@@ -30,24 +30,28 @@ and why the alternative is far more useful to you.
 
 ## Screen 2 of 8 — The 94/6 rule of thumb
 
-*On screen: the number 94% shown large, beside a horizontal proportion bar. The bar is divided
-into two parts with a small gap between them: a long green part labelled "the system — how work
-is designed and managed, about 94%" and a short grey part labelled "special causes — one person,
-one machine, one day, about 6%".*
+*On screen: a small label "Deming's estimate · Out of the Crisis, 1986" above the number 94%
+shown very large, then a horizontal proportion bar divided into two parts with a small gap: a
+long ink-black part labelled "the system: layout, tools, forms, software, schedules, policies,
+about 94%" and a short amber part labelled "special causes: something specific and identifiable
+— a machine fault, a bad batch, a one-off event; occasionally a person, about 6%". A caption
+quotes Deming and notes that Deming says system and Lean says process, meaning the same thing.*
 
-This is the finding that started modern quality thinking. W. Edwards Deming, working with
-Japanese manufacturers after the second world war, put a number on it: about ninety-four
-percent of performance problems come from the system — the way the work is designed and
-managed. Only about six percent come from what he called special causes: one person, one
-machine, one unusual day.
+This is the finding at the heart of modern quality thinking. W. Edwards Deming — whose work
+with Japanese manufacturers after the second world war helped launch the quality movement — put
+a number on it in his 1986 book, *Out of the Crisis*: about ninety-four percent of performance
+problems belong to the system — the way the work is designed and managed — and are, in his
+words, the responsibility of management. Only about six percent come from what he called
+special causes: something specific and identifiable. A machine fault. A bad batch of material.
+A one-off event. Occasionally, a person.
 
-Two honesty notes before we go on. The exact numbers are a rule of thumb, not a measurement;
-Joseph Juran had earlier put it at eighty-five and fifteen. And Deming was making a technical
-point about two kinds of variation, which you'll meet properly at Yellow Belt.
+Two honesty notes before we go on. The numbers are Deming's estimate from experience, not a
+measurement; Joseph Juran had put it at eighty-five and fifteen. And Deming was making a
+technical point about two kinds of variation, which you'll meet properly at Yellow Belt.
 
-But the direction is what matters, and on the direction the evidence has been remarkably
-consistent for seventy years. When something goes wrong at work, the way the work is set up is
-the overwhelming favourite. The person is the long shot.
+But the direction is what matters, and seventy years of improvement work — Toyota's included —
+point the same way. When something goes wrong at work, the way the work is set up is the
+overwhelming favourite. The person is the long shot.
 
 ---
 
@@ -84,6 +88,12 @@ is coached, or moved, or replaced. And then the next person arrives — conscien
 well-intentioned, new — and inherits the same layout, the same forms, the same two systems that
 don't talk to each other. Within a few weeks, the same thing goes wrong again.
 
+Deming demonstrated this with what he called the Red Bead Experiment. Volunteers scoop beads
+from a box with a paddle, and every scoop comes up with some red beads — because a fifth of the
+beads in the box are red. He praised the workers who drew fewer red beads, warned the ones who
+drew more, and eventually fired the worst performers. Their results never changed. The beads
+were in the box.
+
 That pattern is the single most reliable signal you will learn to spot. If a problem survives a
 change of personnel, the problem was never in the personnel. It is built into the work, waiting
 for whoever shows up next.
@@ -106,8 +116,13 @@ Now think about what that means for the organisation. Every hidden problem is a 
 can fix, and it keeps costing money and time and goodwill in the dark.
 
 This is why the language matters. When problems are framed as flaws in how work is designed,
-people will tell you about them — because there is nothing personal to defend. A workplace that
-hides its problems cannot improve. It's that simple.
+people will tell you about them — because there is nothing personal to defend.
+
+Deming made this the eighth of his fourteen points for management: drive out fear, so that
+everyone may work effectively. He put it on the list because fear is the most reliable way to
+stop information moving.
+
+A workplace that hides its problems cannot improve. It's that simple.
 
 ---
 
@@ -196,9 +211,18 @@ many small steps rather than a few large ones.
 **Process** — any repeatable sequence of steps that turns inputs into outputs for a customer.
 Covered properly in Module 2.
 
-**Special cause** — a source of variation that is unusual and identifiable: one person, one
-machine, one day. Contrasted with **common cause**, the ordinary variation built into how a
-process is designed. You will work with both properly at Yellow Belt.
+**Special cause** — an identifiable, non-routine source of variation: a machine fault, a bad
+batch of material, a power cut, a one-off event; occasionally an individual's action.
+Contrasted with **common cause**, the ordinary variation built into how a process is designed.
+Deming's 94/6 is a common-cause versus special-cause split. You will work with both properly at
+Yellow Belt.
+
+**Red Bead Experiment** — Deming's classroom demonstration that individual results are driven
+by the system: workers scoop beads from a box that is one-fifth red, are rewarded and punished
+for red-bead counts they cannot control, and nothing they do changes the outcome.
+
+**Drive out fear (Point 8)** — the eighth of Deming's fourteen points for management. Fear stops
+information moving; problems that are unsafe to report cannot be fixed.
 
 **The system** — everything about how work is designed and managed: layout, tools, forms,
 software, schedules, policies, incentives, and training.

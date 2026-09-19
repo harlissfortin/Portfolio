@@ -35,209 +35,221 @@ s1-7
 Over the next few minutes I want to show you why that answer is usually wrong, and why the alternative is far more useful to you.
 
 s2-1
-00:00:45.259 --> 00:00:48.888
-This is the finding that started modern quality thinking.
+00:00:45.259 --> 00:00:49.052
+This is the finding at the heart of modern quality thinking.
 
 s2-2
-00:00:49.638 --> 00:00:56.977
-W. Edwards Deming, working with Japanese manufacturers after the second world war, put a number on it:
+00:00:49.802 --> 00:01:03.074
+W. Edwards Deming — whose work with Japanese manufacturers after the second world war helped launch the quality movement — put a number on it in his 1986 book, Out of the Crisis:
 
 s2-3
-00:00:57.397 --> 00:01:04.933
-about ninety-four percent of performance problems come from the system — the way the work is designed and managed.
+00:01:03.494 --> 00:01:15.565
+about ninety-four percent of performance problems belong to the system — the way the work is designed and managed — and are, in his words, the responsibility of management.
 
 s2-4
-00:01:05.353 --> 00:01:13.049
-Only about six percent come from what he called special causes: one person, one machine, one unusual day.
+00:01:15.985 --> 00:01:30.010
+Only about six percent come from what he called special causes: something specific and identifiable. A machine fault. A bad batch of material. A one-off event. Occasionally, a person.
 
 s2-5
-00:01:13.799 --> 00:01:24.923
-Two honesty notes before we go on. The exact numbers are a rule of thumb, not a measurement; Joseph Juran had earlier put it at eighty-five and fifteen.
+00:01:30.760 --> 00:01:41.881
+Two honesty notes before we go on. The numbers are Deming's estimate from experience, not a measurement; Joseph Juran had put it at eighty-five and fifteen.
 
 s2-6
-00:01:25.343 --> 00:01:32.869
+00:01:42.301 --> 00:01:49.828
 And Deming was making a technical point about two kinds of variation, which you'll meet properly at Yellow Belt.
 
 s2-7
-00:01:33.619 --> 00:01:41.259
-But the direction is what matters, and on the direction the evidence has been remarkably consistent for seventy years.
+00:01:50.578 --> 00:01:58.039
+But the direction is what matters, and seventy years of improvement work — Toyota's included — point the same way.
 
 s2-8
-00:01:41.679 --> 00:01:49.930
+00:01:58.459 --> 00:02:06.710
 When something goes wrong at work, the way the work is set up is the overwhelming favourite. The person is the long shot.
 
 s3-1
-00:01:50.880 --> 00:01:59.332
+00:02:07.660 --> 00:02:16.112
 So here is the shift that every improvement method is built on, and it fits on one line: blame the process, not the person.
 
 s3-2
-00:01:59.752 --> 00:02:01.301
+00:02:16.532 --> 00:02:18.081
 Then fix the process.
 
 s3-3
-00:02:02.051 --> 00:02:06.913
+00:02:18.831 --> 00:02:23.693
 I want to be careful here, because this is often misheard in two directions.
 
 s3-4
-00:02:07.333 --> 00:02:13.845
+00:02:24.113 --> 00:02:30.625
 It does not mean nobody is ever accountable for anything. And it does not mean people are helpless.
 
 s3-5
-00:02:14.595 --> 00:02:24.278
+00:02:31.375 --> 00:02:41.058
 What it means is narrower and more practical. When you are staring at a problem that keeps happening, the most productive first question is not who did this.
 
 s3-6
-00:02:24.698 --> 00:02:28.483
+00:02:41.478 --> 00:02:45.263
 It is: what about the way this work is set up made that likely?
 
 s3-7
-00:02:29.233 --> 00:02:35.063
+00:02:46.013 --> 00:02:51.843
 That question is worth learning to ask out loud, because it changes what a room does next.
 
 s4-1
-00:02:36.013 --> 00:02:41.557
+00:02:52.793 --> 00:02:58.337
 There are two reasons to work this way, and the first one is simply that it is more accurate.
 
 s4-2
-00:02:42.307 --> 00:02:51.209
+00:02:59.087 --> 00:03:07.989
 Think about what happens when a recurring problem gets treated as a people problem. The person is coached, or moved, or replaced.
 
 s4-3
-00:02:51.629 --> 00:02:59.833
+00:03:08.409 --> 00:03:16.613
 And then the next person arrives — conscientious, well-intentioned, new — and inherits the same layout, the same forms,
 
 s4-4
-00:03:00.253 --> 00:03:06.647
+00:03:17.033 --> 00:03:23.427
 the same two systems that don't talk to each other. Within a few weeks, the same thing goes wrong again.
 
 s4-5
-00:03:07.397 --> 00:03:12.186
-That pattern is the single most reliable signal you will learn to spot.
+00:03:24.177 --> 00:03:38.443
+Deming demonstrated this with what he called the Red Bead Experiment. Volunteers scoop beads from a box with a paddle, and every scoop comes up with some red beads — because a fifth of the beads in the box are red.
 
 s4-6
-00:03:12.606 --> 00:03:18.150
-If a problem survives a change of personnel, the problem was never in the personnel.
+00:03:38.863 --> 00:03:51.349
+He praised the workers who drew fewer red beads, warned the ones who drew more, and eventually fired the worst performers. Their results never changed. The beads were in the box.
 
 s4-7
-00:03:18.570 --> 00:03:22.720
+00:03:52.099 --> 00:03:56.887
+That pattern is the single most reliable signal you will learn to spot.
+
+s4-8
+00:03:57.307 --> 00:04:02.852
+If a problem survives a change of personnel, the problem was never in the personnel.
+
+s4-9
+00:04:03.272 --> 00:04:07.421
 It is built into the work, waiting for whoever shows up next.
 
 s5-1
-00:03:23.670 --> 00:03:28.678
+00:04:08.372 --> 00:04:13.380
 The second reason matters even more, and it has nothing to do with being nice.
 
 s5-2
-00:03:29.428 --> 00:03:38.214
+00:04:14.130 --> 00:04:22.916
 Think about what you do when you make a mistake somewhere that treats mistakes as personal failures. You fix it quietly. You work around it.
 
 s5-3
-00:03:38.634 --> 00:03:46.796
+00:04:23.336 --> 00:04:31.498
 You do not raise it in a meeting. That is not a character flaw — it is a completely rational response to the situation.
 
 s5-4
-00:03:47.546 --> 00:03:54.833
+00:04:32.248 --> 00:04:39.535
 Now think about what that means for the organisation. Every hidden problem is a problem nobody can fix,
 
 s5-5
-00:03:55.253 --> 00:03:59.055
+00:04:39.955 --> 00:04:43.757
 and it keeps costing money and time and goodwill in the dark.
 
 s5-6
-00:03:59.805 --> 00:04:08.284
+00:04:44.507 --> 00:04:52.986
 This is why the language matters. When problems are framed as flaws in how work is designed, people will tell you about them —
 
 s5-7
-00:04:08.704 --> 00:04:11.302
+00:04:53.406 --> 00:04:56.004
 because there is nothing personal to defend.
 
 s5-8
-00:04:11.722 --> 00:04:16.474
+00:04:56.754 --> 00:05:11.178
+Deming made this the eighth of his fourteen points for management: drive out fear, so that everyone may work effectively. He put it on the list because fear is the most reliable way to stop information moving.
+
+s5-9
+00:05:11.928 --> 00:05:16.680
 A workplace that hides its problems cannot improve. It's that simple.
 
 s6-1
-00:04:17.424 --> 00:04:23.207
+00:05:17.630 --> 00:05:23.413
 Let's make this concrete, because the pattern looks identical in wildly different places.
 
 s6-2
-00:04:23.957 --> 00:04:28.440
+00:05:24.163 --> 00:05:28.646
 On a packing line, someone keeps shipping the wrong variant of a product.
 
 s6-3
-00:04:28.860 --> 00:04:38.698
+00:05:29.066 --> 00:05:38.904
 Look at the station: two nearly identical bins, side by side, with small labels. A new packer will make that same error inside a week.
 
 s6-4
-00:04:39.448 --> 00:04:43.175
+00:05:39.654 --> 00:05:43.381
 On a hospital ward, a nurse "forgets" a discharge step.
 
 s6-5
-00:04:43.595 --> 00:04:53.763
+00:05:43.801 --> 00:05:53.969
 Look at the work: the checklist lives in one system and the nurse charts in another. Nothing about that arrangement helps anyone remember anything.
 
 s6-6
-00:04:54.513 --> 00:04:58.805
+00:05:54.719 --> 00:05:59.011
 In an office, an analyst sends out figures that turn out to be stale.
 
 s6-7
-00:04:59.225 --> 00:05:06.150
+00:05:59.431 --> 00:06:06.356
 Look at the folder: there are three files with "final" in the name and nothing at all marking which one is current.
 
 s6-8
-00:05:06.900 --> 00:05:11.171
+00:06:07.106 --> 00:06:11.377
 In every one of those cases, replacing the person changes nothing.
 
 s6-9
-00:05:11.591 --> 00:05:19.167
+00:06:11.797 --> 00:06:19.373
 Changing the bins, the systems, the file naming — that changes everything. Same story, three industries.
 
 s6-10
-00:05:19.587 --> 00:05:22.860
+00:06:19.793 --> 00:06:23.066
 You will start seeing it everywhere, and that is the point.
 
 s7-1
-00:05:23.809 --> 00:05:29.107
+00:06:24.015 --> 00:06:29.313
 Now it's your turn, and this is the part of the module that does the real work.
 
 s7-2
-00:05:29.857 --> 00:05:35.136
+00:06:30.063 --> 00:06:35.342
 Think of one thing that goes wrong repeatedly in your own job. Write it down twice.
 
 s7-3
-00:05:35.556 --> 00:05:40.062
+00:06:35.762 --> 00:06:40.268
 First as a person problem — the way it probably gets discussed today.
 
 s7-4
-00:05:40.482 --> 00:05:44.654
+00:06:40.688 --> 00:06:44.860
 Then as a process problem — what about the setup makes it likely?
 
 s7-5
-00:05:45.404 --> 00:05:51.498
+00:06:45.610 --> 00:06:51.704
 Then read both back and ask yourself which version hands you something you could actually change.
 
 s7-6
-00:05:51.918 --> 00:05:56.711
+00:06:52.124 --> 00:06:56.917
 There is no scoring here and nobody is grading your writing. Take the time.
 
 s8-1
-00:05:57.661 --> 00:05:59.896
+00:06:57.867 --> 00:07:00.102
 Three things to carry out of this module.
 
 s8-2
-00:06:00.646 --> 00:06:07.383
+00:07:00.852 --> 00:07:07.589
 First: most recurring problems are built into the process, so changing people rarely fixes them.
 
 s8-3
-00:06:07.803 --> 00:06:18.970
+00:07:08.009 --> 00:07:19.176
 Second: framing problems as process flaws is what makes them safe to surface — and a surfaced problem is the raw material of every improvement you will ever make.
 
 s8-4
-00:06:19.720 --> 00:06:25.148
+00:07:19.926 --> 00:07:25.354
 Third, and this is the one I'd ask you to hold onto: your frustrations are data.
 
 s8-5
-00:06:25.568 --> 00:06:28.717
+00:07:25.774 --> 00:07:28.923
 This course is going to teach you how to read them.
 
 s8-6
-00:06:29.137 --> 00:06:31.813
+00:07:29.343 --> 00:07:32.019
 Next up: what a process actually is.

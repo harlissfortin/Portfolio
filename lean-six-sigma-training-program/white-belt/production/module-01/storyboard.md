@@ -4,7 +4,7 @@
 **Learning goal:** The learner can explain why most workplace frustration is caused by
 process design rather than by people, and can name one recurring frustration in their own work.
 **Screens:** 8 · **Cumulative check:** none (Module 1 is the first module)
-**Narration:** synthesized neural voice, measured 6:32 — see the asset manifest
+**Narration:** synthesized neural voice, measured 7:32 — see the asset manifest · **Revision 2** after Lean Six Sigma expert review (see S2 note and the program change log)
 **Built against:** [`../storyboard-and-build-spec.md`](../storyboard-and-build-spec.md)
 
 **Conventions used below.** *OST* = on-screen text (≤ 60 words; never narrated verbatim).
@@ -41,31 +41,40 @@ process design rather than by people, and can name one recurring frustration in 
 ## S2 · Teach — The 94/6 rule of thumb
 
 **OST**
-> **W. Edwards Deming's rule of thumb**
-> ~94% of performance problems belong to **the system** — how work is designed and managed.
-> ~6% belong to **special causes** — one person, one machine, one day.
+> **Deming's estimate · Out of the Crisis, 1986**
+> ~94% of performance problems belong to **the system** — how work is designed and managed —
+> and are, in Deming's words, **the responsibility of management**.
+> ~6% belong to **special causes** — something specific and identifiable: a machine fault, a
+> bad batch, a one-off event; occasionally a person.
+> *Caption:* Deming says system; Lean says process. Here they mean the same thing.
 
-**NAR** (≈155 words / 65 s)
-> This is the finding that started modern quality thinking. W. Edwards Deming, working with
-> Japanese manufacturers after the second world war, put a number on it: about ninety-four
-> percent of performance problems come from the system — the way the work is designed and
-> managed. Only about six percent come from what he called special causes: one person, one
-> machine, one unusual day.
+**NAR** (≈170 words / 72 s)
+> This is the finding at the heart of modern quality thinking. W. Edwards Deming — whose work
+> with Japanese manufacturers after the second world war helped launch the quality movement —
+> put a number on it in his 1986 book, *Out of the Crisis*: about ninety-four percent of
+> performance problems belong to the system — the way the work is designed and managed — and
+> are, in his words, the responsibility of management. Only about six percent come from what he
+> called special causes: something specific and identifiable. A machine fault. A bad batch of
+> material. A one-off event. Occasionally, a person.
 >
-> Two honesty notes before we go on. The exact numbers are a rule of thumb, not a
-> measurement; Joseph Juran had earlier put it at eighty-five and fifteen. And Deming was
-> making a technical point about two kinds of variation, which you'll meet properly at Yellow
-> Belt.
+> Two honesty notes before we go on. The numbers are Deming's estimate from experience, not a
+> measurement; Joseph Juran had put it at eighty-five and fifteen. And Deming was making a
+> technical point about two kinds of variation, which you'll meet properly at Yellow Belt.
 >
-> But the direction is what matters, and on the direction the evidence has been remarkably
-> consistent for seventy years. When something goes wrong at work, the way the work is set up
-> is the overwhelming favourite. The person is the long shot.
+> But the direction is what matters, and seventy years of improvement work — Toyota's included —
+> point the same way. When something goes wrong at work, the way the work is set up is the
+> overwhelming favourite. The person is the long shot.
 
 **VIS** `fig-94-6` — emphasis figure: hero number **94%** with a horizontal proportion bar,
 94% in the accent green, 6% in the de-emphasis gray, 2 px surface gap between the fills, both
 segments direct-labeled.
 **Alt text:** *"Proportion bar: about 94 percent of performance problems belong to the system,
 about 6 percent to special causes."*
+**Expert-review note (rev. 2):** the earlier draft dated the 94/6 figure to Deming's post-war
+Japan work (it is from *Out of the Crisis*, 1986), omitted his "responsibility of management"
+clause, listed "one person" first among special causes — conflating assignable causes with
+individual blame, which undercuts the module's own thesis — and over-claimed a body of
+"evidence." All corrected above.
 **Colour decision (for design review):** this is an **emphasis** figure — one accent hue plus a
 de-emphasis gray — not a categorical pair, and deliberately not a two-slice pie. Light
 `#0E7A5F` + `#8A9992`; dark `#43B491` + `#6E7D77`. Both pairs clear the CVD-separation and
@@ -85,6 +94,8 @@ palettes; a de-emphasis gray is *supposed* to recede.
 **OST**
 > **Blame the process, not the person.**
 > Then fix the process.
+> *Aside:* Accountability doesn't disappear — it moves to whoever owns the design of the work.
+> That is what Deming meant by "the responsibility of management."
 
 **NAR** (≈120 words / 50 s)
 > So here is the shift that every improvement method is built on, and it fits on one line:
@@ -112,8 +123,11 @@ palettes; a de-emphasis gray is *supposed* to recede.
 **OST**
 > **1 · It's more accurate**
 > Swap the person, keep the process — and the next person inherits the same result.
+> *Aside — The Red Bead Experiment:* Deming's demonstration that results are driven by the
+> system: a box one-fifth red beads; workers rewarded and punished for counts they cannot
+> control; nothing changes. The beads were in the box.
 
-**NAR** (≈130 words / 55 s)
+**NAR** (≈195 words / 80 s)
 > There are two reasons to work this way, and the first one is simply that it is more
 > accurate.
 >
@@ -121,6 +135,12 @@ palettes; a de-emphasis gray is *supposed* to recede.
 > person is coached, or moved, or replaced. And then the next person arrives — conscientious,
 > well-intentioned, new — and inherits the same layout, the same forms, the same two systems
 > that don't talk to each other. Within a few weeks, the same thing goes wrong again.
+>
+> Deming demonstrated this with what he called the Red Bead Experiment. Volunteers scoop
+> beads from a box with a paddle, and every scoop comes up with some red beads — because a
+> fifth of the beads in the box are red. He praised the workers who drew fewer red beads,
+> warned the ones who drew more, and eventually fired the worst performers. Their results
+> never changed. The beads were in the box.
 >
 > That pattern is the single most reliable signal you will learn to spot. If a problem
 > survives a change of personnel, the problem was never in the personnel. It is built into
@@ -144,8 +164,10 @@ again."*
 > Problems framed as process flaws get reported.
 > Problems framed as personal failures get hidden.
 > **A workplace that hides problems cannot improve.**
+> *Aside — Deming's Point 8 of 14:* "Drive out fear, so that everyone may work effectively for
+> the company."
 
-**NAR** (≈135 words / 58 s)
+**NAR** (≈175 words / 72 s)
 > The second reason matters even more, and it has nothing to do with being nice.
 >
 > Think about what you do when you make a mistake somewhere that treats mistakes as personal
@@ -157,6 +179,11 @@ again."*
 >
 > This is why the language matters. When problems are framed as flaws in how work is
 > designed, people will tell you about them — because there is nothing personal to defend.
+>
+> Deming made this the eighth of his fourteen points for management: drive out fear, so that
+> everyone may work effectively. He put it on the list because fear is the most reliable way
+> to stop information moving.
+>
 > A workplace that hides its problems cannot improve. It's that simple.
 
 **VIS** None. The four OST lines are the visual, with the closing line emphasised.
@@ -279,7 +306,7 @@ something to copy instead of something to compare against.
 
 | Asset | Path | Status |
 |---|---|---|
-| Narration audio, S1–S8 | `audio/wb-m01-s{1..8}.mp3` | **Synthesized** — neural voice (Kokoro, `af_heart`, speed 0.82), 24 kHz mono MP3 56 kbps, peak-normalized to −1 dBFS. Total 6:32 — 165 wpm speech-only, 150 wpm including pauses, inside the instructional band; the first pass at speed 0.94 measured 185 wpm and was rejected as too fast. Replaceable by a studio recording without code changes (see timing note) |
+| Narration audio, S1–S8 | `audio/wb-m01-s{1..8}.mp3` | **Synthesized** — neural voice (Kokoro, `af_heart`, speed 0.82), 24 kHz mono MP3 56 kbps, peak-normalized to −1 dBFS. Total 7:32 (62 cues) — 163 wpm speech-only, 149 wpm including pauses, inside the instructional band; the first pass at speed 0.94 measured 185 wpm and was rejected as too fast. Replaceable by a studio recording without code changes (see timing note) |
 | Captions (WebVTT) | `audio/wb-m01-s{1..8}.vtt` (per screen) · [`narration.vtt`](narration.vtt) (combined, continuous) | **Measured** from the synthesized audio, cue by cue — each cue was synthesized separately so its start/end are exact, not estimated |
 | Transcript | [`transcript.md`](transcript.md) | Complete, includes visual descriptions |
 | Built module | [`index.html`](index.html) | Complete; audio embedded as data URIs (2.5 MB); auto-continues narration across screens once the learner presses play; caption highlight and auto-scroll follow the audio; everything works with sound off |

@@ -53,56 +53,56 @@
    ]
   },
   "s2": {
-   "duration": 65.621,
+   "duration": 82.401,
    "mp3": "audio/wb-m01-s2.mp3",
-   "bytes": 459816,
+   "bytes": 577248,
    "cues": [
     {
      "id": "s2-1",
      "start": 0.35,
-     "end": 3.979,
-     "text": "This is the finding that started modern quality thinking."
+     "end": 4.143,
+     "text": "This is the finding at the heart of modern quality thinking."
     },
     {
      "id": "s2-2",
-     "start": 4.729,
-     "end": 12.068,
-     "text": "W. Edwards Deming, working with Japanese manufacturers after the second world war, put a number on it:"
+     "start": 4.893,
+     "end": 18.165,
+     "text": "W. Edwards Deming \u2014 whose work with Japanese manufacturers after the second world war helped launch the quality movement \u2014 put a number on it in his 1986 book, Out of the Crisis:"
     },
     {
      "id": "s2-3",
-     "start": 12.488,
-     "end": 20.024,
-     "text": "about ninety-four percent of performance problems come from the system \u2014 the way the work is designed and managed."
+     "start": 18.585,
+     "end": 30.656,
+     "text": "about ninety-four percent of performance problems belong to the system \u2014 the way the work is designed and managed \u2014 and are, in his words, the responsibility of management."
     },
     {
      "id": "s2-4",
-     "start": 20.444,
-     "end": 28.14,
-     "text": "Only about six percent come from what he called special causes: one person, one machine, one unusual day."
+     "start": 31.076,
+     "end": 45.101,
+     "text": "Only about six percent come from what he called special causes: something specific and identifiable. A machine fault. A bad batch of material. A one-off event. Occasionally, a person."
     },
     {
      "id": "s2-5",
-     "start": 28.89,
-     "end": 40.014,
-     "text": "Two honesty notes before we go on. The exact numbers are a rule of thumb, not a measurement; Joseph Juran had earlier put it at eighty-five and fifteen."
+     "start": 45.851,
+     "end": 56.972,
+     "text": "Two honesty notes before we go on. The numbers are Deming's estimate from experience, not a measurement; Joseph Juran had put it at eighty-five and fifteen."
     },
     {
      "id": "s2-6",
-     "start": 40.434,
-     "end": 47.96,
+     "start": 57.392,
+     "end": 64.919,
      "text": "And Deming was making a technical point about two kinds of variation, which you'll meet properly at Yellow Belt."
     },
     {
      "id": "s2-7",
-     "start": 48.71,
-     "end": 56.35,
-     "text": "But the direction is what matters, and on the direction the evidence has been remarkably consistent for seventy years."
+     "start": 65.669,
+     "end": 73.13,
+     "text": "But the direction is what matters, and seventy years of improvement work \u2014 Toyota's included \u2014 point the same way."
     },
     {
      "id": "s2-8",
-     "start": 56.77,
-     "end": 65.021,
+     "start": 73.55,
+     "end": 81.801,
      "text": "When something goes wrong at work, the way the work is set up is the overwhelming favourite. The person is the long shot."
     }
    ]
@@ -157,9 +157,9 @@
    ]
   },
   "s4": {
-   "duration": 47.657,
+   "duration": 75.578,
    "mp3": "audio/wb-m01-s4.mp3",
-   "bytes": 333984,
+   "bytes": 529536,
    "cues": [
     {
      "id": "s4-1",
@@ -188,27 +188,39 @@
     {
      "id": "s4-5",
      "start": 31.734,
-     "end": 36.523,
-     "text": "That pattern is the single most reliable signal you will learn to spot."
+     "end": 46.0,
+     "text": "Deming demonstrated this with what he called the Red Bead Experiment. Volunteers scoop beads from a box with a paddle, and every scoop comes up with some red beads \u2014 because a fifth of the beads in the box are red."
     },
     {
      "id": "s4-6",
-     "start": 36.943,
-     "end": 42.487,
-     "text": "If a problem survives a change of personnel, the problem was never in the personnel."
+     "start": 46.42,
+     "end": 58.906,
+     "text": "He praised the workers who drew fewer red beads, warned the ones who drew more, and eventually fired the worst performers. Their results never changed. The beads were in the box."
     },
     {
      "id": "s4-7",
-     "start": 42.907,
-     "end": 47.057,
+     "start": 59.656,
+     "end": 64.444,
+     "text": "That pattern is the single most reliable signal you will learn to spot."
+    },
+    {
+     "id": "s4-8",
+     "start": 64.864,
+     "end": 70.409,
+     "text": "If a problem survives a change of personnel, the problem was never in the personnel."
+    },
+    {
+     "id": "s4-9",
+     "start": 70.829,
+     "end": 74.978,
      "text": "It is built into the work, waiting for whoever shows up next."
     }
    ]
   },
   "s5": {
-   "duration": 53.754,
+   "duration": 69.258,
    "mp3": "audio/wb-m01-s5.mp3",
-   "bytes": 376656,
+   "bytes": 485184,
    "cues": [
     {
      "id": "s5-1",
@@ -254,8 +266,14 @@
     },
     {
      "id": "s5-8",
-     "start": 48.402,
-     "end": 53.154,
+     "start": 48.732,
+     "end": 63.156,
+     "text": "Deming made this the eighth of his fourteen points for management: drive out fear, so that everyone may work effectively. He put it on the list because fear is the most reliable way to stop information moving."
+    },
+    {
+     "id": "s5-9",
+     "start": 63.906,
+     "end": 68.658,
      "text": "A workplace that hides its problems cannot improve. It's that simple."
     }
    ]

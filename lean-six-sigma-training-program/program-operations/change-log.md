@@ -10,6 +10,18 @@ Change classes: **CUR** curriculum/content · **ASM** assessment (items, bluepri
 
 ---
 
+## 2026-09-19 — Module 1 expert review (Lean Six Sigma)
+
+| Class | Change | Rationale | Effective |
+|---|---|---|---|
+| CUR | S2: 94/6 attributed correctly to *Out of the Crisis* (1986), not to Deming's post-war Japan work; "responsibility of management" clause restored; "started modern quality thinking" → "at the heart of"; "evidence consistent for seventy years" → "seventy years of improvement work point the same way" | Chronology was wrong; the management-responsibility half of Deming's sentence is the point; a rule of thumb was being presented as an evidence base | Immediate |
+| CUR | Special cause redefined everywhere (narration, figure label, glossary, transcript) as an identifiable non-routine source — machine fault, bad batch, one-off event; *occasionally* a person | Listing "one person" first conflated assignable causes with individual blame, contradicting the module's own thesis and mis-teaching a Yellow Belt concept | Immediate |
+| CUR | S4: Red Bead Experiment added (narration + on-screen aside + glossary) | Deming's canonical demonstration of exactly this lesson; expected by any LSS-literate reviewer | Immediate |
+| CUR | S5: Deming's Point 8, "Drive out fear," attributed (narration + aside + glossary) | The psychological-safety argument *is* Point 8; attribution ties the module to the body of knowledge | Immediate |
+| CUR | S3: accountability aside — it moves to whoever owns the design of the work | Pre-empts the "so nobody is accountable" misreading | Immediate |
+| CUR | S2: "Deming's estimate" label above the hero number; system/process terminology reconciled in the caption | A rule of thumb must not read as a measured statistic; the module used "system" and "process" interchangeably without saying so | Immediate |
+| PRD | Narration re-synthesized for S2, S4, S5 with cue IDs renumbered; captions re-measured | Content revision | Immediate |
+
 ## 2026-09-19 — White Belt component build-out
 
 | Class | Change | Rationale | Effective |
