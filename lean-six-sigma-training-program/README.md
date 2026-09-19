@@ -4,6 +4,16 @@ A best-in-class, commercially sellable Lean Six Sigma (LSS) certification progra
 White Belt → Yellow Belt → Green Belt → Black Belt → Master Black Belt, designed for delivery
 to external clients across multiple industries.
 
+> **Course build-out status:** the White Belt and Yellow Belt levels are fully built out —
+> lesson content, workshops, exams, project templates, and rubrics:
+> - **[White Belt →](white-belt/README.md)** — 12 lesson modules, 30-item knowledge-check
+>   bank, field-exercise form, pocket card, waste-walk checklist
+> - **[Yellow Belt →](yellow-belt/README.md)** — 5 teaching units, 2 live-workshop
+>   facilitator guides, 44-item certification exam bank, mini-project A3-lite storyboard +
+>   scoring rubric, and the 5-template toolkit
+>
+> Green Belt and above exist at blueprint level (below) pending build-out.
+
 ---
 
 ## Design Assumptions (Stated Constraints)
