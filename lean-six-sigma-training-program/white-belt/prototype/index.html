@@ -1,0 +1,925 @@
+<title>White Belt Foundations</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F2F4F3; --panel:#FFFFFF; --panel2:#E9EEEC; --ink:#1B2420; --mut:#5A6963;
+  --line:#D6DDDA; --acc:#0E7A5F; --acc-deep:#0A5D49; --acc-ink:#FFFFFF;
+  --tint-acc:#E1EFE9; --amber:#9A6608; --tint-amber:#F4EAD6; --red:#B23B2A; --tint-red:#F5E3DF;
+  --code:#3D4A45; --shadow:0 1px 3px rgba(20,30,26,.08),0 4px 14px rgba(20,30,26,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141917; --panel:#1D2421; --panel2:#242C29; --ink:#E7ECEA; --mut:#94A19B;
+    --line:#333D39; --acc:#43B491; --acc-deep:#2E8A6E; --acc-ink:#0E1513;
+    --tint-acc:#1D332C; --amber:#D8A34C; --tint-amber:#39301C; --red:#E07B63; --tint-red:#3C231D;
+    --code:#B9C4BF; --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1D2421; --panel2:#242C29; --ink:#E7ECEA; --mut:#94A19B;
+  --line:#333D39; --acc:#43B491; --acc-deep:#2E8A6E; --acc-ink:#0E1513;
+  --tint-acc:#1D332C; --amber:#D8A34C; --tint-amber:#39301C; --red:#E07B63; --tint-red:#3C231D;
+  --code:#B9C4BF; --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:400 16px/1.55 "Source Sans 3",system-ui,sans-serif;
+}
+.shell{max-width:1140px; margin:0 auto; padding-inline:16px; padding-block:0 40px}
+/* ---------- header ---------- */
+header.top{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:var(--bg);
+  border-bottom:1px solid var(--line); margin-inline:-16px; padding:12px 16px;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:10px; min-width:0}
+.brand .belt{
+  font:800 15px/1 "Archivo",sans-serif; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--acc);
+}
+.brand h1{font:700 18px/1.15 "Archivo",sans-serif; margin:0; letter-spacing:-.01em; text-wrap:balance}
+.progresswrap{margin-left:auto; display:flex; align-items:center; gap:10px}
+.progresswrap .pct{font:500 13px/1 "IBM Plex Mono",monospace; color:var(--mut); font-variant-numeric:tabular-nums}
+.pbar{width:140px; height:8px; border-radius:99px; background:var(--panel2); overflow:hidden}
+.pbar i{display:block; height:100%; width:0%; background:var(--acc); border-radius:99px; transition:width .4s ease}
+/* ---------- layout ---------- */
+.cols{display:grid; grid-template-columns:280px minmax(0,1fr); gap:24px; margin-top:22px}
+@media (max-width:820px){ .cols{grid-template-columns:minmax(0,1fr)} aside.nav{order:2} }
+/* ---------- module board (sidebar) ---------- */
+aside.nav h2{
+  font:500 12px/1 "IBM Plex Mono",monospace; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--mut); margin:4px 0 10px;
+}
+.mods{display:flex; flex-direction:column; gap:6px; margin:0; padding:0; list-style:none}
+.mods button{
+  width:100%; text-align:left; display:flex; align-items:center; gap:10px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px;
+  padding:9px 11px; cursor:pointer; color:var(--ink); font:400 14px/1.3 "Source Sans 3",sans-serif;
+}
+.mods button:hover{border-color:var(--acc)}
+.mods button:focus-visible,.btn:focus-visible,.opt:focus-visible,.bucket:focus-visible{
+  outline:2px solid var(--acc); outline-offset:2px;
+}
+.mods button[aria-current="true"]{border-color:var(--acc); background:var(--tint-acc)}
+.mods .num{
+  font:500 12px/1 "IBM Plex Mono",monospace; color:var(--mut); width:22px; flex:none;
+  font-variant-numeric:tabular-nums;
+}
+.mods .st{margin-left:auto; flex:none; width:18px; height:18px; border-radius:50%;
+  border:2px solid var(--line); display:grid; place-items:center; font-size:11px; color:var(--acc-ink)}
+.mods .st.done{background:var(--acc); border-color:var(--acc)}
+.mods .kcrow .num{color:var(--amber)}
+/* ---------- main pane ---------- */
+main{min-width:0}
+.screenhead{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px}
+.eyebrow{
+  font:500 12px/1 "IBM Plex Mono",monospace; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--acc); background:var(--tint-acc); padding:5px 9px; border-radius:5px;
+}
+.screenhead .count{font:500 12px/1 "IBM Plex Mono",monospace; color:var(--mut); font-variant-numeric:tabular-nums}
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  padding:26px 28px; box-shadow:var(--shadow);
+}
+@media (max-width:520px){ .card{padding:20px 16px} }
+.card h3{font:700 24px/1.2 "Archivo",sans-serif; margin:0 0 14px; letter-spacing:-.015em; text-wrap:balance}
+.card h4{font:700 17px/1.3 "Archivo",sans-serif; margin:22px 0 8px}
+.card p{margin:0 0 12px; max-width:62ch}
+.card ul,.card ol{margin:0 0 12px; padding-left:22px; max-width:60ch}
+.card li{margin-bottom:6px}
+.card strong{font-weight:600}
+.quote{
+  border-left:3px solid var(--acc); background:var(--tint-acc); padding:10px 14px;
+  border-radius:0 8px 8px 0; margin:0 0 14px; max-width:58ch; font-style:italic;
+}
+.tablewrap{overflow-x:auto; margin:0 0 14px}
+table{border-collapse:collapse; font-size:14.5px; min-width:420px}
+th,td{border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top}
+th{background:var(--panel2); font:600 13px/1.3 "Source Sans 3",sans-serif}
+td b{font-weight:600}
+.kv{font:500 13px/1.4 "IBM Plex Mono",monospace; color:var(--code)}
+.wastegrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; margin:0 0 14px}
+.waste{border:1px solid var(--line); border-radius:8px; padding:12px 14px; background:var(--panel)}
+.waste .lt{
+  font:800 22px/1 "Archivo",sans-serif; color:var(--acc); display:inline-block; margin-right:8px;
+}
+.waste .nm{font:700 15px/1.2 "Archivo",sans-serif}
+.waste p{font-size:14px; color:var(--mut); margin:6px 0 0}
+.note{
+  display:flex; gap:9px; align-items:flex-start; background:var(--tint-amber); color:var(--ink);
+  border-radius:8px; padding:10px 13px; margin:0 0 14px; font-size:14.5px; max-width:60ch;
+}
+.note .dot{flex:none; width:8px; height:8px; border-radius:50%; background:var(--amber); margin-top:7px}
+/* ---------- interactions ---------- */
+.qtext{font:600 17px/1.45 "Source Sans 3",sans-serif; margin:0 0 12px; max-width:60ch}
+.opts{display:flex; flex-direction:column; gap:8px; margin-bottom:14px}
+.opt{
+  text-align:left; background:var(--panel); border:1.5px solid var(--line); border-radius:8px;
+  padding:10px 13px; cursor:pointer; color:var(--ink); font:400 15px/1.4 "Source Sans 3",sans-serif;
+}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt:disabled{cursor:default; opacity:.92}
+.opt.right{border-color:var(--acc); background:var(--tint-acc)}
+.opt.wrong{border-color:var(--red); background:var(--tint-red)}
+.why{
+  border-radius:8px; padding:10px 13px; font-size:14.5px; margin-bottom:14px; max-width:60ch;
+  background:var(--panel2);
+}
+.why b{font-weight:600}
+.why.good{background:var(--tint-acc)} .why.bad{background:var(--tint-red)}
+.buckets{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px}
+.bucket{
+  border:1.5px solid var(--line); background:var(--panel); color:var(--ink); border-radius:99px;
+  padding:8px 15px; cursor:pointer; font:600 14px/1 "Source Sans 3",sans-serif;
+}
+.bucket:hover:not(:disabled){border-color:var(--acc)}
+.bucket:disabled{cursor:default}
+.bucket.right{border-color:var(--acc); background:var(--tint-acc)}
+.bucket.wrong{border-color:var(--red); background:var(--tint-red)}
+.itemcard{
+  border:1px dashed var(--line); border-radius:8px; background:var(--panel2);
+  padding:14px 16px; font:600 16px/1.4 "Source Sans 3",sans-serif; margin-bottom:12px; max-width:60ch;
+}
+.scorechip{
+  display:inline-flex; align-items:center; gap:8px; font:500 13px/1 "IBM Plex Mono",monospace;
+  color:var(--mut); margin-bottom:10px; font-variant-numeric:tabular-nums;
+}
+textarea,input[type=text]{
+  width:100%; max-width:62ch; background:var(--panel); color:var(--ink);
+  border:1.5px solid var(--line); border-radius:8px; padding:10px 12px;
+  font:400 15px/1.5 "Source Sans 3",sans-serif;
+}
+textarea:focus,input:focus{outline:2px solid var(--acc); outline-offset:1px; border-color:var(--acc)}
+label.f{display:block; font:600 14px/1.3 "Source Sans 3",sans-serif; margin:16px 0 6px}
+label.f small{display:block; font-weight:400; color:var(--mut)}
+.checks{display:flex; flex-direction:column; gap:6px; max-width:62ch}
+.checks label{display:flex; gap:9px; align-items:flex-start; font-size:15px; cursor:pointer}
+.checks input{margin-top:4px; accent-color:var(--acc)}
+/* ---------- buttons / footer nav ---------- */
+.btn{
+  display:inline-flex; align-items:center; gap:8px; border:none; border-radius:8px;
+  background:var(--acc); color:var(--acc-ink); font:700 15px/1 "Archivo",sans-serif;
+  padding:12px 20px; cursor:pointer; letter-spacing:.01em;
+}
+.btn:hover{background:var(--acc-deep)}
+.btn.sec{background:var(--panel); color:var(--ink); border:1.5px solid var(--line)}
+.btn.sec:hover{border-color:var(--acc); background:var(--panel)}
+.btn:disabled{opacity:.45; cursor:default}
+.footnav{display:flex; gap:10px; margin-top:18px; flex-wrap:wrap}
+.footnav .spacer{flex:1}
+.tk{margin-top:18px; border-top:1px solid var(--line); padding-top:14px}
+.tk h5{font:500 12px/1 "IBM Plex Mono",monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--mut); margin:0 0 8px}
+.tk ul{margin:0; padding-left:20px; font-size:14.5px; max-width:60ch}
+/* ---------- knowledge check ---------- */
+.kcscore{font:800 52px/1 "Archivo",sans-serif; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.passpill{
+  display:inline-block; font:700 13px/1 "Archivo",sans-serif; letter-spacing:.08em; text-transform:uppercase;
+  border-radius:99px; padding:7px 14px; margin-left:10px; vertical-align:middle;
+}
+.passpill.ok{background:var(--tint-acc); color:var(--acc)}
+.passpill.no{background:var(--tint-red); color:var(--red)}
+.review{border-top:1px solid var(--line); margin-top:18px; padding-top:6px}
+.review .rv{padding:12px 0; border-bottom:1px solid var(--line); font-size:14.5px; max-width:64ch}
+.review .rv .q{font-weight:600; margin-bottom:4px}
+.review .rv .tag{font:500 11px/1 "IBM Plex Mono",monospace; letter-spacing:.08em; padding:3px 7px; border-radius:4px; margin-right:7px}
+.review .rv .tag.ok{background:var(--tint-acc); color:var(--acc)}
+.review .rv .tag.no{background:var(--tint-red); color:var(--red)}
+.badge{
+  border:2px solid var(--acc); border-radius:14px; padding:26px; text-align:center; max-width:430px;
+  margin:10px auto 4px; background:var(--panel);
+}
+.badge .ring{
+  width:74px; height:74px; margin:0 auto 12px; border-radius:50%; border:4px solid var(--acc);
+  display:grid; place-items:center; font:800 30px/1 "Archivo",sans-serif; color:var(--acc);
+}
+.badge h4{margin:0 0 4px; font:800 20px/1.2 "Archivo",sans-serif}
+.badge p{color:var(--mut); font-size:14px; margin:0}
+.protonote{font:400 13px/1.5 "Source Sans 3",sans-serif; color:var(--mut); margin-top:26px; max-width:62ch}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <span class="belt">White Belt</span>
+      <h1>Foundations of Operational Excellence</h1>
+    </div>
+    <div class="progresswrap">
+      <div class="pbar" aria-hidden="true"><i id="pfill"></i></div>
+      <span class="pct" id="ppct">0%</span>
+    </div>
+  </header>
+
+  <div class="cols">
+    <aside class="nav">
+      <h2>Course board</h2>
+      <ul class="mods" id="modlist"></ul>
+    </aside>
+    <main id="main" aria-live="polite"></main>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ---------- storage (per-viewer convenience only) ---------- */
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem("wb1:"+k); return v===null? d : JSON.parse(v);}catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem("wb1:"+k, JSON.stringify(v)); }catch(e){} }
+};
+let done = store.get("done", {});          // screenKey -> true
+let kcState = store.get("kc", {best:0, passed:false, attempts:0});
+let drafts = store.get("drafts", {});      // field drafts
+
+/* ============================================================
+   COURSE DATA — condensed from the module source scripts
+   Screen types: les (lesson), quiz, classify, reflect, form
+============================================================ */
+const M = [];
+
+M.push({ id:"m1", n:1, t:"Why Processes Fail People", time:"15 min", screens:[
+{k:"les", label:"The idea", h:"Blame the process, not the person", html:`
+<p>Think of the last time your workday went sideways — the missing information, the system that made you enter the same thing twice, the approval that sat in an inbox for three days. Was that a <strong>lazy person</strong> problem, or a <strong>badly designed process</strong> problem?</p>
+<div class="quote">W. Edwards Deming estimated that about <b>94% of problems come from the system</b> — the way work is designed — and only about 6% from the individual worker.</div>
+<p>People generally come to work wanting to do a good job. When they can't, it's usually because the process makes the wrong thing easy and the right thing hard. The mindset shift that starts all continuous improvement: <strong>blame the process, not the person — then fix the process.</strong></p>
+<p>This matters twice over. It's <strong>more accurate</strong>: swap the person and the next person inherits the same broken process and produces the same result. And it's <strong>safer to talk about</strong>: when problems are framed as process flaws, people stop hiding them — and a workplace where problems are hidden cannot improve.</p>`,
+tk:["Most recurring problems are built into the process; changing people rarely fixes them.","Framing problems as process flaws makes them safe to surface.","Your frustrations are data. This course teaches you to read them."]},
+{k:"les", label:"In practice", h:"Same story, three workplaces", html:`
+<div class="tablewrap"><table>
+<tr><th>What it looks like</th><th>What it really is</th></tr>
+<tr><td>A packer keeps shipping the wrong variant</td><td>Two near-identical part bins sit side by side with tiny labels. New packer, same errors.</td></tr>
+<tr><td>A nurse "forgets" a discharge step</td><td>The discharge checklist lives in a different system than the one nurses chart in.</td></tr>
+<tr><td>An analyst sends stale figures</td><td>Three "final" versions of the spreadsheet exist and nothing marks which is current.</td></tr>
+</table></div>
+<p>In each case, replacing the person changes nothing. Redesigning the setup — distinct bins, one system, one marked current version — changes everything.</p>`},
+{k:"reflect", label:"Try it", h:"Reframe one of your own frustrations",
+ prompt:"Describe one recurring frustration in your work. Write it once as a person problem, and once as a process problem. Which framing gives you something you could actually fix?",
+ dk:"m1_reflect"}
+]});
+
+M.push({ id:"m2", n:2, t:"What Is a Process?", time:"15 min", screens:[
+{k:"les", label:"The idea", h:"SIPOC: five questions about any work", html:`
+<p>A <strong>process</strong> is any repeatable sequence of steps that turns inputs into outputs for a customer. Making coffee. Admitting a patient. Closing the monthly books. If it happens more than once and has steps, it's a process — and anything that's a process can be studied and improved.</p>
+<div class="tablewrap"><table>
+<tr><th></th><th>Means</th><th>Ask yourself</th></tr>
+<tr><td><b>S</b> — Suppliers</td><td>Who provides what the process needs</td><td>Where do my inputs come from?</td></tr>
+<tr><td><b>I</b> — Inputs</td><td>Materials, information, requests</td><td>What do I need to start?</td></tr>
+<tr><td><b>P</b> — Process</td><td>The 4–7 major steps</td><td>What happens, at a high level?</td></tr>
+<tr><td><b>O</b> — Outputs</td><td>What the process produces</td><td>What leaves this process?</td></tr>
+<tr><td><b>C</b> — Customers</td><td>Who receives the output</td><td>Who uses what I produce — and what do they need it to be?</td></tr>
+</table></div>
+<p>Two ideas inside SIPOC do most of the work: <strong>customers are often internal</strong> — whoever receives your output is your customer, and their requirements define your quality. And <strong>you are someone's supplier</strong> — your sloppy output is someone else's defective input.</p>`,
+tk:["Everything repeatable is a process with suppliers, inputs, steps, outputs, customers.","Quality is defined by the customer of the output — often the next person in the chain."]},
+{k:"classify", label:"Try it", h:"Sort the pharmacy pickup", intro:"A patient picks up a prescription. Sort each item into its SIPOC column.",
+ buckets:["Supplier","Input","Process step","Output","Customer"],
+ items:[
+  {t:"The prescribing physician", b:0, w:"They provide the prescription the process needs — a supplier."},
+  {t:"The prescription itself", b:1, w:"What the process needs to start — an input."},
+  {t:"Verify insurance coverage", b:2, w:"A step the pharmacy performs — process."},
+  {t:"Count and fill the medication", b:2, w:"A step that transforms inputs — process."},
+  {t:"The filled, labeled prescription", b:3, w:"What the process produces — an output."},
+  {t:"The patient", b:4, w:"Receives the output — the customer."},
+  {t:"The drug wholesaler", b:0, w:"Provides the medication stock — a supplier."},
+  {t:"Counsel the patient at pickup", b:2, w:"A step performed as part of the service — process."},
+  {t:"The updated medication record", b:3, w:"A second output — many processes have several."},
+  {t:"The patient's insurer", b:4, w:"Also receives an output (the claim) — customers can be multiple, and internal or external."}
+]}
+]});
+
+M.push({ id:"m3", n:3, t:"TPS, Deming & Variation", time:"15 min", screens:[
+{k:"les", label:"The idea", h:"Two traditions, one enemy", html:`
+<p><strong>Lean</strong> grew from the <strong>Toyota Production System</strong>, built when Toyota could not afford warehouses of inventory or armies of inspectors. Its core question: <em>of everything we do, what does the customer actually value — and how do we eliminate the rest?</em> Lean is the discipline of <strong>removing waste and making work flow</strong>.</p>
+<p><strong>Six Sigma</strong> was born at Motorola and scaled at GE. Its core question: <em>why doesn't the process give the same good result every time?</em> Six Sigma is the discipline of <strong>reducing variation using data</strong> — the name comes from a statistical goal so consistent that defects are vanishingly rare (about 3.4 per million opportunities).</p>
+<p>Why is <strong>variation</strong> the enemy? Because customers experience the <em>spread</em>, not the average. A café whose espresso takes "3 minutes on average" but ranges from 1 to 9 minutes feels unreliable. A lab that returns results in 2–14 days can't be planned around. <strong>Averages hide the pain; variation is the pain.</strong></p>
+<p><strong>Deming</strong> ties them together: improve the system using data and the Plan-Do-Check-Act learning cycle — and treat quality as management's responsibility, not the inspector's.</p>
+<div class="quote">Lean makes work flow; Six Sigma makes results consistent. Speed without consistency is chaos delivered faster; consistency without speed is reliable disappointment.</div>`,
+tk:["Lean = remove waste, create flow (from Toyota).","Six Sigma = reduce variation with data (from Motorola/GE).","Customers feel variation, not averages."]},
+{k:"quiz", label:"Check", h:"Three quick checks", items:[
+ {q:"A hospital lab averages 24 hours for results, but individual results range from 4 to 96 hours. Which discipline most directly targets the 4-to-96 problem?",
+  o:["Lean","Six Sigma","5S","Neither — the average is fine"], a:1,
+  w:"The spread is a variation problem — Six Sigma's home turf. The average hides it."},
+ {q:"Lean's core contribution, in one phrase:",
+  o:["Reduce variation using statistics","Eliminate waste and create flow","Inspect quality into the product","Automate manual work"], a:1,
+  w:"Lean removes non-value-added work and makes value flow."},
+ {q:"Why do customers “feel variation, not averages”?",
+  o:["Customers can't do math","Each customer experiences one instance from the spread, not the mean","Averages are always wrong","Variation is caused by staff"], a:1,
+  w:"A 3-minute average espresso means nothing to the customer who waited 9 minutes."}
+]}
+]});
+
+M.push({ id:"m4", n:4, t:"Value-Added vs. Non-Value-Added", time:"15 min", screens:[
+{k:"les", label:"The idea", h:"The three-part value test", html:`
+<p>An activity is <strong>value-added (VA)</strong> only if it passes <strong>all three</strong> tests:</p>
+<ol>
+<li><strong>The customer would pay for it</strong> (or cares that it happened).</li>
+<li><strong>It changes the thing</strong> being worked on — physically or informationally.</li>
+<li><strong>It's done right the first time</strong> — rework never counts, even rework of a value step.</li>
+</ol>
+<p>Everything else is <strong>non-value-added (NVA)</strong> — waste. One important subcategory: <strong>necessary non-value-added (NNVA)</strong> — things the customer doesn't value but regulation, safety, or current business reality requires (compliance documentation, some inspections, payroll). You <em>minimize</em> NNVA; you <em>eliminate</em> NVA; you protect and improve VA.</p>
+<div class="note"><span class="dot"></span><span>The startling finding, consistent across industries: in a typical unimproved process, <b>less than 10% of elapsed time is value-added</b>. A 30-day mortgage contains a few hours of actual work. This is great news — enormous improvement is available without asking anyone to work faster.</span></div>`,
+tk:["Value = customer values it + it transforms the work + right first time.","Most process time — often 90%+ — is non-value-added. That's the opportunity.","Necessary NVA is minimized; pure NVA is eliminated."]},
+{k:"classify", label:"Try it", h:"Grade the blood test", intro:"Classify each step of “get a blood test” — and a few office cousins.",
+ buckets:["Value-added","Non-value-added","Necessary NVA"],
+ items:[
+  {t:"Drawing the blood sample", b:0, w:"The customer needs it, it advances the work, done once — VA."},
+  {t:"Patient waiting 40 minutes in the lobby", b:1, w:"Waiting is pure waste — nothing changes, nobody would pay for it."},
+  {t:"Labeling the sample per safety protocol", b:2, w:"The patient doesn't value the label itself, but safety requires it — minimize, don't eliminate."},
+  {t:"Re-drawing because the first tube was mislabeled", b:1, w:"Rework never counts as value — even though drawing blood is normally VA."},
+  {t:"Analyzing the sample", b:0, w:"Transforms the sample into the answer the customer wants — VA."},
+  {t:"Filing the compliance copy required by regulation", b:2, w:"Required but not valued — necessary NVA."},
+  {t:"Triple-checking a form that one check would catch", b:1, w:"Checking beyond what adds scrutiny is extra-processing — NVA."},
+  {t:"Entering the same order into a second system", b:1, w:"Re-entry changes nothing about the work item — NVA."},
+  {t:"Fixing a typo in an invoice before it goes out", b:1, w:"Correction is rework — the 'right first time' test fails."}
+]}
+]});
+
+M.push({ id:"m5", n:5, t:"The 8 Wastes: D-O-W-N", time:"20 min", screens:[
+{k:"les", label:"The idea", h:"DOWNTIME, first half", html:`
+<p>The 8 wastes spell <strong>DOWNTIME</strong>. Here are the first four.</p>
+<div class="wastegrid">
+<div class="waste"><span class="lt">D</span><span class="nm">Defects</span><p>Work that is wrong, incomplete, or unusable — plus everything that follows: rework, scrap, corrections, apologies. The most expensive waste, because defects multiply downstream.</p></div>
+<div class="waste"><span class="lt">O</span><span class="nm">Overproduction</span><p>Making more, sooner, or faster than the next step needs. The worst waste — it manufactures the others: overproduced items must be stored, moved, and often fixed later.</p></div>
+<div class="waste"><span class="lt">W</span><span class="nm">Waiting</span><p>People or work items idle — for approvals, information, machines, the previous step. Usually the single largest component of lead time.</p></div>
+<div class="waste"><span class="lt">N</span><span class="nm">Non-utilized talent</span><p>Failing to use people's skills, knowledge, and ideas. The operator who knows why the line jams but is never asked. A belt program is, at its core, an attack on this waste.</p></div>
+</div>`,
+tk:["DOWN: Defects, Overproduction, Waiting, Non-utilized talent.","Overproduction breeds other wastes; defects multiply cost downstream.","Unused ideas are the most human waste of all."]},
+{k:"quiz", label:"Spot it", h:"Name the waste", items:[
+ {q:"A print shop runs 5,000 brochures for a customer who ordered 3,000 — “the press was already set up.” First and foremost, this is:",
+  o:["Inventory","Overproduction","Extra-processing","Motion"], a:1,
+  w:"Making more than the customer needs is overproduction. The extra 2,000 then become inventory — which is why it's called the waste that breeds other wastes."},
+ {q:"Completed insurance claims sit four days in a queue before an adjuster opens them. For the claim itself:",
+  o:["Waiting","Motion","Defects","Non-utilized talent"], a:0,
+  w:"The work item is idle. Queue time is waiting — typically the largest share of total lead time."},
+ {q:"An invoice goes out with the wrong purchase-order number and comes back for correction:",
+  o:["Extra-processing","Transportation","Defects","Overproduction"], a:2,
+  w:"Wrong or incomplete work is a defect; the correction loop is the rework it generates."},
+ {q:"A machinist with ten years of fixture-improvement ideas is never asked for input:",
+  o:["Waiting","Non-utilized talent","Motion","Extra-processing"], a:1,
+  w:"Unused skills, knowledge, and ideas — the 8th waste, and the one CI most directly attacks."}
+]}
+]});
+
+M.push({ id:"m6", n:6, t:"The 8 Wastes: T-I-M-E", time:"20 min", screens:[
+{k:"les", label:"The idea", h:"DOWNTIME, second half", html:`
+<div class="wastegrid">
+<div class="waste"><span class="lt">T</span><span class="nm">Transportation</span><p>Moving the <b>work item</b> — product, patient, document, file — between locations or systems. Every move adds delay and risk; none adds value.</p></div>
+<div class="waste"><span class="lt">I</span><span class="nm">Inventory</span><p>Work piling up between steps — and its office forms: full inboxes, ticket backlogs, unread reports. It ties up cash, hides problems, and goes stale.</p></div>
+<div class="waste"><span class="lt">M</span><span class="nm">Motion</span><p>Movement of the <b>person</b> doing the work: reaching, walking, searching, clicking through six screens. It wears people out without advancing the work.</p></div>
+<div class="waste"><span class="lt">E</span><span class="nm">Extra-processing</span><p>Doing more than the customer requires: polishing beyond spec, triple-checking, signatures that add no scrutiny, the beautiful 30-slide deck when the decision needed one number.</p></div>
+</div>
+<div class="quote">Rule of thumb: <b>Transportation moves the work; Motion moves the worker.</b></div>`,
+tk:["TIME: Transportation, Inventory, Motion, Extra-processing.","Inventory hides problems; extra-processing is effort the customer never asked for."]},
+{k:"quiz", label:"Spot it", h:"Work or worker?", items:[
+ {q:"A nurse walks to a supply room at the far end of the unit six times per shift because gloves aren't stocked at the bedside:",
+  o:["Transportation","Motion","Waiting","Defects"], a:1,
+  w:"The worker is moving, not the work item — motion."},
+ {q:"Lab samples are couriered between two hospital buildings three times a day:",
+  o:["Motion","Transportation","Overproduction","Inventory"], a:1,
+  w:"The work items (samples) are moving between locations — transportation."},
+ {q:"A support team's backlog has grown to 600 open tickets. As a category, the pile itself is:",
+  o:["Waiting","Inventory","Defects","Motion"], a:1,
+  w:"Work-in-progress piling up between steps is inventory — including backlogs and full inboxes. (Each ticket also experiences waiting; the pile is inventory.)"},
+ {q:"A finance analyst produces a 25-page monthly report; leadership reads the one-page summary and two charts. The other 22 pages are:",
+  o:["Defects","Extra-processing","Inventory","Overproduction"], a:1,
+  w:"Effort beyond what the output's customer uses — extra-processing. (Extra copies would be overproduction; here it's the depth of work itself.)"}
+]}
+]});
+
+M.push({ id:"m7", n:7, t:"Waste in Your World", time:"15 min", screens:[
+{k:"les", label:"The idea", h:"The running clock", html:`
+<p>All 8 wastes exist in every industry — only the costumes change. Follow one work item through its full journey and track the clock:</p>
+<div class="tablewrap"><table>
+<tr><th>One real journey</th><th>Elapsed time</th><th>Value time</th></tr>
+<tr><td>A machined bracket, order entry to shipment</td><td class="kv">11 days</td><td class="kv">47 min</td></tr>
+<tr><td>An outpatient visit, booking to results call-back</td><td class="kv">31 days</td><td class="kv">34 min</td></tr>
+<tr><td>An invoice dispute, email to resolution</td><td class="kv">19 days</td><td class="kv">22 min</td></tr>
+</table></div>
+<p>The gap between those two columns is where the eight wastes live — and the <strong>elapsed-vs-value story is the most persuasive improvement case you can tell</strong>. Every learner is standing next to a story like this in their own workplace.</p>`,
+tk:["All 8 wastes exist in every industry; only the costumes change.","Elapsed time vs. value time is the business case for improvement."]},
+{k:"quiz", label:"Try it", h:"Name the dominant waste", items:[
+ {q:"Patient charts pile up for three days awaiting coding before billing can start:",
+  o:["Motion","Inventory","Defects","Extra-processing"], a:1,
+  w:"Work accumulating between steps — inventory (each chart also waits; the pile is the category)."},
+ {q:"An operator crosses the line to fetch a torque wrench roughly forty times a shift:",
+  o:["Transportation","Motion","Waiting","Overproduction"], a:1,
+  w:"The worker moves; the work doesn't — motion."},
+ {q:"A weekly report is generated for a distribution list; interviews show nobody has used it in a year:",
+  o:["Overproduction","Inventory","Defects","Non-utilized talent"], a:0,
+  w:"Producing output nobody needs is overproduction — the report equivalent of running a batch no one ordered."},
+ {q:"A claim is re-keyed from the intake portal into the adjudication system by hand:",
+  o:["Motion for the clerk, transportation for the claim — both","Pure waiting","Value-added integration","Defects"], a:0,
+  w:"System-to-system transfer moves the work (transportation) via the worker's clicks (motion). Multiple wastes often ride together."},
+ {q:"Purchasing requires three signatures on every order under $100; approvers sign without reading:",
+  o:["Extra-processing","Defects","Waiting for each signature — and extra-processing overall","Inventory"], a:2,
+  w:"Signatures that add no scrutiny are extra-processing, and the order waits at each hop. Wastes stack."},
+ {q:"A veteran scheduler has a fix for the double-booking pattern but “nobody ever asked”:",
+  o:["Non-utilized talent","Waiting","Motion","Extra-processing"], a:0,
+  w:"The idea exists and goes unused — the 8th waste."}
+]}
+]});
+
+M.push({ id:"m8", n:8, t:"5S: A Place for Everything", time:"15 min", screens:[
+{k:"les", label:"The idea", h:"Five S's, one purpose", html:`
+<ol>
+<li><strong>Sort</strong> — remove what isn't needed. Red-tag doubtful items; when in doubt, move it out.</li>
+<li><strong>Set in Order</strong> — a place for everything, arranged by frequency of use; label, outline, make the <em>absence</em> of something instantly visible.</li>
+<li><strong>Shine</strong> — clean and inspect. Cleaning is inspection in disguise: wiping down the machine is how you notice the oil leak early.</li>
+<li><strong>Standardize</strong> — make the first three the documented norm: photo standards, checklists, labeled layouts.</li>
+<li><strong>Sustain</strong> — build the habit: audits, leader walk-throughs, team ownership. This is where most 5S efforts die.</li>
+</ol>
+<p><strong>Digital 5S</strong> applies the same logic to shared drives, inboxes, and dashboards: archive what's stale, adopt naming conventions, fix broken links, keep one marked current version, schedule the cleanup cadence.</p>
+<div class="quote">5S is not housekeeping. Its purpose is <b>making abnormality visible</b>: in a 5S'd workspace, the missing tool, the extra part, and the growing backlog announce themselves.</div>`,
+tk:["Sort, Set in Order, Shine, Standardize, Sustain.","The point is visible abnormality, not tidiness.","Sustain is the hard one — it belongs to leaders and teams, not posters."]},
+{k:"classify", label:"Try it", h:"Which S produced this change?", intro:"Each before/after change below came from one S. Name it.",
+ buckets:["Sort","Set in Order","Shine","Standardize","Sustain"],
+ items:[
+  {t:"A dated red-tag zone now holds items nobody could vouch for", b:0, w:"Red-tagging is Sort — turning 'we might need it' into a time-boxed experiment."},
+  {t:"A shadow board shows one missing wrench outline at a glance", b:1, w:"A visible home for everything — Set in Order."},
+  {t:"While wiping down the press, the team logged a slow hydraulic leak", b:2, w:"Cleaning as inspection — Shine's real deliverable is the anomaly list."},
+  {t:"A photo of 'ready for shift' is posted at the workstation", b:3, w:"Making the new state the documented norm — Standardize."},
+  {t:"A 5-minute weekly self-audit is on the calendar with an owner's name", b:4, w:"Scheduled, owned, visible — Sustain."},
+  {t:"The shared drive now has one 'Current' folder; 'final_v3_USE_THIS' is gone", b:1, w:"Digital Set in Order — current-ness marked structurally, never by filename adjectives."}
+]}
+]});
+
+M.push({ id:"m9", n:9, t:"DMAIC as a Storyline", time:"20 min", screens:[
+{k:"les", label:"The idea", h:"Five phases, five questions", html:`
+<p>When a problem is too big for "just fix it," Lean Six Sigma uses a five-phase roadmap: <strong>DMAIC</strong>. Don't memorize tools — memorize the <em>questions</em>:</p>
+<div class="tablewrap"><table>
+<tr><th>Phase</th><th>The question it answers</th></tr>
+<tr><td><b>Define</b></td><td>What problem are we solving, and why does it matter?</td></tr>
+<tr><td><b>Measure</b></td><td>How bad is it, really — in numbers?</td></tr>
+<tr><td><b>Analyze</b></td><td>What is actually causing it?</td></tr>
+<tr><td><b>Improve</b></td><td>What change fixes the cause — and does it work?</td></tr>
+<tr><td><b>Control</b></td><td>How do we make sure it stays fixed?</td></tr>
+</table></div>
+<p>Two disciplines make DMAIC different from ordinary problem-solving. <strong>No jumping to solutions</strong> — the most common failure is landing in Improve on day one; DMAIC forces the boring, decisive middle. And <strong>no walking away after the fix</strong> — the second most common failure is improvement that evaporates in 90 days. Control is a full phase for a reason.</p>
+<p>White Belts aren't expected to lead DMAIC — but you'll be invited into these projects as the people who know the real work, and knowing the storyline lets you contribute from day one.</p>`,
+tk:["Define → Measure → Analyze → Improve → Control; each phase answers one question.","The discipline is resisting the leap to solutions — and not abandoning the fix."]},
+{k:"classify", label:"Try it", h:"Which phase is this?", intro:"Place each project activity in its DMAIC phase.",
+ buckets:["Define","Measure","Analyze","Improve","Control"],
+ items:[
+  {t:"Interview customers about what a 'good' turnaround means", b:0, w:"Understanding the problem and why it matters — Define."},
+  {t:"Agree the project scope: order receipt to shipment, one product line", b:0, w:"Scoping is Define work — start/stop points settle the arguments."},
+  {t:"Collect two weeks of baseline timing data with an agreed definition of 'late'", b:1, w:"Establishing how bad it really is, in numbers — Measure."},
+  {t:"Check that two auditors count 'incomplete' the same way", b:1, w:"Trustworthy measurement is Measure's whole job."},
+  {t:"Build a fishbone of possible causes, then go verify the top three", b:2, w:"Finding and verifying causes — Analyze."},
+  {t:"Test whether error rates differ by shift using the collected data", b:2, w:"Testing cause theories against evidence — Analyze."},
+  {t:"Run a two-week pilot of the new intake form on one team", b:3, w:"Piloting a fix aimed at a verified cause — Improve."},
+  {t:"Mistake-proof the form so the field can't be skipped", b:3, w:"Implementing the solution — Improve."},
+  {t:"Set up a weekly metric review with a response plan if it drifts", b:4, w:"Locking in the gain — Control."},
+  {t:"Hand the process back to its owner with the updated standard", b:4, w:"Closure and handover — Control."}
+]}
+]});
+
+M.push({ id:"m10", n:10, t:"Process vs. People Problems", time:"15 min", screens:[
+{k:"les", label:"The idea", h:"Three diagnostic questions", html:`
+<p>Saying "it's the process" isn't the same as knowing <em>how to tell</em>. Ask three questions about any recurring problem:</p>
+<ol>
+<li><strong>Does it happen across different people?</strong> If three different techs make the same error, the error is designed into the work.</li>
+<li><strong>Would a conscientious new hire eventually make the same mistake?</strong> If yes, it's the process — the "set up to fail" test.</li>
+<li><strong>Does the process make the right way the easy way?</strong> If the correct method requires heroics — extra clicks, memory, workarounds — expect failure at scale.</li>
+</ol>
+<p>Genuine people problems exist — skill gaps, conduct issues — and they're handled by management, not process tools. The tell: a genuine people problem is <em>specific to the person and persists when the process is sound</em>. But the honest sequence is: <strong>rule out the process first.</strong> Most "people problems" dissolve under that examination.</p>
+<div class="quote">When something goes wrong near you, the first question changes from <b>"who?"</b> to <b>"what about how this is set up made that likely?"</b> Asked out loud, that question changes the room.</div>`,
+tk:["Test: multiple people? new hire would too? is the right way the easy way?","Rule out the process before concluding 'people problem.'","“What made that likely?” beats “who did that?”"]},
+{k:"quiz", label:"Try it", h:"Process, people — or too early to tell?", items:[
+ {q:"Three different employees make the same data-entry error in the same field over one month:",
+  o:["All three need retraining","The process or interface makes the error likely — examine it","Hiring standards have slipped","The error rate is acceptable"], a:1,
+  w:"Repetition across different people is the signature of a process-designed error."},
+ {q:"One team member repeatedly misses deadlines that everyone else on the same workflow meets comfortably:",
+  o:["Clearly a process problem","Possibly a genuine people matter — but verify the process is truly the same for everyone first","Redesign the workflow for everyone","Ignore it"], a:1,
+  w:"Person-specific and persisting under a sound process is the tell — but the honest sequence still rules out the process first (same tools? same inputs? same load?)."},
+ {q:"A new report format was rolled out yesterday and one analyst got it wrong this morning:",
+  o:["Process problem — redesign the format","People problem — coach the analyst","Can't tell yet — one instance, one day in; go look at how the change was introduced","Both"], a:2,
+  w:"One data point on day one tells you almost nothing. 'Can't tell yet — go look' is a legitimate and often correct answer."},
+ {q:"The right way to log a sample takes 11 clicks across two systems; the wrong way takes 2. Errors are common:",
+  o:["Enforce the 11-click method harder","The process fails the 'right way = easy way' test; redesign it","Hire more careful staff","Audit and discipline"], a:1,
+  w:"When correctness requires heroics, expect failure at scale — that's a design problem."}
+]}
+]});
+
+M.push({ id:"m11", n:11, t:"The Belt System & Your Role", time:"10 min", screens:[
+{k:"les", label:"The idea", h:"The ladder runs on its base", html:`
+<div class="tablewrap"><table>
+<tr><th>Belt</th><th>In one line</th></tr>
+<tr><td><b>White Belt</b> (you)</td><td>Speaks the language; spots and reports waste; contributes ideas</td></tr>
+<tr><td><b>Yellow Belt</b></td><td>Serves on project teams; maps processes; runs small local improvements</td></tr>
+<tr><td><b>Green Belt</b></td><td>Leads a DMAIC project on a real process, part-time</td></tr>
+<tr><td><b>Black Belt</b></td><td>Leads major cross-functional projects; advanced statistics; coaches Green Belts</td></tr>
+<tr><td><b>Master Black Belt</b></td><td>Designs the whole improvement program; ties CI to strategy</td></tr>
+</table></div>
+<p>The system only works because of its base. Green and Black Belts do not know where the problems are — <strong>you do</strong>. Every strong CI culture runs on frontline eyes:</p>
+<ul>
+<li><strong>Report problems without fear</strong> — a surfaced problem is a gift, and the culture must treat it that way.</li>
+<li><strong>Contribute ideas</strong> — nobody knows the job like the person doing it.</li>
+<li><strong>Join projects when invited</strong> — as the expert witness on how work really happens.</li>
+<li><strong>Protect improvements</strong> — follow the new standard, and speak up when it isn't working rather than quietly reverting.</li>
+</ul>`,
+tk:["Each belt has a distinct job; the ladder runs on frontline participation.","Your contributions start today: surface problems, offer ideas, join projects, hold standards."]}
+]});
+
+M.push({ id:"m12", n:12, t:"See a Waste: Field Exercise", time:"20 min", screens:[
+{k:"les", label:"The idea", h:"Your first real contribution", html:`
+<p>Certification requires one real observation from your own work — because a White Belt who has <em>done it once</em> is different from one who watched videos. A good observation has five parts:</p>
+<ol>
+<li><strong>Where</strong> — the process and place.</li>
+<li><strong>What I observed</strong> — facts only, what you'd see on video. No blame, no guessed causes, no solutions.</li>
+<li><strong>Which waste(s)</strong> — named from DOWNTIME; many observations contain two or three.</li>
+<li><strong>Who it affects</strong> — the customer of that step, and how they feel it.</li>
+<li><strong>An idea</strong> (optional) — one sentence, offered humbly as a hypothesis.</li>
+</ol>
+<h4>A worked example</h4>
+<div class="quote"><b>Where:</b> Invoice processing, accounts payable. <b>Observed:</b> Invoices arriving by email are printed, then re-typed into the ERP by hand. About one in ten comes back from the approver over a mistyped field. <b>Wastes:</b> Extra-processing, Defects, Waiting. <b>Who it affects:</b> Suppliers paid late call to chase; AP spends part of each afternoon on corrections. <b>Idea:</b> I wonder if attachments could go straight into the ERP intake instead of being printed first.</div>
+<p>Note what it <em>doesn't</em> do: no "because IT never fixed the integration," no "the team doesn't care." Blame kills observations; vagueness starves them.</p>`},
+{k:"form", label:"Submit", h:"See a Waste — your observation"}
+]});
+
+/* ---------- Knowledge check bank (30 items; each attempt draws 20) ---------- */
+const KC = [
+ {q:"A print shop runs 5,000 brochures for an order of 3,000 — “the press was already set up.” First and foremost:",o:["Inventory","Overproduction","Extra-processing","Motion"],a:1,w:"Making more than needed is overproduction; the extra 2,000 then become inventory."},
+ {q:"A nurse walks to a far supply room six times per shift because gloves aren't stocked at the bedside:",o:["Transportation","Waiting","Motion","Defects"],a:2,w:"The worker moves, not the work item."},
+ {q:"Completed claims sit four days in a queue before an adjuster opens them. For the claim itself:",o:["Waiting","Motion","Extra-processing","Non-utilized talent"],a:0,w:"The work item is idle — queue time is waiting."},
+ {q:"An invoice sent with the wrong PO number comes back for correction:",o:["Extra-processing","Transportation","Defects","Overproduction"],a:2,w:"Wrong or incomplete work is a defect; the loop is its rework."},
+ {q:"A machinist full of fixture-improvement ideas is never asked for input:",o:["Waiting","Non-utilized talent","Motion","Extra-processing"],a:1,w:"Unused skills and ideas — the 8th waste."},
+ {q:"Lab samples are couriered between two buildings three times a day:",o:["Motion","Inventory","Transportation","Overproduction"],a:2,w:"The work items are being moved between locations."},
+ {q:"A 25-page report of which leadership reads one page and two charts — the other 22 pages are:",o:["Defects","Extra-processing","Inventory","Overproduction"],a:1,w:"Effort beyond what the output's customer uses."},
+ {q:"A 600-ticket backlog, as a category, is:",o:["Waiting","Defects","Inventory","Motion"],a:2,w:"Work piling up between steps — inventory, including its office forms."},
+ {q:"Which waste does Lean tradition consider the worst, because it generates the others?",o:["Defects","Waiting","Overproduction","Inventory"],a:2,w:"Overproduced work must be stored, moved, and often reworked."},
+ {q:"Transportation vs. motion — which is correct?",o:["Transportation is people moving; motion is product moving","Transportation is product/work moving; motion is people moving","Two names for the same waste","Motion only applies to factories"],a:1,w:"Transportation moves the work item; motion moves the worker."},
+ {q:"Which is NOT one of the three value-added tests?",o:["The customer would pay for it","It changes the thing being worked on","It is done right the first time","It is performed by qualified personnel"],a:3,w:"The VA test: valued + transforms + right first time."},
+ {q:"Regulatory documentation customers don't care about but the law requires is:",o:["Value-added","Pure waste to eliminate immediately","Necessary non-value-added — minimize it","A defect"],a:2,w:"Required-but-not-valued work is necessary NVA."},
+ {q:"In a typical unimproved process, value-added time as a share of elapsed time is closest to:",o:["Under 10%","About 50%","About 75%","Over 90%"],a:0,w:"Single digits are the consistent finding across industries."},
+ {q:"In SIPOC, the customer is:",o:["Always the person who pays money","Whoever receives the output, internal or external","The customer service department","The process owner"],a:1,w:"The next step or department receiving your output is your customer."},
+ {q:"Reworking a defective part so it meets spec counts as:",o:["Value-added — it ends up meeting spec","Non-value-added","Necessary non-value-added","Value-added if done quickly"],a:1,w:"Rework never counts — 'right first time' fails."},
+ {q:"“What is actually causing the problem?” belongs to which DMAIC phase?",o:["Define","Measure","Analyze","Improve"],a:2,w:"Analyze finds and verifies root causes with evidence."},
+ {q:"A team jumps straight from noticing a problem to installing their favorite solution. They are violating:",o:["Control before Improve","Measure and Analyze before Improve","Define after Measure","Nothing — speed is a Lean principle"],a:1,w:"DMAIC's defining discipline: baseline and verified causes before solutions."},
+ {q:"Ninety days after a successful improvement, performance drifts back. Which phase was shortchanged?",o:["Define","Measure","Improve","Control"],a:3,w:"Control locks in gains: standards, monitoring, response plans, handover."},
+ {q:"“How bad is it, in numbers, right now?” is answered in:",o:["Define","Measure","Analyze","Control"],a:1,w:"Measure establishes the trustworthy baseline."},
+ {q:"The correct order of the five S's:",o:["Sort, Shine, Set in Order, Sustain, Standardize","Sort, Set in Order, Shine, Standardize, Sustain","Standardize, Sort, Set in Order, Shine, Sustain","Set in Order, Sort, Shine, Standardize, Sustain"],a:1,w:"Sort → Set in Order → Shine → Standardize → Sustain."},
+ {q:"“Cleaning is inspection in disguise” describes:",o:["Sort","Set in Order","Shine","Sustain"],a:2,w:"Shine pairs cleaning with inspection — leaks and cracks get noticed early."},
+ {q:"The primary purpose of 5S is:",o:["A presentable workplace for visitors","Making abnormality instantly visible","Reducing cleaning costs","Freeing storage space"],a:1,w:"Tidiness is a by-product; visible abnormality is the point."},
+ {q:"Applying Sort to a shared network drive means:",o:["Alphabetizing every folder","Archiving or deleting files no longer needed","Backing everything up","Restricting permissions"],a:1,w:"Digital Sort removes what isn't needed — red-tagging's direct analog."},
+ {q:"Most 5S efforts fail at which S, and why?",o:["Sort — people won't discard","Shine — cleaning takes too long","Sustain — habits and audits aren't maintained","Set in Order — labeling is expensive"],a:2,w:"Without audits and ownership, workplaces revert."},
+ {q:"Deming's attribution of quality problems is approximately:",o:["94% the system, 6% the individual","50/50","94% the individual, 6% the system","100% the system"],a:0,w:"Recurring problems are overwhelmingly built into the process design."},
+ {q:"Lean's core contribution in one phrase:",o:["Reduce variation using statistics","Eliminate waste and create flow","Inspect quality into the product","Automate manual work"],a:1,w:"From the Toyota Production System: remove NVA work, make value flow."},
+ {q:"Six Sigma's core contribution in one phrase:",o:["Organize the workspace","Empower suggestion programs","Reduce variation using data","Cut headcount"],a:2,w:"Six Sigma targets the spread customers actually feel."},
+ {q:"Customers “feel variation, not averages” because:",o:["Customers can't do math","Each customer experiences one instance from the spread, not the mean","Averages are always wrong","Variation is always caused by staff"],a:1,w:"A 3-minute average espresso means nothing to whoever waited 9 minutes."},
+ {q:"Three different employees make the same data-entry error in the same field over a month. The most defensible first conclusion:",o:["All three need retraining","The process or interface makes the error likely — examine it","Hiring standards have slipped","The rate is acceptable"],a:1,w:"Repetition across different people is the signature of a designed-in error."},
+ {q:"Which is an appropriate White Belt contribution, without further training?",o:["Leading a DMAIC project","Designing a control chart","Submitting a well-formed waste observation from their own work","Coaching a Green Belt"],a:2,w:"White Belts contribute frontline eyes: problems surfaced, ideas offered, projects joined."}
+];
+
+/* ============================================================
+   APP
+============================================================ */
+const main = document.getElementById("main");
+const modlist = document.getElementById("modlist");
+let cur = store.get("cur", {m:0, s:0});   // current module index (M.length = knowledge check), screen index
+if(cur.m > M.length) cur = {m:0,s:0};
+
+function skey(mi, si){ return M[mi].id + ":" + si; }
+function modDone(mi){ return M[mi].screens.every((_,si)=> done[skey(mi,si)]); }
+function screensTotal(){ return M.reduce((n,m)=>n+m.screens.length,0); }
+function screensDone(){ let n=0; M.forEach((m,mi)=>m.screens.forEach((_,si)=>{ if(done[skey(mi,si)]) n++; })); return n; }
+function overallPct(){
+  const t = screensTotal()+1, d = screensDone() + (kcState.passed?1:0);
+  return Math.round(100*d/t);
+}
+function save(){ store.set("done",done); store.set("kc",kcState); store.set("cur",cur); store.set("drafts",drafts); }
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function renderNav(){
+  modlist.innerHTML = "";
+  M.forEach((m,mi)=>{
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.setAttribute("aria-current", cur.m===mi ? "true":"false");
+    b.innerHTML = `<span class="num">${String(m.n).padStart(2,"0")}</span><span>${esc(m.t)}</span>
+      <span class="st ${modDone(mi)?"done":""}">${modDone(mi)?"✓":""}</span>`;
+    b.addEventListener("click",()=>{ cur={m:mi,s:0}; save(); render(); window.scrollTo({top:0}); });
+    li.appendChild(b); modlist.appendChild(li);
+  });
+  const li = document.createElement("li");
+  const b = document.createElement("button");
+  b.className="kcrow"; b.classList.add("kcbtn");
+  b.setAttribute("aria-current", cur.m===M.length ? "true":"false");
+  b.innerHTML = `<span class="num">KC</span><span>Knowledge Check</span>
+    <span class="st ${kcState.passed?"done":""}">${kcState.passed?"✓":""}</span>`;
+  b.addEventListener("click",()=>{ if(kcRun && kcRun.finished) kcRun=null; cur={m:M.length,s:0}; save(); render(); window.scrollTo({top:0}); });
+  li.appendChild(b); modlist.appendChild(li);
+  document.getElementById("pfill").style.width = overallPct()+"%";
+  document.getElementById("ppct").textContent = overallPct()+"%";
+}
+
+function footNav(container, mi, si, extraBtn){
+  const nav = document.createElement("div"); nav.className="footnav";
+  const back = document.createElement("button"); back.className="btn sec"; back.textContent="← Back";
+  back.disabled = (mi===0 && si===0);
+  back.addEventListener("click",()=>{
+    if(si>0) cur={m:mi,s:si-1}; else cur={m:mi-1,s:M[mi-1].screens.length-1};
+    save(); render(); window.scrollTo({top:0});
+  });
+  nav.appendChild(back);
+  const sp=document.createElement("span"); sp.className="spacer"; nav.appendChild(sp);
+  if(extraBtn) nav.appendChild(extraBtn);
+  container.appendChild(nav);
+  return nav;
+}
+function nextBtn(mi, si, label){
+  const b = document.createElement("button"); b.className="btn";
+  const last = si===M[mi].screens.length-1;
+  b.textContent = label || (last ? (mi===M.length-1 ? "Finish → Knowledge Check" : "Next module →") : "Continue →");
+  b.addEventListener("click",()=>{
+    done[skey(mi,si)] = true;
+    if(!last) cur={m:mi,s:si+1};
+    else if(mi===M.length-1) cur={m:M.length,s:0};
+    else cur={m:mi+1,s:0};
+    save(); render(); window.scrollTo({top:0});
+  });
+  return b;
+}
+function takeaways(el, list){
+  if(!list) return;
+  const d=document.createElement("div"); d.className="tk";
+  d.innerHTML = "<h5>Takeaways</h5><ul>"+list.map(t=>`<li>${esc(t)}</li>`).join("")+"</ul>";
+  el.appendChild(d);
+}
+
+/* ---------- screen renderers ---------- */
+function rLesson(card, sc, mi, si){
+  card.insertAdjacentHTML("beforeend", `<h3>${esc(sc.h)}</h3>` + sc.html);
+  takeaways(card, sc.tk);
+  footNav(card, mi, si, nextBtn(mi, si));
+}
+
+function rReflect(card, sc, mi, si){
+  card.insertAdjacentHTML("beforeend", `<h3>${esc(sc.h)}</h3><p>${esc(sc.prompt)}</p>`);
+  const ta = document.createElement("textarea"); ta.rows=6; ta.id = "ta_"+sc.dk;
+  ta.value = drafts[sc.dk] || "";
+  ta.addEventListener("input", ()=>{ drafts[sc.dk]=ta.value; save(); });
+  card.appendChild(ta);
+  const hint=document.createElement("p"); hint.className="protonote";
+  hint.textContent="Saved as you type, on this device. In the full course, reflections build into your personal workbook.";
+  card.appendChild(hint);
+  const b = nextBtn(mi, si);
+  footNav(card, mi, si, b);
+}
+
+function rQuiz(card, sc, mi, si){
+  card.insertAdjacentHTML("beforeend", `<h3>${esc(sc.h)}</h3>`);
+  let idx = 0, right = 0, answered = 0;
+  const zone = document.createElement("div"); card.appendChild(zone);
+  const navHolder = document.createElement("div"); card.appendChild(navHolder);
+
+  function show(){
+    zone.innerHTML = "";
+    const it = sc.items[idx];
+    zone.insertAdjacentHTML("beforeend",
+      `<div class="scorechip">Question ${idx+1} / ${sc.items.length}</div><p class="qtext">${esc(it.q)}</p>`);
+    const opts=document.createElement("div"); opts.className="opts";
+    it.o.forEach((o,oi)=>{
+      const b=document.createElement("button"); b.className="opt"; b.textContent=o;
+      b.addEventListener("click",()=>{
+        if(b.disabled) return;
+        [...opts.children].forEach(x=>x.disabled=true);
+        answered++;
+        const ok = oi===it.a;
+        if(ok){ right++; b.classList.add("right"); }
+        else { b.classList.add("wrong"); opts.children[it.a].classList.add("right"); }
+        const why=document.createElement("div"); why.className="why "+(ok?"good":"bad");
+        why.innerHTML = `<b>${ok?"Right.":"Not quite."}</b> ${esc(it.w)}`;
+        zone.appendChild(why);
+        const nb=document.createElement("button"); nb.className="btn sec";
+        nb.textContent = idx<sc.items.length-1 ? "Next question →" : "See result";
+        nb.addEventListener("click",()=>{ idx++; idx<sc.items.length ? show() : finish(); });
+        zone.appendChild(nb);
+      });
+      opts.appendChild(b);
+    });
+    zone.appendChild(opts);
+  }
+  function finish(){
+    zone.innerHTML = `<p class="qtext">You got <strong>${right} of ${sc.items.length}</strong>.</p>
+      <p>${right===sc.items.length ? "Clean sweep — the distinctions are landing." :
+         "Review the explanations above any misses — the distinctions matter more than the score here."}</p>`;
+    navHolder.innerHTML="";
+    footNav(navHolder, mi, si, nextBtn(mi, si));
+  }
+  show();
+  if(done[skey(mi,si)]){ /* allow retake but show shortcut */
+    const b = nextBtn(mi, si, "Skip (already completed) →");
+    footNav(navHolder, mi, si, b);
+  }
+}
+
+function rClassify(card, sc, mi, si){
+  card.insertAdjacentHTML("beforeend", `<h3>${esc(sc.h)}</h3><p>${esc(sc.intro)}</p>`);
+  let idx=0, right=0;
+  const zone=document.createElement("div"); card.appendChild(zone);
+  const navHolder=document.createElement("div"); card.appendChild(navHolder);
+
+  function show(){
+    zone.innerHTML="";
+    const it = sc.items[idx];
+    zone.insertAdjacentHTML("beforeend",
+      `<div class="scorechip">Item ${idx+1} / ${sc.items.length}</div><div class="itemcard">${esc(it.t)}</div>`);
+    const bk=document.createElement("div"); bk.className="buckets";
+    sc.buckets.forEach((b,bi)=>{
+      const btn=document.createElement("button"); btn.className="bucket"; btn.textContent=b;
+      btn.addEventListener("click",()=>{
+        if(btn.disabled) return;
+        [...bk.children].forEach(x=>x.disabled=true);
+        const ok = bi===it.b;
+        if(ok){ right++; btn.classList.add("right"); }
+        else { btn.classList.add("wrong"); bk.children[it.b].classList.add("right"); }
+        const why=document.createElement("div"); why.className="why "+(ok?"good":"bad");
+        why.innerHTML=`<b>${ok?"Right.":"It's “"+esc(sc.buckets[it.b])+".”"}</b> ${esc(it.w)}`;
+        zone.appendChild(why);
+        const nb=document.createElement("button"); nb.className="btn sec";
+        nb.textContent = idx<sc.items.length-1 ? "Next item →" : "See result";
+        nb.addEventListener("click",()=>{ idx++; idx<sc.items.length ? show() : finish(); });
+        zone.appendChild(nb);
+      });
+      bk.appendChild(btn);
+    });
+    zone.appendChild(bk);
+  }
+  function finish(){
+    zone.innerHTML=`<p class="qtext">You placed <strong>${right} of ${sc.items.length}</strong> correctly.</p>
+      <p>${right>=sc.items.length-1 ? "Strong — you're reading the categories, not guessing them." :
+        "Worth one more pass later: the misclassifications above are exactly the confusions the exam probes."}</p>`;
+    navHolder.innerHTML="";
+    footNav(navHolder, mi, si, nextBtn(mi, si));
+  }
+  show();
+  if(done[skey(mi,si)]){
+    const b = nextBtn(mi, si, "Skip (already completed) →");
+    footNav(navHolder, mi, si, b);
+  }
+}
+
+const WASTES = ["Defects","Overproduction","Waiting","Non-utilized talent","Transportation","Inventory","Motion","Extra-processing"];
+function rForm(card, sc, mi, si){
+  card.insertAdjacentHTML("beforeend", `<h3>${esc(sc.h)}</h3>
+   <p>Facts, not blame. Observations, not solutions — the optional idea at the end is a hypothesis, not a demand.</p>`);
+  const f=document.createElement("div");
+  const val = k => drafts[k]||"";
+  f.innerHTML = `
+   <label class="f" for="sw_name">Your name</label>
+   <input type="text" id="sw_name" value="${esc(val("sw_name"))}">
+   <label class="f" for="sw_where">1 · Where <small>Which process, and where does it happen?</small></label>
+   <input type="text" id="sw_where" value="${esc(val("sw_where"))}">
+   <label class="f" for="sw_obs">2 · What I observed <small>What you'd see on video. At least two sentences. No blame, no causes, no solutions. Self-check: would everyone involved agree this is fair?</small></label>
+   <textarea id="sw_obs" rows="4">${esc(val("sw_obs"))}</textarea>
+   <label class="f">3 · Which waste(s)? <small>Check all that apply — many observations contain two or three.</small></label>
+   <div class="checks" id="sw_wastes"></div>
+   <label class="f" for="sw_who">4 · Who does it affect, and how? <small>The customer of that step — internal counts — and what they experience.</small></label>
+   <textarea id="sw_who" rows="2">${esc(val("sw_who"))}</textarea>
+   <label class="f" for="sw_size">5 · Rough size <small>Optional. “~5 times a day, ~10 minutes each” is plenty.</small></label>
+   <input type="text" id="sw_size" value="${esc(val("sw_size"))}">
+   <label class="f" for="sw_idea">6 · An idea <small>Optional, one sentence: “I wonder if ___ would help.”</small></label>
+   <input type="text" id="sw_idea" value="${esc(val("sw_idea"))}">`;
+  card.appendChild(f);
+  const wz = f.querySelector("#sw_wastes");
+  const chosen = new Set(drafts.sw_wastes || []);
+  WASTES.forEach(w=>{
+    const l=document.createElement("label");
+    const c=document.createElement("input"); c.type="checkbox"; c.id="sw_w_"+w.replace(/\W/g,"");
+    c.checked = chosen.has(w);
+    c.addEventListener("change",()=>{ c.checked?chosen.add(w):chosen.delete(w); drafts.sw_wastes=[...chosen]; save(); });
+    l.appendChild(c); l.appendChild(document.createTextNode(w)); wz.appendChild(l);
+  });
+  ["sw_name","sw_where","sw_obs","sw_who","sw_size","sw_idea"].forEach(id=>{
+    f.querySelector("#"+id).addEventListener("input",e=>{ drafts[id]=e.target.value; save(); });
+  });
+  const msg=document.createElement("div"); card.appendChild(msg);
+  const sub=document.createElement("button"); sub.className="btn"; sub.textContent="Submit observation";
+  sub.addEventListener("click",()=>{
+    const errs=[];
+    if(!(drafts.sw_where||"").trim()) errs.push("Where is required.");
+    const obs=(drafts.sw_obs||"").trim();
+    if(obs.split(/[.!?]+/).filter(s=>s.trim().length>3).length < 2) errs.push("The observation needs at least two sentences of facts.");
+    if(!(drafts.sw_wastes||[]).length) errs.push("Name at least one waste from DOWNTIME.");
+    if(!(drafts.sw_who||"").trim()) errs.push("Say who it affects.");
+    msg.innerHTML="";
+    if(errs.length){
+      const w=document.createElement("div"); w.className="why bad";
+      w.innerHTML="<b>Not quite ready:</b><br>"+errs.map(esc).join("<br>");
+      msg.appendChild(w);
+      return;
+    }
+    const first = !drafts.sw_submitted;
+    drafts.sw_submitted = true; done[skey(mi,si)]=true; save(); renderNav();
+    const ok=document.createElement("div"); ok.className="why good";
+    ok.innerHTML="<b>Submitted.</b> In the full course this flows to your organization's observation gallery — the start of a crowd-sourced problem inventory. Here it stays on your device.";
+    msg.appendChild(ok);
+    if(first) nav.appendChild(nextBtn(mi, si, "Finish → Knowledge Check"));
+  });
+  const nav = footNav(card, mi, si);
+  nav.appendChild(sub);
+  if(done[skey(mi,si)]) nav.appendChild(nextBtn(mi, si, "Finish → Knowledge Check"));
+}
+
+/* ---------- knowledge check ---------- */
+let kcRun = null; // {qs:[indices], idx, answers:[]}
+function drawKC(){
+  const idxs=[...KC.keys()];
+  for(let i=idxs.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [idxs[i],idxs[j]]=[idxs[j],idxs[i]]; }
+  return idxs.slice(0,20);
+}
+function rKC(){
+  const card=document.createElement("div"); card.className="card";
+  const head=document.createElement("div"); head.className="screenhead";
+  head.innerHTML=`<span class="eyebrow">Knowledge Check</span><span class="count">20 questions · pass 70%</span>`;
+  main.appendChild(head); main.appendChild(card);
+
+  if(!kcRun){
+    card.innerHTML=`<h3>Knowledge Check</h3>
+     <p>Twenty questions drawn at random from the item bank. <strong>70% (14/20) passes.</strong> Explanations are shown after you finish, not during — and retakes draw a fresh set, so there's nothing to lose by attempting.</p>
+     ${kcState.attempts?`<p class="kv">Attempts so far: ${kcState.attempts} · best score: ${kcState.best}/20 ${kcState.passed?"· PASSED":""}</p>`:""}
+     <p>${screensDone()<screensTotal()?"You have modules still open — you can attempt now, but finishing them first is the better bet.":"All modules complete. Good luck — you won't need it."}</p>`;
+    const b=document.createElement("button"); b.className="btn";
+    b.textContent = kcState.attempts? "Start a new attempt" : "Start the knowledge check";
+    b.addEventListener("click",()=>{ kcRun={qs:drawKC(), idx:0, answers:[]}; render(); window.scrollTo({top:0}); });
+    card.appendChild(b);
+    if(kcState.passed){ card.appendChild(badgeEl()); }
+    return;
+  }
+  if(kcRun.idx < kcRun.qs.length){
+    const it = KC[kcRun.qs[kcRun.idx]];
+    card.innerHTML=`<div class="scorechip">Question ${kcRun.idx+1} / 20</div><p class="qtext">${esc(it.q)}</p>`;
+    const opts=document.createElement("div"); opts.className="opts";
+    it.o.forEach((o,oi)=>{
+      const b=document.createElement("button"); b.className="opt"; b.textContent=o;
+      b.addEventListener("click",()=>{
+        kcRun.answers.push(oi); kcRun.idx++;
+        render(); window.scrollTo({top:0});
+      });
+      opts.appendChild(b);
+    });
+    card.appendChild(opts);
+    return;
+  }
+  // results
+  let right=0;
+  kcRun.qs.forEach((qi,i)=>{ if(kcRun.answers[i]===KC[qi].a) right++; });
+  const passed = right>=14;
+  if(!kcRun.finished){
+    kcRun.finished = true;
+    kcState.attempts++; kcState.best=Math.max(kcState.best,right);
+    if(passed) kcState.passed=true;
+    save(); renderNav();
+  }
+  card.innerHTML=`<h3>Result</h3>
+    <p><span class="kcscore">${right}/20</span><span class="passpill ${passed?"ok":"no"}">${passed?"Pass":"Not yet"}</span></p>
+    <p>${passed? "That clears the 70% bar." : "70% (14/20) passes — review below, then take a fresh draw. Unlimited retakes."}</p>`;
+  if(passed && !(drafts.sw_submitted)){
+    card.insertAdjacentHTML("beforeend",`<div class="note"><span class="dot"></span><span>One gate left: submit your <b>See a Waste</b> field exercise (Module 12) to earn the badge.</span></div>`);
+  }
+  if(passed && drafts.sw_submitted){ card.appendChild(badgeEl()); }
+  const rv=document.createElement("div"); rv.className="review";
+  kcRun.qs.forEach((qi,i)=>{
+    const it=KC[qi], ok = kcRun.answers[i]===it.a;
+    const d=document.createElement("div"); d.className="rv";
+    d.innerHTML=`<div class="q"><span class="tag ${ok?"ok":"no"}">${ok?"RIGHT":"MISS"}</span>${esc(it.q)}</div>
+      ${ok?"":`<div>Your answer: ${esc(it.o[kcRun.answers[i]])}</div>`}
+      <div>Correct: <strong>${esc(it.o[it.a])}</strong> — ${esc(it.w)}</div>`;
+    rv.appendChild(d);
+  });
+  card.appendChild(rv);
+  const again=document.createElement("button"); again.className="btn sec"; again.textContent="Take a fresh attempt";
+  again.style.marginTop="16px";
+  again.addEventListener("click",()=>{ kcRun={qs:drawKC(), idx:0, answers:[]}; render(); window.scrollTo({top:0}); });
+  card.appendChild(again);
+}
+function badgeEl(){
+  const d=document.createElement("div"); d.className="badge";
+  const nm=(drafts.sw_name||"").trim();
+  d.innerHTML=`<div class="ring">W</div><h4>${nm?esc(nm):"Certified"} · White Belt</h4>
+   <p>Foundations of Operational Excellence<br>Knowledge check passed · field exercise submitted</p>`;
+  return d;
+}
+
+/* ---------- master render ---------- */
+function render(){
+  renderNav();
+  main.innerHTML="";
+  if(cur.m===M.length){ rKC(); addProtoNote(); return; }
+  const m=M[cur.m], sc=m.screens[cur.s];
+  const head=document.createElement("div"); head.className="screenhead";
+  head.innerHTML=`<span class="eyebrow">Module ${String(m.n).padStart(2,"0")} · ${esc(sc.label)}</span>
+    <span class="count">${esc(m.t)} · screen ${cur.s+1}/${m.screens.length} · ${esc(m.time)}</span>`;
+  main.appendChild(head);
+  const card=document.createElement("div"); card.className="card";
+  main.appendChild(card);
+  ({les:rLesson, quiz:rQuiz, classify:rClassify, reflect:rReflect, form:rForm})[sc.k](card, sc, cur.m, cur.s);
+  addProtoNote();
+}
+function addProtoNote(){
+  const p=document.createElement("p"); p.className="protonote";
+  p.textContent="Interactive prototype. In the production course, spot-the-waste video walkthroughs, narration, vertical variants (manufacturing / healthcare / transactional), and LMS-tracked submission replace the simplified exercises shown here. Progress is saved on this device only.";
+  main.appendChild(p);
+}
+render();
+</script>
