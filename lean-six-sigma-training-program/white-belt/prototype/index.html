@@ -896,8 +896,11 @@ function rKC(){
 function badgeEl(){
   const d=document.createElement("div"); d.className="badge";
   const nm=(drafts.sw_name||"").trim();
-  d.innerHTML=`<div class="ring">W</div><h4>${nm?esc(nm):"Certified"} · White Belt</h4>
-   <p>Foundations of Operational Excellence<br>Knowledge check passed · field exercise submitted</p>`;
+  d.innerHTML=`<div class="ring">W</div><h4>Lean Six Sigma White Belt (Awareness)</h4>
+   <p>${nm?esc(nm)+"<br>":""}Foundations of Operational Excellence<br>
+   Knowledge check passed · field exercise submitted<br>
+   <em>An awareness credential. It does not certify ability to map, measure, analyze, or lead
+   improvement work \u2014 those are Yellow and Green Belt.</em></p>`;
   return d;
 }
 

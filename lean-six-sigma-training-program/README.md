@@ -4,16 +4,25 @@ A best-in-class, commercially sellable Lean Six Sigma (LSS) certification progra
 White Belt → Yellow Belt → Green Belt → Black Belt → Master Black Belt, designed for delivery
 to external clients across multiple industries.
 
-> **Course build-out status:** the White Belt and Yellow Belt levels are fully built out —
-> lesson content, workshops, exams, project templates, and rubrics:
-> - **[White Belt →](white-belt/README.md)** — 12 lesson modules, 30-item knowledge-check
->   bank, field-exercise form, pocket card, waste-walk checklist
-> - **[Yellow Belt →](yellow-belt/README.md)** — 6 teaching units (3A/3B split), 2 live-workshop
->   facilitator guides (120 min each), 140-item tagged certification exam bank, mini-project
->   A3-lite storyboard + scoring rubric, and the 5-template toolkit
+> **Course build-out status.** Every level is built against the same eight-component
+> delivery model: (1) curriculum & content design, (2) assessment & credentialing,
+> (3) learner experience & delivery, (4) instructor & reviewer system, (5) learner support &
+> reinforcement, (6) measurement & evidence, (7) corporate deployment, (8) content operations.
+>
+> - **[White Belt →](white-belt/README.md)** — **all eight components built.** 12 lesson
+>   modules with spaced cumulative checks, three vertical production scripts, 80-item tagged
+>   item bank plus pre-assessment and retrieval pools, field-exercise rubric with calibrated
+>   sampled review, BoK crosswalk and credential spec, production/accessibility/LMS spec,
+>   working prototype, kickoff facilitator guide, rollout playbook, reinforcement kit,
+>   evaluation plan
+> - **[Yellow Belt →](yellow-belt/README.md)** — components 1–2 built: 6 teaching units
+>   (3A/3B split), 2 workshop facilitator guides (120 min each), 140-item tagged exam bank,
+>   mini-project storyboard + scoring rubric, 5-template toolkit. Components 3–8 pending
 > - **[Assessment policy →](assessment/standard-setting-and-item-policy.md)** — modified-Angoff
->   standard setting, item-writing rules, bank sizing, retake overlap, item analysis, pre/post
->   measurement (applies to every level)
+>   standard setting, item-writing rules, bank sizing, retake overlap, item analysis,
+>   pre/post measurement (all levels)
+> - **[Program operations →](program-operations/)** — authoring style guide, terms of
+>   certification, change log (all levels)
 >
 > Green Belt and above exist at blueprint level (below) pending build-out.
 
@@ -101,10 +110,16 @@ By completion, the learner can:
 - Templates provided: waste walk checklist, 8-wastes pocket card (print + digital).
 
 ### Certification requirements & credibility
-- Complete all modules + pass the knowledge check + submit the field exercise.
-- Credential: **digital badge (Open Badges / Credly-style)** with embedded metadata describing
-  hours, BoK coverage, and the applied exercise. Honest positioning: this is an *awareness*
-  credential — the badge metadata says so, which paradoxically increases trust in the higher belts.
+- Complete all modules + pass the knowledge check + submit the field exercise (rubric-reviewed:
+  10% sampled for individual enrollment, 100% in corporate rollouts, by calibrated reviewers).
+- Credential: **"Lean Six Sigma White Belt (Awareness)"** — the parenthetical is part of the
+  name on every surface. Open Badges 3.0 metadata carries the exit-competence statement, the
+  coverage map, the explicit exclusions, and two fields that a click-through certificate cannot
+  honestly populate: `assessmentType` (knowledge check + applied artifact) and a per-learner
+  `reviewStatus` (`human-reviewed` vs. `completeness-checked`). Permanent public verification;
+  no CEUs claimed at this level, and the course description says so.
+- Full specs: [`white-belt/bok-crosswalk-and-credential.md`](white-belt/bok-crosswalk-and-credential.md),
+  [`white-belt/field-exercise-rubric.md`](white-belt/field-exercise-rubric.md).
 
 ### Assessment method
 - 20-question multiple-choice knowledge check assembled to blueprint from an 80-item tagged
@@ -115,14 +130,26 @@ By completion, the learner can:
   defensible.
 
 ### Reinforcement & alumni value
-- Monthly "Waste of the Month" email with a 3-minute vertical case.
-- Access to the free community tier (discussion forum, template library — read-only).
-- No recertification (awareness level, evergreen).
+- A designed 12-month sequence in which **every touchpoint asks for or reports on an
+  observation** — micro-lesson at day 3, peer observation at day 7, waste-walk invitation at
+  day 14, organizational theme report at day 30, Just-Do-It triage tool at day 45, 90-day
+  pulse and second-observation invitation, then monthly "Waste of the Month" cases.
+- Free community tier (forum, template library, monthly tool clinic). No paid tier at this
+  level — a White Belt paying a subscription is a bad-faith product.
+- Manager reinforcement touches at day 10 and day 45 (corporate).
+- No recertification, no CEUs, and deliberately no "advanced White Belt" tier.
+- Full kit: [`white-belt/reinforcement/post-course-kit.md`](white-belt/reinforcement/post-course-kit.md).
 
 ### Progression pathway (upsell)
-- Certificate completion page presents Yellow Belt with a **completion discount valid 30 days**.
-- Corporate: rollout dashboards show L&D buyers the volume of employee waste observations —
-  the natural pitch is "your people found 400 problems; Yellow/Green Belts are how they fix them."
+- Certificate completion page presents Yellow Belt with a **completion discount valid 30 days**;
+  a personalized invitation at day 120, and an anniversary touch that replays the learner's own
+  first observation back to them with what happened to it.
+- Reviewers are instructed to flag observations revealing a Yellow-Belt-sized problem and say so
+  in the feedback — progression starts inside the rubric, not in a sales email.
+- Corporate: the rollout dashboard makes the pitch concrete — *"your people found 412 problems;
+  180 are local fixes their supervisors can own (Yellow Belt), and 30 cluster into four
+  cross-departmental problems with real money attached (a Green Belt cohort, with these
+  sponsors)."*
 
 ---
 

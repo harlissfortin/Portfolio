@@ -88,7 +88,7 @@ receipts, expense form; Process = submit → manager approves → finance review
 issued; Outputs = reimbursement, accounting entry; Customers = employee, finance, auditors.
 
 ### Try
-Drag-and-drop: learner sorts ten items (e.g., "pharmacy", "prescription", "verify insurance",
+Click-to-assign (select item, then column — never drag-and-drop, per the accessibility spec): learner sorts ten items (e.g., "pharmacy", "prescription", "verify insurance",
 "filled prescription", "patient") into S-I-P-O-C columns for a pharmacy pickup process.
 
 ### Takeaways
@@ -171,13 +171,20 @@ patient waiting 40 minutes (NVA), re-drawing because the first tube was mislabel
 rework), analyzing the sample (VA).
 
 ### Try
-Sort-the-activities exercise: 12 activities from the learner's chosen vertical sorted into
+Click-to-assign sort: 12 activities from the learner's chosen vertical sorted into
 VA / NVA / NNVA, with instant feedback explaining each.
 
 ### Takeaways
 - Value is defined by the customer, changes the work item, and is done right the first time.
 - Most process time — often 90%+ — is non-value-added. That's the opportunity, not the shame.
 - Necessary NVA is minimized; pure NVA is eliminated.
+
+### Cumulative check (spaced retrieval)
+
+Two items drawn from the PRAC pool re-testing **Modules 1–2**: whose requirements define the
+quality of your output, and process-versus-person attribution. Feedback gives the rationale.
+Not scored toward certification — this is retrieval practice, and getting one wrong here is
+the most useful thing that can happen to a learner at this point.
 
 ---
 
@@ -263,6 +270,11 @@ Spot-the-waste video 2 (same scene, continued), plus a paired-scenario item bank
 - Transportation moves the work; motion moves the worker.
 - Inventory hides problems; extra-processing is effort the customer never asked for.
 
+### Cumulative check (spaced retrieval)
+
+Two items re-testing **Modules 3–4**: which discipline targets a wide spread of outcomes, and
+the three value-added tests.
+
 ---
 
 ## Module 7 — Waste in Your World (15 min)
@@ -334,6 +346,11 @@ which S produced each visible change.
 - The point is visible abnormality, not tidiness.
 - Sustain is the hard one — and it belongs to leaders and teams, not posters.
 
+### Cumulative check (spaced retrieval)
+
+Two items re-testing **Modules 5–6**: waste identification in a fresh scene, and the
+transportation-versus-motion discriminator.
+
 ---
 
 ## Module 9 — DMAIC as a Storyline (20 min)
@@ -364,7 +381,7 @@ the people who know the real work, and knowing the storyline lets you contribute
 
 ### Try
 Phase-matching exercise: 15 activities ("interview customers about requirements," "run a
-pilot on one line," "set up a weekly metric review") dragged onto the right phase.
+pilot on one line," "set up a weekly metric review") assigned to the right phase by click-to-assign.
 
 ### Takeaways
 - Define → Measure → Analyze → Improve → Control; each phase answers one question.
@@ -407,6 +424,10 @@ of them, teaching intellectual honesty.
 - Test: multiple people? new hire would too? is the right way the easy way?
 - Rule out the process before concluding "people problem."
 - "What made that likely?" beats "who did that?"
+
+### Cumulative check (spaced retrieval)
+
+Two items re-testing **Modules 7–8**: the elapsed-versus-value story, and the purpose of 5S.
 
 ---
 
@@ -471,3 +492,20 @@ waste category selected. (Corporate option: internal CI lead review layer.)
 ### Takeaways
 - An observation is facts + waste name + who it hurts. Blame kills it; vagueness starves it.
 - Your submission is a real contribution to a real problem inventory — the first of many.
+
+### Cumulative check (spaced retrieval)
+
+Two items re-testing **Modules 9–10**: the question each DMAIC phase answers, and the
+"would a new hire make the same mistake?" diagnostic. These close the course before the
+knowledge check, so the learner enters the assessment having just retrieved the two
+frameworks it weights most heavily.
+
+---
+
+## Production references
+
+- Vertical footage, click-targets and anchor stories: [`vertical-variants.md`](vertical-variants.md)
+- Screen architecture, interactions, accessibility, LMS tracking: [`production/storyboard-and-build-spec.md`](production/storyboard-and-build-spec.md)
+- Item pools (CERT / PRE / PRAC) and blueprint: [`knowledge-check.md`](knowledge-check.md)
+- Field exercise scoring: [`field-exercise-rubric.md`](field-exercise-rubric.md)
+- Coverage claims and credential definition: [`bok-crosswalk-and-credential.md`](bok-crosswalk-and-credential.md)
