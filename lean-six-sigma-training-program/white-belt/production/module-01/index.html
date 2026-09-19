@@ -159,6 +159,16 @@ textarea:focus,input[type=text]:focus{border-color:var(--acc)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .nav .sp{flex:1}
 .buildnote{font-size:14px;color:var(--mut);margin-top:26px;max-width:66ch}
+/* ---- screen transitions ---- */
+#stage{will-change:transform,opacity}
+#stage.leave-fwd{animation:leaveFwd .15s ease-in forwards}
+#stage.leave-back{animation:leaveBack .15s ease-in forwards}
+#stage.enter-fwd{animation:enterFwd .28s cubic-bezier(.2,.7,.2,1) both}
+#stage.enter-back{animation:enterBack .28s cubic-bezier(.2,.7,.2,1) both}
+@keyframes leaveFwd{to{opacity:0;transform:translateX(-20px)}}
+@keyframes leaveBack{to{opacity:0;transform:translateX(20px)}}
+@keyframes enterFwd{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes enterBack{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -217,6 +227,7 @@ textarea:focus,input[type=text]:focus{border-color:var(--acc)}
 </section>
 
 <main id="main">
+  <div id="stage">
   <div class="card">
     <span class="eyebrow" id="eyebrow">Hook</span>
     <h2 class="sh" id="shead" tabindex="-1">Was that a lazy person problem?</h2>
@@ -230,6 +241,7 @@ textarea:focus,input[type=text]:focus{border-color:var(--acc)}
       <button class="tool" id="capToggle" aria-expanded="true" aria-controls="caps">Hide captions</button>
     </div>
     <div class="caps" id="caps" aria-live="off"></div>
+  </div>
   </div>
 
   <div class="nav">
@@ -637,6 +649,32 @@ function render(){
   h.focus();
   say("Screen "+(state.i+1)+" of "+S.length+": "+sc.h);
 }
+/* ---- screen navigation with directional transition ---- */
+const reduceMotion=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let navBusy=false;
+function go(dir){
+  if(navBusy) return;
+  const stage=document.getElementById("stage");
+  const leave=dir>0?"leave-fwd":"leave-back", enter=dir>0?"enter-fwd":"enter-back";
+  const swap=()=>{
+    stage.classList.remove(leave);
+    audio.pause(); state.i+=dir; render(); window.scrollTo({top:0});
+    if(!reduceMotion){
+      stage.classList.add(enter);
+      once(stage,"animationend",()=>stage.classList.remove(enter),400);
+    }
+    navBusy=false;
+  };
+  if(reduceMotion){ swap(); return; }
+  navBusy=true;
+  stage.classList.add(leave);
+  once(stage,"animationend",swap,250);
+}
+/* run fn on the event or after a fallback delay, whichever comes first */
+function once(el,ev,fn,ms){
+  let done=false; const run=()=>{ if(done) return; done=true; el.removeEventListener(ev,run); fn(); };
+  el.addEventListener(ev,run); setTimeout(run,ms);
+}
 document.getElementById("next").addEventListener("click",()=>{
   if(state.i===S.length-1){
     emit("completed",null,{result:{completion:true,
@@ -645,15 +683,15 @@ document.getElementById("next").addEventListener("click",()=>{
     const n=document.getElementById("next"); n.disabled=true; n.textContent="Module complete ✓";
     return;
   }
-  audio.pause(); state.i++; render(); window.scrollTo({top:0});
+  go(1);
 });
 document.getElementById("back").addEventListener("click",()=>{
   if(state.i===0) return;
-  audio.pause(); state.i--; render(); window.scrollTo({top:0});
+  go(-1);
 });
 document.getElementById("skip").addEventListener("click",()=>{
   emit("experienced","s7-skipped");
-  audio.pause(); state.i++; render(); window.scrollTo({top:0});
+  go(1);
 });
 render();
 </script>
