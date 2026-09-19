@@ -4,6 +4,7 @@
 **Learning goal:** The learner can explain why most workplace frustration is caused by
 process design rather than by people, and can name one recurring frustration in their own work.
 **Screens:** 8 · **Cumulative check:** none (Module 1 is the first module)
+**Narration:** synthesized neural voice, measured 6:32 — see the asset manifest
 **Built against:** [`../storyboard-and-build-spec.md`](../storyboard-and-build-spec.md)
 
 **Conventions used below.** *OST* = on-screen text (≤ 60 words; never narrated verbatim).
@@ -278,15 +279,23 @@ something to copy instead of something to compare against.
 
 | Asset | Path | Status |
 |---|---|---|
-| Narration audio, S1–S8 | `audio/wb-m01-s{1..8}.mp3` | **Pending recording** — scripts above are final |
-| Captions (WebVTT) | [`narration.vtt`](narration.vtt) | Authored from the final script; re-timed against recorded audio at record time |
+| Narration audio, S1–S8 | `audio/wb-m01-s{1..8}.mp3` | **Synthesized** — neural voice (Kokoro, `af_heart`, speed 0.82), 24 kHz mono MP3 56 kbps, peak-normalized to −1 dBFS. Total 6:32 — 165 wpm speech-only, 150 wpm including pauses, inside the instructional band; the first pass at speed 0.94 measured 185 wpm and was rejected as too fast. Replaceable by a studio recording without code changes (see timing note) |
+| Captions (WebVTT) | `audio/wb-m01-s{1..8}.vtt` (per screen) · [`narration.vtt`](narration.vtt) (combined, continuous) | **Measured** from the synthesized audio, cue by cue — each cue was synthesized separately so its start/end are exact, not estimated |
 | Transcript | [`transcript.md`](transcript.md) | Complete, includes visual descriptions |
-| Built module | [`index.html`](index.html) | Complete and functional without audio (text-primary) |
+| Built module | [`index.html`](index.html) | Complete; audio embedded as data URIs (2.5 MB); auto-continues narration across screens once the learner presses play; caption highlight and auto-scroll follow the audio; everything works with sound off |
 | Figures | Inline SVG in `index.html` | Complete |
 
-**Audio timing note.** Cue times in `narration.vtt` are authored estimates at 140 wpm. They are
-replaced with measured times from the recording session; the build reads cue times from the
-caption source, so no code changes on re-timing.
+**Audio timing note.** Cue times are measured, not estimated: the pipeline
+(`synth.py` in the production tooling) synthesizes each cue independently, concatenates them
+with 0.42 s pauses (0.75 s at paragraph breaks) plus a 0.35 s lead-in, and records each cue's
+true start and end. The build embeds those times, so captions sit exactly on the speech.
+
+**Replacing the voice.** A human studio recording drops in the same way: record per screen,
+force-align or hand-time the cues, regenerate `audio/manifest.json`, re-run the embed step.
+No content or code changes. The storyboard is the script of record either way. The
+synthesized voice is a legitimate production choice for e-learning at this level and is
+disclosed to the learner in the module footer; whether to invest in a studio voice for
+launch is a brand decision, not a completeness one.
 
 ## Definition of done
 
@@ -298,6 +307,6 @@ caption source, so no code changes on re-timing.
 - [x] Accessibility: keyboard-only path, visible focus, no time limits, reduced-motion respected,
       glossary on every screen, 320 px reflow and 400 % zoom, live-region announcements
 - [x] Vertical-aware Show screen (MFG / HC / TXN)
-- [ ] **Narration recorded** and captions re-timed
+- [x] Narration produced (synthesized neural voice) and captions timed from it, cue by cue
 - [ ] Screen-reader pass (NVDA + JAWS + VoiceOver) on the built module
 - [ ] Reviewed against `modules.md` by the assessment lead

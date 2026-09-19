@@ -2,7 +2,8 @@
 
 **Module WB-M01 · White Belt: Foundations of Operational Excellence · ≈7 minutes narration**
 
-This transcript carries the complete narration together with descriptions of everything shown
+The narration is voiced by a synthesized neural voice (Kokoro, "af_heart"); this transcript is
+its script of record. It carries the complete narration together with descriptions of everything shown
 on screen, so it stands alone as an equivalent to the module for anyone who prefers or needs to
 read it. Screen headings match the module's navigation. Downloadable and printable.
 
