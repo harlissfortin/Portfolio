@@ -66,6 +66,11 @@ Three levels of visual control, in rising strength:
    (fixture that only accepts the part one way, form field that rejects invalid input,
    kanban square that physically caps the queue).
 
+A note on the word **pull**: a two-bin kanban or a min/max line is more than a signal —
+it lets the *downstream* need trigger replenishment, instead of upstream pushing stock
+"just in case." That is a **pull system** in miniature, and it's the same idea Green Belts
+scale up to whole value streams. When you build a reorder signal, you're building pull.
+
 Design rules:
 - **Answer one question per visual.** "Are we ahead or behind, right now?" "Is anything
   missing?" A visual that needs explaining has failed.

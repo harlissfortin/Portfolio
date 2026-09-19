@@ -91,6 +91,27 @@ person who knows how the work actually happens. What you owe each phase:
   to peers; when the new way isn't working, **say so through the response plan** rather
   than quietly reverting. Quiet reversion is how 90-day evaporation happens.
 
+**Kaizen events — the compressed version of all this.** A kaizen event (rapid-improvement
+event) is a focused 2–5 day effort in which a cross-functional team maps, analyzes,
+changes, and standardizes one process *in the same week*, led by a Green or Black Belt.
+Yellow Belts are the core of these teams. What you owe a kaizen event: arrive with data
+and your check sheets (the event has no time to collect a baseline from scratch); be
+physically present for the whole event — half-attendance breaks the team; try changes on
+the spot rather than debating them (the event runs on PDCA cycles measured in hours);
+help write the new standard work on the final day, because you'll be the one living it;
+and own one item on the 30-day follow-up list. A kaizen event that ends without a
+standard and a follow-up list was a workshop, not an improvement.
+
+**Why people resist — and your part in it.** Every change in a workplace meets resistance,
+and most of it is rational: people fear looking incompetent with a new method, losing
+control of their work, or absorbing extra effort for someone else's benefit. Green and
+Black Belts are trained to manage this; the Yellow Belt's role is simpler and often more
+effective: say honestly what the change costs *you*, ask the team's questions out loud
+rather than letting them go underground, try the new way in good faith before judging it,
+and tell the project lead early and factually when it isn't working. Peers believe a
+colleague who says "I tried it for a week and here's what I found" far more than a
+project lead with a slide.
+
 **Tollgates — what they are and how to show up.** At each phase end, the team presents to
 the sponsor: what we found, what we conclude, what we need, go/no-go. As a team member:
 know which exhibit is yours (often the check sheet or the map — speak to it in plain

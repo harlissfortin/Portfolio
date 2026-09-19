@@ -21,7 +21,11 @@ even is before anyone argues about fixing it.
    here — the start/stop points *are* the scope.
 2. **O** then **C**: what comes out, and who receives it. For each customer, add their top
    **requirement** — what makes the output good in their eyes. (This extension, sometimes
-   called SIPOC-R, is where quality gets defined.)
+   called SIPOC-R, is where quality gets defined.) Two Green Belt terms you'll hear for this
+   column: the **voice of the customer (VOC)** — what customers say they need, in their
+   words — and **critical-to-quality (CTQ)** characteristics — the measurable requirements
+   translated from it ("seen within 14 days" is a CTQ; "don't keep me waiting" is VOC).
+   At Yellow Belt you capture the requirement; Green Belts formalize the translation.
 3. **I** then **S**: what the process needs, and who provides it. For each input, note what
    makes it *usable* — a bad input requirement is the most common upstream cause of downstream
    pain.

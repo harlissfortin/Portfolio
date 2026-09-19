@@ -1,6 +1,8 @@
 # Workshop 1 — Process Mapping Clinic (Facilitator Guide)
 
-**Duration:** 90 minutes, live virtual · **Class size:** 8–24 (breakouts of 3–4)
+**Duration:** 120 minutes, live virtual (extended from 90 on review — the original
+schedule had no buffer and reliably overran into the closing debrief) · **Class size:**
+8–24 (breakouts of 3–4)
 **Prerequisite for attendees:** Unit 1 complete; each brings a SIPOC + draft swimlane map of
 a real process they touch.
 **Facilitator:** certified program instructor (GB+). **Producer recommended** above 16
@@ -30,7 +32,7 @@ map: handoffs counted, waits and rework loops flagged, one candidate focus area 
 - Ground rules: critique maps, never map-owners; every question about someone's process is
   a gift to them.
 
-### 0:10–0:25 — Live demo: interrogating a flawed map
+### 0:10–0:27 — Live demo: interrogating a flawed map
 Facilitator walks the pre-built "Vendor Setup" map and models the interrogation out loud,
 recruiting answers from the room. The map contains **five planted flaws** — find at least
 four with the group (keep one in your pocket for time):
@@ -48,8 +50,9 @@ Model the **map interrogation questions** (attendees get these as a sticker on t
 - "How long does the work sit before this step?" (finds waits)
 - "Is this what the SOP says, or what actually happens?" (finds the gap)
 
-### 0:25–0:55 — Breakout round 1: peer map walks (30 min)
-Groups of 3–4. Each attendee gets ~8 minutes in the hot seat:
+### 0:27–1:07 — Breakout round 1: peer map walks (40 min)
+Groups of 3–4. Each attendee gets 9 minutes in the hot seat (4 × 9 = 36, plus a 4-minute
+buffer for rotation — the buffer is not optional):
 - **2 min:** owner walks their map silently-ish (peers hold questions).
 - **5 min:** peers interrogate using the sticker questions; owner edits the map **live** —
   adding loops, splitting steps, labeling diamonds, marking ⚡⏱🔁.
@@ -60,14 +63,14 @@ Roles rotate. Facilitator + producer float; the most common interventions:
 - Maps ballooning past 20 steps → *"Which step hides a world? Draw a box around it and
   label it 'own map later.'"*
 
-### 0:55–1:05 — Regroup: the handoff count
+### 1:07–1:22 — Regroup: the handoff count (15 min)
 - Each attendee posts two numbers in chat: **handoffs** (lane crossings) and **rework loops**
   now on their map vs. their draft. Read a few deltas aloud — the point lands by itself
   ("your process didn't get worse in the last hour; your camera got better").
 - Mini-teach (5 min): annotating waits with rough times; why the *longest queue* on the map
   outweighs the busiest step; %C&A in one sentence as the bridge to VSM reading (Unit 1.3).
 
-### 1:05–1:25 — Breakout round 2: where's the treasure? (20 min)
+### 1:22–1:50 — Breakout round 2: where's the treasure? (28 min)
 Same groups. Each owner, with peers:
 1. Adds rough time annotations (best honest guesses; ranges welcome) to waits and the 2–3
    biggest steps.
@@ -78,7 +81,7 @@ Same groups. Each owner, with peers:
 Facilitator prompt for the stuck: "Where would a customer standing next to the work item
 sigh the loudest?"
 
-### 1:25–1:30 — Close & commitments
+### 1:50–2:00 — Close & commitments (10 min)
 - Three volunteers (recruit in breakouts, don't cold-call) each get 60 seconds: one thing
   your map was hiding.
 - Homework, said plainly: **walk your process for real within 7 days** — follow one work
@@ -90,7 +93,9 @@ sigh the loudest?"
 ## Facilitator notes & failure modes
 - **Time discipline is the hard part.** Round 1 hot seats WILL overrun; appoint a
   timekeeper per group and enforce rotation over completeness — an unfinished good critique
-  beats one perfect map and two untouched ones.
+  beats one perfect map and two untouched ones. The schedule now carries buffers; if you
+  are still behind at 1:22, shorten round 2 to the time annotations and the circled focus
+  — never the close. The close is where the homework commitment happens.
 - **The "process I don't actually touch" attendee** (mapped someone else's work from
   hearsay): pair them as *interrogator-in-chief* in round 1 and have them re-scope to a
   process they own before round 2.

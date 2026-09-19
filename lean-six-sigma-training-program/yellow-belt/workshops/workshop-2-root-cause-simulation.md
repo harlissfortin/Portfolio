@@ -1,6 +1,8 @@
 # Workshop 2 — Root-Cause Simulation (Facilitator Guide)
 
-**Duration:** 90 minutes, live virtual · **Class size:** 8–24 (teams of 4–6)
+**Duration:** 120 minutes, live virtual (extended from 90 on review — five rounds plus a
+debrief do not fit in 90 without cutting the debrief, which is where the learning lands) ·
+**Class size:** 8–24 (teams of 4–6)
 **Prerequisite for attendees:** Units 3 & 4 complete; each brings one real problem statement
 drafted in Unit 4.
 **Facilitator:** certified program instructor (GB+); producer above 16.
@@ -45,14 +47,14 @@ flip cards — forcing prioritization, mimicking the real cost of verification.
 - Teams formed; rules: 8 tokens, any card may be requested, facilitator answers only what
   the card says.
 
-### 0:10–0:20 — Round 1: Problem statement (10 min)
+### 0:10–0:22 — Round 1: Problem statement (12 min)
 Teams draft the problem statement from the scenario brief. Then facilitator shows three
 candidate statements — one clean, one with smuggled cause ("because the new crew…"), one
 vague ("trucks are always late lately") — teams self-grade theirs against the rubric.
 **Checkpoint:** every team must have a cause-free, quantified statement before tokens
 unlock. (The scenario brief contains all numbers needed.)
 
-### 0:20–0:40 — Round 2: Fishbone & the token hunt (20 min)
+### 0:22–0:50 — Round 2: Fishbone & the token hunt (28 min)
 - Teams build a fishbone (board pre-framed with service-variant bones) — minimum 3 bones
   populated, causes as **checkable statements**.
 - Teams then rank their top 3 suspicions and start spending tokens to flip evidence cards.
@@ -63,7 +65,7 @@ unlock. (The scenario brief contains all numbers needed.)
      instructive. Teams that ask "what changed ~5 weeks ago?" find the change log fast.
      **Do not rescue early.** The pain is the product.
 
-### 0:40–1:00 — Round 3: 5 Whys to ground truth (20 min)
+### 0:50–1:15 — Round 3: 5 Whys to ground truth (25 min)
 - Each team drills its best-supported suspicion: every "because" must cite a flipped card
   or request a new flip (tokens still finite).
 - Chains that stop at "because the crew is slow" get the guardrail question: *"Is that a
@@ -77,7 +79,7 @@ unlock. (The scenario brief contains all numbers needed.)
   BEFORE claiming victory** (e.g., roll back / reprint test and time it; predict departure
   recovery; watch 2 weeks of departures).
 
-### 1:00–1:15 — Debrief: the anatomy of a wrong certainty (15 min)
+### 1:15–1:40 — Debrief: the anatomy of a wrong certainty (25 min)
 - Reveal ground truth + full evidence map. Teams narrate their token trail — where they
   spent, what misled them, what one card would have saved them.
 - Re-run the opening poll question. The gap between the gut poll and the truth **is** the
@@ -89,7 +91,7 @@ unlock. (The scenario brief contains all numbers needed.)
   who was always slow is *common cause* wearing a villain costume (tie back to Unit 3
   tampering).
 
-### 1:15–1:30 — Transfer to reality (15 min)
+### 1:40–2:00 — Transfer to reality (20 min)
 - Pairs: exchange the **real problem statements** brought from Unit 4; grade each other
   against the rubric (2 min each way); rewrite on the spot.
 - Each attendee writes their own next verification step: *"For my problem, the first thing
@@ -105,9 +107,12 @@ unlock. (The scenario brief contains all numbers needed.)
 - **A team refuses to abandon the crew theory even after the rate cards:** let them present
   it in the debrief and have the room, not you, ask the questions. Handle with warmth —
   the room's own poll made the same call at 0:07.
-- **Token hoarding** (analysis paralysis, 6 tokens left at 0:50): inject urgency in
+- **Token hoarding** (analysis paralysis, 6 tokens left at 1:00): inject urgency in
   character — "the site manager is approving overtime at the top of the hour unless you
   bring something better."
+- **Protect the debrief.** If rounds overrun, cut round 3 short at 1:15 and reveal ground
+  truth on schedule; a team that hasn't finished its chain learns *more* from the reveal,
+  not less. Never compress the debrief or the transfer block.
 - **Virtual logistics:** evidence cards as locked frames the producer duplicates into team
   boards on request; keep a visible token tracker per team; breakout audio must be stable
   before round 2 — the token mechanic dies if requests lag.

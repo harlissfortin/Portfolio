@@ -8,9 +8,12 @@ to external clients across multiple industries.
 > lesson content, workshops, exams, project templates, and rubrics:
 > - **[White Belt →](white-belt/README.md)** — 12 lesson modules, 30-item knowledge-check
 >   bank, field-exercise form, pocket card, waste-walk checklist
-> - **[Yellow Belt →](yellow-belt/README.md)** — 5 teaching units, 2 live-workshop
->   facilitator guides, 44-item certification exam bank, mini-project A3-lite storyboard +
->   scoring rubric, and the 5-template toolkit
+> - **[Yellow Belt →](yellow-belt/README.md)** — 6 teaching units (3A/3B split), 2 live-workshop
+>   facilitator guides (120 min each), 140-item tagged certification exam bank, mini-project
+>   A3-lite storyboard + scoring rubric, and the 5-template toolkit
+> - **[Assessment policy →](assessment/standard-setting-and-item-policy.md)** — modified-Angoff
+>   standard setting, item-writing rules, bank sizing, retake overlap, item analysis, pre/post
+>   measurement (applies to every level)
 >
 > Green Belt and above exist at blueprint level (below) pending build-out.
 
@@ -104,9 +107,12 @@ By completion, the learner can:
   credential — the badge metadata says so, which paradoxically increases trust in the higher belts.
 
 ### Assessment method
-- 20-question multiple-choice knowledge check, **70% pass**, unlimited retakes with item-bank
-  randomization; field exercise marked complete/incomplete by rubric-lite auto-check
-  (corporate: optionally reviewed by their internal CI lead).
+- 20-question multiple-choice knowledge check assembled to blueprint from an 80-item tagged
+  bank, **provisional 70% cut (Angoff panel to confirm)**, unlimited retakes with ≤25%
+  overlap; 10-item pre-assessment for test-out and pre/post gain; field exercise
+  auto-checked for completeness and **quality-sampled by rubric** (10% of submissions, or
+  100% peer-reviewed in corporate deployments) so the badge's "applied exercise" claim is
+  defensible.
 
 ### Reinforcement & alumni value
 - Monthly "Waste of the Month" email with a 3-minute vertical case.
@@ -145,10 +151,14 @@ By completion, the learner can:
 - SIPOC and process mapping (swimlane, basic value stream awareness)
 - 5S implementation and audit (with digital-5S variant for transactional track)
 - PDCA for local improvements
-- Basic quality tools: check sheets, Pareto, run charts (reading, not constructing control charts)
+- Basic quality tools: check sheets, Pareto, run charts
+- Reading the numbers (IASSC/ASQ YB alignment): center and spread (mean/median/SD as
+  concepts, histograms), reading a control chart (limits vs. specs; stable ≠ capable),
+  capability (Cpk) and measurement-system awareness at interpretation depth
 - Root cause participation tools: 5 Whys, fishbone (Ishikawa)
-- Standard work basics; visual management
+- Standard work basics; visual management; pull signals in miniature (two-bin kanban)
 - Data collection basics: operational definitions, sampling awareness
+- Kaizen event participation; why people resist change and the team member's role
 - Role of the Yellow Belt on a Green/Black Belt project; effective tollgate participation
 
 ### Delivery format & duration
@@ -177,7 +187,9 @@ By completion, the learner can:
 
 ### Assessment method
 - 40-question exam, scenario-weighted (≥50% of items are "what would you do" scenarios, not
-  definitions), **75% pass**, 2 retakes included, new form each attempt.
+  definitions), assembled to blueprint from a 140-item tagged bank; **provisional 75% cut,
+  set formally by modified-Angoff panel** per the program assessment policy; 2 retakes
+  included with ≤25% item overlap.
 - Mini-project rubric: 5 dimensions (real problem, baseline data, action taken, result measured,
   storyboard clarity), each 0–2; **pass = 7/10 with no dimension at 0.**
 
@@ -530,7 +542,7 @@ By completion, the candidate can:
 | **Format** | Self-paced | Self-paced + 2 live workshops | 8-wk live-virtual cohort (or 2×3-day on-site) | 16-wk hybrid + 2 immersions | 6-mo hybrid fellowship |
 | **Signature tools taught** | 8 wastes, DMAIC awareness, VA/NVA | SIPOC, process maps, 5S, PDCA, Pareto, 5 Whys, fishbone | VSM, MSA, capability, control charts, hypothesis tests, regression (simple), FMEA, control plans | DOE, multiple/logistic regression, advanced SPC, future-state VSM, kaizen leadership, change leadership | Hoshin Kanri, deployment design, RSM/simulation, DFSS, coaching & training design |
 | **Project requirement** | Field observation exercise | Real Just-Do-It mini-project (rubric-reviewed) | Real sponsored DMAIC project, independently reviewed + sponsor-verified | BB-scale project + DOE practicum + kaizen facilitation + GB coaching | Enterprise deployment capstone + assessed coaching + teach-back + panel defense |
-| **Exam** | 20 Q, 70% | 40 Q, 75% | 100 Q proctored, 80% | 150 Q proctored, 80% | None — panel defense w/ external examiner |
+| **Exam** | 20 Q from 80-item bank; provisional 70% (Angoff) | 40 Q from 140-item bank; provisional 75% (Angoff) | 100 Q proctored; provisional 80% (Angoff) | 150 Q proctored; provisional 80% (Angoff) | None — panel defense w/ external examiner |
 | **Certifying authority** | Program credential (awareness badge) | Program credential; IACET CEUs ⚙️ | Program credential; IASSC-BoK-aligned; CSSC-accredited provider ⚙️; independent reviewer | Same + MBB reviewer of record signs | Same + external examiner + public portfolio |
 | **Renewal** | None | None (optional refresher) | 3-yr CEU renewal (earnable free) | 3-yr: CEUs + project/coaching evidence | Active-status via practice evidence |
 
@@ -554,8 +566,8 @@ assures quality) · — = not covered
 | VOC / CTQ | — | A | P | L | M |
 | Data collection & operational definitions | — | P | L | L | M |
 | Pareto, run charts, basic graphs | A | P | L | L | M |
-| Measurement system analysis (MSA) | — | — | P | L | M |
-| Capability analysis (Cp/Cpk, DPMO) | — | — | P | L | M |
+| Measurement system analysis (MSA) | — | A | P | L | M |
+| Capability analysis (Cp/Cpk, DPMO) | — | A | P | L | M |
 | Control charts / SPC | — | A | P | L | M |
 | Advanced SPC (EWMA, CUSUM, short-run) | — | — | — | P | L |
 | Root cause: 5 Whys, fishbone | — | P | L | L | M |

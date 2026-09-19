@@ -1,308 +1,439 @@
-# White Belt Knowledge Check — Item Bank
+# White Belt Knowledge Check — Item Bank (v2)
 
-**Administration:** 20 questions drawn from this bank (randomized selection and order),
-70% (14/20) to pass, unlimited retakes. Each attempt draws a fresh form. Feedback with
-rationale is shown after submission, not per-question during the attempt.
+**Governed by:** [`../assessment/standard-setting-and-item-policy.md`](../assessment/standard-setting-and-item-policy.md)
 
-**Blueprint:** ~30% wastes identification · ~20% VA/NVA and process concepts ·
-~20% DMAIC · ~15% 5S · ~15% philosophy/roles.
+**Administration:** 20 items per form, assembled to the blueprint below from the CERT pool
+(80 items — meets the 3.5× minimum for a 20-item form). Provisional cut **70%** pending
+the first modified-Angoff panel. Unlimited retakes; each retake form shares ≤ 25% of items
+with prior attempts and never the items previously missed.
 
-Answer key: correct option marked ✅ with rationale in *italics*.
+**Minimally competent candidate (draft for the Angoff panel):** *Can name and recognize the
+eight wastes in an everyday scene, explain what Lean and Six Sigma each contribute, state the
+DMAIC phases and the question each answers, and distinguish a process-designed error from a
+person-specific one — without being able to map, measure, or analyze anything formally.*
 
----
+## Blueprint (20-item form)
 
-### Wastes (D-O-W-N-T-I-M-E)
+| Section | Items per form | CERT items in bank |
+|---|---|---|
+| A. The 8 wastes | 7 | 28 |
+| B. Value & process concepts | 4 | 16 |
+| C. DMAIC | 3 | 12 |
+| D. 5S | 3 | 12 |
+| E. Philosophy & roles | 3 | 12 |
 
-**Q1.** A print shop runs 5,000 brochures for a customer who ordered 3,000, reasoning "the
-press was already set up." Which waste is this, first and foremost?
-- A. Inventory
-- B. Overproduction ✅
-- C. Extra-processing
-- D. Motion
+Constraints: ≥ 40% scenario (S) items · ≥ 40% Apply/Analyze · vertical rule (NEU + cohort
+vertical) · balanced key positions.
 
-*Making more than the customer needs is overproduction — the extra 2,000 then become
-inventory, but the act that created them is overproduction. This is why it's called the waste
-that breeds other wastes.*
+**Tag format:** `[section · objective · Bloom · vertical · type · pool]`
+Objectives: **W1** define Lean/Six Sigma/CI · **W2** identify the 8 wastes · **W3** DMAIC phases
+and questions · **W4** process vs. people problems · **W5** value/VA-NVA and process concepts.
+Pools: CERT = certification · PRE = pre-assessment only · PRAC = in-module cumulative checks.
 
-**Q2.** A nurse walks to a supply room at the far end of the unit six times per shift because
-gloves aren't stocked at the bedside. Which waste?
-- A. Transportation
-- B. Waiting
-- C. Motion ✅
-- D. Defects
-
-*The worker is moving, not the work item. Transportation moves the work; motion moves the
-worker.*
-
-**Q3.** Completed insurance claims sit for four days in a queue before an adjuster opens
-them. For the claim itself, which waste dominates?
-- A. Waiting ✅
-- B. Motion
-- C. Extra-processing
-- D. Non-utilized talent
-
-*The work item is idle. Queue time is waiting waste — typically the largest share of total
-lead time.*
-
-**Q4.** An invoice is sent with the wrong purchase-order number and comes back for
-correction. Which waste?
-- A. Extra-processing
-- B. Transportation
-- C. Defects ✅
-- D. Overproduction
-
-*Wrong or incomplete work is a defect; the correction loop is the rework it generates.*
-
-**Q5.** A machinist who spent ten years suggesting fixture improvements at a previous employer
-is never asked for input in his current role. Which waste?
-- A. Waiting
-- B. Non-utilized talent ✅
-- C. Motion
-- D. Extra-processing
-
-*Unused skills, knowledge, and ideas are the 8th waste — the one CI programs most directly
-attack.*
-
-**Q6.** Lab samples are couriered between two hospital buildings three times a day. Which
-waste?
-- A. Motion
-- B. Inventory
-- C. Transportation ✅
-- D. Overproduction
-
-*The work items (samples) are being moved between locations — transportation.*
-
-**Q7.** A finance analyst produces a 25-page monthly report; the leadership team reads the
-one-page summary and two charts. The other 22 pages are best described as:
-- A. Defects
-- B. Extra-processing ✅
-- C. Inventory
-- D. Overproduction
-
-*Doing more than the customer requires — effort invested beyond what the output's customer
-uses — is extra-processing. (Producing extra copies would be overproduction; here it's the
-depth of work itself.)*
-
-**Q8.** A support team's ticket backlog has grown to 600 open tickets. As a category, the
-backlog itself is:
-- A. Waiting
-- B. Defects
-- C. Inventory ✅
-- D. Motion
-
-*Work-in-progress piling up between steps is inventory — including its office forms:
-backlogs, full inboxes, queues. (Each ticket also experiences waiting; the pile is inventory.)*
-
-**Q9.** Which waste does Lean tradition consider the "worst" because it generates the others?
-- A. Defects
-- B. Waiting
-- C. Overproduction ✅
-- D. Inventory
-
-*Overproduced work must be stored, moved, and often reworked — it manufactures inventory,
-transportation, and defect exposure.*
-
-**Q10.** "Transportation vs. motion" — which statement is correct?
-- A. Transportation is people moving; motion is product moving
-- B. Transportation is product/work moving; motion is people moving ✅
-- C. They are two names for the same waste
-- D. Motion only applies to factories
-
-*Transportation moves the work item; motion moves the worker. Both apply in any industry,
-including digital work (system-to-system transfer vs. clicking through screens).*
+Correct option marked ✅; rationale follows the dash.
 
 ---
 
-### Value and process concepts
+## Section A — The 8 wastes (28 CERT)
 
-**Q11.** For an activity to be value-added, it must meet all three tests. Which is NOT one
-of them?
-- A. The customer would pay for it
-- B. It changes the thing being worked on
-- C. It is done right the first time
-- D. It is performed by qualified personnel ✅
+**A1.** A print shop runs 5,000 brochures for a customer who ordered 3,000, reasoning "the press was already set up." The *act* of running the extra 2,000 is, first and foremost:
+A. Inventory · B. Overproduction ✅ · C. Extra-processing · D. Motion
+— Making more than the customer needs is overproduction; the extras *become* inventory afterward. The stem asks about the act.
+`[A · W2 · Apply · MFG · S · CERT]`
 
-*Qualification matters for many reasons, but the VA test is: customer values it, it
-transforms the work item, done right first time.*
+**A2.** A nurse walks to a supply room at the far end of the unit six times per shift because gloves aren't stocked at the bedside. The nurse's walking is:
+A. Transportation · B. Waiting · C. Motion ✅ · D. Defects
+— The worker moves; the work item does not. Transportation moves the work; motion moves the worker.
+`[A · W2 · Apply · HC · S · CERT]`
 
-**Q12.** Regulatory compliance documentation that customers don't care about but the law
-requires is best classified as:
-- A. Value-added
-- B. Pure waste to eliminate immediately
-- C. Necessary non-value-added — minimize it ✅
-- D. A defect
+**A3.** Completed insurance claims sit four days in a queue before an adjuster opens them. *For the claim itself during those four days*, the waste is:
+A. Waiting ✅ · B. Motion · C. Extra-processing · D. Non-utilized talent
+— The work item is idle. Queue time is waiting.
+`[A · W2 · Apply · TXN · S · CERT]`
 
-*Required-but-not-valued work is necessary NVA: you streamline it, you don't (and often
-legally can't) eliminate it.*
+**A4.** An invoice is sent with the wrong purchase-order number and comes back for correction. The wrong number is:
+A. Extra-processing · B. Transportation · C. Defects ✅ · D. Overproduction
+— Wrong or incomplete work is a defect; the correction loop is the rework it generates.
+`[A · W2 · Apply · TXN · S · CERT]`
 
-**Q13.** In a typical unimproved process, the proportion of total elapsed time that is
-value-added is closest to:
-- A. Under 10% ✅
-- B. About 50%
-- C. About 75%
-- D. Over 90%
+**A5.** A machinist who spent ten years improving fixtures at a previous employer is never asked for input in his current role. The waste is:
+A. Waiting · B. Non-utilized talent ✅ · C. Motion · D. Extra-processing
+— Unused skills, knowledge, and ideas are the eighth waste.
+`[A · W2 · Apply · MFG · S · CERT]`
 
-*Studies across industries consistently find single-digit percentages — which is why huge
-improvement is available without anyone working faster.*
+**A6.** Lab samples are couriered between two hospital buildings three times a day. The courier trips are:
+A. Motion · B. Inventory · C. Transportation ✅ · D. Overproduction
+— The work items (samples) are being moved between locations.
+`[A · W2 · Apply · HC · S · CERT]`
 
-**Q14.** In SIPOC, the "C" (customer) is:
-- A. Always the person who pays money
-- B. Whoever receives the output of the process, internal or external ✅
-- C. The company's customer service department
-- D. The process owner
+**A7.** A finance analyst spends two days each month producing a 25-page report; leadership reads only the one-page summary. *The effort invested in the unread 22 pages* — not the number of copies — is best classified as:
+A. Defects · B. Extra-processing ✅ · C. Inventory · D. Waiting
+— Work beyond what the output's customer requires is extra-processing. The stem excludes the copies question (overproduction) explicitly.
+`[A · W2 · Analyze · TXN · S · CERT]`
 
-*The next step, next shift, or next department that receives your output is your customer —
-their requirements define your quality.*
+**A8.** A support team has 600 open tickets. *Considered as a pile of work sitting between steps*, the backlog is which waste?
+A. Waiting · B. Defects · C. Inventory ✅ · D. Motion
+— Work-in-progress accumulating between steps is inventory, in its office form. (Each ticket also experiences waiting; the stem asks about the pile.)
+`[A · W2 · Understand · TXN · S · CERT]`
 
-**Q15.** Reworking a defective part so it meets spec counts as:
-- A. Value-added, because the part ends up meeting spec
-- B. Non-value-added ✅
-- C. Necessary non-value-added
-- D. Value-added if done quickly
+**A9.** Which waste does Lean tradition call the worst, because it generates the others?
+A. Defects · B. Waiting · C. Overproduction ✅ · D. Inventory
+— Overproduced work must be stored, moved, and often reworked.
+`[A · W2 · Remember · NEU · K · CERT]`
 
-*Rework never counts as value-added — the "done right the first time" test fails.*
+**A10.** Which statement about transportation and motion is correct?
+A. Transportation is people moving; motion is product moving · B. Transportation is the work item moving; motion is the worker moving ✅ · C. They are two names for the same waste · D. Motion applies only in factories
+`[A · W2 · Understand · NEU · K · CERT]`
+
+**A11.** An operator crosses the cell to fetch a torque wrench about forty times a shift. This is:
+A. Transportation · B. Motion ✅ · C. Waiting · D. Overproduction
+— The worker moves; the part stays put.
+`[A · W2 · Apply · MFG · S · CERT]`
+
+**A12.** Patient charts accumulate for three days awaiting coding before billing can begin. *As a category, the accumulated charts* are:
+A. Motion · B. Inventory ✅ · C. Defects · D. Extra-processing
+— Work piling between steps is inventory; the stem names the pile.
+`[A · W2 · Apply · HC · S · CERT]`
+
+**A13.** A weekly report is generated for a distribution list; interviews show nobody has used it in a year. Producing it is:
+A. Overproduction ✅ · B. Inventory · C. Defects · D. Non-utilized talent
+— Output nobody needs is overproduction — a batch no one ordered.
+`[A · W2 · Apply · TXN · S · CERT]`
+
+**A14.** A veteran scheduler has a fix for a recurring double-booking pattern but says "nobody ever asked." This is primarily:
+A. Non-utilized talent ✅ · B. Waiting · C. Motion · D. Extra-processing
+`[A · W2 · Apply · HC · S · CERT]`
+
+**A15.** Purchasing requires three signatures on every order under $100; approvers sign without reading. The signatures themselves are:
+A. Extra-processing ✅ · B. Defects · C. Inventory · D. Transportation
+— Steps that add no scrutiny are effort the customer never asked for.
+`[A · W2 · Apply · TXN · S · CERT]`
+
+**A16.** A crew stands idle for 40 minutes because materials for the next job haven't arrived. The crew's idle time is:
+A. Waiting ✅ · B. Motion · C. Inventory · D. Overproduction
+`[A · W2 · Apply · MFG · S · CERT]`
+
+**A17.** A packing station keeps a month's supply of cartons stacked beside the line "just in case." The stacked cartons are:
+A. Overproduction · B. Inventory ✅ · C. Transportation · D. Extra-processing
+— Raw material held between steps is inventory; nothing was produced by the station.
+`[A · W2 · Apply · MFG · S · CERT]`
+
+**A18.** A customer-service rep navigates five separate systems to answer one routine question. The screen-hopping is:
+A. Transportation · B. Motion ✅ · C. Defects · D. Waiting
+— Clicking through systems is the digital form of the worker moving.
+`[A · W2 · Apply · TXN · S · CERT]`
+
+**A19.** A technician deburrs surfaces the customer will never see or touch, to a mirror finish, because "that's how we've always done it." This is:
+A. Defects · B. Extra-processing ✅ · C. Overproduction · D. Motion
+— Polishing beyond what the customer values is extra-processing.
+`[A · W2 · Apply · MFG · S · CERT]`
+
+**A20.** A medication order is written with the wrong dose and is caught by the pharmacist. The wrong dose is:
+A. Waiting · B. Defects ✅ · C. Extra-processing · D. Inventory
+— Wrong work is a defect even when caught before harm; the catch is rework.
+`[A · W2 · Apply · HC · S · CERT]`
+
+**A21.** The mnemonic for the eight wastes is:
+A. DOWNTIME ✅ · B. DMAIC · C. SIPOC · D. PDCA
+`[A · W2 · Remember · NEU · K · CERT]`
+
+**A22.** In DOWNTIME, the "N" stands for:
+A. Non-conformance · B. Non-utilized talent ✅ · C. Non-value-added · D. Negligence
+`[A · W2 · Remember · NEU · K · CERT]`
+
+**A23.** Which waste was *added* when Lean's original seven wastes became eight?
+A. Defects · B. Non-utilized talent ✅ · C. Motion · D. Overproduction
+`[A · W2 · Remember · NEU · K · CERT]`
+
+**A24.** A patient is transported across the campus to a scanner and back. The transfer is:
+A. Motion · B. Transportation ✅ · C. Waiting · D. Extra-processing
+— The patient is the work item being moved.
+`[A · W2 · Apply · HC · S · CERT]`
+
+**A25.** Which statement best explains why inventory is considered a waste even when the items are needed eventually?
+A. Stored items are always defective · B. It ties up cash and space, hides problems, and goes stale ✅ · C. It requires extra motion to count · D. Customers dislike seeing stock
+`[A · W2 · Understand · NEU · K · CERT]`
+
+**A26.** A team processes 300 applications on Monday for a downstream reviewer who can handle 60 per day. The Monday batch is best described as:
+A. Waiting · B. Overproduction ✅ · C. Motion · D. Defects
+— Producing faster than the next step can consume is overproduction; the resulting pile is inventory.
+`[A · W2 · Analyze · TXN · S · CERT]`
+
+**A27.** An assembler must re-enter a serial number that the scanner already captured because two systems don't share data. The re-entry is best described as:
+A. Extra-processing ✅ · B. Waiting · C. Inventory · D. Overproduction
+— Repeating work the customer needs done once is extra-processing.
+`[A · W2 · Apply · MFG · S · CERT]`
+
+**A28.** Which of the following is the *least* accurate example of defects waste?
+A. A mislabeled sample · B. An invoice with a wrong PO number · C. A form returned for a missing signature · D. A form waiting in an inbox for approval ✅
+— Waiting in an inbox is waiting waste, not a defect.
+`[A · W2 · Analyze · NEU · S · CERT]`
 
 ---
 
-### DMAIC
+## Section B — Value & process concepts (16 CERT)
 
-**Q16.** Put the DMAIC question "What is actually causing the problem?" with its phase:
-- A. Define
-- B. Measure
-- C. Analyze ✅
-- D. Improve
+**B1.** Which is NOT one of the three tests an activity must pass to be value-added?
+A. The customer would pay for it · B. It changes the thing being worked on · C. It is done right the first time · D. It is performed by qualified personnel ✅
+`[B · W5 · Remember · NEU · K · CERT]`
 
-*Analyze finds and verifies root causes with evidence.*
+**B2.** Regulatory documentation that customers don't care about but the law requires is:
+A. Value-added · B. Pure waste to eliminate · C. Necessary non-value-added — minimize it ✅ · D. A defect
+`[B · W5 · Understand · NEU · K · CERT]`
 
-**Q17.** A team jumps straight from noticing a problem to installing their favorite solution.
-Which DMAIC discipline are they violating?
-- A. Control before Improve
-- B. Measure and Analyze before Improve ✅
-- C. Define after Measure
-- D. None — speed is a Lean principle
+**B3.** In a typical unimproved process, value-added time as a share of total elapsed time is closest to:
+A. Under 10% ✅ · B. About 50% · C. About 75% · D. Over 90%
+`[B · W5 · Remember · NEU · K · CERT]`
 
-*The defining discipline of DMAIC is establishing the baseline and verifying causes before
-selecting solutions.*
+**B4.** In SIPOC, the "C" (customer) is:
+A. Always the person who pays money · B. Whoever receives the output, internal or external ✅ · C. The customer service department · D. The process owner
+`[B · W5 · Understand · NEU · K · CERT]`
 
-**Q18.** Ninety days after a successful improvement, performance has drifted back to the old
-level. Which phase was most likely shortchanged?
-- A. Define
-- B. Measure
-- C. Improve
-- D. Control ✅
+**B5.** Reworking a defective part until it meets spec counts as:
+A. Value-added — it ends up meeting spec · B. Non-value-added ✅ · C. Necessary non-value-added · D. Value-added if done quickly
+— Rework never counts; "right the first time" fails.
+`[B · W5 · Apply · MFG · S · CERT]`
 
-*Control exists to lock in gains: standards, monitoring, response plans, and handover. Its
-absence is the classic cause of evaporating improvements.*
+**B6.** Drawing a patient's blood sample, done correctly once, is:
+A. Value-added ✅ · B. Non-value-added · C. Necessary non-value-added · D. Waiting
+`[B · W5 · Apply · HC · S · CERT]`
 
-**Q19.** "How bad is the problem, in numbers, right now?" is the question answered in:
-- A. Define
-- B. Measure ✅
-- C. Analyze
-- D. Control
+**B7.** A patient sits 40 minutes in the lobby before the draw. That 40 minutes is:
+A. Value-added · B. Non-value-added ✅ · C. Necessary non-value-added · D. Defects
+`[B · W5 · Apply · HC · S · CERT]`
 
-*Measure establishes the trustworthy baseline — without it, improvement can't be proven later.*
+**B8.** For "process an expense report," which item belongs in the **Inputs** column of a SIPOC?
+A. The employee submitting the report · B. Receipts and the completed expense form ✅ · C. The reimbursement payment · D. Finance reviews the claim
+`[B · W5 · Apply · TXN · S · CERT]`
 
----
+**B9.** For the same expense process, "Finance reviews the claim" belongs under:
+A. Suppliers · B. Inputs · C. Process ✅ · D. Customers
+`[B · W5 · Apply · TXN · S · CERT]`
 
-### 5S
+**B10.** "You are someone's supplier" means:
+A. You must negotiate prices with the next department · B. Your output is the next step's input, so its quality determines their quality ✅ · C. You should stock more inventory for them · D. Only external vendors are suppliers
+`[B · W5 · Understand · NEU · K · CERT]`
 
-**Q20.** The correct order of the five S's is:
-- A. Sort, Shine, Set in Order, Sustain, Standardize
-- B. Sort, Set in Order, Shine, Standardize, Sustain ✅
-- C. Standardize, Sort, Set in Order, Shine, Sustain
-- D. Set in Order, Sort, Shine, Standardize, Sustain
+**B11.** A mortgage takes 30 days to approve; the actual work inside it totals about 6 hours. Which statement is the correct takeaway?
+A. Staff must work faster · B. Large improvement is available without anyone working faster, because most of the 30 days is non-value time ✅ · C. The process is efficient · D. The 6 hours should be eliminated
+`[B · W5 · Analyze · TXN · S · CERT]`
 
-*Sort → Set in Order → Shine → Standardize → Sustain.*
+**B12.** Which activity fails the "changes the thing being worked on" test?
+A. Machining a bracket to size · B. Entering a diagnosis into the record · C. Moving a pallet to the next building ✅ · D. Analyzing a lab sample
+`[B · W5 · Apply · NEU · S · CERT]`
 
-**Q21.** "Cleaning is inspection in disguise" describes which S?
-- A. Sort
-- B. Set in Order
-- C. Shine ✅
-- D. Sustain
+**B13.** A "process," for improvement purposes, is best defined as:
+A. Anything written in an SOP · B. Any repeatable sequence of steps turning inputs into outputs for a customer ✅ · C. Only manufacturing operations · D. A task performed by one person
+`[B · W5 · Remember · NEU · K · CERT]`
 
-*Shine pairs cleaning with inspection — wiping down the equipment is how leaks, cracks, and
-loose fittings get noticed early.*
+**B14.** The night shift is the "customer" of the day shift's handover notes. If the notes are incomplete, the Lean interpretation is:
+A. Night shift should ask more questions · B. Day shift delivered a defective output to its internal customer ✅ · C. Handover is non-value-added and should be eliminated · D. Night shift is over-processing
+`[B · W5 · Analyze · HC · S · CERT]`
 
-**Q22.** The primary purpose of 5S is:
-- A. Making the workplace look good for visitors
-- B. Making abnormality instantly visible ✅
-- C. Reducing cleaning costs
-- D. Freeing storage space
+**B15.** Payroll processing is best classified, from the paying customer's point of view, as:
+A. Value-added · B. Necessary non-value-added ✅ · C. Pure waste · D. A defect
+— Required by business reality, not valued by the external customer: minimize, don't eliminate.
+`[B · W5 · Understand · TXN · K · CERT]`
 
-*Tidiness is a by-product. The point is that in a 5S'd workspace, the missing tool or growing
-pile announces itself.*
-
-**Q23.** Applying "Sort" to a shared network drive means:
-- A. Alphabetizing every folder
-- B. Archiving or deleting files no longer needed ✅
-- C. Backing everything up
-- D. Restricting access permissions
-
-*Digital Sort removes what isn't needed — the direct analog of red-tagging physical items.*
-
-**Q24.** Most 5S efforts fail at which S, and why?
-- A. Sort — people won't throw things away
-- B. Shine — cleaning takes too long
-- C. Sustain — habits and audits aren't maintained ✅
-- D. Set in Order — labeling is expensive
-
-*Sustain is a leadership-and-habit problem, not a technique problem; without audits and
-ownership, workplaces revert.*
+**B16.** Which is the correct treatment for each category?
+A. Eliminate VA, minimize NVA, protect NNVA · B. Protect and improve VA, eliminate NVA, minimize NNVA ✅ · C. Minimize VA, eliminate NNVA, protect NVA · D. Treat all three the same
+`[B · W5 · Understand · NEU · K · CERT]`
 
 ---
 
-### Philosophy and roles
+## Section C — DMAIC (12 CERT)
 
-**Q25.** Deming's famous attribution of quality problems is approximately:
-- A. 94% the system, 6% the individual ✅
-- B. 50/50 between system and individual
-- C. 94% the individual, 6% the system
-- D. 100% the system
+**C1.** "What is actually causing the problem?" is the question of which phase?
+A. Define · B. Measure · C. Analyze ✅ · D. Improve
+`[C · W3 · Remember · NEU · K · CERT]`
 
-*The overwhelming majority of recurring problems are built into the process design.*
+**C2.** A team jumps straight from noticing a problem to installing their favorite solution. They are skipping:
+A. Control before Improve · B. Measure and Analyze before Improve ✅ · C. Define after Measure · D. Nothing — speed is a Lean principle
+`[C · W3 · Understand · NEU · S · CERT]`
 
-**Q26.** Lean's core contribution in one phrase:
-- A. Reduce variation using statistics
-- B. Eliminate waste and create flow ✅
-- C. Inspect quality into the product
-- D. Automate manual work
+**C3.** Ninety days after a successful improvement, performance drifts back to the old level. Which phase was most likely shortchanged?
+A. Define · B. Measure · C. Improve · D. Control ✅
+`[C · W3 · Apply · NEU · S · CERT]`
 
-*Lean (from the Toyota Production System) removes non-value-added work and makes value flow.
-Reducing variation with data is Six Sigma's contribution.*
+**C4.** "How bad is it, in numbers, right now?" is answered in:
+A. Define · B. Measure ✅ · C. Analyze · D. Control
+`[C · W3 · Remember · NEU · K · CERT]`
 
-**Q27.** Six Sigma's core contribution in one phrase:
-- A. Organize the workspace
-- B. Empower frontline suggestion programs
-- C. Reduce variation using data ✅
-- D. Cut headcount
+**C5.** Agreeing the scope — "order receipt to shipment, one product line" — happens in:
+A. Define ✅ · B. Measure · C. Improve · D. Control
+`[C · W3 · Apply · MFG · S · CERT]`
 
-*Six Sigma targets inconsistency — the spread customers actually feel — using measurement and
-statistics.*
+**C6.** Running a two-week pilot of a new intake form on one team belongs to:
+A. Measure · B. Analyze · C. Improve ✅ · D. Control
+`[C · W3 · Apply · TXN · S · CERT]`
 
-**Q28.** Why do customers "feel variation, not averages"?
-- A. Customers can't do math
-- B. Each customer experiences one instance from the spread, not the mean ✅
-- C. Averages are always wrong
-- D. Variation is always caused by staff
+**C7.** Setting up a weekly metric review with a response plan if results drift belongs to:
+A. Define · B. Analyze · C. Improve · D. Control ✅
+`[C · W3 · Apply · NEU · S · CERT]`
 
-*A 3-minute average espresso means nothing to the customer who waited 9 minutes. Individual
-experiences come from the distribution's spread.*
+**C8.** The correct order of DMAIC phases is:
+A. Define, Measure, Analyze, Improve, Control ✅ · B. Define, Analyze, Measure, Improve, Control · C. Measure, Define, Analyze, Control, Improve · D. Define, Measure, Improve, Analyze, Control
+`[C · W3 · Remember · NEU · K · CERT]`
 
-**Q29.** Three different employees make the same data-entry error in the same field over one
-month. The most defensible first conclusion is:
-- A. All three need retraining
-- B. The process or interface makes the error likely — examine it ✅
-- C. Hiring standards have slipped
-- D. The error rate is acceptable
+**C9.** A project team verifies with data that late deliveries cluster on one carrier before proposing any change. This verification is:
+A. Define · B. Measure · C. Analyze ✅ · D. Control
+`[C · W3 · Apply · TXN · S · CERT]`
 
-*Repetition across different people is the signature of a process-designed error ("set up to
-fail" test).*
+**C10.** Why does DMAIC insist on a measured baseline before improvement?
+A. Sponsors like numbers · B. Without a baseline, later improvement cannot be proven ✅ · C. Baselines are required by law · D. It delays the project usefully
+`[C · W3 · Understand · NEU · K · CERT]`
 
-**Q30.** Which is a contribution appropriate to a White Belt, without further training?
-- A. Leading a DMAIC project
-- B. Designing a control chart
-- C. Submitting a well-formed waste observation from their own work ✅
-- D. Coaching a Green Belt
+**C11.** Which activity does NOT belong in the Control phase?
+A. Updating standard work · B. Handing the process to its owner · C. Brainstorming possible causes ✅ · D. Monitoring the metric
+`[C · W3 · Understand · NEU · K · CERT]`
 
-*White Belts contribute frontline eyes: surfacing problems, offering ideas, joining project
-teams as experts on how work really happens.*
+**C12.** A White Belt is invited onto a DMAIC team. Their most valuable contribution is:
+A. Selecting the statistical tests · B. Serving as the expert on how the work actually happens ✅ · C. Approving the project charter · D. Owning the control plan
+`[C · W3 · Understand · NEU · S · CERT]`
+
+---
+
+## Section D — 5S (12 CERT)
+
+**D1.** The correct order of the five S's is:
+A. Sort, Shine, Set in Order, Sustain, Standardize · B. Sort, Set in Order, Shine, Standardize, Sustain ✅ · C. Standardize, Sort, Set in Order, Shine, Sustain · D. Set in Order, Sort, Shine, Standardize, Sustain
+`[D · W1 · Remember · NEU · K · CERT]`
+
+**D2.** "Cleaning is inspection in disguise" describes:
+A. Sort · B. Set in Order · C. Shine ✅ · D. Sustain
+`[D · W1 · Understand · NEU · K · CERT]`
+
+**D3.** The primary purpose of 5S is:
+A. A presentable workplace for visitors · B. Making abnormality instantly visible ✅ · C. Reducing cleaning costs · D. Freeing storage space
+`[D · W1 · Understand · NEU · K · CERT]`
+
+**D4.** Applying Sort to a shared network drive means:
+A. Alphabetizing every folder · B. Archiving or deleting files no longer needed ✅ · C. Backing everything up · D. Restricting access permissions
+`[D · W1 · Apply · TXN · S · CERT]`
+
+**D5.** Most 5S efforts fail at which S, and why?
+A. Sort — people won't discard · B. Shine — cleaning takes too long · C. Sustain — audits and habits aren't maintained ✅ · D. Set in Order — labeling is expensive
+`[D · W1 · Understand · NEU · K · CERT]`
+
+**D6.** A shadow board with a single empty wrench outline is an example of:
+A. Sort · B. Set in Order ✅ · C. Shine · D. Sustain
+— Absence made visible at a glance.
+`[D · W1 · Apply · MFG · S · CERT]`
+
+**D7.** Posting a photo of "what ready-for-shift looks like" at the workstation is:
+A. Sort · B. Shine · C. Standardize ✅ · D. Sustain
+`[D · W1 · Apply · NEU · S · CERT]`
+
+**D8.** Red-tagging an item during Sort means:
+A. Discarding it immediately · B. Tagging it with a date and quarantining it until a decision window passes ✅ · C. Marking it as dangerous · D. Assigning it to a person
+`[D · W1 · Understand · NEU · K · CERT]`
+
+**D9.** A supply room's 5S audit score falls from 22 to 14 over three months. The 5S-literate first response is:
+A. Discipline the team · B. Check whether the standard still fits the work and whether audits lapsed ✅ · C. Repaint the floor markings · D. Skip audits until morale improves
+`[D · W1 · Analyze · HC · S · CERT]`
+
+**D10.** While wiping down a press, an operator logs a slow hydraulic leak. This illustrates:
+A. Shine's real deliverable — the anomaly list ✅ · B. Sort · C. Sustain · D. Overproduction
+`[D · W1 · Apply · MFG · S · CERT]`
+
+**D11.** "Arrange by frequency of use — daily items within arm's reach" is guidance for:
+A. Sort · B. Set in Order ✅ · C. Standardize · D. Sustain
+`[D · W1 · Remember · NEU · K · CERT]`
+
+**D12.** Which is the strongest sign that Sustain is working?
+A. The area looked clean during the executive visit · B. A weekly self-audit happens on schedule with a named owner and a posted trend ✅ · C. A 5S poster is on the wall · D. The team was trained once
+`[D · W1 · Analyze · NEU · S · CERT]`
+
+---
+
+## Section E — Philosophy & roles (12 CERT)
+
+**E1.** Deming's often-quoted attribution holds that the large majority of performance problems (roughly 94%) arise from:
+A. The system as designed and managed ✅ · B. Individual worker effort · C. Supplier quality · D. Customer demands
+`[E · W1 · Remember · NEU · K · CERT]`
+
+**E2.** Lean's core contribution in one phrase:
+A. Reduce variation using statistics · B. Eliminate waste and create flow ✅ · C. Inspect quality into the product · D. Automate manual work
+`[E · W1 · Remember · NEU · K · CERT]`
+
+**E3.** Six Sigma's core contribution in one phrase:
+A. Organize the workspace · B. Empower suggestion programs · C. Reduce variation using data ✅ · D. Cut headcount
+`[E · W1 · Remember · NEU · K · CERT]`
+
+**E4.** Customers "feel variation, not averages" because:
+A. Customers can't do math · B. Each customer experiences one instance from the spread, not the mean ✅ · C. Averages are always wrong · D. Variation is always caused by staff
+`[E · W1 · Understand · NEU · K · CERT]`
+
+**E5.** Three different employees make the same data-entry error in the same field over one month. The most defensible first conclusion is:
+A. All three need retraining · B. The process or interface makes the error likely — examine it ✅ · C. Hiring standards have slipped · D. The error rate is acceptable
+`[E · W4 · Analyze · TXN · S · CERT]`
+
+**E6.** Which is an appropriate White Belt contribution without further training?
+A. Leading a DMAIC project · B. Designing a control chart · C. Submitting a well-formed waste observation from their own work ✅ · D. Coaching a Green Belt
+`[E · W1 · Understand · NEU · K · CERT]`
+
+**E7.** Lean's origin is most closely associated with:
+A. Motorola · B. The Toyota Production System ✅ · C. General Electric · D. Ford's assembly line
+`[E · W1 · Remember · NEU · K · CERT]`
+
+**E8.** One team member repeatedly misses deadlines that colleagues on the identical workflow meet comfortably. The most defensible reading is:
+A. Clearly a process problem · B. Possibly person-specific — but confirm the process really is identical for everyone before concluding ✅ · C. Redesign the workflow for everyone · D. Ignore it
+`[E · W4 · Analyze · NEU · S · CERT]`
+
+**E9.** A new report format launched yesterday; one analyst got it wrong this morning. The most honest conclusion is:
+A. Process problem — redesign the format · B. People problem — coach the analyst · C. Too early to tell — one instance; look at how the change was introduced ✅ · D. Both
+`[E · W4 · Analyze · TXN · S · CERT]`
+
+**E10.** The correct way to log a sample takes 11 clicks across two systems; the shortcut takes 2, and errors are common. This process fails which diagnostic test?
+A. "Does it happen across different people?" · B. "Is the right way the easy way?" ✅ · C. "Is the customer internal?" · D. "Has the baseline been measured?"
+`[E · W4 · Apply · HC · S · CERT]`
+
+**E11.** Which question does the course recommend asking first when something goes wrong nearby?
+A. "Who did that?" · B. "What about how this is set up made that likely?" ✅ · C. "Who approved this process?" · D. "How do we discipline this?"
+`[E · W4 · Understand · NEU · K · CERT]`
+
+**E12.** A "See a Waste" observation reads: *"Night shift never labels the bins because they don't care, so we need a new labeling machine."* The main flaw is that it:
+A. Is too short · B. Contains blame and a solution instead of observed facts ✅ · C. Names the wrong waste · D. Lacks a date
+`[E · W5 · Analyze · MFG · S · CERT]`
+
+---
+
+## Pre-assessment pool (PRE — 10 items, never on certification forms)
+
+Administered before Module 1. A score of 9/10 or better offers test-out of Modules 1–6
+(the learner still completes Modules 7–12 and the field exercise). Pre/post gain is
+reported per corporate cohort.
+
+**P1.** The mnemonic for Lean's eight wastes is: A. SIPOC · B. DOWNTIME ✅ · C. DMAIC · D. PDCA
+**P2.** A worker walking to find a tool is: A. Transportation · B. Motion ✅ · C. Waiting · D. Inventory
+**P3.** "Reduce variation using data" describes: A. Lean · B. Six Sigma ✅ · C. 5S · D. SIPOC
+**P4.** The DMAIC phase that locks in gains is: A. Define · B. Analyze · C. Improve · D. Control ✅
+**P5.** The first S in 5S is: A. Shine · B. Sort ✅ · C. Standardize · D. Sustain
+**P6.** In a typical unimproved process, value-added time is usually: A. Under 10% ✅ · B. About half · C. Most of it · D. Unknown
+**P7.** Rework of a defective item is: A. Value-added · B. Non-value-added ✅ · C. Necessary NVA · D. Overproduction
+**P8.** The same error made by several different people most likely indicates: A. A process design problem ✅ · B. A hiring problem · C. Bad luck · D. A training problem only
+**P9.** In SIPOC, "C" stands for: A. Cost · B. Customer ✅ · C. Control · D. Capability
+**P10.** Which is a White Belt contribution? A. Leading a project · B. Reporting an observed waste ✅ · C. Running a hypothesis test · D. Coaching Green Belts
+
+---
+
+## Cumulative-check pool (PRAC — embedded in modules; never on certification forms)
+
+Each module's end-check draws 2 items from earlier modules, per the spacing policy:
+
+| Appears at end of | Re-tests |
+|---|---|
+| Module 4 | Modules 1–2 (process vs. person; SIPOC roles) |
+| Module 6 | Modules 3–4 (Lean vs. Six Sigma; VA tests) |
+| Module 8 | Modules 5–6 (waste identification, transport vs. motion) |
+| Module 10 | Modules 7–8 (running clock; 5S purpose) |
+| Module 12 | Modules 9–10 (DMAIC questions; diagnostic tests) |
+
+Initial PRAC items (retired-CERT style; expand as item analysis retires items):
+
+**R1.** [after M4] Whose requirements define the quality of your output? A. Your manager's · B. The customer of your output, often internal ✅ · C. The supplier's · D. HR's
+**R2.** [after M6] Which discipline targets the 4-to-96-hour spread in lab results? A. Lean · B. Six Sigma ✅ · C. 5S · D. SIPOC
+**R3.** [after M8] Couriering samples between buildings is: A. Motion · B. Transportation ✅ · C. Waiting · D. Extra-processing
+**R4.** [after M10] 5S exists mainly to: A. Impress visitors · B. Make abnormality visible ✅ · C. Save cleaning cost · D. Free storage
+**R5.** [after M12] "How bad is it, in numbers?" belongs to: A. Define · B. Measure ✅ · C. Improve · D. Control
+**R6.** [after M12] "Would a conscientious new hire make the same mistake?" tests for: A. A people problem · B. A process-designed error ✅ · C. Training needs · D. Hiring quality

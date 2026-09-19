@@ -20,14 +20,22 @@
 | 11 | The Belt System and Your Role in CI Culture | 10 min | — |
 | 12 | Your First Contribution: the "See a Waste" Exercise | 20 min | Field exercise submission |
 
-Then: **Knowledge check** (20 questions, 70% pass, unlimited retakes from randomized item bank)
-and **field exercise submission** → badge issued.
+Then: **Knowledge check** (20 questions assembled to blueprint from an 80-item tagged bank;
+provisional 70% cut pending the modified-Angoff panel; unlimited retakes with ≤ 25% item
+overlap) and **field exercise submission** → badge issued.
+
+Also built in: a **10-item pre-assessment** before Module 1 (test-out of Modules 1–6 at
+9/10; pre/post learning gain reported per corporate cohort) and **cumulative checks** at
+the end of Modules 4, 6, 8, 10, and 12 that re-test earlier modules (spaced retrieval).
+All governed by [`../assessment/standard-setting-and-item-policy.md`](../assessment/standard-setting-and-item-policy.md).
 
 ## Files in this folder
 
 - [`modules.md`](modules.md) — full lesson content for all 12 modules (source of truth for
   e-learning scripting/storyboarding)
-- [`knowledge-check.md`](knowledge-check.md) — item bank with answer key and rationales
+- [`knowledge-check.md`](knowledge-check.md) — 80-item tagged CERT bank + pre-assessment and
+  cumulative-check pools, blueprint, answer key and rationales
+- [`prototype/index.html`](prototype/index.html) — interactive single-file course prototype
 - [`templates/see-a-waste.md`](templates/see-a-waste.md) — the field exercise form
 - [`templates/eight-wastes-pocket-card.md`](templates/eight-wastes-pocket-card.md) — printable reference
 - [`templates/waste-walk-checklist.md`](templates/waste-walk-checklist.md) — guided waste walk

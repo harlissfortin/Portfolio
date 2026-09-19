@@ -17,9 +17,13 @@ made you enter the same thing twice. The approval that sat in someone's inbox fo
 Now ask: was that a *lazy person* problem — or a *badly designed process* problem?
 
 ### Teach
-W. Edwards Deming, one of the founders of modern quality thinking, estimated that **about 94%
-of problems come from the system — the way work is designed — and only about 6% from the
-individual worker.** People generally come to work wanting to do a good job. When they can't,
+W. Edwards Deming, one of the founders of modern quality thinking, offered a rule of thumb
+that has become famous: **about 94% of performance problems belong to the system — the way
+work is designed and managed — and only about 6% to special causes, such as one person's
+actions on one day.** (Deming was speaking about common-cause versus special-cause
+variation; Joseph Juran's earlier estimate was 85/15. The exact number matters less than
+the direction: the system dominates.) People generally come to work wanting to do a good
+job. When they can't,
 it's usually because the process makes the wrong thing easy and the right thing hard.
 
 Continuous improvement (CI) starts with this mindset shift:
@@ -119,7 +123,10 @@ the pain; variation *is* the pain.
 
 **Deming's contribution** ties them together: improve the system using data and the
 **Plan-Do-Check-Act** learning cycle, and treat quality as management's responsibility, not
-the inspector's.
+the inspector's. (The cycle originated with Walter Shewhart; Deming himself insisted on
+calling it Plan-Do-**Study**-Act — "study," because the point of the third step is to
+learn what happened, not merely to check a box. This program uses the more common PDCA
+label and means it Deming's way.)
 
 Together: **Lean makes work flow; Six Sigma makes results consistent.** Speed without
 consistency is chaos delivered faster; consistency without speed is reliable disappointment.
