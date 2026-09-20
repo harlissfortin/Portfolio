@@ -28,7 +28,21 @@ to external clients across multiple industries.
 > - **[Program operations →](program-operations/)** — authoring style guide, terms of
 >   certification, change log (all levels)
 >
-> Green Belt and above exist at blueprint level (below) pending build-out.
+> - **[Green Belt →](green-belt/README.md)** — **all eight components built.** 8-week
+>   phase-locked cohort (one file per week with live-lab run-of-show), 350-item tagged exam
+>   bank, 100-point project rubric with mandatory items, charter and tollgate standard, sponsor
+>   verification and Finance validation, day-90 sustainment check, partner-project pool and
+>   the labeled Practicum track, three vertical case datasets with answer keys, toolkit with
+>   software parity, facilitator and coaching system with coach/assessor separation,
+>   corporate cohort playbook, evaluation plan, BoK crosswalk and credential spec
+> - **[Black Belt →](black-belt/README.md)** — **all eight components built.** 16-week hybrid
+>   program in eight modules (DOE as the centerpiece), 525-item tagged exam bank, 150-point
+>   rubric with leadership evidence and Finance sign-off, DOE and change-leadership
+>   practicums, kaizen facilitation and Green Belt tollgate-review requirements, reviewer of
+>   record, toolkit, instructor and coaching system, Black Belt Guild, corporate deployment
+>   playbook, evaluation plan, BoK crosswalk and credential spec
+>
+> Master Black Belt exists at blueprint level (below) pending build-out.
 
 ---
 
