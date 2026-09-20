@@ -89,7 +89,8 @@ cycles that have actually run on the White Belt content to date, with their curr
 | 15 | Four-lens review | No safety-hazard recognition in the coach, although the rubric escalates hazards the same day | `just-do-it` ✓ | H1 rule added (manufacturing and healthcare hazard vocabulary); submission path *escalate*; receipt tells the learner to use their site's channel today |
 | 16 | Four-lens review | "Andon cord" overpromises — a real cord stops the line and brings a leader in seconds | `noted — not a problem, here's why` | The name stays; the board states plainly what the cord does not do, and keeps the half that matters: instant acknowledgment, never wrong to pull, a named role answers in the open |
 | 17 | Four-lens review | "Go look" is the Lean practice of *gemba* / *genchi genbutsu* and should be taught by name | `just-do-it` ✓ | Renamed *go see* program-wide; glossary entry from Module 1; one CERT item added (E13) |
-| 18 | Four-lens review | Readiness strip used green for "looks ready," which reads as pass/fail against the spec's own rule | `just-do-it` ✓ | Both states in ink; hazard stripe marks "needs work"; green reserved for the receipt |
+| 18 | Four-lens review | Readiness strip used green for "looks ready," which reads as pass/fail against the spec's own rule | `just-do-it` ✓ | Both states in ink; an accent bar marks "needs work"; green reserved for the receipt |
+| 19 | Program owner | The hi-vis theme (hazard stripes, amber, black tape, condensed capitals) read as a construction site rather than a training program | `just-do-it` ✓ | Re-themed as a quality-lab instrument sheet: cool paper, deep ink, one signal-blue accent, sentence-case headings, soft corners; the andon strip stays as calm progress cells; safety flags now use a distinct alert colour |
 
 ## 5. Who owns the board
 

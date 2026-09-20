@@ -33,7 +33,7 @@ and why the alternative is far more useful to you.
 *On screen: a small label "Deming's estimate · Out of the Crisis, 1986" above the number 94%
 shown very large, then a horizontal proportion bar divided into two parts with a small gap: a
 long ink-black part labelled "the system: layout, tools, forms, software, schedules, policies,
-about 94%" and a short amber part labelled "special causes: something specific and identifiable
+about 94%" and a short blue part labelled "special causes: something specific and identifiable
 — a machine fault, a bad batch, a one-off event; occasionally a person, about 6%". A caption
 quotes Deming and notes that Deming says system and Lean says process, meaning the same thing.*
 

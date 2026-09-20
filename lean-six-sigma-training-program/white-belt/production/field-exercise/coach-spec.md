@@ -96,7 +96,9 @@ Four cells, D1–D4, each reading **"looks ready"** or **"needs work"** from the
 (a dimension is "needs work" while any advisory rule for it is firing). Under the strip, in
 the same type size: *Coach's read — not a score. A calibrated reviewer decides.* No numbers,
 no percentages, no colors that read as pass/fail: both states are set in ink; "needs work"
-carries the hazard stripe, "looks ready" carries none. Green is reserved for the receipt.
+carries a thin accent bar, "looks ready" carries none. Green is reserved for the receipt;
+the safety flag alone uses a distinct alert colour, because it is the one message that is not
+about the rubric.
 
 ## 4. Behavior
 

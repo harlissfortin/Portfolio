@@ -10,6 +10,12 @@ Change classes: **CUR** curriculum/content · **ASM** assessment (items, bluepri
 
 ---
 
+## 2026-09-20 — Visual theme revised
+
+| Class | Change | Rationale | Effective |
+|---|---|---|---|
+| PRD | Module 1, the field-exercise form and the public pages re-themed from the hi-vis shop-floor look (hazard stripes, amber, black tape, condensed capitals) to a quality-lab instrument sheet: cool paper, deep ink, one signal-blue accent, sentence-case Bricolage Grotesque headings, soft corners; the andon strip remains as calm progress cells; the coach's safety flag uses a distinct alert colour; dark theme retuned to match | The theme read as a construction site rather than a training program (board item 19) | Immediate |
+
 ## 2026-09-20 — Four-lens review of the roadmap build (training · design · Lean Six Sigma · manufacturing)
 
 | Class | Change | Rationale | Effective |

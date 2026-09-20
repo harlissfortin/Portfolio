@@ -1,37 +1,39 @@
 <title>Why Processes Fail People</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
 /* ============================================================
-   WB-M01 — "Standard work sheet on a shop floor."
-   Paper ground, ink type, one andon-amber accent, floor-tape rules,
-   an andon strip for progress. Square corners everywhere but the play button.
+   WB-M01 — "Quality-lab instrument sheet."
+   Cool paper, deep ink, one signal-blue accent, a hairline index mark,
+   an andon strip for progress rendered as calm cells. Soft corners.
 ============================================================ */
 :root{
-  --paper:#F4F3EF; --ink:#131516; --steel:#5E6469; --hair:#D9D7D0; --raised:#EAE8E2;
-  --amber:#F5A300; --amber-ink:#131516; --mark-amber:#B26E00; --done:#1E8E5A; --done-ink:#F4F3EF;
-  --focus:#131516; --tape:#131516;
-  --d:"Big Shoulders Display","Archivo Narrow","Arial Narrow",Impact,sans-serif;
+  --paper:#F7F8F6; --ink:#17212B; --steel:#5C6873; --hair:#D9DEDC; --raised:#EDF0EE;
+  --accent:#1D6F8F; --on-accent:#F7F8F6; --accent-deep:#17607C; --tint:#E3EEF2; --alert:#B0413E;
+  --done:#2C7A4B; --done-ink:#F7F8F6; --focus:#17212B; --tape:#1D6F8F;
+  --d:"Bricolage Grotesque","Avenir Next","Segoe UI","Helvetica Neue",Arial,sans-serif;
   --b:"Atkinson Hyperlegible","Helvetica Neue",Arial,sans-serif;
   --m:"JetBrains Mono","IBM Plex Mono",Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --paper:#131516; --ink:#F4F3EF; --steel:#9AA0A6; --hair:#2A2E31; --raised:#1C1F22;
-    --mark-amber:#F5A300; --focus:#F4F3EF; --tape:#F4F3EF; --done:#3DBE85; --done-ink:#131516;
+    --paper:#151A1F; --ink:#EEF1F0; --steel:#98A3AC; --hair:#2A3238; --raised:#1D242A;
+    --accent:#4FA6C4; --on-accent:#151A1F; --accent-deep:#7CC3DB; --tint:#1E2C33; --alert:#E07A76;
+    --focus:#EEF1F0; --tape:#4FA6C4; --done:#4CBF7E; --done-ink:#151A1F;
   }
 }
 :root[data-theme="dark"]{
-  --paper:#131516; --ink:#F4F3EF; --steel:#9AA0A6; --hair:#2A2E31; --raised:#1C1F22;
-  --mark-amber:#F5A300; --focus:#F4F3EF; --tape:#F4F3EF; --done:#3DBE85; --done-ink:#131516;
+  --paper:#151A1F; --ink:#EEF1F0; --steel:#98A3AC; --hair:#2A3238; --raised:#1D242A;
+  --accent:#4FA6C4; --on-accent:#151A1F; --accent-deep:#7CC3DB; --tint:#1E2C33; --alert:#E07A76;
+  --focus:#EEF1F0; --tape:#4FA6C4; --done:#4CBF7E; --done-ink:#151A1F;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--b)}
 .wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:0 56px}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.skip{position:absolute;left:-9999px;top:0;background:var(--amber);color:var(--amber-ink);padding:10px 16px;z-index:60;font:800 15px/1 var(--d);letter-spacing:.06em;text-transform:uppercase}
+.skip{position:absolute;left:-9999px;top:0;background:var(--accent);color:var(--on-accent);padding:10px 16px;z-index:60;font:800 15px/1 var(--d);letter-spacing:.06em;text-transform:uppercase}
 .skip:focus{left:0}
-mark{background:var(--amber);color:var(--amber-ink);padding:0 .12em}
+mark{background:var(--accent);color:var(--on-accent);padding:0 .12em}
 em{font-style:italic}
 /* ---- header: module strip + floor tape ---- */
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--paper);margin-inline:-16px;padding:14px 16px 0}
@@ -54,15 +56,15 @@ em{font-style:italic}
 .cell.done{border-color:var(--ink);color:var(--ink);cursor:pointer}
 .cell.done:hover{background:var(--raised)}
 .cell.done .n::after{content:" \2713";color:var(--done)}
-.cell.now{background:var(--amber);color:var(--amber-ink);border-color:var(--amber);font-weight:700}
+.cell.now{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700}
 .cell.now::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;
-  background:repeating-linear-gradient(135deg,var(--ink) 0 6px,transparent 6px 12px)}
+  background:var(--accent) 0 6px,transparent 6px 12px)}
 .tools{border-top:1px solid var(--hair);padding-top:12px;display:flex;flex-direction:column;gap:2px}
 @media (max-width:840px){.tools{flex-direction:row;flex-wrap:wrap;gap:6px 14px}}
 .tool{background:none;border:0;padding:6px 0;text-align:left;cursor:pointer;color:var(--ink);font:500 12px/1 var(--m);letter-spacing:.1em;text-transform:uppercase}
 .tool::before{content:"+ ";color:var(--steel)}
 .tool[aria-expanded="true"]::before{content:"\2212 "}
-.tool:hover{color:var(--mark-amber)}
+.tool:hover{color:var(--accent-deep)}
 fieldset.vert{border:0;margin:18px 0 0;padding:14px 0 0;border-top:1px solid var(--hair)}
 fieldset.vert legend{font:500 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);padding:0;margin-bottom:8px;float:left;width:100%}
 .vert .opts{display:flex;flex-wrap:wrap;gap:4px;clear:both}
@@ -75,7 +77,7 @@ fieldset.vert legend{font:500 11px/1 var(--m);letter-spacing:.14em;text-transfor
 .panel h2{font:800 20px/1 var(--d);text-transform:uppercase;letter-spacing:.02em;margin:0 0 10px}
 .panel dl{margin:0;font-size:16px}.panel dt{font-weight:700;margin-top:10px}.panel dd{margin:2px 0 0;color:var(--steel)}
 .log{font:500 12px/1.55 var(--m);background:var(--raised);padding:12px;max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-word}
-.note{border-left:4px solid var(--amber);padding:8px 12px;font-size:15px;color:var(--steel);margin:12px 0 0}
+.note{border-left:4px solid var(--accent);padding:8px 12px;font-size:15px;color:var(--steel);margin:12px 0 0}
 /* ---- stage ---- */
 #stage{will-change:transform,opacity}
 .eyebrow{font:500 12px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin:4px 0 14px;display:flex;gap:14px}
@@ -102,11 +104,11 @@ figure.fig{margin:0}
 .heroc{font-size:19px;color:var(--steel);max-width:40ch;margin:0 0 22px}
 .est{font:500 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin:0 0 6px}
 .bar{display:flex;gap:2px;height:56px}
-.seg.sys{background:var(--ink)}.seg.spc{background:var(--mark-amber)}
+.seg.sys{background:var(--ink)}.seg.spc{background:var(--accent-deep)}
 .barlabels{display:flex;flex-direction:column;gap:6px;margin-top:12px;font-size:15.5px}
 .bl{display:flex;gap:9px;align-items:flex-start;margin:0}
 .bl .sw{flex:none;width:12px;height:12px;margin-top:6px}
-.bl.sys .sw{background:var(--ink)}.bl.spc .sw{background:var(--mark-amber)}
+.bl.sys .sw{background:var(--ink)}.bl.spc .sw{background:var(--accent-deep)}
 .bl b{font:700 15px var(--m)}
 figcaption{font-size:15.5px;color:var(--steel);margin-top:18px;max-width:58ch;border-top:1px solid var(--hair);padding-top:12px}
 /* ---- cycle strip ---- */
@@ -121,7 +123,7 @@ figcaption{font-size:15.5px;color:var(--steel);margin-top:18px;max-width:58ch;bo
 .row{border-bottom:1px solid var(--hair)}
 .row>button{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;background:none;border:0;padding:16px 0;text-align:left;cursor:pointer;color:var(--ink);font:400 18px/1.35 var(--b)}
 .row .tag{font:700 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);padding-top:5px}
-.row.you .tag{background:var(--amber);color:var(--amber-ink);padding:5px 7px}
+.row.you .tag{background:var(--accent);color:var(--on-accent);padding:5px 7px}
 .row .chev{font:900 20px/1 var(--d);color:var(--steel)}
 .row>button[aria-expanded="true"] .chev{transform:rotate(90deg);display:inline-block}
 .rowbody{padding:0 0 18px;font-size:17px;max-width:58ch}
@@ -132,16 +134,16 @@ figcaption{font-size:15.5px;color:var(--steel);margin-top:18px;max-width:58ch;bo
 .field .fl .n{font:700 12px/1 var(--m);letter-spacing:.12em;color:var(--steel)}
 .field .hint{font-size:15px;color:var(--steel);margin:4px 0 8px 34px}
 textarea,input[type=text]{width:100%;background:transparent;color:var(--ink);border:0;border-bottom:2px solid var(--ink);padding:10px 0;font:400 18px/1.55 var(--b);border-radius:0}
-textarea:focus,input[type=text]:focus{outline:none;border-bottom-color:var(--mark-amber);box-shadow:0 2px 0 var(--mark-amber)}
+textarea:focus,input[type=text]:focus{outline:none;border-bottom-color:var(--accent-deep);box-shadow:0 2px 0 var(--accent-deep)}
 .model{border:1px solid var(--ink);padding:18px 20px;margin:26px 0 0;max-width:62ch;position:relative}
-.model::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--amber)}
+.model::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--accent)}
 .model h3{font:800 18px/1 var(--d);text-transform:uppercase;letter-spacing:.03em;margin:6px 0 12px}
 .model dl{margin:0}.model dt{font:700 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin-top:12px}.model dd{margin:4px 0 0;font-size:17px}
 /* ---- narration: transport + subtitle ---- */
 .player{margin-top:34px;border-top:3px solid var(--ink);padding-top:16px}
 .prow{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center}
 @media (max-width:560px){.prow{grid-template-columns:auto 1fr}.prow .tool{grid-column:1/-1;padding:0}}
-.pbtn{width:58px;height:58px;border-radius:50%;border:0;background:var(--amber);color:var(--amber-ink);cursor:pointer;font-size:20px;display:grid;place-items:center}
+.pbtn{width:58px;height:58px;border-radius:50%;border:0;background:var(--accent);color:var(--on-accent);cursor:pointer;font-size:20px;display:grid;place-items:center}
 .pbtn:hover{filter:brightness(.94)}
 .pbtn:disabled{background:var(--hair);color:var(--steel);cursor:not-allowed}
 .pstatus{font:500 12px/1.5 var(--m);letter-spacing:.08em;text-transform:uppercase;color:var(--steel)}
@@ -149,13 +151,13 @@ textarea:focus,input[type=text]:focus{outline:none;border-bottom-color:var(--mar
 .capnow{font:400 clamp(19px,2.4vw,24px)/1.45 var(--b);margin:16px 0 10px;min-height:2.9em;max-width:52ch;color:var(--steel)}
 .capnow.live{color:var(--ink)}
 .pline{height:3px;background:var(--hair);position:relative;max-width:52ch}
-.pline i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--mark-amber)}
+.pline i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--accent-deep)}
 .caps{margin-top:14px;border-top:1px solid var(--hair);padding-top:12px;font-size:16px;max-width:60ch}
 .caps p{margin:0 0 8px;color:var(--steel)}.caps p.on{color:var(--ink);font-weight:700}
 /* ---- nav ---- */
 .nav{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap;align-items:center}
 .btn{border:2px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;font:800 16px/1 var(--d);letter-spacing:.08em;text-transform:uppercase;padding:15px 22px;border-radius:0}
-.btn:hover{background:var(--amber);border-color:var(--amber);color:var(--amber-ink)}
+.btn:hover{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .btn.sec{background:transparent;color:var(--ink)}
 .btn.sec:hover{background:var(--raised);border-color:var(--ink);color:var(--ink)}
 .btn.link{border:0;background:none;color:var(--steel);text-decoration:underline;font:400 15px/1 var(--b);text-transform:none;letter-spacing:0;padding:14px 4px}
@@ -164,15 +166,15 @@ textarea:focus,input[type=text]:focus{outline:none;border-bottom-color:var(--mar
 .buildnote{font:400 13.5px/1.5 var(--b);color:var(--steel);margin-top:30px;max-width:66ch;border-top:1px solid var(--hair);padding-top:12px}
 /* ---- go see (S8) ---- */
 .golook{border:1px solid var(--ink);padding:18px 20px;margin:26px 0 0;max-width:62ch;position:relative}
-.golook::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:repeating-linear-gradient(135deg,var(--amber) 0 8px,var(--ink) 8px 16px)}
+.golook::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--accent) 0 8px,var(--ink) 8px 16px)}
 .golook .gl{font:500 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin:6px 0 8px;display:flex;gap:12px;flex-wrap:wrap}
 .golook .gl b{color:var(--ink)}
 .golook h3{font:800 clamp(22px,3vw,28px)/1.05 var(--d);text-transform:uppercase;margin:0 0 10px}
 .golook p{margin:0 0 8px;font-size:16.5px}
 .golook .hint{color:var(--steel);font-size:15px}
 .golook .saved{font:500 12px/1.5 var(--m);letter-spacing:.06em;color:var(--steel);margin:8px 0 0}
-.tool.cord{color:var(--mark-amber)}
-.tool.cord::before{content:"\25CF ";color:var(--amber)}
+.tool.cord{color:var(--accent-deep)}
+.tool.cord::before{content:"\25CF ";color:var(--accent)}
 #cordForm textarea{font-size:16px}
 /* ---- transitions ---- */
 #stage.leave-fwd{animation:leaveFwd .15s ease-in forwards}
@@ -184,6 +186,27 @@ textarea:focus,input[type=text]:focus{outline:none;border-bottom-color:var(--mar
 @keyframes enterFwd{from{opacity:0;transform:translate(28px,-6px)}to{opacity:1;transform:none}}
 @keyframes enterBack{from{opacity:0;transform:translate(-28px,-6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---- instrument theme: calmer surfaces, sentence-case display, soft corners ---- */
+.tape{height:2px;background:var(--hair);position:relative}
+.tape::after{content:"";position:absolute;left:0;top:0;height:2px;width:72px;background:var(--accent)}
+.btn,.panel,.model,.golook,.receipt,.cred,.evid,.slot,.cadence li,.cell,.ready li,.vert label,.wastes label,.tabs button,.log,.coach li,.note,.fb{border-radius:6px}
+.st{border-radius:999px}
+.top h1,h2.sh,.panel h2,.model h3,.golook h3,.receipt h3,.cred h3,.evid h3,.lvl,.body .big,.tk li:last-child,.btn,.skip,.wastes b{text-transform:none;letter-spacing:-.01em}
+.btn{font-weight:600;font-size:16px;letter-spacing:0}
+.top h1{font-weight:700;letter-spacing:-.015em}
+h2.sh{font-weight:700;letter-spacing:-.02em;line-height:1}
+.hero{font-weight:700;letter-spacing:-.04em}
+.tabs button[aria-selected="true"]::before,.cell.now::before{display:none}
+.cell.now{background:var(--tint);color:var(--ink);border-color:var(--accent);font-weight:700;box-shadow:inset 3px 0 0 var(--accent)}
+.ready li.work::before{background:var(--accent);height:3px;border-radius:6px 6px 0 0}
+.golook::before,.model::before{height:3px;border-radius:6px 6px 0 0}
+.cred::before,.receipt::before,.evid::before{height:3px;border-radius:6px 6px 0 0}
+mark{background:var(--tint);color:var(--ink);border-radius:3px}
+.tabs button[aria-selected="true"]{background:var(--tint);color:var(--ink);border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.st.pdca{background:var(--tint);color:var(--ink);border-color:var(--accent)}
+.row.you .tag{background:var(--tint);color:var(--accent-deep);border-radius:4px}
+.eyebrow,.rail .lbl,fieldset.vert legend,.pstatus,.est,.notascore,.slot .n,.cadence .l,.refuse small,.signed,.cred .tier,.cred dt,.evid dt,.model dt,.receipt dt,.golook .gl,.field .fl .opt,.tool,.tabs button,.top .id,.board th,.st{letter-spacing:.08em}
 </style>
 
 <a class="skip" href="#main">Skip to module content</a>
