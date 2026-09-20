@@ -389,9 +389,9 @@
    ]
   },
   "s8": {
-   "duration": 35.102,
+   "duration": 56.183,
    "mp3": "audio/wb-m01-s8.mp3",
-   "bytes": 246120,
+   "bytes": 393624,
    "cues": [
     {
      "id": "s8-1",
@@ -425,8 +425,14 @@
     },
     {
      "id": "s8-6",
-     "start": 31.826,
-     "end": 34.502,
+     "start": 32.156,
+     "end": 52.157,
+     "text": "Before you go, one five-minute task, and it is done in the workplace, not here. Take the process version you just wrote to the place where it happens. Stand there for five minutes and write down one thing you can see that makes the problem likely. That is the first entry in your process dossier."
+    },
+    {
+     "id": "s8-7",
+     "start": 52.907,
+     "end": 55.583,
      "text": "Next up: what a process actually is."
     }
    ]

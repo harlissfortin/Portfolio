@@ -4,6 +4,10 @@
 Facts, not blame. Observations, not solutions (an idea at the end is welcome — as a
 hypothesis, not a demand).*
 
+*This is the print version. The on-screen form carries the rubric coach, which comments on
+your draft as you write; the questions are identical. Most people submit the entry they
+chose in dossier entry 12.*
+
 ---
 
 **Name:** ______________________  **Date:** ____________

@@ -16,6 +16,7 @@ after you finish.*
 | **Your name / cohort** | |
 | **Area & process** | |
 | **Pattern** | ☐ 5S ☐ Standard work ☐ PDCA waste elimination |
+| **From your White Belt dossier** | *(the ★ entry, or the number of the entry this project grew from — "none, new problem" is a fine answer)* |
 | **Dates** | Baseline: ____ → Change: ____ → Check: ____ |
 
 ## 1. Problem statement

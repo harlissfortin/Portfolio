@@ -75,6 +75,16 @@ yellow-belt/
     └── problem-statement-rubric.md
 ```
 
+## Continuity from White Belt
+- The A3-lite storyboard asks for the White Belt **process dossier** entry the project grew
+  from (★ entry). Bringing the dossier is the expected start; "none, new problem" is a fine
+  answer.
+- The rubric-passed storyboard, with its scores and the named instructor, can be attached to
+  the Yellow Belt badge as evidence at the learner's choice
+  ([credential evidence policy](../program-operations/credential-evidence-policy.md)).
+- Role variants (frontline / supervisor / leader) continue from White Belt in the units'
+  reflection prompts; the exam and rubric are identical for all roles.
+
 ## Design notes for content/production team
 - Units are written as teach-text; storyboard each into 15–20-min interactive segments with
   the same Hook → Teach → Show → Try pattern as White Belt.

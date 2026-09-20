@@ -1,8 +1,13 @@
 # White Belt — Module Lesson Content
 
 Source-of-truth scripts for the 12 self-paced micro-modules. Each module follows the same
-pattern: **Hook → Teach → Show (vertical example) → Try (interaction) → Takeaways.**
-Target narration length ≈ 6–8 minutes per module plus interaction time.
+pattern: **Hook → Teach → Show (vertical example) → Try (interaction) → Takeaways → Go look.**
+Target narration length ≈ 6–8 minutes per module plus interaction time. The closing *Go look* is
+a five-minute task done in the learner's own workplace, not at the screen; its result is an
+entry in the learner's [process dossier](templates/process-dossier.md). Twelve entries make the
+dossier; one of them becomes the Module 12 submission. Show examples and reflection prompts
+also vary by the learner's **role** (frontline / supervisor / leader) where
+[`role-variants.md`](role-variants.md) says so.
 
 ---
 
@@ -54,6 +59,10 @@ Which framing gives you something you could actually fix?"*
 - Framing problems as process flaws makes them safe to surface — the raw material of improvement.
 - Your frustrations are data. This course teaches you to read them.
 
+### Go look — dossier entry 1 (5 min, in the workplace)
+Take the process version from your Module 1 reflection to the place where it happens. Stand there for five minutes and write down one thing you can see that makes the problem likely.
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
+
 ---
 
 ## Module 2 — What Is a Process? (15 min)
@@ -95,6 +104,10 @@ Click-to-assign (select item, then column — never drag-and-drop, per the acces
 - Everything repeatable is a process, and every process has suppliers, inputs, steps, outputs,
   and customers.
 - Quality is defined by the customer of the output — often the next person in the chain.
+
+### Go look — dossier entry 2 (5 min, in the workplace)
+For the process you touch most: name its customer (the next person who receives your output) and one thing they need from it to be "good".
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
 
 ---
 
@@ -141,6 +154,10 @@ results range from 4 to 96 hours. Which discipline most directly targets the 4-t
 - Six Sigma = reduce variation with data (from Motorola/GE).
 - Customers feel variation, not averages.
 
+### Go look — dossier entry 3 (5 min, in the workplace)
+Find one thing in your work that varies from day to day — arrival time, order size, how long a step takes. Write down the range you have seen.
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
+
 ---
 
 ## Module 4 — Value-Added vs. Non-Value-Added Work (15 min)
@@ -178,6 +195,10 @@ VA / NVA / NNVA, with instant feedback explaining each.
 - Value is defined by the customer, changes the work item, and is done right the first time.
 - Most process time — often 90%+ — is non-value-added. That's the opportunity, not the shame.
 - Necessary NVA is minimized; pure NVA is eliminated.
+
+### Go look — dossier entry 4 (5 min, in the workplace)
+Watch one work item for five minutes. Estimate how much of that time something was actually *done* to it.
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
 
 ### Cumulative check (spaced retrieval)
 
@@ -228,6 +249,10 @@ moments where D, O, W, or N wastes appear; each click reveals the classification
 - Overproduction breeds other wastes; defects multiply cost downstream; waiting dominates
   lead time; unused ideas are the most human waste of all.
 
+### Go look — dossier entry 5 (5 min, in the workplace)
+Find one example of **Waiting** you can see from where you stand. Who or what waits, and for what?
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
+
 ---
 
 ## Module 6 — The 8 Wastes, Part 2: T-I-M-E (20 min)
@@ -270,6 +295,10 @@ Spot-the-waste video 2 (same scene, continued), plus a paired-scenario item bank
 - Transportation moves the work; motion moves the worker.
 - Inventory hides problems; extra-processing is effort the customer never asked for.
 
+### Go look — dossier entry 6 (5 min, in the workplace)
+Find one example of **Motion** (a person moving) and one of **Transportation** (a work item moving).
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
+
 ### Cumulative check (spaced retrieval)
 
 Two items re-testing **Modules 3–4**: which discipline targets a wide spread of outcomes, and
@@ -306,6 +335,10 @@ designed around the classic confusions (transportation/motion, inventory/overpro
 ### Takeaways
 - All 8 wastes exist in every industry; only the costumes change.
 - Elapsed time vs. value time is the most persuasive improvement story you can tell.
+
+### Go look — dossier entry 7 (5 min, in the workplace)
+Take the anchor story's elapsed-vs-value question to one of your own items: how long does it take start to finish, and how much of that is work?
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
 
 ---
 
@@ -345,6 +378,10 @@ which S produced each visible change.
 - Sort, Set in Order, Shine, Standardize, Sustain.
 - The point is visible abnormality, not tidiness.
 - Sustain is the hard one — and it belongs to leaders and teams, not posters.
+
+### Go look — dossier entry 8 (5 min, in the workplace)
+Find one thing someone searched for today. Where was it? Where should it live so nobody searches again?
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
 
 ### Cumulative check (spaced retrieval)
 
@@ -387,6 +424,10 @@ pilot on one line," "set up a weekly metric review") assigned to the right phase
 - Define → Measure → Analyze → Improve → Control; each phase answers one question.
 - The discipline is in resisting the leap to solutions and in not abandoning the fix.
 
+### Go look — dossier entry 9 (5 min, in the workplace)
+Of everything in your dossier so far, which one would need real data to understand — not a quick fix? Mark it ★.
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
+
 ---
 
 ## Module 10 — Process Problems vs. People Problems (15 min)
@@ -425,6 +466,10 @@ of them, teaching intellectual honesty.
 - Rule out the process before concluding "people problem."
 - "What made that likely?" beats "who did that?"
 
+### Go look — dossier entry 10 (5 min, in the workplace)
+Take the ★ item. Run the test: multiple people? would a new hire do it too? is the right way the easy way? Record the answers.
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
+
 ### Cumulative check (spaced retrieval)
 
 Two items re-testing **Modules 7–8**: the elapsed-versus-value story, and the purpose of 5S.
@@ -457,6 +502,10 @@ problems are — **you do.** Every strong CI culture runs on frontline eyes:
 ### Takeaways
 - Each belt has a distinct job; the ladder runs on frontline participation.
 - Your immediate contributions: surface problems, offer ideas, join projects, hold standards.
+
+### Go look — dossier entry 11 (5 min, in the workplace)
+Who in your organization could act on the ★ item? Name the role, not a person.
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted.
 
 ---
 
@@ -492,6 +541,10 @@ waste category selected. (Corporate option: internal CI lead review layer.)
 ### Takeaways
 - An observation is facts + waste name + who it hurts. Blame kills it; vagueness starves it.
 - Your submission is a real contribution to a real problem inventory — the first of many.
+
+### Go look — dossier entry 12 (5 min, in the workplace)
+Choose the dossier entry you will submit. Rewrite it into the four parts: where, what I observed, which waste, who it affects.
+Saved to the learner's [process dossier](templates/process-dossier.md); never scored, never transmitted. This is the entry that becomes the field exercise submission.
 
 ### Cumulative check (spaced retrieval)
 

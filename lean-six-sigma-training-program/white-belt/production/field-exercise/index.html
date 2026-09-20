@@ -1,0 +1,454 @@
+<title>See a Waste</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* ============================================================
+   WB-FX — "See a Waste" field exercise form with the rubric coach.
+   Same sheet as WB-M01: paper ground, ink type, one andon-amber accent.
+   The coach is formative and private; the verdict is a calibrated human's.
+============================================================ */
+:root{
+  --paper:#F4F3EF; --ink:#131516; --steel:#5E6469; --hair:#D9D7D0; --raised:#EAE8E2;
+  --amber:#F5A300; --amber-ink:#131516; --mark-amber:#B26E00; --done:#1E8E5A; --done-ink:#F4F3EF;
+  --focus:#131516; --tape:#131516;
+  --d:"Big Shoulders Display","Archivo Narrow","Arial Narrow",Impact,sans-serif;
+  --b:"Atkinson Hyperlegible","Helvetica Neue",Arial,sans-serif;
+  --m:"JetBrains Mono","IBM Plex Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131516; --ink:#F4F3EF; --steel:#9AA0A6; --hair:#2A2E31; --raised:#1C1F22;
+    --mark-amber:#F5A300; --focus:#F4F3EF; --tape:#F4F3EF; --done:#3DBE85; --done-ink:#131516;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131516; --ink:#F4F3EF; --steel:#9AA0A6; --hair:#2A2E31; --raised:#1C1F22;
+  --mark-amber:#F5A300; --focus:#F4F3EF; --tape:#F4F3EF; --done:#3DBE85; --done-ink:#131516;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--b)}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:0 56px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0;background:var(--amber);color:var(--amber-ink);padding:10px 16px;z-index:60;font:800 15px/1 var(--d);letter-spacing:.06em;text-transform:uppercase}
+.skip:focus{left:0}
+mark{background:var(--amber);color:var(--amber-ink);padding:0 .12em}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--paper);margin-inline:-16px;padding:14px 16px 0}
+.top .id{font:500 12px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);display:flex;gap:18px;flex-wrap:wrap}
+.top .id b{color:var(--ink);font-weight:700}
+.top h1{font:900 clamp(30px,5vw,44px)/.95 var(--d);letter-spacing:-.005em;text-transform:uppercase;margin:6px 0 12px}
+.tape{height:4px;background:var(--tape)}
+.cols{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;margin-top:22px;align-items:start}
+@media (max-width:840px){.cols{grid-template-columns:minmax(0,1fr);gap:18px}}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 96px)}
+@media (max-width:840px){.rail{position:static}}
+.rail .lbl{font:500 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin:0 0 8px}
+/* readiness strip */
+.ready{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-direction:column;gap:3px}
+@media (max-width:840px){.ready{flex-direction:row;flex-wrap:wrap}}
+.ready li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--hair);padding:8px 10px;font:400 14px/1.2 var(--b);color:var(--steel);position:relative}
+@media (max-width:840px){.ready li{flex:1 1 45%}}
+.ready .n{font:700 12px/1 var(--m);letter-spacing:.06em}
+.ready .st{font:500 11px/1 var(--m);letter-spacing:.1em;text-transform:uppercase}
+.ready li.ok{border-color:var(--ink);color:var(--ink)}
+.ready li.ok .st{color:var(--done)}
+.ready li.work{border-color:var(--ink);color:var(--ink)}
+.ready li.work::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:repeating-linear-gradient(135deg,var(--amber) 0 6px,transparent 6px 12px)}
+.ready li.work .st{color:var(--mark-amber)}
+.ready li.idle .st{color:var(--steel)}
+.notascore{font:500 11px/1.5 var(--m);letter-spacing:.08em;text-transform:uppercase;color:var(--steel);margin:8px 0 18px;border-top:1px solid var(--hair);padding-top:10px}
+.notascore b{color:var(--ink)}
+.tools{border-top:1px solid var(--hair);padding-top:12px;display:flex;flex-direction:column;gap:2px}
+@media (max-width:840px){.tools{flex-direction:row;flex-wrap:wrap;gap:6px 14px}}
+.tool{background:none;border:0;padding:6px 0;text-align:left;cursor:pointer;color:var(--ink);font:500 12px/1 var(--m);letter-spacing:.1em;text-transform:uppercase}
+.tool::before{content:"+ ";color:var(--steel)}
+.tool[aria-expanded="true"]::before{content:"\2212 "}
+.tool:hover{color:var(--mark-amber)}
+.tool.cord{color:var(--mark-amber)}
+.tool.cord::before{content:"\25CF ";color:var(--amber)}
+fieldset.vert{border:0;margin:18px 0 0;padding:14px 0 0;border-top:1px solid var(--hair)}
+fieldset.vert legend{font:500 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);padding:0;margin-bottom:8px;float:left;width:100%}
+.vert .opts{display:flex;flex-wrap:wrap;gap:4px;clear:both}
+.vert label{border:1px solid var(--hair);padding:7px 10px;cursor:pointer;font:400 13.5px/1 var(--b);color:var(--ink);position:relative}
+.vert input{position:absolute;opacity:0;width:1px;height:1px}
+.vert label:has(input:checked){background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.vert label:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:3px}
+/* panels */
+.panel{border:1px solid var(--ink);padding:18px 20px;margin:0 0 18px;background:var(--paper)}
+.panel h2{font:800 20px/1 var(--d);text-transform:uppercase;letter-spacing:.02em;margin:0 0 10px}
+.panel p{margin:0 0 10px;font-size:15.5px}
+.log{font:500 12px/1.55 var(--m);background:var(--raised);padding:12px;max-height:260px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.note{border-left:4px solid var(--amber);padding:8px 12px;font-size:15px;color:var(--steel);margin:12px 0 0}
+/* stage */
+.eyebrow{font:500 12px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin:4px 0 14px;display:flex;gap:14px}
+.eyebrow b{color:var(--ink);font-weight:700}
+h2.sh{font:900 clamp(38px,6.2vw,64px)/.92 var(--d);letter-spacing:-.005em;text-transform:uppercase;margin:0 0 18px;max-width:16ch;text-wrap:balance}
+.kick{font:400 20px/1.45 var(--b);color:var(--steel);margin:0 0 22px;max-width:52ch}
+.kick b{color:var(--ink)}
+/* form */
+.field{margin:26px 0 0;max-width:64ch}
+.field .fl{display:flex;gap:12px;align-items:baseline;font:700 17px/1.3 var(--b)}
+.field .fl .n{font:700 12px/1 var(--m);letter-spacing:.12em;color:var(--steel)}
+.field .fl .opt{font:500 11px/1 var(--m);letter-spacing:.12em;text-transform:uppercase;color:var(--steel);margin-left:auto}
+.field .hint{font-size:15px;color:var(--steel);margin:4px 0 8px 34px}
+textarea,input[type=text]{width:100%;background:transparent;color:var(--ink);border:0;border-bottom:2px solid var(--ink);padding:10px 0;font:400 18px/1.55 var(--b);border-radius:0}
+textarea:focus,input[type=text]:focus{outline:none;border-bottom-color:var(--mark-amber);box-shadow:0 2px 0 var(--mark-amber)}
+textarea[aria-invalid="true"],input[aria-invalid="true"]{border-bottom-color:var(--mark-amber);box-shadow:0 2px 0 var(--mark-amber)}
+.wastes{list-style:none;margin:8px 0 0 34px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px}
+.wastes label{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;border:1px solid var(--hair);padding:9px 11px;cursor:pointer;font-size:15px;line-height:1.35}
+.wastes label:has(input:checked){border-color:var(--ink);background:var(--raised)}
+.wastes input{margin:4px 0 0;accent-color:var(--ink)}
+.wastes b{font:800 16px/1 var(--d);letter-spacing:.02em}
+.wastes small{display:block;color:var(--steel);font-size:13.5px}
+/* coach */
+.coach{margin:10px 0 0 34px;list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+.coach li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:15.5px;line-height:1.45;padding:8px 12px;border-left:4px solid var(--amber);background:var(--raised)}
+.coach li.good{border-left-color:var(--done)}
+.coach li.gate{border-left-color:var(--ink)}
+.coach .c{font:700 11px/1.6 var(--m);letter-spacing:.1em;color:var(--steel);padding-top:2px}
+.coach li.good .c{color:var(--done)}
+.coach li .why{display:block;color:var(--steel);font-size:14px}
+.rule{border:0;border-top:1px solid var(--hair);margin:26px 0}
+.rule.thick{border-top:3px solid var(--ink)}
+/* worked example */
+.model{border:1px solid var(--ink);padding:18px 20px;margin:18px 0 0;max-width:64ch;position:relative}
+.model::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--amber)}
+.model h3{font:800 18px/1 var(--d);text-transform:uppercase;letter-spacing:.03em;margin:6px 0 12px}
+.model dl{margin:0}.model dt{font:700 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin-top:12px}.model dd{margin:4px 0 0;font-size:16.5px}
+.model .rolenote{margin:14px 0 0;font-size:15px;color:var(--steel);border-top:1px solid var(--hair);padding-top:10px}
+/* nav */
+.nav{display:flex;gap:10px;margin-top:30px;flex-wrap:wrap;align-items:center}
+.btn{border:2px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;font:800 16px/1 var(--d);letter-spacing:.08em;text-transform:uppercase;padding:15px 22px;border-radius:0}
+.btn:hover{background:var(--amber);border-color:var(--amber);color:var(--amber-ink)}
+.btn.sec{background:transparent;color:var(--ink)}
+.btn.sec:hover{background:var(--raised);border-color:var(--ink);color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.nav .sp{flex:1}
+.buildnote{font:400 13.5px/1.5 var(--b);color:var(--steel);margin-top:30px;max-width:66ch;border-top:1px solid var(--hair);padding-top:12px}
+/* receipt */
+.receipt{border:1px solid var(--ink);padding:20px 22px;max-width:64ch;position:relative;margin-top:8px}
+.receipt::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--done)}
+.receipt h3{font:800 22px/1 var(--d);text-transform:uppercase;margin:6px 0 12px}
+.receipt dl{margin:0;font-size:16px}.receipt dt{font:700 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin-top:12px}.receipt dd{margin:4px 0 0}
+.tk{list-style:none;margin:18px 0 0;padding:0;border-top:3px solid var(--ink);max-width:64ch}
+.tk li{padding:14px 0;border-bottom:1px solid var(--hair);font-size:17px}
+/* cord form */
+#cordForm textarea{font-size:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<a class="skip" href="#main">Skip to the form</a>
+<div class="wrap">
+<header class="top">
+  <div class="id"><span><b>WB-FX</b></span><span>Field exercise</span><span>White Belt</span><span>Module 12 · Try</span></div>
+  <h1>See a Waste</h1>
+  <div class="tape" aria-hidden="true"></div>
+</header>
+
+<p class="vh" role="status" aria-live="polite" id="live"></p>
+
+<div class="cols">
+<aside class="rail" aria-label="Coach's read and tools">
+  <p class="lbl">Coach's read</p>
+  <ul class="ready" id="ready">
+    <li class="idle" data-d="1"><span class="n">D1</span><span>Real and specific</span><span class="st">—</span></li>
+    <li class="idle" data-d="2"><span class="n">D2</span><span>Observational</span><span class="st">—</span></li>
+    <li class="idle" data-d="3"><span class="n">D3</span><span>Waste identified</span><span class="st">—</span></li>
+    <li class="idle" data-d="4"><span class="n">D4</span><span>Impact named</span><span class="st">—</span></li>
+  </ul>
+  <p class="notascore"><b>Not a score.</b> A calibrated reviewer decides. The coach reads the same rubric they do and says what they'd say first.</p>
+  <div class="tools">
+    <button class="tool" id="tModel" aria-expanded="false" aria-controls="pModel">Worked example</button>
+    <button class="tool" id="tRubric" aria-expanded="false" aria-controls="pRubric">The rubric</button>
+    <button class="tool" id="tXapi" aria-expanded="false" aria-controls="pXapi">xAPI log</button>
+    <button class="tool cord" id="tCord" aria-expanded="false" aria-controls="pCord">Pull the cord</button>
+  </div>
+  <fieldset class="vert">
+    <legend>Your industry</legend>
+    <div class="opts">
+      <label><input type="radio" name="vert" value="MFG"><span>Manufacturing</span></label>
+      <label><input type="radio" name="vert" value="HC"><span>Healthcare</span></label>
+      <label><input type="radio" name="vert" value="TXN"><span>Office</span></label>
+    </div>
+  </fieldset>
+  <fieldset class="vert">
+    <legend>Your role</legend>
+    <div class="opts">
+      <label><input type="radio" name="role" value="FL"><span>Frontline</span></label>
+      <label><input type="radio" name="role" value="SV"><span>Supervisor</span></label>
+      <label><input type="radio" name="role" value="LD"><span>Leader</span></label>
+    </div>
+  </fieldset>
+</aside>
+
+<main id="main">
+  <section class="panel" id="pModel" hidden aria-labelledby="pModelH">
+    <h2 id="pModelH">A worked example</h2>
+    <p>Picked for your industry and role. Reviewers see this example too, so write yours.</p>
+    <div id="modelBody"></div>
+  </section>
+  <section class="panel" id="pRubric" hidden aria-labelledby="pRubricH">
+    <h2 id="pRubricH">How this is reviewed</h2>
+    <p>Every submission passes a completeness check. One in ten (all of them, in a corporate rollout) is then scored by a calibrated human on four dimensions, each 0, 1 or 2. <b>Pass is 5 of 8 with no dimension at 0.</b></p>
+    <p><b>D1 Real and specific</b> — a named process, place and recognizable moment. <b>D2 Observational, not judgmental</b> — reads like a camera recorded it. <b>D3 Waste correctly identified</b> — the category fits. <b>D4 Impact named</b> — who receives this step's output and what they experience.</p>
+    <p>The optional size and idea are never scored and never penalized. Grammar and spelling are not dimensions. A three-line observation from the shop floor that locates a real problem scores full marks.</p>
+    <p class="note">If the blame flag is still showing when you submit, your observation goes to a human reviewer regardless of sampling, and you'll be told so. That's protection, not punishment.</p>
+  </section>
+  <section class="panel" id="pXapi" hidden aria-labelledby="pXapiH">
+    <h2 id="pXapiH">xAPI statement log</h2>
+    <p>Statements this form would send to the learning record store. The coach reports <b>which rules fired</b>, never your text. Your observation itself is transmitted only when you submit.</p>
+    <div class="log" id="xapiLog" tabindex="0" role="region" aria-label="xAPI statements"></div>
+  </section>
+  <section class="panel" id="pCord" hidden aria-labelledby="pCordH">
+    <h2 id="pCordH">Pull the cord</h2>
+    <p>Something wrong with this form or the coach — a rule that fired unfairly, a message you disagree with, a bug? Say it in your words. It goes on the program's public improvement board with a status within 15 working days.</p>
+    <form id="cordForm" novalidate>
+      <label class="vh" for="cordText">What's wrong, in your words</label>
+      <textarea id="cordText" rows="3" placeholder="What's wrong, in your words"></textarea>
+      <div class="nav" style="margin-top:12px"><button class="btn sec" type="submit">Send to the board</button></div>
+    </form>
+    <p class="note" id="cordDone" hidden></p>
+  </section>
+
+  <div id="stage">
+    <p class="eyebrow"><b>Try</b><span>Your first contribution</span></p>
+    <h2 class="sh" id="shead" tabindex="-1">One real observation from your own work</h2>
+    <p class="kick">Facts, not blame. Observations, not solutions. As you write, the coach says what a reviewer would say first. <b>Nothing leaves this device until you press Submit.</b></p>
+
+    <form id="fx" novalidate>
+      <div class="field">
+        <label class="fl" for="f_where"><span class="n">01</span>Where</label>
+        <p class="hint" id="h_where">Which process, and where does it happen? "Order entry, customer service desk." "Morning medication rounds, Unit 4." "Weld cell 2, second shift."</p>
+        <input type="text" id="f_where" aria-describedby="h_where c_where" autocomplete="off">
+        <ul class="coach" id="c_where" aria-live="polite" aria-atomic="false"></ul>
+      </div>
+
+      <div class="field">
+        <label class="fl" for="f_obs"><span class="n">02</span>What I observed</label>
+        <p class="hint" id="h_obs">Describe what you would see if you filmed it. At least two sentences. Self-check: would everyone involved agree this is fair and accurate?</p>
+        <textarea id="f_obs" rows="5" aria-describedby="h_obs c_obs"></textarea>
+        <ul class="coach" id="c_obs" aria-live="polite"></ul>
+      </div>
+
+      <fieldset class="field" style="border:0;padding:0;margin-top:26px" aria-describedby="c_waste">
+        <legend class="fl" style="padding:0"><span class="n">03</span>Which waste(s)?</legend>
+        <p class="hint">Check all that apply. Naming two you'd defend beats naming five you wouldn't.</p>
+        <ul class="wastes" id="wastes">
+          <li><label><input type="checkbox" name="w" value="D"><span><b>D</b>efects<small>wrong, incomplete or unusable work; rework</small></span></label></li>
+          <li><label><input type="checkbox" name="w" value="O"><span><b>O</b>verproduction<small>more, sooner or faster than the next step needs</small></span></label></li>
+          <li><label><input type="checkbox" name="w" value="W"><span><b>W</b>aiting<small>people or work items idle</small></span></label></li>
+          <li><label><input type="checkbox" name="w" value="N"><span><b>N</b>on-utilized talent<small>skills, knowledge or ideas going unused</small></span></label></li>
+          <li><label><input type="checkbox" name="w" value="T"><span><b>T</b>ransportation<small>the <em>work item</em> moving between places or systems</small></span></label></li>
+          <li><label><input type="checkbox" name="w" value="I"><span><b>I</b>nventory<small>work piling up between steps; backlogs, full inboxes</small></span></label></li>
+          <li><label><input type="checkbox" name="w" value="M"><span><b>M</b>otion<small>the <em>person</em> moving: walking, searching, clicking</small></span></label></li>
+          <li><label><input type="checkbox" name="w" value="E"><span><b>E</b>xtra-processing<small>more than the customer requires</small></span></label></li>
+        </ul>
+        <ul class="coach" id="c_waste" aria-live="polite"></ul>
+      </fieldset>
+
+      <div class="field">
+        <label class="fl" for="f_who"><span class="n">04</span>Who does it affect, and how?</label>
+        <p class="hint" id="h_who">Who is the customer of this step — internal counts — and what do they experience? Delay, errors, frustration, cost, risk.</p>
+        <textarea id="f_who" rows="2" aria-describedby="h_who c_who"></textarea>
+        <ul class="coach" id="c_who" aria-live="polite"></ul>
+      </div>
+
+      <hr class="rule">
+
+      <div class="field">
+        <label class="fl" for="f_size"><span class="n">05</span>Rough size<span class="opt">optional · never scored</span></label>
+        <p class="hint" id="h_size">Your best honest guess. "About five times a day, ten minutes each" is plenty.</p>
+        <input type="text" id="f_size" aria-describedby="h_size c_size" autocomplete="off">
+        <ul class="coach" id="c_size" aria-live="polite"></ul>
+      </div>
+
+      <div class="field">
+        <label class="fl" for="f_idea"><span class="n">06</span>An idea<span class="opt">optional · never scored</span></label>
+        <p class="hint" id="h_idea">One sentence, as a hypothesis: "I wonder if ___ would help."</p>
+        <input type="text" id="f_idea" aria-describedby="h_idea c_idea" autocomplete="off">
+        <ul class="coach" id="c_idea" aria-live="polite"></ul>
+      </div>
+
+      <div class="nav">
+        <button class="btn sec" type="button" id="clear">Clear draft</button>
+        <span class="sp"></span>
+        <button class="btn" type="submit" id="submit">Submit observation &#8594;</button>
+      </div>
+    </form>
+
+    <div id="done" hidden></div>
+  </div>
+  <p class="buildnote">Production build of the White Belt field exercise form with the rubric coach (rule set published in the coach specification). The coach is rule-based and deterministic so every message it shows can be read, disputed and audited. Drafts are saved on this device only. The certification decision is made by a calibrated human reviewer, never by this page.</p>
+</main>
+</div>
+
+<script>
+/* ---- storage ---- */
+const store={get:(k,d)=>{try{const v=localStorage.getItem("wb-fx:"+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+  set:(k,v)=>{try{localStorage.setItem("wb-fx:"+k,JSON.stringify(v))}catch(e){}}};
+const state={vert:store.get("vert","TXN"),role:store.get("role","FL"),
+  draft:store.get("draft",{where:"",obs:"",w:[],who:"",size:"",idea:""}),
+  fired:store.get("fired",{}),submitted:store.get("submitted",null)};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function say(m){document.getElementById("live").textContent=m}
+
+/* ---- xAPI ---- */
+const xapi=[];
+function emit(verb,objId,extra){
+  const st={actor:{account:{name:"learner-local"}},
+    verb:{id:(verb==="reported"?"https://lss.example/verbs/":"http://adlnet.gov/expapi/verbs/")+verb,display:{"en-US":verb}},
+    object:{id:"https://lss.example/wb-fx"+(objId?"/"+objId:""),definition:{name:{"en-US":objId?("WB-FX "+objId):"WB-FX See a Waste"}}},
+    context:{extensions:{"https://lss.example/x/vertical":state.vert,"https://lss.example/x/role":state.role,"https://lss.example/x/level":"white-belt"}},
+    timestamp:new Date().toISOString(),...(extra||{})};
+  xapi.push(st);
+  const log=document.getElementById("xapiLog"); if(log){log.textContent=xapi.map(s=>JSON.stringify(s)).join("\n\n");log.scrollTop=log.scrollHeight}
+}
+
+/* ---- the rules (see coach-spec.md; codes and messages are verbatim) ---- */
+const R=(rx)=>new RegExp(rx,"i");
+const RULES={
+ where:[
+  {code:"W1",gate:true,d:1,test:t=>t.trim().split(/\s+/).filter(Boolean).length<3,msg:"Name the process and where it happens."},
+  {code:"W2",d:1,test:t=>!R("\\b(desk|line|cell|ward|unit|station|shift|queue|inbox|room|bay|floor|dock|counter|clinic|pharmacy|lab|office|warehouse|kitchen|register|portal|system|erp|crm|epic|sap|screen|bench|press|machine|area|department|dept|team|site|store|branch|plant|theatre|theater|triage|reception|intake|dispatch|yard|gate|bed|cart|tote|printer|e-?mail|ticket|form|report)\\b").test(t),msg:"Where would a camera stand? Add the place or the step."},
+ ],
+ obs:[
+  {code:"O1",gate:true,d:1,test:t=>{const w=t.trim().split(/\s+/).filter(Boolean).length;const s=(t.match(/[.!?](\s|$)/g)||[]).length;return w<25||s<2},msg:"Describe what you'd see on video — at least two sentences."},
+  {code:"O2",d:2,test:t=>R("\\b(lazy|careless|incompetent|useless|sloppy|clueless|doesn'?t care|don'?t care|couldn'?t care|never listens?|can'?t be bothered|too slow|is slow|are slow|not competent|attitude|unmotivated|idiots?|stupid)\\b").test(t)||R("\\b(they|he|she|the (night|day|morning|evening|weekend) shift|the team|(the )?nurses|(the )?operators|(the )?admins?|the crew|the temps?|new hires?|(the )?agents|IT|finance|management)\\s+(never|always|just|refuse|won'?t|don'?t bother|keeps?|keep)\\b").test(t)||R("\\byou (never|always|keep|don'?t)\\b").test(t),msg:"This names or blames a person or group. A camera can't see attitude — describe what it would see instead.",why:"D2 is the dimension a vivid, accurate observation still fails on. A person involved should agree it is fair."},
+  {code:"O3",d:2,test:t=>R("\\b(because|due to|caused by|the reason is|as a result of|owing to|thanks to|the cause is|which is why)\\b").test(t),msg:"You've written a cause. At this level an observation records what happens; the “because” is Yellow Belt work. Keep the fact, drop the reason."},
+  {code:"O4",d:2,test:t=>R("\\b(should|needs? to|we could|if only|just (buy|install|hire|get|add|fix)|ought to|the fix is|the solution)\\b").test(t),msg:"That's a solution. Keep it for box 6, offered as a hypothesis."},
+  {code:"O5",d:2,test:t=>R("\\b(always|never|every (single )?time|constantly|all the time|nobody ever|everyone always)\\b").test(t),msg:"Absolutes read like a complaint. Try a count: “about three times a shift.”"},
+  {code:"O6",d:1,test:t=>R("\\b(a lot|lots of|too much|too many|often|sometimes|takes forever|ages|forever|frequently|regularly)\\b").test(t)&&!R("\\d|\\b(one|two|three|four|five|six|seven|eight|nine|ten|dozen|half|twice|once|hour|minute|day|week|shift|percent)\\b").test(t),msg:"Can you put a rough number on that? Even “about” counts."},
+  {code:"X1",d:1,test:(t,ctx)=>{const g=s=>{const w=s.toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(Boolean);const o=new Set();for(let i=0;i+4<=w.length;i++)o.add(w.slice(i,i+4).join(" "));return o};const a=g(t);if(a.size<6)return false;const m=g(MODEL[state.vert].obs);let s=0;for(const x of a)if(m.has(x))s++;return s/a.size>=0.6},msg:"This is close to the worked example. Reviewers see the example too — write yours."},
+  {code:"O7",good:true,d:1,test:(t,ctx)=>R("\\d|\\b(one|two|three|four|five|six|seven|eight|nine|ten|dozen|half|twice|once|hourly|daily|weekly|per (day|shift|hour|week))\\b").test(t)&&!ctx.any(["O2","O3","O4","O5"]),msg:"Good — this has a count. A reviewer can picture it."},
+ ],
+ waste:[
+  {code:"K1",gate:true,d:3,test:(w)=>w.length===0,msg:"Name at least one waste from DOWNTIME."},
+  {code:"K2",d:3,test:(w,ctx)=>R("\\b(walk|walks|walking|walked|search|searches|searching|searched|click|clicks|clicking|reach|reaches|reaching|looks? for|hunting|scrolls?|scrolling)\\b").test(ctx.obs)&&w.includes("T")&&!w.includes("M"),msg:"Walking, searching, clicking is the person moving — that's Motion. Transportation is the work item moving."},
+  {code:"K3",d:3,test:(w,ctx)=>R("\\b(moved|moves|sent|sends|carried|carries|forklift|cart|trolley|transferred|transfers|shipped|couriered|e-?mailed to|handed (over|off)|routed|delivered)\\b").test(ctx.obs)&&w.includes("M")&&!w.includes("T"),msg:"The work item is moving here — that's Transportation. Motion is the person."},
+  {code:"K4",d:3,test:(w,ctx)=>R("\\b(wait|waits|waiting|waited|idle|queue|queued|on hold|standing around|sat waiting|sits? waiting)\\b").test(ctx.obs)&&!w.includes("W"),msg:"Someone or something waits in this observation. Consider Waiting."},
+  {code:"K5",d:3,test:(w,ctx)=>R("\\b(rework|reworked|wrong|error|errors|mistake|mistakes|redo|redone|reprint|reprinted|returned|corrected|correction|bounced|rejected|incorrect|misread|typo)\\b").test(ctx.obs)&&!w.includes("D"),msg:"Something came back or was redone. Consider Defects."},
+  {code:"K6",d:3,test:(w,ctx)=>R("\\b(pile|piles|piled|backlog|stack|stacks|stacked|inbox (is )?full|queue of|waiting to be|build(s|ing)? up|accumulat)\\b").test(ctx.obs)&&!w.includes("I"),msg:"Work is piling up between steps. Consider Inventory."},
+  {code:"K7",d:3,test:(w,ctx)=>R("\\b(retype|retyped|re-?enter|re-?entered|twice|again|double[- ]?(entry|handling|check)|print(ed|s)? (and|then) (type|enter)|copy (it )?into|copied into|manually (re)?key)\\b").test(ctx.obs)&&!w.includes("E"),msg:"The same work is being done twice. Consider Extra-processing."},
+  {code:"K8",d:3,test:(w)=>w.length>=5,msg:"Five wastes at once is usually a sign of a vague observation. Which two would you defend to a reviewer?"},
+ ],
+ who:[
+  {code:"A1",gate:true,d:4,test:t=>!t.trim(),msg:"Say who is affected and how."},
+  {code:"A2",d:4,test:t=>R("^\\s*(the )?(company|business|organi[sz]ation|management|everyone|everybody|all of us|the firm|the hospital|the plant)\\b[^a-z]*$").test(t.trim())||(R("\\b(the )?(company|business|organi[sz]ation|management|everyone|everybody)\\b").test(t)&&!R("\\b(customer|patient|client|next|operator|nurse|clerk|team|supervisor|driver|supplier|colleague|agent|technician|analyst|doctor|physician|pharmacist|shipper|picker|approver|reviewer|resident|family|caller|user|student|member|the person|people who|whoever)\\b").test(t)),msg:"“The company” is nobody in particular. Who receives this step's output — the next person, the patient, the customer?"},
+  {code:"A3",d:4,test:t=>t.trim().split(/\s+/).length>=2&&!R("\\b(delay|delays|delayed|wait|waits|waiting|late|later|error|errors|rework|cost|costs|risk|risks|chase|chases|chasing|call(s|ed)? back|frustrat|minute|minutes|hour|hours|day|days|overtime|stress|unsafe|harm|missed|miss|lost|lose|extra|longer|slower|again|wrong|complain|complaints?|refund|penalt|fine|fines|stay|stays|discharge|cancel|scrap)\\b").test(t),msg:"You've named who. What do they experience — delay, rework, risk, cost?"},
+ ],
+ size:[
+  {code:"S1",good:true,d:0,test:t=>/\d|\b(one|two|three|four|five|six|seven|eight|nine|ten|dozen|half|twice|once|hourly|daily|weekly)\b/i.test(t),msg:"A rough size makes this actionable."},
+ ],
+ idea:[
+  {code:"I1",d:0,test:t=>R("\\b(must|should|needs? to|has to|have to|have got to)\\b").test(t)&&!R("^\\s*i wonder").test(t),msg:"Offer it as a hypothesis: “I wonder if…” A demand invites a defense; a hypothesis invites a test."},
+ ],
+};
+const WHY={O3:"D2: a cause asserted as fact is a judgment, however plausible.",O4:"The observation is the evidence; the idea is a separate, optional, never-scored box.",O5:"D1 and D2: an absolute can't be filmed and can't be checked.",O6:"D1: a rough count is what turns a complaint into an observation.",W2:"D1: reviewers score a located, recognizable moment.",A2:"D4: name the customer of the step, internal counts.",A3:"D4: the most common real failure in submissions is a party named with no effect.",K8:"D3: several wastes can genuinely apply, but list what you'd defend.",K2:"D3: the most common category mix-up.",K3:"D3: the most common category mix-up."};
+
+/* ---- worked examples: vertical × role ---- */
+const MODEL={
+ TXN:{where:"Invoice processing, accounts payable.",obs:"Invoices arriving by email are printed, then the same details are typed into the ERP system by hand. Roughly one in ten comes back from the approver with a mistyped field, and it is corrected and re-entered.",w:"Extra-processing (print and retype), Defects (mistyped fields), Waiting (the correction loop adds one to two days)",who:"Suppliers on the corrected invoices are paid late and call to chase; the AP team spends part of each afternoon on corrections.",size:"About 60 invoices a day; corrections on about 6, at 15 minutes each.",
+  role:{FL:"Written from the desk: what the clerk sees and touches. That is enough.",SV:"A supervisor's version would add what reaches them: the chase calls land on the team lead's line. Still no cause, still no name.",LD:"A leader's version notes that the same print-and-retype step exists in two other departments. Same observation; wider lens."}},
+ HC:{where:"Morning medication rounds, Unit 4.",obs:"The nurse walks from the medication room to the patient bay and back for each of the first four patients, about 40 metres each way, because one item is missing from the tray each time. Two of the trips on Tuesday were for the same item. The round finished 25 minutes after the scheduled time.",w:"Motion (the nurse walking), Waiting (patients whose medication is late), Defects (an incomplete tray)",who:"Patients in bays 3 to 6 receive medication later than scheduled; the nurse loses about 25 minutes that would have gone to the 9:00 handover.",size:"About four extra trips per round, two rounds a day.",
+  role:{FL:"Written by the nurse doing the round. Note that it says what the camera would see, including the word “because” only where it describes a fact seen on the tray, not a theory about anyone.",SV:"A charge nurse's version adds what it costs the shift: the handover starts late for the whole team.",LD:"A director's version notes the same tray set-up is used on three units. Same observation; a system question."}},
+ MFG:{where:"Weld cell 2, second shift.",obs:"Finished brackets are placed in a tote marked REWORK that already holds about a dozen. The operator walks to the fixture rack twice during the hour to swap a fixture that has been adjusted with a hand-cut shim. The staging area has no material for the next order for about 15 minutes at the start of the shift.",w:"Defects (the rework tote), Motion (the walks to the rack), Waiting (no material at shift start)",who:"The assembly cell downstream receives fewer good brackets per shift and reworks some itself; the operator loses about 20 minutes a shift to fixture swaps.",size:"About a dozen reworked brackets a shift; two fixture swaps an hour.",
+  role:{FL:"Written from the cell. The shim is described, not judged: nobody is praised or blamed for it.",SV:"A team lead's version adds what reaches them: the downstream cell's complaint arrives as a call at 15:30 most days.",LD:"A plant manager's version notes the shim fix has never been asked about. That is a non-utilized talent observation as much as a defect one."}}
+};
+const VERT={MFG:"Manufacturing",HC:"Healthcare",TXN:"Office"}, ROLE={FL:"Frontline",SV:"Supervisor",LD:"Leader"};
+function renderModel(){
+  const m=MODEL[state.vert];
+  document.getElementById("modelBody").innerHTML=`<div class="model"><h3>${esc(VERT[state.vert])} &middot; ${esc(ROLE[state.role])}</h3><dl>
+   <dt>Where</dt><dd>${esc(m.where)}</dd><dt>What I observed</dt><dd>${esc(m.obs)}</dd><dt>Wastes</dt><dd>${esc(m.w)}</dd>
+   <dt>Who it affects</dt><dd>${esc(m.who)}</dd><dt>Rough size</dt><dd>${esc(m.size)}</dd></dl>
+   <p class="rolenote">${esc(m.role[state.role])}</p></div>`;
+}
+
+/* ---- coach engine ---- */
+const touched={};
+let firedNow={};
+function ctxOf(){return {obs:state.draft.obs,any:codes=>codes.some(c=>firedNow[c])}}
+function runRules(){
+  const d=state.draft, ctx=ctxOf(); firedNow={};
+  const out={where:[],obs:[],waste:[],who:[],size:[],idea:[]};
+  const eval_=(key,val)=>{for(const r of RULES[key]){if(r.test(val,ctx)){firedNow[r.code]=true;out[key].push(r)}}};
+  eval_("obs",d.obs); eval_("where",d.where); eval_("waste",d.w); eval_("who",d.who); eval_("size",d.size); eval_("idea",d.idea);
+  return out;
+}
+const debounce=(fn,ms)=>{let t;return()=>{clearTimeout(t);t=setTimeout(fn,ms)}};
+function paint(all){
+  const res=runRules();
+  for(const key of Object.keys(res)){
+    const ul=document.getElementById("c_"+key);
+    const show=(all||touched[key])?res[key]:[];
+    const html=show.map(r=>`<li class="${r.good?"good":r.gate?"gate":""}"><span class="c">${r.code}</span><span>${esc(r.msg)}${WHY[r.code]||r.why?`<span class="why">${esc(WHY[r.code]||r.why)}</span>`:""}</span></li>`).join("");
+    if(ul.innerHTML!==html) ul.innerHTML=html;
+  }
+  // record which advisory rules ever fired (codes only)
+  for(const c of Object.keys(firedNow)){ if(!state.fired[c]){state.fired[c]={first:new Date().toISOString(),clear:false};emit("experienced","coach/"+c)} }
+  for(const c of Object.keys(state.fired)){ const now=!!firedNow[c]; if(state.fired[c].clear!==!now){state.fired[c].clear=!now; if(!now) emit("experienced","coach/"+c+"/cleared")} }
+  store.set("fired",state.fired);
+  // readiness strip
+  const started={1:touched.where||touched.obs,2:touched.obs,3:touched.waste,4:touched.who};
+  const bad={};
+  for(const key of Object.keys(res)) for(const r of res[key]) if(!r.good&&r.d) bad[r.d]=true;
+  document.querySelectorAll("#ready li").forEach(li=>{const dnum=+li.dataset.d; const st=li.querySelector(".st");
+    if(!started[dnum]){li.className="idle";st.textContent="—"} else if(bad[dnum]){li.className="work";st.textContent="needs work"} else {li.className="ok";st.textContent="looks ready"}});
+  return res;
+}
+const paintSoon=debounce(()=>paint(false),400);
+
+/* ---- wiring ---- */
+const F={where:"f_where",obs:"f_obs",who:"f_who",size:"f_size",idea:"f_idea"};
+for(const [k,id] of Object.entries(F)){const el=document.getElementById(id); el.value=state.draft[k]||""; if(el.value) touched[k]=true;
+  el.addEventListener("input",()=>{state.draft[k]=el.value;touched[k]=true;store.set("draft",state.draft);paintSoon()})}
+document.querySelectorAll("input[name=w]").forEach(cb=>{cb.checked=state.draft.w.includes(cb.value);
+  cb.addEventListener("change",()=>{state.draft.w=[...document.querySelectorAll("input[name=w]:checked")].map(x=>x.value);touched.waste=true;store.set("draft",state.draft);paint(false)})});
+if(state.draft.w.length) touched.waste=true;
+document.querySelector(`input[name=vert][value=${state.vert}]`).checked=true;
+document.querySelector(`input[name=role][value=${state.role}]`).checked=true;
+document.querySelectorAll("input[name=vert]").forEach(r=>r.addEventListener("change",()=>{state.vert=r.value;store.set("vert",state.vert);emit("experienced","vertical-selected");renderModel()}));
+document.querySelectorAll("input[name=role]").forEach(r=>r.addEventListener("change",()=>{state.role=r.value;store.set("role",state.role);emit("experienced","role-selected");renderModel()}));
+[["tModel","pModel","worked-example"],["tRubric","pRubric","rubric"],["tXapi","pXapi","xapi-log"],["tCord","pCord","andon-cord-opened"]].forEach(([b,p,name])=>{
+  const btn=document.getElementById(b), pn=document.getElementById(p);
+  btn.addEventListener("click",()=>{const open=pn.hidden; document.querySelectorAll("main .panel").forEach(x=>x.hidden=true); document.querySelectorAll(".tools .tool").forEach(x=>x.setAttribute("aria-expanded","false"));
+    pn.hidden=!open; btn.setAttribute("aria-expanded",String(open)); if(open){emit("experienced",name);pn.scrollIntoView({block:"nearest"})}});
+});
+document.getElementById("cordForm").addEventListener("submit",ev=>{ev.preventDefault();const t=document.getElementById("cordText").value.trim(); if(!t){say("Say what's wrong first.");document.getElementById("cordText").focus();return}
+  emit("reported","andon-cord",{result:{response:t},context:{extensions:{"https://lss.example/x/screen":"wb-fx","https://lss.example/x/vertical":state.vert,"https://lss.example/x/role":state.role}}});
+  document.getElementById("cordText").value=""; const d=document.getElementById("cordDone"); d.hidden=false; d.textContent="Thank you. It's on the board as “new”. You'll be able to see its status there; pulling the cord is never wrong."; say("Report sent to the improvement board.")});
+document.getElementById("clear").addEventListener("click",()=>{if(!confirm("Clear the whole draft on this device?"))return; state.draft={where:"",obs:"",w:[],who:"",size:"",idea:""}; store.set("draft",state.draft);
+  for(const [k,id] of Object.entries(F)) document.getElementById(id).value=""; document.querySelectorAll("input[name=w]").forEach(c=>c.checked=false); Object.keys(touched).forEach(k=>delete touched[k]); paint(false); say("Draft cleared.")});
+
+document.getElementById("fx").addEventListener("submit",ev=>{
+  ev.preventDefault();
+  Object.assign(touched,{where:true,obs:true,waste:true,who:true});
+  const res=paint(true);
+  const gates=[["where","f_where"],["obs","f_obs"],["waste",null],["who","f_who"]].map(([k,id])=>[k,id,res[k].find(r=>r.gate)]).filter(x=>x[2]);
+  ["f_where","f_obs","f_who"].forEach(id=>document.getElementById(id).setAttribute("aria-invalid","false"));
+  if(gates.length){const [k,id,r]=gates[0]; say("Not yet: "+r.msg); if(id){const el=document.getElementById(id);el.setAttribute("aria-invalid","true");el.focus()} else document.querySelector("input[name=w]").focus(); return}
+  const blame=!!firedNow.O2;
+  const path=blame?"full (blame flag)":"sampled";
+  const flags=Object.fromEntries(Object.entries(state.fired).map(([c,v])=>[c,v.clear?"cleared":"open"]));
+  emit("submitted","field-exercise",{result:{completion:true,extensions:{"https://lss.example/x/wastes":state.draft.w,"https://lss.example/x/review-path":path,"https://lss.example/x/coach-flags":flags}}});
+  state.submitted={at:new Date().toISOString(),path,flags,w:state.draft.w}; store.set("submitted",state.submitted);
+  const open=Object.entries(flags).filter(([c,s])=>s==="open"&&!/^(O7|S1)$/.test(c)).map(([c])=>c);
+  document.getElementById("fx").hidden=true;
+  document.getElementById("shead").textContent="Submitted — your first contribution";
+  document.querySelector(".kick").hidden=true;
+  const dn=document.getElementById("done"); dn.hidden=false; dn.innerHTML=`<div class="receipt"><h3>Received</h3><dl>
+    <dt>Wastes named</dt><dd>${esc(state.draft.w.join(", ")||"—")}</dd>
+    <dt>Review path</dt><dd>${blame?"<b>Human review.</b> The blame flag was still showing, so a calibrated reviewer reads this one regardless of sampling. You'll get their feedback in four sentences or fewer.":"Completeness check passed. One in ten submissions (all, in a corporate rollout) is read by a calibrated reviewer; if yours is sampled you'll get their feedback."}</dd>
+    <dt>Coach flags at submission</dt><dd>${open.length?esc(open.join(", "))+" still open — that's allowed; the coach advises, it doesn't decide.":"None open."}</dd>
+    <dt>What was sent</dt><dd>Your four answers, the wastes, and the list of coach rule codes that fired. Not the dossier, not the draft history.</dd>
+   </dl></div>
+   <ul class="tk"><li>This observation is a real contribution to a real problem inventory — the first of many.</li>
+   <li>Your process dossier stays with you. Entries 5, 6 and 8 are usually your next three.</li>
+   <li>If this problem looks bigger than one observation, a Yellow Belt problem statement is the next tool. The reviewer will tell you if they think so.</li></ul>`;
+  document.getElementById("shead").focus({preventScroll:true}); window.scrollTo({top:0}); say("Submitted. Review path: "+path+".");
+});
+
+/* ---- first paint ---- */
+renderModel();
+if(state.submitted){ /* fresh session after a submission: show the form again for another observation, with the draft cleared */ }
+emit("attempted");
+paint(false);
+</script>

@@ -35,7 +35,7 @@ def tts_text(t):
 
 # Paragraph breaks from the storyboard: a longer pause AFTER these cue ids
 PARA_AFTER = {"s1-3","s1-5","s2-1","s2-4","s2-6","s3-2","s3-4","s3-6","s4-1","s4-4","s4-6",
-              "s5-1","s5-3","s5-5","s5-7","s5-8","s6-1","s6-3","s6-5","s6-7","s7-1","s7-4","s8-1","s8-3"}
+              "s5-1","s5-3","s5-5","s5-7","s5-8","s6-1","s6-3","s6-5","s6-7","s7-1","s7-4","s8-1","s8-3","s8-5","s8-6"}
 
 kok = Kokoro(str(pathlib.Path("kokoro/kokoro-v1.0.onnx")), str(pathlib.Path("kokoro/voices-v1.0.bin")))
 

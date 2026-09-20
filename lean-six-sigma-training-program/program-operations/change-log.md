@@ -10,6 +10,20 @@ Change classes: **CUR** curriculum/content · **ASM** assessment (items, bluepri
 
 ---
 
+## 2026-09-20 — Differentiation roadmap implemented
+
+| Class | Change | Rationale | Effective |
+|---|---|---|---|
+| CUR | Every White Belt module closes with a five-minute *go look* task in the workplace; twelve entries make the learner's process dossier (new template); Module 1 build carries entry 01 with narration; Yellow Belt storyboard asks for the ★ entry | Learners left awareness courses with no real observation of their own; the dossier is the seed of the Yellow Belt project and the corporate problem inventory | Next cohort |
+| CUR | Role layer (frontline / supervisor / leader) specified for Modules 1, 5, 7, 10, 11, 12; role selector and role-specific hints in the Module 1 build; `x/role` on every xAPI statement | A supervisor and an operator watching the same clip have different levers; role changes the question, never the assessment | Next cohort |
+| ASM | Rubric coach specified (23 published rules mapped to D1–D4) and built into the field-exercise form; Stage 0 added to the rubric; rule codes travel with the submission, text never does | Formative feedback at the moment of drafting, without automating the verdict; flag rates become a course-quality signal | Next cohort |
+| CRT | Credential evidence policy: badge carries the reviewed artifact, rubric scores and named reviewer of record at the learner's choice (default badge only), after a redaction pass; withdrawal never affects the credential; terms §7 updated | A pass/fail certificate cannot show what the holder did; ours can, with consent | Next cohort |
+| OPS | Public improvement board with the in-course andon cord, five statuses identical to the client gallery, published response cadence, PDCA on content; seeded with the program's real history to date; cord built into Module 1 and the field-exercise form | A Lean training should practice Lean on itself in public; the change log alone was invisible | Immediate |
+| OPS | Outcomes page specified: figures, definitions, minimum n per figure, the n = 0 launch state, what the page refuses to show; prototype published | Transparency was a strategy line with no artifact behind it | Immediate |
+| OPS | Benchmark library created with provenance rules and a publication threshold (n ≥ 30 from ≥ 3 organizations); scripts may quote only rows that exist | Secondhand figures are what every other course has | Immediate |
+| OPS | "What we refuse" published: sixteen refusals, each tied to its source decision | A refusal is a promise the market can hold us to | Immediate |
+| PRD | Public pages prototype (outcomes, board, refusals, credential verification); production spec: `responded` for dossier entries, `reported` for the cord, coach codes, `x/role`; DoD extended | Learner-facing surfaces for items 2, 3, 4 and 7 | Immediate |
+
 ## 2026-09-19 — Module 1 expert review (Lean Six Sigma)
 
 | Class | Change | Rationale | Effective |

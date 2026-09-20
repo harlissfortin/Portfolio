@@ -100,6 +100,13 @@ procurement blocker, not a nice-to-have.
 | `submitted` | field exercise | waste categories chosen, review path (`sampled` / `full` / `completeness-only`) | Rubric review routing; the observation gallery; badge `reviewStatus` |
 | `earned` | credential | badge ID, verification URL | Credential issuance |
 | `experienced` | glossary term, transcript, caption toggle | — | Tells us which accessibility features are actually load-bearing, so they are never "optimized away" |
+| `responded` | each go-look dossier entry (M1–M12) | completion flag only; **text never transmitted** | Whether the workplace tasks are being done; the dossier itself stays on the learner's device |
+| `experienced` | coach rule codes (`coach/<code>`, `…/cleared`) on the field exercise | — | Which rubric lessons are not landing, per the coach specification §5; no draft text |
+| `reported` (custom verb) | andon cord, any screen | free text, screen ID | Feeds the public improvement board; the program's own response cadence is published |
+
+Every statement carries `x/vertical` **and** `x/role` (frontline / supervisor / leader, per
+[`../role-variants.md`](../role-variants.md)) as context extensions, so learning gain and
+submission quality can be reported by role without ever reporting an individual.
 
 Form ID on every knowledge-check statement is not optional: without it the item-exposure and
 retake-overlap rules in the assessment policy cannot be enforced or audited.
@@ -131,4 +138,6 @@ independently of each other.
 - [ ] xAPI statements emitting and verified in the LRS, including form ID where applicable
 - [ ] Accessibility gate passed (automated + keyboard + screen reader)
 - [ ] Reviewed against `modules.md` for content fidelity by the assessment lead
-- [ ] Vertical variants swapped and spot-checked (MFG / HC / TXN)
+- [ ] Vertical variants swapped and spot-checked (MFG / HC / TXN); role variants where the module has them
+- [ ] Go-look dossier task on the closing screen, saved locally, `responded` with completion flag only
+- [ ] Andon cord present and emitting `reported` with the screen ID

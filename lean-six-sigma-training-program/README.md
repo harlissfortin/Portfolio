@@ -10,11 +10,15 @@ to external clients across multiple industries.
 > reinforcement, (6) measurement & evidence, (7) corporate deployment, (8) content operations.
 >
 > - **[White Belt →](white-belt/README.md)** — **all eight components built.** 12 lesson
->   modules with spaced cumulative checks, three vertical production scripts, 80-item tagged
->   item bank plus pre-assessment and retrieval pools, field-exercise rubric with calibrated
->   sampled review, BoK crosswalk and credential spec, production/accessibility/LMS spec,
->   working prototype, kickoff facilitator guide, rollout playbook, reinforcement kit,
->   evaluation plan
+>   modules with spaced cumulative checks and a go-look dossier task on each, three vertical
+>   production scripts plus the role layer, 80-item tagged item bank plus pre-assessment and
+>   retrieval pools, field-exercise rubric with calibrated sampled review and the built
+>   rubric coach, BoK crosswalk and credential spec with evidence policy,
+>   production/accessibility/LMS spec, working prototype, Module 1 production build with
+>   narration, kickoff facilitator guide, rollout playbook, reinforcement kit, evaluation plan
+> - **[Differentiation roadmap →](#differentiation-roadmap--status)** — all seven items
+>   implemented at the design-and-prototype level; the public pages are at
+>   [`program-operations/public/`](program-operations/public/)
 > - **[Yellow Belt →](yellow-belt/README.md)** — components 1–2 built: 6 teaching units
 >   (3A/3B split), 2 workshop facilitator guides (120 min each), 140-item tagged exam bank,
 >   mini-project storyboard + scoring rubric, 5-template toolkit. Components 3–8 pending
@@ -105,8 +109,14 @@ By completion, the learner can:
 ### Practice / application component
 - Interactive waste-spotting simulations (click-to-find wastes in a video walkthrough of a
   clinic, plant floor, and office).
-- **"See a Waste" field exercise:** learner documents one real waste observation with a photo
-  or description and an improvement idea; peer-visible gallery in corporate deployments.
+- **Bring Your Own Process:** every module ends with a five-minute *go look* task in the
+  learner's own workplace, accumulating into a personal
+  [process dossier](white-belt/templates/process-dossier.md); by Module 12 the learner has
+  found their first three improvement opportunities.
+- **"See a Waste" field exercise:** learner submits one dossier entry as a real waste
+  observation, drafted with the [rubric coach](white-belt/production/field-exercise/coach-spec.md)
+  (instant, private, rule-based feedback; human verdict); peer-visible gallery in corporate
+  deployments.
 - Templates provided: waste walk checklist, 8-wastes pocket card (print + digital).
 
 ### Certification requirements & credibility
@@ -726,6 +736,24 @@ own data, verified by an independent expert and your own sponsor."*
 *(Deliberately not differentiators: being cheapest, being fastest-to-certificate. "Faster
 time-to-certification" is marketed honestly as faster time-to-**competence** via cohort
 structure — racing to hand out certificates is the mill trap.)*
+
+## Differentiation roadmap — status
+
+Seven product decisions that make the program unlike other trainings, each implemented in
+the documents and prototypes named. "Built" means specified, cross-referenced from the
+course materials, and where it is a learner-facing surface, prototyped.
+
+| # | Differentiator | What it is | Status | Where |
+|---|---|---|---|---|
+| 1 | **Bring Your Own Process** | The learner's real work is the case study from minute one: twelve go-look tasks, one per module, accumulating into a personal process dossier that seeds the Yellow Belt project and the corporate problem inventory | Built; in Module 1 production build with narration | [`white-belt/templates/process-dossier.md`](white-belt/templates/process-dossier.md), [`white-belt/modules.md`](white-belt/modules.md) |
+| 2 | **A credential that shows the work** | Badge carries the reviewed artifact, rubric scores and the reviewer of record, at the learner's choice, on a permanent verification page | Built; verification page prototyped | [`program-operations/credential-evidence-policy.md`](program-operations/credential-evidence-policy.md) |
+| 3 | **Run the course on Lean, visibly** | Andon cord in every module; a public improvement board with the same five statuses the program demands of clients; PDCA on content; the change log made public | Built; board seeded with the program's real history; cord in Module 1 | [`program-operations/improvement-board.md`](program-operations/improvement-board.md) |
+| 4 | **Radical outcome transparency** | Published outcomes page with definitions, minimum n per figure and an honest launch state at n = 0, live before the first sale | Built; page prototyped | [`program-operations/outcomes-page.md`](program-operations/outcomes-page.md) |
+| 5 | **Rubric feedback while you draft, humans for the verdict** | A rule-based coach in the See a Waste form says what a calibrated reviewer would say first; never scores; the rule set is published | Built and working | [`white-belt/production/field-exercise/`](white-belt/production/field-exercise/) |
+| 6 | **Industry-native, not industry-flavored** | Role layer (frontline / supervisor / leader) on top of the three verticals; a benchmark library that quotes only what the program has measured | Built; role selector in Module 1; library published in its honest empty state | [`white-belt/role-variants.md`](white-belt/role-variants.md), [`program-operations/benchmark-library.md`](program-operations/benchmark-library.md) |
+| 7 | **Publish what we refuse to do** | Sixteen refusals, each tied to the document where the decision lives | Built | [`program-operations/what-we-refuse.md`](program-operations/what-we-refuse.md) |
+
+Public-facing prototype of items 2, 3, 4 and 7: [`program-operations/public/index.html`](program-operations/public/index.html).
 
 ---
 

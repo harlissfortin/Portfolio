@@ -1,0 +1,307 @@
+<title>Open Book</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* ============================================================
+   Open Book — the program's public pages: outcomes, the improvement
+   board, what we refuse, and credential verification. One sheet,
+   same shop-floor language as the modules: paper, ink, andon amber.
+============================================================ */
+:root{
+  --paper:#F4F3EF; --ink:#131516; --steel:#5E6469; --hair:#D9D7D0; --raised:#EAE8E2;
+  --amber:#F5A300; --amber-ink:#131516; --mark-amber:#B26E00; --done:#1E8E5A; --done-ink:#F4F3EF;
+  --focus:#131516; --tape:#131516;
+  --d:"Big Shoulders Display","Archivo Narrow","Arial Narrow",Impact,sans-serif;
+  --b:"Atkinson Hyperlegible","Helvetica Neue",Arial,sans-serif;
+  --m:"JetBrains Mono","IBM Plex Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131516; --ink:#F4F3EF; --steel:#9AA0A6; --hair:#2A2E31; --raised:#1C1F22;
+    --mark-amber:#F5A300; --focus:#F4F3EF; --tape:#F4F3EF; --done:#3DBE85; --done-ink:#131516;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131516; --ink:#F4F3EF; --steel:#9AA0A6; --hair:#2A2E31; --raised:#1C1F22;
+  --mark-amber:#F5A300; --focus:#F4F3EF; --tape:#F4F3EF; --done:#3DBE85; --done-ink:#131516;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--b)}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:0 56px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0;background:var(--amber);color:var(--amber-ink);padding:10px 16px;z-index:60;font:800 15px/1 var(--d);letter-spacing:.06em;text-transform:uppercase}
+.skip:focus{left:0}
+a{color:inherit}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--paper);margin-inline:-16px;padding:14px 16px 0}
+.top .id{font:500 12px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);display:flex;gap:18px;flex-wrap:wrap}
+.top .id b{color:var(--ink);font-weight:700}
+.top h1{font:900 clamp(30px,5vw,44px)/.95 var(--d);letter-spacing:-.005em;text-transform:uppercase;margin:6px 0 12px}
+.tape{height:4px;background:var(--tape)}
+/* tabs */
+.tabs{display:flex;gap:3px;margin:16px 0 0;flex-wrap:wrap;list-style:none;padding:0}
+.tabs button{border:1px solid var(--hair);background:transparent;color:var(--steel);padding:10px 14px;cursor:pointer;font:700 13px/1 var(--m);letter-spacing:.1em;text-transform:uppercase;position:relative}
+.tabs button[aria-selected="true"]{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+.tabs button[aria-selected="true"]::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:repeating-linear-gradient(135deg,var(--ink) 0 6px,transparent 6px 12px)}
+.tabs button:hover{color:var(--ink);border-color:var(--ink)}
+section[role=tabpanel]{margin-top:26px}
+.eyebrow{font:500 12px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin:4px 0 14px;display:flex;gap:14px;flex-wrap:wrap}
+.eyebrow b{color:var(--ink);font-weight:700}
+h2.sh{font:900 clamp(34px,5.6vw,60px)/.92 var(--d);letter-spacing:-.005em;text-transform:uppercase;margin:0 0 16px;max-width:18ch;text-wrap:balance}
+.kick{font:400 20px/1.45 var(--b);color:var(--steel);margin:0 0 22px;max-width:56ch}
+.kick b{color:var(--ink)}
+.signed{font:500 12px/1.6 var(--m);letter-spacing:.06em;color:var(--steel);border-top:3px solid var(--ink);padding-top:10px;margin:26px 0 0;max-width:66ch}
+.signed b{color:var(--ink)}
+/* outcomes grid */
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:3px;margin:0;padding:0;list-style:none}
+.slot{border:1px solid var(--hair);padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;min-height:150px}
+.slot .lbl{font:700 15px/1.3 var(--b)}
+.slot .val{font:900 clamp(34px,4vw,48px)/.9 var(--d);letter-spacing:-.01em;margin:4px 0 2px;font-variant-numeric:tabular-nums;color:var(--steel)}
+.slot .val.has{color:var(--ink)}
+.slot .n{font:500 11px/1.5 var(--m);letter-spacing:.1em;text-transform:uppercase;color:var(--steel);margin-top:auto}
+.slot .def{font-size:14px;color:var(--steel);line-height:1.45}
+.slot.always{border-color:var(--ink)}
+.slot.always .val{color:var(--ink)}
+.lvl{font:800 20px/1 var(--d);text-transform:uppercase;letter-spacing:.02em;margin:26px 0 10px;border-top:3px solid var(--ink);padding-top:12px}
+.rulelist{margin:18px 0 0;padding:0;list-style:none;max-width:66ch;border-top:1px solid var(--hair)}
+.rulelist li{padding:10px 0;border-bottom:1px solid var(--hair);font-size:16px}
+/* board */
+.board{width:100%;border-collapse:collapse;font-size:15.5px}
+.tblwrap{overflow-x:auto;margin-top:8px}
+.board th{text-align:left;font:700 11px/1.4 var(--m);letter-spacing:.12em;text-transform:uppercase;color:var(--steel);padding:8px 10px;border-bottom:3px solid var(--ink)}
+.board td{padding:12px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+.board td.num{font:700 13px/1.6 var(--m);color:var(--steel);white-space:nowrap}
+.board td.by{color:var(--steel);white-space:nowrap}
+.st{display:inline-block;font:700 11px/1 var(--m);letter-spacing:.1em;text-transform:uppercase;padding:6px 8px;border:1px solid var(--ink);white-space:nowrap}
+.st.done{background:var(--ink);color:var(--paper)}
+.st.pdca{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+.st.later{background:transparent;color:var(--ink)}
+.st.esc{background:var(--raised);color:var(--ink);border-style:dashed}
+.st.new{background:transparent;color:var(--mark-amber);border-color:var(--mark-amber)}
+.cadence{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:3px;list-style:none;padding:0;margin:0 0 20px}
+.cadence li{border:1px solid var(--ink);padding:12px 14px}
+.cadence .v{font:900 34px/.9 var(--d);margin:4px 0 4px;font-variant-numeric:tabular-nums}
+.cadence .l{font:500 11px/1.4 var(--m);letter-spacing:.1em;text-transform:uppercase;color:var(--steel)}
+/* refusals */
+.refuse{list-style:none;margin:0;padding:0;border-top:3px solid var(--ink);max-width:72ch}
+.refuse li{display:grid;grid-template-columns:auto 1fr;gap:14px;padding:16px 0;border-bottom:1px solid var(--hair)}
+.refuse .no{font:900 26px/1 var(--d);color:var(--mark-amber);padding-top:2px}
+.refuse b{display:block;font-size:17.5px;margin-bottom:4px}
+.refuse span{color:var(--steel);font-size:15.5px}
+.refuse small{display:block;font:500 11px/1.6 var(--m);letter-spacing:.08em;text-transform:uppercase;color:var(--steel);margin-top:6px}
+/* verify */
+.verify{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:820px){.verify{grid-template-columns:minmax(0,1fr)}}
+.cred{border:1px solid var(--ink);padding:20px 22px;position:relative}
+.cred::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--done)}
+.cred.sample::after{content:"Sample record";position:absolute;right:12px;top:14px;font:700 11px/1 var(--m);letter-spacing:.12em;text-transform:uppercase;color:var(--mark-amber);border:1px solid var(--mark-amber);padding:5px 7px}
+.cred h3{font:900 clamp(24px,3.4vw,34px)/1 var(--d);text-transform:uppercase;margin:10px 0 2px;max-width:14ch}
+.cred .tier{font:500 12px/1.4 var(--m);letter-spacing:.1em;text-transform:uppercase;color:var(--steel);margin:0 0 14px}
+.cred dl{margin:0;font-size:16px}.cred dt{font:700 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin-top:12px}.cred dd{margin:4px 0 0}
+.cred .ok{color:var(--done);font-weight:700}
+.evid{border:1px solid var(--ink);padding:20px 22px;position:relative}
+.evid::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--amber)}
+.evid h3{font:800 18px/1 var(--d);text-transform:uppercase;letter-spacing:.03em;margin:8px 0 12px}
+.evid dl{margin:0}.evid dt{font:700 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin-top:12px}.evid dd{margin:4px 0 0;font-size:16px}
+.scores{display:flex;gap:3px;margin:8px 0 0;list-style:none;padding:0;flex-wrap:wrap}
+.scores li{border:1px solid var(--ink);padding:8px 10px;font:700 13px/1.2 var(--m);min-width:120px}
+.scores li span{display:block;font:400 12px/1.3 var(--b);color:var(--steel);margin-top:3px}
+.fb{border-left:4px solid var(--amber);padding:8px 12px;margin:10px 0 0;font-size:15.5px}
+.consent{margin:18px 0 0;font-size:15px;color:var(--steel);max-width:60ch}
+.lookup{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;max-width:60ch;margin:0 0 22px}
+.lookup input{width:100%;background:transparent;color:var(--ink);border:0;border-bottom:2px solid var(--ink);padding:10px 0;font:500 16px/1.4 var(--m);border-radius:0}
+.lookup input:focus{outline:none;border-bottom-color:var(--mark-amber);box-shadow:0 2px 0 var(--mark-amber)}
+.btn{border:2px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;font:800 15px/1 var(--d);letter-spacing:.08em;text-transform:uppercase;padding:13px 18px;border-radius:0}
+.btn:hover{background:var(--amber);border-color:var(--amber);color:var(--amber-ink)}
+.note{border-left:4px solid var(--amber);padding:8px 12px;font-size:15px;color:var(--steel);margin:12px 0 0;max-width:66ch}
+.buildnote{font:400 13.5px/1.5 var(--b);color:var(--steel);margin-top:34px;max-width:66ch;border-top:1px solid var(--hair);padding-top:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+<header class="top">
+  <div class="id"><span><b>Open book</b></span><span>Lean Six Sigma program</span><span>Public pages</span><span id="upd">Updated 2026-09-20</span></div>
+  <h1>What we publish, so you don't have to take our word</h1>
+  <div class="tape" aria-hidden="true"></div>
+  <ul class="tabs" role="tablist" aria-label="Public pages">
+    <li><button role="tab" id="t-out" aria-selected="true" aria-controls="p-out">Outcomes</button></li>
+    <li><button role="tab" id="t-board" aria-selected="false" aria-controls="p-board" tabindex="-1">Improvement board</button></li>
+    <li><button role="tab" id="t-refuse" aria-selected="false" aria-controls="p-refuse" tabindex="-1">What we refuse</button></li>
+    <li><button role="tab" id="t-verify" aria-selected="false" aria-controls="p-verify" tabindex="-1">Verify a credential</button></li>
+  </ul>
+</header>
+<p class="vh" role="status" aria-live="polite" id="live"></p>
+
+<main id="main">
+
+<!-- ================= OUTCOMES ================= -->
+<section role="tabpanel" id="p-out" aria-labelledby="t-out">
+  <p class="eyebrow"><b>Outcomes</b><span>Quarterly · every figure with its n and period</span></p>
+  <h2 class="sh">The numbers, in the state they are in</h2>
+  <p class="kick">This program has not yet run a live cohort. <b>These are the figures we will publish, with their definitions, and the sample size each one needs before it is shown.</b> The first update follows the first cohort's close. A slot below minimum n is never hidden, because a hidden slot is indistinguishable from a bad number.</p>
+
+  <p class="lvl">White Belt (Awareness)</p>
+  <ul class="slots" id="wb"></ul>
+  <p class="lvl">Yellow Belt</p>
+  <ul class="slots" id="yb"></ul>
+  <p class="lvl">The program itself</p>
+  <ul class="slots" id="prog"></ul>
+
+  <ul class="rulelist">
+    <li><b>Published in bad quarters too.</b> A figure that gets worse appears with the same prominence and a link to the board item that owns it.</li>
+    <li><b>First-attempt pass rate is published on purpose.</b> A rate above 95% means the exam is decorative. Publishing it is what makes the other numbers believable.</li>
+    <li><b>No testimonials in place of numbers.</b> Satisfaction is shown below learning and behavior, never as a headline.</li>
+    <li><b>Nothing annualized, extrapolated, or attributed beyond what the evaluation plan allows.</b> White and Yellow Belt impact is learner-reported and says so.</li>
+  </ul>
+  <p class="signed"><b>Signed off:</b> assessment lead · next update at first cohort close · definitions: <em>outcomes-page.md</em></p>
+</section>
+
+<!-- ================= BOARD ================= -->
+<section role="tabpanel" id="p-board" aria-labelledby="t-board" hidden>
+  <p class="eyebrow"><b>Improvement board</b><span>Every report, every content change, with a status</span></p>
+  <h2 class="sh">We run the course on Lean, in public</h2>
+  <p class="kick">Every module has a cord. Pull it and your report lands here as <b>new</b>, reaches <b>read</b> within 5 working days and a triage status within 15. The course teaches that a gallery without statuses is a suggestion box; this board holds us to the same rule.</p>
+  <ul class="cadence">
+    <li><div class="v">12</div><div class="l">Items on the board</div></li>
+    <li><div class="v">0</div><div class="l">New &gt; 30 days</div></li>
+    <li><div class="v">—</div><div class="l">Median days to triage · no learner reports yet</div></li>
+    <li><div class="v">8</div><div class="l">Closed with an outcome</div></li>
+  </ul>
+  <div class="tblwrap"><table class="board">
+    <thead><tr><th>#</th><th>Reported by</th><th>Problem</th><th>Status</th><th>Outcome / reason</th></tr></thead>
+    <tbody id="boardBody"></tbody>
+  </table></div>
+  <p class="note">Statuses are the same five the client observation gallery uses: just-do-it, PDCA, escalated to review, noted not now, noted not a problem. An item cannot close without its outcome sentence. Items 1–8 are the program's real history to date; 9–12 are open.</p>
+  <p class="signed"><b>Owner:</b> content operations · anything escalated: assessment lead · reviewed quarterly with reviewer calibration</p>
+</section>
+
+<!-- ================= REFUSE ================= -->
+<section role="tabpanel" id="p-refuse" aria-labelledby="t-refuse" hidden>
+  <p class="eyebrow"><b>What we refuse</b><span>A refusal is a promise you can hold us to</span></p>
+  <h2 class="sh">The pay-to-pass program you won't get from us</h2>
+  <p class="kick">Each line is a decision already made in the program's design, with the document it lives in. <b>If we ever break one, the change log will show it and the board will carry the reason.</b></p>
+  <ul class="refuse" id="refuse"></ul>
+  <p class="note">Think we've broken one? Pull the cord in any module. It goes on the board.</p>
+</section>
+
+<!-- ================= VERIFY ================= -->
+<section role="tabpanel" id="p-verify" aria-labelledby="t-verify" hidden>
+  <p class="eyebrow"><b>Verify a credential</b><span>What an employer sees · with the holder's consent, what they did</span></p>
+  <h2 class="sh">A credential that shows the work</h2>
+  <p class="kick">Every badge resolves to a permanent page like this one. With the holder's consent it also carries the applied artifact the credential required, the rubric scores, and the reviewer of record. <b>Every other certificate says “passed.” Ours can show what the person did.</b></p>
+  <form class="lookup" id="lookup" novalidate>
+    <label class="vh" for="vid">Verification ID</label>
+    <input type="text" id="vid" value="WB-A-2026-000001" autocomplete="off" spellcheck="false">
+    <button class="btn" type="submit">Look up</button>
+  </form>
+  <div class="verify">
+    <div class="cred sample">
+      <h3>Lean Six Sigma White Belt (Awareness)</h3>
+      <p class="tier">Awareness tier · evergreen · no CEUs · the parenthetical is part of the name</p>
+      <dl>
+        <dt>Holder</dt><dd>J. Sample</dd>
+        <dt>Issued</dt><dd>2026-11-14 · <span class="ok">Valid</span> (not revoked)</dd>
+        <dt>Criteria met</dt><dd>12 modules completed · knowledge check passed at the current cut score · field exercise submitted and reviewed</dd>
+        <dt>Review status</dt><dd><b>human-reviewed</b> — this submission was in the 10% sample read by a calibrated reviewer. The program publishes its sampling rate.</dd>
+        <dt>Exit competence</dt><dd>Can recognize the eight wastes in their own work area, describe a process problem without blaming a person, name who is affected, and knows what the belts above them do.</dd>
+        <dt>Not shown, ever</dt><dd>Exam score, item answers, attempt count, reflections, dossier, anyone else's data.</dd>
+      </dl>
+    </div>
+    <div class="evid">
+      <h3>Evidence · shared by the holder</h3>
+      <dl>
+        <dt>Applied artifact · See a Waste (redacted by the program)</dt>
+        <dd><b>Where:</b> Invoice processing, accounts payable desk. <b>Observed:</b> Invoices arriving by email are printed, then the same details are typed into the ERP by hand. About one in ten comes back from the approver with a mistyped field and is corrected and re-entered. <b>Wastes:</b> Extra-processing, Defects, Waiting. <b>Who it affects:</b> Suppliers on the corrected invoices are paid late and call to chase; the AP team spends part of each afternoon on corrections.</dd>
+        <dt>Rubric · pass is 5/8 with no zero</dt>
+        <dd><ul class="scores"><li>D1 · 2/2<span>Real and specific</span></li><li>D2 · 2/2<span>Observational</span></li><li>D3 · 2/2<span>Waste identified</span></li><li>D4 · 2/2<span>Impact named</span></li></ul></dd>
+        <dt>Reviewer's feedback</dt>
+        <dd class="fb">You located a real step and named its internal customer, which most first observations miss. The one-in-ten count is what makes it usable. This problem looks bigger than one observation: a Yellow Belt problem statement is the next tool, and it starts with exactly what you wrote.</dd>
+        <dt>Reviewer of record</dt><dd>A. Reviewer · Certified Green Belt, program reviewer since 2026 · <a href="#">their verification page</a> · reviewed 2026-11-12</dd>
+      </dl>
+      <p class="consent">The holder chose <b>badge + reviewed summary</b>. They can change that at any time; withdrawing evidence never affects the credential. Employers get what this page shows and nothing more, and the program says so here.</p>
+    </div>
+  </div>
+  <p class="signed"><b>Policy:</b> credential-evidence-policy.md · consent choices: badge only (default) · badge + reviewed summary · badge + summary + organization named (organization's consent required)</p>
+</section>
+
+</main>
+<p class="buildnote">Prototype of the program's public pages. The outcomes slots show the launch state defined in the outcomes-page specification: no live cohort has run, so every figure is at n = 0 by design. The board carries the program's real content history. The verification record is a sample, marked as such; no real learner or reviewer is shown.</p>
+</div>
+
+<script>
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+/* ---- outcomes slots: label, definition, minimum n, current n ---- */
+const SLOTS={
+ wb:[
+  ["Completion rate","Completed all 12 modules ÷ started Module 1, within 90 days of enrollment","50 starts"],
+  ["First-attempt pass rate","Passed the knowledge check on attempt 1 ÷ all first attempts","50 attempts"],
+  ["Eventual pass rate","Passed within the retake allowance ÷ all who attempted","50 attempts"],
+  ["Pre/post gain","Mean post − mean pre on matched items, with the pre score shown","50 matched pairs"],
+  ["Field-exercise pass rate","Rubric-passed ÷ rubric-reviewed","30 reviews"],
+  ["Sampling rate","Human-reviewed ÷ submitted. Always published; the number that makes the one before it believable","always",true],
+  ["Second observation in 90 days","Holders submitting a second observation ÷ holders","100 holders"],
+  ["Coach flag rates","Share of submissions where each rule fired, by rule code","50 submissions"],
+ ],
+ yb:[
+  ["Completion rate","Completed all units and both workshops ÷ started Unit 1, within the cohort window","50 starts"],
+  ["First-attempt pass rate","40-item exam passed on attempt 1 ÷ first attempts","50 attempts"],
+  ["Pre/post gain","Mean post − mean pre on matched items","50 matched pairs"],
+  ["Mini-project pass rate","Rubric-passed ÷ reviewed (100% reviewed at this level)","30 projects"],
+  ["Verified improvement","Rubric-passed projects with a checked, measured result ÷ rubric-passed","30 projects"],
+ ],
+ prog:[
+  ["Readiness-gate rate","Corporate rollouts launched with all four gate conditions met ÷ rollouts requested. Shows we decline launches","5 requests"],
+  ["Triage health","Client observations still “new” after 30 days ÷ submitted, corporate rollouts","3 rollouts"],
+  ["Board cadence","Median days from andon-cord report to triage status; items new > 30 days","always",true],
+  ["Accessibility findings open","Open findings from the pre-release gate, by severity","always",true],
+ ]
+};
+for(const [k,rows] of Object.entries(SLOTS)){
+  document.getElementById(k).innerHTML=rows.map(([l,d,min,always])=>`<li class="slot${always?" always":""}"><span class="lbl">${esc(l)}</span><span class="val${always?" has":""}">${always?(k==="prog"&&/Board/.test(l)?"0":k==="prog"?"0":"—"):"—"}</span><span class="def">${esc(d)}</span><span class="n">${always?"published from day one":"n = 0 · not yet reportable · needs "+esc(min)}</span></li>`).join("");
+}
+/* ---- board ---- */
+const BOARD=[
+ [1,"Assessment review","Cut scores set by convention; retake policies impossible against bank sizes","done","just-do-it ✓","Assessment policy written; White Belt bank 30 → 80, Yellow 44 → 140; retake overlap ≤ 25% — change log 2026-09-19"],
+ [2,"Assessment review","White Belt badge claimed an “applied exercise” with no human check behind it","done","just-do-it ✓","Rubric, two-stage review, 10% / 100% sampling, calibration set"],
+ [3,"Training-authority review","Yellow Belt skills matrix promised competencies no unit taught","done","just-do-it ✓","Unit 3 split; Unit 5 kaizen and change content; matrix reconciled"],
+ [4,"Training-authority review","Workshops overran into the debrief","done","just-do-it ✓","Both workshops 90 → 120 min with a “protect the debrief” rule"],
+ [5,"Author (self-report)","Module 1 read as generic e-learning; nothing distinguished it","done","just-do-it ✓","Redesigned in shop-floor visual language: andon strip, floor tape, hazard stripe"],
+ [6,"Author (self-report)","Narration at 185 wpm too fast for instruction","pdca","PDCA ✓ adopted","Re-synthesized at 163 wpm speech-only; check: inside the 140–170 instructional band; adopted"],
+ [7,"LSS expert review","94/6 misattributed to Deming's Japan work; special cause defined as “one person”","done","just-do-it ✓","Attribution corrected to Out of the Crisis (1986); special cause redefined; Red Bead and Point 8 added"],
+ [8,"Author (self-report)","Learners finish awareness courses with no real observation of their own","done","just-do-it ✓","Twelve go-look tasks and the process dossier added to every module"],
+ [9,"Program","Cut score is provisional (70%) until a modified-Angoff panel sits","later","noted, not now","Panel needs ≥ 8 SMEs and the first cohort's item statistics; review at first cohort close"],
+ [10,"Program","No empirical item statistics; the bank has never met a learner","later","noted, not now","Resolved by the first 200 completions; nothing to do before then"],
+ [11,"Program","Accessibility gate run on the prototype, not with a screen-reader user","esc","escalated to review","Screen-reader pass with an assistive-technology user before launch; owner: production lead"],
+ [12,"Program","Narration is a synthesized voice","later","noted, not now","Disclosed in every module footer; a studio recording drops in without code changes; decision at first paid cohort"],
+];
+document.getElementById("boardBody").innerHTML=BOARD.map(([n,by,p,cls,st,out])=>`<tr><td class="num">${String(n).padStart(2,"0")}</td><td class="by">${esc(by)}</td><td>${esc(p)}</td><td><span class="st ${cls}">${esc(st)}</span></td><td>${esc(out)}</td></tr>`).join("");
+/* ---- refusals ---- */
+const REFUSE=[
+ ["Certify anyone without applied work, at any level, including White Belt","A credential that can be earned by watching is a receipt, not a credential","credential spec §2.1 · Yellow Belt gates"],
+ ["Run an exam with a pass rate we'd be embarrassed to publish","A pass rate above 95% means the exam is decorative. We publish it","evaluation plan · outcomes page"],
+ ["Let the instructor who coached a project certify it","Grade-your-own-homework is how credentials rot","program blueprint, pitfalls"],
+ ["Auto-grade the thing that matters","Formative feedback can be automated; the verdict is a calibrated, named human's","field-exercise rubric · coach spec"],
+ ["Sell an “advanced White Belt,” a “Yellow Belt Plus,” or any tier between belts","Belt inflation is how these businesses die","reinforcement kit §6"],
+ ["Charge an awareness-credential holder to renew","Revenue extracted against our own integrity claims","credential spec §2.3"],
+ ["Claim CEUs at White Belt","It doesn't meet the criteria; claiming it would risk the accreditation we pursue for Yellow and above","credential spec §2.6"],
+ ["Launch a corporate rollout with no named response owner","Awareness rollouts fail as suggestion boxes, not as courses","rollout playbook, readiness gate"],
+ ["Let an observation be used in a performance review","One such case ends the program's credibility overnight","rollout playbook §8 · manager brief"],
+ ["Report a learner's reflections, dossier or item-level answers to their employer","Data honesty taught in Module 3 is worthless if the course surveils the learner","production spec §4.3 · terms §7"],
+ ["Quote a benchmark we haven't measured","Secondhand numbers are what every other course has","benchmark library"],
+ ["Publish an impact figure without its n, period and label","Overclaiming at awareness level destroys CFO credibility at Green","outcomes page §2"],
+ ["Ship drag-and-drop, or a module that fails the accessibility gate","Pointer gestures exclude people; “we'll fix it later” never comes","production spec, WCAG 2.2 AA gate"],
+ ["Name a person as a cause, anywhere in our content","The module that teaches “blame the process” cannot do otherwise","authoring style guide"],
+ ["Compete on being cheapest or fastest to a certificate","Those are the mills' axes; racing to hand out certificates is the mill trap","market differentiation"],
+ ["Hide a problem someone reported about the course","Every report is on the board with a status. Silence is the one status we don't allow","improvement board"],
+];
+document.getElementById("refuse").innerHTML=REFUSE.map(([w,b,src])=>`<li><span class="no" aria-hidden="true">✕</span><div><b>We will not ${esc(w)}.</b><span>${esc(b)}.</span><small>${esc(src)}</small></div></li>`).join("");
+/* ---- tabs ---- */
+const tabs=[...document.querySelectorAll('[role=tab]')];
+function show(id){tabs.forEach(t=>{const on=t.id===id;t.setAttribute("aria-selected",String(on));t.tabIndex=on?0:-1;document.getElementById(t.getAttribute("aria-controls")).hidden=!on});
+  try{localStorage.setItem("openbook:tab",id)}catch(e){} document.getElementById("live").textContent=document.getElementById(id).textContent+" shown."}
+tabs.forEach(t=>{t.addEventListener("click",()=>show(t.id));t.addEventListener("keydown",e=>{const i=tabs.indexOf(t);let j=null;if(e.key==="ArrowRight")j=(i+1)%tabs.length;if(e.key==="ArrowLeft")j=(i-1+tabs.length)%tabs.length;if(e.key==="Home")j=0;if(e.key==="End")j=tabs.length-1;if(j!==null){e.preventDefault();tabs[j].focus();show(tabs[j].id)}})});
+let saved=null; try{saved=localStorage.getItem("openbook:tab")}catch(e){}
+if(saved&&document.getElementById(saved)) show(saved);
+document.getElementById("lookup").addEventListener("submit",e=>{e.preventDefault();document.getElementById("live").textContent="Prototype: the sample record is shown for any ID. Live verification resolves the ID against the issuer."});
+</script>

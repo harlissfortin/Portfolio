@@ -99,6 +99,13 @@ Publishing the pass rate and the sampling rate is what makes the rest of the num
 believable. A program that publishes a 99% pass rate has told the market its exam is
 decorative.
 
+The published page itself — slots, definitions, minimum n per figure, and the honest
+launch state at n = 0 — is specified in
+[`../../program-operations/outcomes-page.md`](../../program-operations/outcomes-page.md)
+(prototype: [`../../program-operations/public/index.html`](../../program-operations/public/index.html)).
+Two additions to the list above: coach flag rates by rule code (course-quality signal) and
+the program's own improvement-board cadence.
+
 ## Review cadence
 
 | When | What happens |

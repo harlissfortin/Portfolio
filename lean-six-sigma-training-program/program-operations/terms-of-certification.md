@@ -103,6 +103,14 @@ request is answered within 5 business days and never noted on the credential.
 - **Retention:** credential records permanently (verification depends on it); assessment
   responses 3 years for item analysis; applied work 3 years, or removed sooner on request
   where the credential record can stand without it.
+- **Evidence on the verification page** is attached only with the candidate's explicit
+  choice at award (default: badge only), after the program's redaction pass, and can be
+  withdrawn at any time without affecting the credential — see the
+  [credential evidence policy](credential-evidence-policy.md).
+- **Aggregate use:** figures from submitted applied work (never from dossiers or
+  reflections) may be pooled, without any identifying detail, into the program's published
+  [benchmark library](benchmark-library.md) and [outcomes page](outcomes-page.md). Candidates
+  may decline at submission; declining changes nothing about their credential.
 - Candidates may request export or deletion of their personal data, subject to keeping the
   minimum record needed to keep a credential verifiable.
 

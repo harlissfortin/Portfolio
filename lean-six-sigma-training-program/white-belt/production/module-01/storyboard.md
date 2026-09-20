@@ -284,8 +284,12 @@ something to copy instead of something to compare against.
 > - Most recurring problems are built into the process; changing people rarely fixes them.
 > - Framing problems as process flaws makes them safe to surface — the raw material of improvement.
 > - Your frustrations are data. This course teaches you to read them.
+>
+> **Go look · dossier entry 01 (5 min, in the workplace).** Take the process version from
+> your reflection to the place where it happens. Stand there for five minutes and write down
+> one thing you can see that makes the problem likely.
 
-**NAR** (≈85 words / 36 s)
+**NAR** (≈140 words / 60 s)
 > Three things to carry out of this module.
 >
 > First: most recurring problems are built into the process, so changing people rarely fixes
@@ -294,11 +298,27 @@ something to copy instead of something to compare against.
 > this is the one I'd ask you to hold onto: your frustrations are data. This course is going
 > to teach you how to read them.
 >
+> Before you go, one five-minute task, and it is done in the workplace, not here. Take the
+> process version you just wrote to the place where it happens. Stand there for five minutes
+> and write down one thing you can see that makes the problem likely. That is the first entry
+> in your process dossier.
+>
 > Next up: what a process actually is.
 
-**Interaction** Continue to Module 2.
+**Interaction** The go-look card carries a single free-text field ("What I saw") that saves
+to the learner's process dossier on the device; the hint line varies by role (frontline: your
+own station · supervisor: something you get escalated · leader: something that appears in more
+than one team). Never scored, never transmitted. Continue to Module 2.
 
-**XAPI** `completed` WB-M01 with duration.
+**XAPI** `responded` WB-M01/s8-dossier with a completion flag only when the field is filled;
+`completed` WB-M01 with duration.
+
+**Module shell (all screens).** The rail carries a **role** selector (Frontline / Supervisor
+/ Leader, per [`../../role-variants.md`](../../role-variants.md)) beside the vertical selector;
+role changes the S7 hint lines and the S8 go-look hint, nothing else, and rides on every
+statement as the `x/role` context extension. The rail also carries the **andon cord** ("Pull
+the cord"): one free-text field plus the current screen ID, emitting `reported` and landing
+on the program's public improvement board as `new`.
 
 ---
 
@@ -306,7 +326,7 @@ something to copy instead of something to compare against.
 
 | Asset | Path | Status |
 |---|---|---|
-| Narration audio, S1–S8 | `audio/wb-m01-s{1..8}.mp3` | **Synthesized** — neural voice (Kokoro, `af_heart`, speed 0.82), 24 kHz mono MP3 56 kbps, peak-normalized to −1 dBFS. Total 7:32 (62 cues) — 163 wpm speech-only, 149 wpm including pauses, inside the instructional band; the first pass at speed 0.94 measured 185 wpm and was rejected as too fast. Replaceable by a studio recording without code changes (see timing note) |
+| Narration audio, S1–S8 | `audio/wb-m01-s{1..8}.mp3` | **Synthesized** — neural voice (Kokoro, `af_heart`, speed 0.82), 24 kHz mono MP3 56 kbps, peak-normalized to −1 dBFS. Total ≈ 8:00 (63 cues) — 163 wpm speech-only, 149 wpm including pauses, inside the instructional band; the first pass at speed 0.94 measured 185 wpm and was rejected as too fast. Replaceable by a studio recording without code changes (see timing note) |
 | Captions (WebVTT) | `audio/wb-m01-s{1..8}.vtt` (per screen) · [`narration.vtt`](narration.vtt) (combined, continuous) | **Measured** from the synthesized audio, cue by cue — each cue was synthesized separately so its start/end are exact, not estimated |
 | Transcript | [`transcript.md`](transcript.md) | Complete, includes visual descriptions |
 | Built module | [`index.html`](index.html) | Complete; audio embedded as data URIs (2.5 MB); auto-continues narration across screens once the learner presses play; caption highlight and auto-scroll follow the audio; everything works with sound off |
@@ -333,7 +353,9 @@ launch is a brand decision, not a completeness one.
 - [x] xAPI statements emitting, including the reflection privacy boundary
 - [x] Accessibility: keyboard-only path, visible focus, no time limits, reduced-motion respected,
       glossary on every screen, 320 px reflow and 400 % zoom, live-region announcements
-- [x] Vertical-aware Show screen (MFG / HC / TXN)
+- [x] Vertical-aware Show screen (MFG / HC / TXN); role-aware S7 hints and S8 go-look hint
+- [x] Go-look dossier task on S8 with narration, saved locally only
+- [x] Andon cord on every screen, emitting `reported` with the screen ID
 - [x] Narration produced (synthesized neural voice) and captions timed from it, cue by cue
 - [ ] Screen-reader pass (NVDA + JAWS + VoiceOver) on the built module
 - [ ] Reviewed against `modules.md` by the assessment lead

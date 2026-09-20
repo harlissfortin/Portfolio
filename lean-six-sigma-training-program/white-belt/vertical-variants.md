@@ -172,3 +172,12 @@ customer is not angry about the twenty-two minutes."
 5. **Elapsed-to-value ratio stays under 1%** in every anchor story, because that is the
    honest finding — and it is checked against a real observed process before the shoot, not
    invented to be dramatic.
+6. **Any number quoted as typical ("in clinics we have seen…") must have a row in the
+   [benchmark library](../program-operations/benchmark-library.md)**; until it does, the
+   script says "we have not measured this yet."
+
+## The role layer
+
+Vertical changes what the learner sees; **role** changes what they are asked to do with it.
+Role-specific reflection prompts and Show examples are in [`role-variants.md`](role-variants.md);
+the footage above is shared by all three roles.

@@ -11,6 +11,15 @@ then scored by a human against this rubric.
 
 ## 1. Two-stage review
 
+### Stage 0 — The rubric coach (while drafting; advisory)
+The built form ([`production/field-exercise/index.html`](production/field-exercise/index.html))
+reads the draft as the learner types and says, beside each box, what a calibrated reviewer
+would say first — a rule-based, published set of checks mapped to D1–D4
+([`production/field-exercise/coach-spec.md`](production/field-exercise/coach-spec.md)). It
+never scores, never blocks beyond the Stage 1 gates, and never transmits text; the set of
+rule codes that fired travels with the submission so the program can see which lessons are
+not landing. On screen it is labeled *"Coach's read — not a score."*
+
 ### Stage 1 — Automated completeness gate (100% of submissions)
 Blocks submission until all are true. These are *completeness* checks, not quality
 judgments, and the learner sees the specific failure.

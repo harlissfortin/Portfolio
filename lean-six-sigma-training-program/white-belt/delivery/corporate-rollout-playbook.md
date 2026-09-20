@@ -42,7 +42,7 @@ is what prevents the failure the client would otherwise blame on the training.
 | −1 | Launch comms from the sponsor (not from L&D, and not from the vendor). Pre-assessment opens |
 | 1 | **Kickoff webinar.** Modules open. Help channel staffed |
 | 2–4 | Completion nudges at day 7 / 14 / 21 (§4). Submissions begin arriving; CI lead triages weekly |
-| 3 | **First theme report back to all staff** — the single highest-value action in the rollout |
+| 3 | **First theme report back to all staff** — the single highest-value action in the rollout. Built from the submissions, which are the one-per-learner public face of the [process dossiers](../templates/process-dossier.md) every learner has been keeping since Module 1; a forty-person cohort is a forty-item problem inventory by this week |
 | 5 | Deadline week. Manager-level completion visibility (completion only, never content) |
 | 6 | Badges issued. Rollout report and QBR. Yellow Belt nomination conversation |
 

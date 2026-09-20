@@ -1,7 +1,8 @@
 # White Belt — Foundations of Operational Excellence
 
 **Format:** 100% self-paced e-learning (+ optional live kickoff for corporate cohorts)
-**Duration:** 3–4 hours, 12 micro-modules · **Prerequisites:** none
+**Duration:** 3–4 hours, 12 micro-modules, plus twelve five-minute "go look" tasks done in the
+learner's own workplace · **Prerequisites:** none
 **Credential:** Lean Six Sigma White Belt (Awareness) — verifiable badge, no expiry, no CEUs
 
 This level is built out across all eight components of the program's delivery model. The
@@ -27,7 +28,10 @@ component map below is the index; each component's detail lives in its own docum
 | 12 | Your First Contribution: the "See a Waste" Exercise | 20 min | Field exercise submission **+ cumulative check** |
 
 **Before Module 1:** 10-item pre-assessment (test-out of Modules 1–6 at 9/10; pre/post gain
-reported per cohort). **After Module 12:** knowledge check, then field exercise → badge.
+reported per cohort). **After every module:** a five-minute *go look* task in the workplace,
+recorded in the learner's [process dossier](templates/process-dossier.md) — by Module 12 the
+learner has found their first three improvement opportunities. **After Module 12:** knowledge
+check, then field exercise (one dossier entry, through the rubric coach) → badge.
 
 ---
 
@@ -37,6 +41,11 @@ reported per cohort). **After Module 12:** knowledge check, then field exercise 
 - [`modules.md`](modules.md) — full lesson scripts for all 12 modules (source of truth)
 - [`vertical-variants.md`](vertical-variants.md) — production scripts for the three flavors:
   manufacturing, healthcare, transactional — click-targets, reveal text, anchor stories
+- [`role-variants.md`](role-variants.md) — the role layer (frontline / supervisor / leader):
+  role-specific reflection prompts and Show examples; never changes what is assessed
+- [`templates/process-dossier.md`](templates/process-dossier.md) — the twelve go-look tasks
+  and the page they accumulate on; feeds the Yellow Belt mini-project and the corporate
+  problem inventory
 - [`bok-crosswalk-and-credential.md`](bok-crosswalk-and-credential.md) Part 1 — coverage map,
   explicit exclusions by level, exit-competence statement
 - Spaced retrieval: cumulative checks at Modules 4, 6, 8, 10, 12
@@ -46,6 +55,11 @@ reported per cohort). **After Module 12:** knowledge check, then field exercise 
   PRE (pre-assessment) and PRAC (cumulative check) pools
 - [`field-exercise-rubric.md`](field-exercise-rubric.md) — 4-dimension rubric, two-stage
   review, sampling rates, reviewer anchor set, escalation route
+- [`production/field-exercise/coach-spec.md`](production/field-exercise/coach-spec.md) +
+  [`production/field-exercise/index.html`](production/field-exercise/index.html) — the rubric
+  coach: rule-based, instant, private feedback while drafting; the verdict stays human
+- [`../program-operations/credential-evidence-policy.md`](../program-operations/credential-evidence-policy.md)
+  — the credential that shows the work: evidence on the badge, learner consent, reviewer of record
 - [`bok-crosswalk-and-credential.md`](bok-crosswalk-and-credential.md) Part 2 — badge
   metadata, verification, revocation, and why this level carries no CEUs
 - Program policy: [`../assessment/standard-setting-and-item-policy.md`](../assessment/standard-setting-and-item-policy.md)
@@ -55,6 +69,9 @@ reported per cohort). **After Module 12:** knowledge check, then field exercise 
   screen architecture, narration budget, interaction specs, WCAG 2.2 AA requirements and
   testing gate, xAPI/SCORM/LTI packaging, data-handling boundary
 - [`prototype/index.html`](prototype/index.html) — working interactive prototype
+- [`production/module-01/`](production/module-01/) — Module 1 production build: storyboard,
+  synthesized narration with measured captions, transcript, role-aware prompts, go-look
+  dossier task, andon cord
 - [`templates/`](templates/) — pocket card, waste walk checklist, field exercise form
 
 ### 4 · Instructor & reviewer system
@@ -72,6 +89,10 @@ reported per cohort). **After Module 12:** knowledge check, then field exercise 
 - [`evaluation/evaluation-plan.md`](evaluation/evaluation-plan.md) — L1 reaction survey, L2
   learning targets, L3 behavior metrics, L4 constrained to labeled estimates, plus the
   program-level figures published for transparency
+- [`../program-operations/outcomes-page.md`](../program-operations/outcomes-page.md) — the
+  published outcomes page: definitions, minimum n, the honest launch state
+- [`../program-operations/benchmark-library.md`](../program-operations/benchmark-library.md)
+  — measured industry figures with provenance; nothing quoted secondhand
 
 ### 7 · Corporate deployment
 - [`delivery/corporate-rollout-playbook.md`](delivery/corporate-rollout-playbook.md) —
@@ -82,6 +103,12 @@ reported per cohort). **After Module 12:** knowledge check, then field exercise 
 - [`../program-operations/content-authoring-style-guide.md`](../program-operations/content-authoring-style-guide.md)
 - [`../program-operations/terms-of-certification.md`](../program-operations/terms-of-certification.md)
 - [`../program-operations/change-log.md`](../program-operations/change-log.md)
+- [`../program-operations/improvement-board.md`](../program-operations/improvement-board.md)
+  — the program's public improvement board: andon cord, statuses, PDCA on content
+- [`../program-operations/what-we-refuse.md`](../program-operations/what-we-refuse.md) — the
+  published refusals list
+- [`../program-operations/public/index.html`](../program-operations/public/index.html) —
+  prototype of the public pages: outcomes, board, refusals, credential verification
 
 ---
 
@@ -107,3 +134,5 @@ at enrollment and may switch without losing progress. Scripts:
 - Accessibility testing gate executed against the built course, not the prototype
 - Badge issuance and verification infrastructure stood up
 - Item statistics from first live cohorts (the bank has no empirical p-values yet)
+- Modules 2–12 production builds to the Module 1 standard (role layer and go-look task on each)
+- Benchmark library rows: none reach the publication threshold until the first cohorts submit

@@ -114,10 +114,20 @@ honest at the level of the individual learner, not the marketing page.
   exercise) revokes the badge; the verification URL then resolves to "revoked" with a date
   and no other detail. Appeals follow the program terms of certification.
 
+### 2.4a Evidence — the credential that shows the work
+With the learner's consent (three choices at award, default *badge only*), the badge carries
+an Open Badges 3.0 `evidence` entry: the reviewed observation after the program's redaction
+pass, its four rubric scores, the reviewer's feedback, and the reviewer of record's name
+linked to their own credential. The verification page renders it. Consent can be changed at
+any time and withdrawing evidence never affects the credential. Policy:
+[`../program-operations/credential-evidence-policy.md`](../program-operations/credential-evidence-policy.md).
+Prototype of the verification page: [`../program-operations/public/index.html`](../program-operations/public/index.html).
+
 ### 2.5 What the learner receives
 A digital badge; a one-page PDF certificate carrying the same name and a verification QR
 code; a completion record in their LMS transcript; the 8-wastes pocket card; and their
-scored field-exercise feedback where a human reviewed it.
+scored field-exercise feedback where a human reviewed it. Their process dossier stays with
+them and is never part of the record.
 
 ### 2.6 CEUs
 White Belt does **not** carry IACET CEUs. At 3.5 structured hours with an unproctored
