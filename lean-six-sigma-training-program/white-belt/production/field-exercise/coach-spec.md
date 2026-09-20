@@ -37,18 +37,26 @@ the learner-facing message verbatim. Advisory unless marked **gate** (Stage 1).
 | Code | Fires when | Message |
 |---|---|---|
 | W1 **gate** | fewer than 3 words | Name the process and where it happens. |
-| W2 | no place or step word (desk, line, cell, ward, station, shift, queue, inbox, system name, room, bay…) | Where would a camera stand? Add the place or the step. |
+| W2 | no place or step word (desk, line, cell, ward, station, shift, queue, inbox, system name, room, bay, processing, payable, rounds, assembly, picking…) | Where would a camera stand? Add the place or the step. |
 
 ### Box 2 — What I observed (D1, D2)
 | Code | Fires when | Message |
 |---|---|---|
 | O1 **gate** | fewer than 2 sentences or 25 words | Describe what you'd see on video — at least two sentences. |
 | O2 | blame pattern: named person or group + negative trait; "they/he/she never/always"; second-person accusation; "doesn't care", "lazy", "sloppy", "incompetent", "useless" | This names or blames a person or group. A camera can't see attitude — describe what it would see instead. |
-| O3 | cause pattern: "because", "due to", "caused by", "the reason is", "as a result of", "since [clause]" | You've written a cause. At this level an observation records what happens; the "because" is Yellow Belt work. Keep the fact, drop the reason. |
+| O3 | cause pattern: "because", "due to", "caused by", "the reason is", "as a result of" | You've written a cause. At this level an observation records what happens; the "because" is Yellow Belt work. Keep the fact, drop the reason. |
 | O4 | solution pattern: "should", "need(s) to", "we could", "if only", "just buy/install/hire", "ought to" | That's a solution. Keep it for box 6, offered as a hypothesis. |
 | O5 | absolute: "always", "never", "every time", "constantly", "all the time" | Absolutes read like a complaint. Try a count: "about three times a shift." |
 | O6 | vagueness: "a lot", "lots of", "too much", "often", "sometimes", "takes forever" with no number anywhere in the box | Can you put a rough number on that? Even "about" counts. |
 | O7 (positive) | a number, time or frequency word present and no O2–O5 fired | Good — this has a count. A reviewer can picture it. |
+
+### Safety (any box; the rubric's §5 escalation route, brought forward)
+| Code | Fires when | Message |
+|---|---|---|
+| H1 | hazard language anywhere in boxes 1, 2 or 4: unguarded, guard removed / missing / open / bypassed, reaching into a machine, interlock defeated, near miss, injury, spill, exposed wiring, blocked exit, no PPE, lockout, forklift with pedestrians, pinch point, crush, LOTO, leak, crane or overhead load, unlabeled container, broken e-stop, sharps, needlestick, wrong patient, wrong medication, wrong dose | This reads like a safety hazard. Submit it — and report it through your organization's safety channel **today**, without waiting for review. The program thanks people who report; it never penalizes them. |
+
+H1 never blocks. At submission it sets the review path to *escalate* so a human sees it the
+same day, per rubric §5, and the receipt says so.
 
 ### Box 3 — Which waste (D3 Waste correctly identified)
 | Code | Fires when | Message |
@@ -59,7 +67,7 @@ the learner-facing message verbatim. Advisory unless marked **gate** (Stage 1).
 | K4 | wait/waiting/idle/queue/on hold and **Waiting** not ticked | Someone or something waits in this observation. Consider Waiting. |
 | K5 | rework/wrong/error/mistake/redo/reprint/returned/corrected and **Defects** not ticked | Something came back or was redone. Consider Defects. |
 | K6 | pile/backlog/stack/inbox full/queue of/waiting to be and **Inventory** not ticked | Work is piling up between steps. Consider Inventory. |
-| K7 | retype/re-enter/twice/again/double/print and type/copy into and **Extra-processing** not ticked | The same work is being done twice. Consider Extra-processing. |
+| K7 | retype/re-enter/typed it again/double entry/print and type/copy into and **Extra-processing** not ticked (count words like "twice" deliberately excluded) | The same work is being done twice. Consider Extra-processing. |
 | K8 | 5 or more categories ticked | Five wastes at once is usually a sign of a vague observation. Which two would you defend to a reviewer? |
 
 K2–K7 suggest; they never untick or tick anything.
@@ -87,7 +95,8 @@ K2–K7 suggest; they never untick or tick anything.
 Four cells, D1–D4, each reading **"looks ready"** or **"needs work"** from the rules above
 (a dimension is "needs work" while any advisory rule for it is firing). Under the strip, in
 the same type size: *Coach's read — not a score. A calibrated reviewer decides.* No numbers,
-no percentages, no colors that read as pass/fail.
+no percentages, no colors that read as pass/fail: both states are set in ink; "needs work"
+carries the hazard stripe, "looks ready" carries none. Green is reserved for the receipt.
 
 ## 4. Behavior
 
@@ -100,7 +109,10 @@ no percentages, no colors that read as pass/fail.
   first failing field. Advisory rules do not block. The O2 blame flag, if still firing at
   submission, routes the submission to 100% human review (rubric §1) and tells the learner so.
 - Worked example: picked by the learner's vertical and role, in a panel the learner opens;
-  never pre-filled into the form.
+  never pre-filled into the form. **Every worked example passes the coach clean** — an
+  example the coach would flag teaches the learner to distrust one or the other.
+- After submission the draft is cleared from the device and the receipt is shown; reopening
+  the form starts a new observation.
 
 ## 5. What the program learns from the coach (and what it does not)
 

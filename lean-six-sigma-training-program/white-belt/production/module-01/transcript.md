@@ -189,7 +189,7 @@ change this week: the sort order, or a distinguishing field on that screen."
 
 ## Screen 8 of 8 — Takeaways
 
-*On screen: the three takeaway lines as a list, followed by a "Go look" card headed "dossier
+*On screen: the three takeaway lines as a list, followed by a "Go see" card headed "dossier
 entry 01" with one text box labelled "What I saw" and a hint line that changes with the
 learner's chosen role. The card says it is saved on this device only.*
 
@@ -231,8 +231,12 @@ for red-bead counts they cannot control, and nothing they do changes the outcome
 **Drive out fear (Point 8)** — the eighth of Deming's fourteen points for management. Fear stops
 information moving; problems that are unsafe to report cannot be fixed.
 
+**Gemba · go see** — Japanese for "the real place," where the work actually happens. Lean's
+practice of *genchi genbutsu*, "go and see for yourself," is the reason every module ends with a
+five-minute task at your own workplace rather than a quiz about someone else's.
+
 **Process dossier** — the one-page record you build through the course: every module ends with a
-five-minute "go look" task in your own workplace, and each one adds a line. Never scored; one
+five-minute "go see" task in your own workplace, and each one adds a line. Never scored; one
 entry becomes your Module 12 submission.
 
 **The system** — everything about how work is designed and managed: layout, tools, forms,

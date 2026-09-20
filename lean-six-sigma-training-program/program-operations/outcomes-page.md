@@ -22,6 +22,8 @@ period and n.
 | Pre/post gain | Mean post score − mean pre score on matched items, with the pre score | 50 matched pairs | Learning, not attendance |
 | Applied-artifact pass rate | Rubric-passed ÷ rubric-reviewed | 30 reviews | Whether people can *do* it |
 | **Sampling rate** | Human-reviewed ÷ submitted | always | The number that makes the previous one believable |
+| Go-see completion | Learners recording ≥ 9 of 12 dossier entries (completion flags only) ÷ completers | 50 completers | Whether the workplace tasks are done, not skipped — the course's own transfer claim |
+| Coach flag rates | Share of submissions where each coach rule fired, by rule code; the safety rule reported separately | 50 submissions | Which lessons are not landing; a rising blame-flag rate is a Module 12 problem, not a learner problem |
 | Readiness-gate rate | Corporate rollouts launched with all four gate conditions met ÷ rollouts requested | 5 requests | Shows the program declines launches |
 | Triage health | Share of observations still `new` after 30 days, corporate rollouts | 3 rollouts | Whether client organizations respond |
 | Second observation within 90 days | White Belt holders submitting a second observation ÷ holders | 100 holders | Behavior change, the only awareness outcome that matters |

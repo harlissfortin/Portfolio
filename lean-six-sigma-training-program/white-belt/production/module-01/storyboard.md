@@ -285,7 +285,7 @@ something to copy instead of something to compare against.
 > - Framing problems as process flaws makes them safe to surface — the raw material of improvement.
 > - Your frustrations are data. This course teaches you to read them.
 >
-> **Go look · dossier entry 01 (5 min, in the workplace).** Take the process version from
+> **Go see · dossier entry 01 (5 min, in the workplace).** Take the process version from
 > your reflection to the place where it happens. Stand there for five minutes and write down
 > one thing you can see that makes the problem likely.
 
@@ -305,7 +305,7 @@ something to copy instead of something to compare against.
 >
 > Next up: what a process actually is.
 
-**Interaction** The go-look card carries a single free-text field ("What I saw") that saves
+**Interaction** The go-see card carries a single free-text field ("What I saw") that saves
 to the learner's process dossier on the device; the hint line varies by role (frontline: your
 own station · supervisor: something you get escalated · leader: something that appears in more
 than one team). Never scored, never transmitted. Continue to Module 2.
@@ -315,7 +315,8 @@ than one team). Never scored, never transmitted. Continue to Module 2.
 
 **Module shell (all screens).** The rail carries a **role** selector (Frontline / Supervisor
 / Leader, per [`../../role-variants.md`](../../role-variants.md)) beside the vertical selector;
-role changes the S7 hint lines and the S8 go-look hint, nothing else, and rides on every
+role changes the S7 hint lines, the S8 go-see hint, and adds one role-specific closing line
+to the learner's own vertical row on S6 (supervisor / leader only), nothing else, and rides on every
 statement as the `x/role` context extension. The rail also carries the **andon cord** ("Pull
 the cord"): one free-text field plus the current screen ID, emitting `reported` and landing
 on the program's public improvement board as `new`.
@@ -353,8 +354,8 @@ launch is a brand decision, not a completeness one.
 - [x] xAPI statements emitting, including the reflection privacy boundary
 - [x] Accessibility: keyboard-only path, visible focus, no time limits, reduced-motion respected,
       glossary on every screen, 320 px reflow and 400 % zoom, live-region announcements
-- [x] Vertical-aware Show screen (MFG / HC / TXN); role-aware S7 hints and S8 go-look hint
-- [x] Go-look dossier task on S8 with narration, saved locally only
+- [x] Vertical-aware Show screen (MFG / HC / TXN); role-aware S7 hints and S8 go-see hint
+- [x] Go-see dossier task on S8 with narration, saved locally only
 - [x] Andon cord on every screen, emitting `reported` with the screen ID
 - [x] Narration produced (synthesized neural voice) and captions timed from it, cue by cue
 - [ ] Screen-reader pass (NVDA + JAWS + VoiceOver) on the built module

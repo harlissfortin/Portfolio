@@ -3,7 +3,7 @@
 **Governed by:** [`../assessment/standard-setting-and-item-policy.md`](../assessment/standard-setting-and-item-policy.md)
 
 **Administration:** 20 items per form, assembled to the blueprint below from the CERT pool
-(80 items — meets the 3.5× minimum for a 20-item form). Provisional cut **70%** pending
+(81 items — meets the 3.5× minimum for a 20-item form). Provisional cut **70%** pending
 the first modified-Angoff panel. Unlimited retakes; each retake form shares ≤ 25% of items
 with prior attempts and never the items previously missed.
 
@@ -20,7 +20,7 @@ person-specific one — without being able to map, measure, or analyze anything 
 | B. Value & process concepts | 4 | 16 |
 | C. DMAIC | 3 | 12 |
 | D. 5S | 3 | 12 |
-| E. Philosophy & roles | 3 | 12 |
+| E. Philosophy & roles | 3 | 13 |
 
 Constraints: ≥ 40% scenario (S) items · ≥ 40% Apply/Analyze · vertical rule (NEU + cohort
 vertical) · balanced key positions.
@@ -346,7 +346,7 @@ A. The area looked clean during the executive visit · B. A weekly self-audit ha
 
 ---
 
-## Section E — Philosophy & roles (12 CERT)
+## Section E — Philosophy & roles (13 CERT)
 
 **E1.** Deming's often-quoted attribution holds that the large majority of performance problems (roughly 94%) arise from:
 A. The system as designed and managed ✅ · B. Individual worker effort · C. Supplier quality · D. Customer demands
@@ -391,6 +391,10 @@ A. "Does it happen across different people?" · B. "Is the right way the easy wa
 **E11.** Which question does the course recommend asking first when something goes wrong nearby?
 A. "Who did that?" · B. "What about how this is set up made that likely?" ✅ · C. "Who approved this process?" · D. "How do we discipline this?"
 `[E · W4 · Understand · NEU · K · CERT]`
+
+**E13.** A team lead wants to understand why a step keeps running late. The Lean practice the course calls *gemba* (go see) says the most useful first move is to:
+A. Ask the people involved to write a report explaining it · B. Review last month's performance figures in the system · C. Go to where the step happens and watch it for a few minutes · D. Schedule a meeting with the team's manager
+`[E · W1 · Apply · NEU · S · CERT]` — ✅ C. The point of gemba is direct observation of the real work in the real place before opinions, reports or averages; B and D are second-hand, A puts the burden on the people doing the work.
 
 **E12.** A "See a Waste" observation reads: *"Night shift never labels the bins because they don't care, so we need a new labeling machine."* The main flaw is that it:
 A. Is too short · B. Contains blame and a solution instead of observed facts ✅ · C. Names the wrong waste · D. Lacks a date

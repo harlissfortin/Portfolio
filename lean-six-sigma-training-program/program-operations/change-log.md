@@ -10,13 +10,26 @@ Change classes: **CUR** curriculum/content · **ASM** assessment (items, bluepri
 
 ---
 
+## 2026-09-20 — Four-lens review of the roadmap build (training · design · Lean Six Sigma · manufacturing)
+
+| Class | Change | Rationale | Effective |
+|---|---|---|---|
+| CUR | "Go look" renamed **go see** program-wide and taught as *gemba* / *genchi genbutsu* (glossary from Module 1, transcript); dossier entry 4 reworded to the customer-pays test; dossier gains a filled example, safety and privacy rules for observing | The practice has a name in the body of knowledge; "done to it" admitted inspection and handling as value | Immediate |
+| ASM | Coach: safety rule H1 with same-day escalation path; place vocabulary widened; count words excluded from the extra-processing rule; healthcare example rewritten without "because"; rule that every worked example passes the coach clean; readiness strip colors neutralized; draft cleared after submission with the receipt persisted | The coach flagged the program's own examples; hazards were unrecognized although the rubric escalates them; green read as pass/fail | Immediate |
+| ASM | One CERT item added (E13, gemba), bank 80 → 81; blueprint count updated | Term now taught from Module 1 | Next cohort |
+| CUR | Role layer: Module 11 is one screen with role-swapped content (production rule 1 held); supervisor and leader Show lines added to Module 1 S6 | role-variants.md contradicted its own production rule; Module 1 promised a leader Show it did not have | Immediate |
+| OPS | Benchmark library sources corrected: dossier entries removed as a source (never transmitted); Yellow Belt storyboards and the optional size box used instead | Contradicted the privacy boundary | Immediate |
+| OPS | Improvement board: honest statement of what the cord cannot do; client gallery gains the "noted — not a problem, here's why" status so both sets are identical; six review findings added to the board (items 13–18) | The name over-promised; the "identical statuses" claim was not true | Immediate |
+| OPS | Outcomes page and evaluation plan L3: go-see completion (≥ 9 of 12 flags) and coach flag rates added; evidence policy states what a non-sampled learner's evidence shows | Transfer claim needs its own measure; evidence must never imply a score not given | Immediate |
+| PRD | Public page tabs are hash-routed so a verification record is linkable; go-see reminder specified in the production spec and folded into the rollout nudges; Module 1 S8 card: safety line, skipped-reflection fallback, "write it when you're back" | A verification page that cannot be linked is not a verification page; the task is done away from the screen | Immediate |
+
 ## 2026-09-20 — Differentiation roadmap implemented
 
 | Class | Change | Rationale | Effective |
 |---|---|---|---|
-| CUR | Every White Belt module closes with a five-minute *go look* task in the workplace; twelve entries make the learner's process dossier (new template); Module 1 build carries entry 01 with narration; Yellow Belt storyboard asks for the ★ entry | Learners left awareness courses with no real observation of their own; the dossier is the seed of the Yellow Belt project and the corporate problem inventory | Next cohort |
+| CUR | Every White Belt module closes with a five-minute *go see* task in the workplace; twelve entries make the learner's process dossier (new template); Module 1 build carries entry 01 with narration; Yellow Belt storyboard asks for the ★ entry | Learners left awareness courses with no real observation of their own; the dossier is the seed of the Yellow Belt project and the corporate problem inventory | Next cohort |
 | CUR | Role layer (frontline / supervisor / leader) specified for Modules 1, 5, 7, 10, 11, 12; role selector and role-specific hints in the Module 1 build; `x/role` on every xAPI statement | A supervisor and an operator watching the same clip have different levers; role changes the question, never the assessment | Next cohort |
-| ASM | Rubric coach specified (23 published rules mapped to D1–D4) and built into the field-exercise form; Stage 0 added to the rubric; rule codes travel with the submission, text never does | Formative feedback at the moment of drafting, without automating the verdict; flag rates become a course-quality signal | Next cohort |
+| ASM | Rubric coach specified (24 published rules mapped to D1–D4) and built into the field-exercise form; Stage 0 added to the rubric; rule codes travel with the submission, text never does | Formative feedback at the moment of drafting, without automating the verdict; flag rates become a course-quality signal | Next cohort |
 | CRT | Credential evidence policy: badge carries the reviewed artifact, rubric scores and named reviewer of record at the learner's choice (default badge only), after a redaction pass; withdrawal never affects the credential; terms §7 updated | A pass/fail certificate cannot show what the holder did; ours can, with consent | Next cohort |
 | OPS | Public improvement board with the in-course andon cord, five statuses identical to the client gallery, published response cadence, PDCA on content; seeded with the program's real history to date; cord built into Module 1 and the field-exercise form | A Lean training should practice Lean on itself in public; the change log alone was invisible | Immediate |
 | OPS | Outcomes page specified: figures, definitions, minimum n per figure, the n = 0 launch state, what the page refuses to show; prototype published | Transparency was a strategy line with no artifact behind it | Immediate |

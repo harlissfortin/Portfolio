@@ -25,6 +25,12 @@ scored feedback where a human reviewed it.
 The badge without evidence is still a valid credential. Evidence is *additional* and
 learner-controlled.
 
+**When no human reviewed it.** A White Belt submission outside the sample has no rubric
+scores. Its evidence entry shows the artifact and the words *completeness-checked, not
+scored*; it never shows a score the program did not give. A learner who wants a scored
+record can request review (rubric §1); the request is granted at the program's reviewer
+capacity and never changes the credential.
+
 ## 2. Consent, in one screen
 
 At the moment of award the learner is shown three choices, in plain words, defaulting to

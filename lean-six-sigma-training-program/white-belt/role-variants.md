@@ -9,7 +9,7 @@ Three roles, chosen at enrollment alongside the vertical, switchable at any time
 
 | Role | Who picks it | What changes |
 |---|---|---|
-| **Frontline** (default) | Operators, nurses, clerks, technicians, analysts — people who *do* the process | Reflection prompts ask what they see and what they would report; go-look tasks are done at their own station |
+| **Frontline** (default) | Operators, nurses, clerks, technicians, analysts — people who *do* the process | Reflection prompts ask what they see and what they would report; go-see tasks are done at their own station |
 | **Supervisor / team lead** | First-line leaders who own a team's daily work | Prompts ask what they would *respond* to and what they would change about how work is assigned; Module 10 and 11 carry supervisor-specific Show examples |
 | **Leader** | Managers and above who sponsor rollouts or own budgets | Prompts ask what the *system* they own makes likely, and what they would fund or stop; Modules 1, 5 and 11 carry leader-specific Show examples |
 
@@ -33,17 +33,18 @@ Only modules with a role-specific element are listed; everything else is shared.
 - Supervisor: "The way it gets raised with you today — usually as someone's name." / "What about the way you assign, sequence or equip the work makes it likely?"
 - Leader: "The way it reaches you — as a performance issue in one team." / "What about the policies, systems or targets you own makes it likely in *every* team?"
 
-**Leader Show example (replaces the vertical card's closing line):** the same story told from
-the budget holder's seat — three teams, three replacements, one unchanged handoff. The lever
+**Leader and supervisor Show lines (added under the learner's own vertical row on S6):** the
+same story told from the team lead's seat (three names on your desk, one unchanged thing
+between them) and from the budget holder's seat — three teams, three replacements, one unchanged handoff. The lever
 is the handoff, and only the leader can fund changing it.
 
-**Go look (dossier entry 1)** — shared wording; role hint appended: *frontline: your own
+**Go see (dossier entry 1)** — shared wording; role hint appended: *frontline: your own
 station · supervisor: something you get escalated · leader: something that appears in more
 than one team.*
 
 ### Module 5 — The 8 Wastes: D-O-W-N
 **Non-utilized talent Show example, leader role:** the shim story from the MFG variant (A4)
-is retold as a management failure: nobody has asked. The leader's go-look asks: *when did
+is retold as a management failure: nobody has asked. The leader's go-see asks: *when did
 your organization last ask a frontline person for an improvement idea, and what happened to
 it?*
 
@@ -58,7 +59,8 @@ person, with the three-question test run live. The supervisor variant closes wit
 sentence the module wants them to say next time: *"thank you — what made that likely?"*
 
 ### Module 11 — The Belt System and Your Role in CI Culture
-Role is the whole module here. Three closing screens, one per role:
+Role is the whole module here. One closing screen whose content swaps by role (same screen
+count for every role, per the production rules below):
 - Frontline: surface problems, offer ideas, join projects, hold standards.
 - Supervisor: respond to every observation within the stated cadence; protect the reporter;
   triage honestly ("noted, not now" is a legitimate status; silence is not).
@@ -79,6 +81,6 @@ role, so a supervisor sees a supervisor's observation as the model.
 3. Corporate rollouts set a default role by enrollment group (frontline for the workforce,
    supervisor for team leads, leader for the sponsor's cohort). The sponsor cohort takes the
    course *first*, in the kickoff week — the playbook's readiness gate condition 2 is met by a
-   leader who has done the go-look tasks, not one who has read a brief.
+   leader who has done the go-see tasks, not one who has read a brief.
 4. Role-specific Show examples are written to the same fairness rules as everything else: no
    named villain, no cause asserted as fact.

@@ -1,7 +1,7 @@
 # White Belt — Foundations of Operational Excellence
 
 **Format:** 100% self-paced e-learning (+ optional live kickoff for corporate cohorts)
-**Duration:** 3–4 hours, 12 micro-modules, plus twelve five-minute "go look" tasks done in the
+**Duration:** 3–4 hours, 12 micro-modules, plus twelve five-minute "go see" tasks done in the
 learner's own workplace · **Prerequisites:** none
 **Credential:** Lean Six Sigma White Belt (Awareness) — verifiable badge, no expiry, no CEUs
 
@@ -28,7 +28,7 @@ component map below is the index; each component's detail lives in its own docum
 | 12 | Your First Contribution: the "See a Waste" Exercise | 20 min | Field exercise submission **+ cumulative check** |
 
 **Before Module 1:** 10-item pre-assessment (test-out of Modules 1–6 at 9/10; pre/post gain
-reported per cohort). **After every module:** a five-minute *go look* task in the workplace,
+reported per cohort). **After every module:** a five-minute *go see* task in the workplace,
 recorded in the learner's [process dossier](templates/process-dossier.md) — by Module 12 the
 learner has found their first three improvement opportunities. **After Module 12:** knowledge
 check, then field exercise (one dossier entry, through the rubric coach) → badge.
@@ -43,7 +43,7 @@ check, then field exercise (one dossier entry, through the rubric coach) → bad
   manufacturing, healthcare, transactional — click-targets, reveal text, anchor stories
 - [`role-variants.md`](role-variants.md) — the role layer (frontline / supervisor / leader):
   role-specific reflection prompts and Show examples; never changes what is assessed
-- [`templates/process-dossier.md`](templates/process-dossier.md) — the twelve go-look tasks
+- [`templates/process-dossier.md`](templates/process-dossier.md) — the twelve go-see tasks
   and the page they accumulate on; feeds the Yellow Belt mini-project and the corporate
   problem inventory
 - [`bok-crosswalk-and-credential.md`](bok-crosswalk-and-credential.md) Part 1 — coverage map,
@@ -51,7 +51,7 @@ check, then field exercise (one dossier entry, through the rubric coach) → bad
 - Spaced retrieval: cumulative checks at Modules 4, 6, 8, 10, 12
 
 ### 2 · Assessment & credentialing
-- [`knowledge-check.md`](knowledge-check.md) — 80-item tagged CERT bank, blueprint, plus the
+- [`knowledge-check.md`](knowledge-check.md) — 81-item tagged CERT bank, blueprint, plus the
   PRE (pre-assessment) and PRAC (cumulative check) pools
 - [`field-exercise-rubric.md`](field-exercise-rubric.md) — 4-dimension rubric, two-stage
   review, sampling rates, reviewer anchor set, escalation route
@@ -70,7 +70,7 @@ check, then field exercise (one dossier entry, through the rubric coach) → bad
   testing gate, xAPI/SCORM/LTI packaging, data-handling boundary
 - [`prototype/index.html`](prototype/index.html) — working interactive prototype
 - [`production/module-01/`](production/module-01/) — Module 1 production build: storyboard,
-  synthesized narration with measured captions, transcript, role-aware prompts, go-look
+  synthesized narration with measured captions, transcript, role-aware prompts, go-see
   dossier task, andon cord
 - [`templates/`](templates/) — pocket card, waste walk checklist, field exercise form
 
@@ -115,7 +115,7 @@ check, then field exercise (one dossier entry, through the rubric coach) → bad
 ## Certification requirements
 
 1. All 12 modules completed.
-2. Knowledge check passed (20 items from the 80-item bank; provisional 70% cut pending the
+2. Knowledge check passed (20 items from the 81-item bank; provisional 70% cut pending the
    modified-Angoff panel; unlimited retakes, ≤ 25% item overlap, no time limit).
 3. Field exercise submitted past the completeness gate — and, where sampled (10% individual /
    100% corporate), scoring ≥ 5/8 with no dimension at 0.
@@ -134,5 +134,5 @@ at enrollment and may switch without losing progress. Scripts:
 - Accessibility testing gate executed against the built course, not the prototype
 - Badge issuance and verification infrastructure stood up
 - Item statistics from first live cohorts (the bank has no empirical p-values yet)
-- Modules 2–12 production builds to the Module 1 standard (role layer and go-look task on each)
+- Modules 2–12 production builds to the Module 1 standard (role layer and go-see task on each)
 - Benchmark library rows: none reach the publication threshold until the first cohorts submit

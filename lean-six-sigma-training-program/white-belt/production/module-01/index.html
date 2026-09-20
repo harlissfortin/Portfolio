@@ -162,7 +162,7 @@ textarea:focus,input[type=text]:focus{outline:none;border-bottom-color:var(--mar
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .nav .sp{flex:1}
 .buildnote{font:400 13.5px/1.5 var(--b);color:var(--steel);margin-top:30px;max-width:66ch;border-top:1px solid var(--hair);padding-top:12px}
-/* ---- go look (S8) ---- */
+/* ---- go see (S8) ---- */
 .golook{border:1px solid var(--ink);padding:18px 20px;margin:26px 0 0;max-width:62ch;position:relative}
 .golook::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:repeating-linear-gradient(135deg,var(--amber) 0 8px,var(--ink) 8px 16px)}
 .golook .gl{font:500 11px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--steel);margin:6px 0 8px;display:flex;gap:12px;flex-wrap:wrap}
@@ -233,7 +233,8 @@ textarea:focus,input[type=text]:focus{outline:none;border-bottom-color:var(--mar
       <dt>Special cause</dt><dd>An identifiable, non-routine source of variation &mdash; a machine fault, a bad batch of material, a power cut, a one-off event; occasionally an individual&rsquo;s action. Contrasted with <b>common cause</b>, the ordinary variation built into how a process is designed. Deming&rsquo;s 94/6 is a common-cause versus special-cause split. You work with both properly at Yellow Belt.</dd>
       <dt>Red Bead Experiment</dt><dd>Deming&rsquo;s classroom demonstration that individual results are driven by the system: workers scoop beads from a box that is one-fifth red, are rewarded and punished for red-bead counts they cannot control, and nothing they do changes the outcome.</dd>
       <dt>Drive out fear (Point 8)</dt><dd>The eighth of Deming&rsquo;s fourteen points for management. Fear stops information moving; problems that are unsafe to report cannot be fixed.</dd>
-      <dt>Process dossier</dt><dd>The one-page record you build through the course: every module ends with a five-minute &ldquo;go look&rdquo; task in your own workplace, and each one adds a line. Never scored; one entry becomes your Module 12 submission.</dd>
+      <dt>Gemba &middot; go see</dt><dd>Japanese for &ldquo;the real place&rdquo; &mdash; where the work actually happens. Lean&rsquo;s practice of <em>genchi genbutsu</em>, &ldquo;go and see for yourself,&rdquo; is the reason every module ends with a five-minute task at your own workplace rather than a quiz about someone else&rsquo;s.</dd>
+      <dt>Process dossier</dt><dd>The one-page record you build through the course: every module ends with a five-minute &ldquo;go see&rdquo; task in your own workplace, and each one adds a line. Never scored; one entry becomes your Module 12 submission.</dd>
       <dt>The system</dt><dd>Everything about how work is designed and managed: layout, tools, forms, software, schedules, policies, incentives, and training.</dd>
     </dl>
   </section>
@@ -393,6 +394,11 @@ const MODELS={
    w:"“The second one names something I could change this week: the sort order, or a distinguishing field on that screen.”"}
 };
 
+const ROLESHOW={
+ FL:"",
+ SV:"<b>From the team lead's seat:</b> this arrives as a name on your desk, three times a year, three different names. The thing that didn't change between them is the one you can fix.",
+ LD:"<b>From the budget holder's seat:</b> three teams, three replacements, one unchanged handoff. The lever is the handoff — and only you can fund changing it."
+};
 const ROLEHINT={
  FL:{p:"The way it probably gets discussed today.",q:"What about the way the work is set up makes it likely?",g:"Frontline: your own station."},
  SV:{p:"The way it gets raised with you today — usually as someone's name.",q:"What about the way you assign, sequence or equip the work makes it likely?",g:"Supervisor: something that gets escalated to you."},
@@ -472,7 +478,7 @@ const S=[
       </button>
       <div class="rowbody" id="vb-${c.k}"${open?"":" hidden"}>
         <p class="looks"><b>What it looks like:</b> ${esc(c.looks)}</p>
-        <p class="truth">${c.truth}</p>
+        <p class="truth">${c.truth}</p>${open&&ROLESHOW[state.role]?`<p class="truth" style="margin-top:8px">${ROLESHOW[state.role]}</p>`:""}
       </div></div>`;}).join("")+`</div>
   <p style="margin-top:18px">In every case, replacing the person changes nothing. Changing the bins, the systems, the file naming changes everything.</p>`}},
 
@@ -501,11 +507,11 @@ const S=[
   </ul>
   <p class="sub" style="margin-top:18px">This course teaches you to read them.</p>
   <div class="golook">
-    <p class="gl"><b>Go look</b><span>Dossier entry 01</span><span>5 min &middot; in the workplace</span></p>
+    <p class="gl"><b>Go see</b><span>Dossier entry 01</span><span>5 min &middot; in the workplace</span></p>
     <h3>Stand where it happens</h3>
     <p>Take the process version you just wrote to the place where it happens. Stand there for five minutes and write down <b>one thing you can see</b> that makes the problem likely.</p>
-    <p class="hint">${esc(ROLEHINT[state.role].g)}</p>
-    <div class="field" style="margin-top:14px"><label class="fl" for="d1"><span class="n">01</span>What I saw</label><textarea id="d1" rows="2"></textarea></div>
+    <p class="hint">${esc(ROLEHINT[state.role].g)} Skipped the reflection? Take any recurring frustration. Follow your site's rules for being on the floor or in a ward &mdash; if you can't stand there safely, observe from where you're allowed to be, and never note a patient, customer or employee identifier.</p>
+    <div class="field" style="margin-top:14px"><label class="fl" for="d1"><span class="n">01</span>What I saw</label><p class="hint" style="margin-left:34px">Write it when you're back. This screen stays open from the course board.</p><textarea id="d1" rows="2"></textarea></div>
     <p class="saved" id="d1saved">Saved to your process dossier on this device only. Never scored, never transmitted.</p>
   </div>
   <p class="sub" style="margin-top:18px">Next up: what a process actually is.</p>`}

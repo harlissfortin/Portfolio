@@ -162,16 +162,16 @@ h2.sh{font:900 clamp(34px,5.6vw,60px)/.92 var(--d);letter-spacing:-.005em;text-t
   <h2 class="sh">We run the course on Lean, in public</h2>
   <p class="kick">Every module has a cord. Pull it and your report lands here as <b>new</b>, reaches <b>read</b> within 5 working days and a triage status within 15. The course teaches that a gallery without statuses is a suggestion box; this board holds us to the same rule.</p>
   <ul class="cadence">
-    <li><div class="v">12</div><div class="l">Items on the board</div></li>
+    <li><div class="v">18</div><div class="l">Items on the board</div></li>
     <li><div class="v">0</div><div class="l">New &gt; 30 days</div></li>
     <li><div class="v">—</div><div class="l">Median days to triage · no learner reports yet</div></li>
-    <li><div class="v">8</div><div class="l">Closed with an outcome</div></li>
+    <li><div class="v">14</div><div class="l">Closed with an outcome</div></li>
   </ul>
   <div class="tblwrap"><table class="board">
     <thead><tr><th>#</th><th>Reported by</th><th>Problem</th><th>Status</th><th>Outcome / reason</th></tr></thead>
     <tbody id="boardBody"></tbody>
   </table></div>
-  <p class="note">Statuses are the same five the client observation gallery uses: just-do-it, PDCA, escalated to review, noted not now, noted not a problem. An item cannot close without its outcome sentence. Items 1–8 are the program's real history to date; 9–12 are open.</p>
+  <p class="note">Statuses are the same five the client observation gallery uses: just-do-it, PDCA, escalated to review, noted not now, noted not a problem. An item cannot close without its outcome sentence. Items 1–8 and 13–18 are the program's real history to date; 9–12 are open.</p>
   <p class="signed"><b>Owner:</b> content operations · anything escalated: assessment lead · reviewed quarterly with reviewer calibration</p>
 </section>
 
@@ -188,7 +188,7 @@ h2.sh{font:900 clamp(34px,5.6vw,60px)/.92 var(--d);letter-spacing:-.005em;text-t
 <section role="tabpanel" id="p-verify" aria-labelledby="t-verify" hidden>
   <p class="eyebrow"><b>Verify a credential</b><span>What an employer sees · with the holder's consent, what they did</span></p>
   <h2 class="sh">A credential that shows the work</h2>
-  <p class="kick">Every badge resolves to a permanent page like this one. With the holder's consent it also carries the applied artifact the credential required, the rubric scores, and the reviewer of record. <b>Every other certificate says “passed.” Ours can show what the person did.</b></p>
+  <p class="kick">Every badge resolves to a permanent, linkable page like this one (the address carries the verification ID). With the holder's consent it also carries the applied artifact the credential required, the rubric scores, and the reviewer of record. <b>Every other certificate says “passed.” Ours can show what the person did.</b></p>
   <form class="lookup" id="lookup" novalidate>
     <label class="vh" for="vid">Verification ID</label>
     <input type="text" id="vid" value="WB-A-2026-000001" autocomplete="off" spellcheck="false">
@@ -216,7 +216,7 @@ h2.sh{font:900 clamp(34px,5.6vw,60px)/.92 var(--d);letter-spacing:-.005em;text-t
         <dd><ul class="scores"><li>D1 · 2/2<span>Real and specific</span></li><li>D2 · 2/2<span>Observational</span></li><li>D3 · 2/2<span>Waste identified</span></li><li>D4 · 2/2<span>Impact named</span></li></ul></dd>
         <dt>Reviewer's feedback</dt>
         <dd class="fb">You located a real step and named its internal customer, which most first observations miss. The one-in-ten count is what makes it usable. This problem looks bigger than one observation: a Yellow Belt problem statement is the next tool, and it starts with exactly what you wrote.</dd>
-        <dt>Reviewer of record</dt><dd>A. Reviewer · Certified Green Belt, program reviewer since 2026 · <a href="#">their verification page</a> · reviewed 2026-11-12</dd>
+        <dt>Reviewer of record</dt><dd>A. Reviewer · Certified Green Belt, program reviewer since 2026 · verification ID GB-2026-000014 (their own page, linked in the live system) · reviewed 2026-11-12</dd>
       </dl>
       <p class="consent">The holder chose <b>badge + reviewed summary</b>. They can change that at any time; withdrawing evidence never affects the credential. Employers get what this page shows and nothing more, and the program says so here.</p>
     </div>
@@ -269,11 +269,17 @@ const BOARD=[
  [5,"Author (self-report)","Module 1 read as generic e-learning; nothing distinguished it","done","just-do-it ✓","Redesigned in shop-floor visual language: andon strip, floor tape, hazard stripe"],
  [6,"Author (self-report)","Narration at 185 wpm too fast for instruction","pdca","PDCA ✓ adopted","Re-synthesized at 163 wpm speech-only; check: inside the 140–170 instructional band; adopted"],
  [7,"LSS expert review","94/6 misattributed to Deming's Japan work; special cause defined as “one person”","done","just-do-it ✓","Attribution corrected to Out of the Crisis (1986); special cause redefined; Red Bead and Point 8 added"],
- [8,"Author (self-report)","Learners finish awareness courses with no real observation of their own","done","just-do-it ✓","Twelve go-look tasks and the process dossier added to every module"],
+ [8,"Author (self-report)","Learners finish awareness courses with no real observation of their own","done","just-do-it ✓","Twelve go-see tasks and the process dossier added to every module"],
  [9,"Program","Cut score is provisional (70%) until a modified-Angoff panel sits","later","noted, not now","Panel needs ≥ 8 SMEs and the first cohort's item statistics; review at first cohort close"],
  [10,"Program","No empirical item statistics; the bank has never met a learner","later","noted, not now","Resolved by the first 200 completions; nothing to do before then"],
  [11,"Program","Accessibility gate run on the prototype, not with a screen-reader user","esc","escalated to review","Screen-reader pass with an assistive-technology user before launch; owner: production lead"],
  [12,"Program","Narration is a synthesized voice","later","noted, not now","Disclosed in every module footer; a studio recording drops in without code changes; decision at first paid cohort"],
+ [13,"Four-lens review","The coach flagged the program's own worked examples (no place word in “accounts payable”; “twice” read as extra-processing; “because” in the healthcare example)","done","just-do-it ✓","Place vocabulary widened, count words excluded, example rewritten; rule added: every worked example passes the coach clean"],
+ [14,"Four-lens review","Benchmark library named dossier entries as a data source, contradicting the rule that dossiers are never transmitted","done","just-do-it ✓","Sources moved to Yellow Belt storyboards and the optional size box"],
+ [15,"Four-lens review","No safety-hazard recognition in the coach, though the rubric escalates hazards the same day","done","just-do-it ✓","H1 rule added; submission path “escalate”; receipt tells the learner to use their site's channel today"],
+ [16,"Four-lens review","“Andon cord” overpromises — a real cord stops the line and brings a leader in seconds","later","noted — not a problem","The name stays; the board states what the cord does not do and keeps what matters: instant acknowledgment, never wrong to pull, a named role answers in the open"],
+ [17,"Four-lens review","“Go look” is the Lean practice of gemba / genchi genbutsu and should be taught by name","done","just-do-it ✓","Renamed “go see” program-wide; glossary entry from Module 1; one certification item added"],
+ [18,"Four-lens review","Readiness strip used green for “looks ready,” which reads as pass/fail","done","just-do-it ✓","Both states in ink; hazard stripe marks “needs work”; green reserved for the receipt"],
 ];
 document.getElementById("boardBody").innerHTML=BOARD.map(([n,by,p,cls,st,out])=>`<tr><td class="num">${String(n).padStart(2,"0")}</td><td class="by">${esc(by)}</td><td>${esc(p)}</td><td><span class="st ${cls}">${esc(st)}</span></td><td>${esc(out)}</td></tr>`).join("");
 /* ---- refusals ---- */
@@ -298,10 +304,15 @@ const REFUSE=[
 document.getElementById("refuse").innerHTML=REFUSE.map(([w,b,src])=>`<li><span class="no" aria-hidden="true">✕</span><div><b>We will not ${esc(w)}.</b><span>${esc(b)}.</span><small>${esc(src)}</small></div></li>`).join("");
 /* ---- tabs ---- */
 const tabs=[...document.querySelectorAll('[role=tab]')];
-function show(id){tabs.forEach(t=>{const on=t.id===id;t.setAttribute("aria-selected",String(on));t.tabIndex=on?0:-1;document.getElementById(t.getAttribute("aria-controls")).hidden=!on});
-  try{localStorage.setItem("openbook:tab",id)}catch(e){} document.getElementById("live").textContent=document.getElementById(id).textContent+" shown."}
+function show(id,push){tabs.forEach(t=>{const on=t.id===id;t.setAttribute("aria-selected",String(on));t.tabIndex=on?0:-1;document.getElementById(t.getAttribute("aria-controls")).hidden=!on});
+  const hash="#"+id.replace(/^t-/,""); if(push!==false&&location.hash!==hash){try{history.replaceState(null,"",hash)}catch(e){}}
+  document.getElementById("live").textContent=document.getElementById(id).textContent+" shown."}
+function fromHash(){const h=location.hash.replace(/^#/,""); const m=h.match(/^(out|board|refuse|verify)(?:\/(.+))?$/); if(!m) return false;
+  show("t-"+m[1],false); if(m[1]==="verify"&&m[2]){const v=document.getElementById("vid"); v.value=decodeURIComponent(m[2])} return true}
+window.addEventListener("hashchange",fromHash);
 tabs.forEach(t=>{t.addEventListener("click",()=>show(t.id));t.addEventListener("keydown",e=>{const i=tabs.indexOf(t);let j=null;if(e.key==="ArrowRight")j=(i+1)%tabs.length;if(e.key==="ArrowLeft")j=(i-1+tabs.length)%tabs.length;if(e.key==="Home")j=0;if(e.key==="End")j=tabs.length-1;if(j!==null){e.preventDefault();tabs[j].focus();show(tabs[j].id)}})});
-let saved=null; try{saved=localStorage.getItem("openbook:tab")}catch(e){}
-if(saved&&document.getElementById(saved)) show(saved);
-document.getElementById("lookup").addEventListener("submit",e=>{e.preventDefault();document.getElementById("live").textContent="Prototype: the sample record is shown for any ID. Live verification resolves the ID against the issuer."});
+fromHash();
+document.getElementById("lookup").addEventListener("submit",e=>{e.preventDefault();const id=document.getElementById("vid").value.trim();
+  try{history.replaceState(null,"","#verify/"+encodeURIComponent(id))}catch(x){}
+  document.getElementById("live").textContent="Prototype: the sample record is shown for any ID. Live verification resolves the ID against the issuer. This page's address now carries the ID, so it can be shared."});
 </script>

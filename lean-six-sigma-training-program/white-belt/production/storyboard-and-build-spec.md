@@ -42,7 +42,7 @@ Target seat time per module matches the `modules.md` table (10–20 min). Narrat
 | 7 | 8 vertical scenarios, name the dominant waste | Distractors target transport/motion and inventory/overproduction confusions |
 | 8 | Which S produced this change? (6 before/after pairs) | Photo pairs; click-to-assign |
 | 9 | Place 15 activities into DMAIC phases | Click-to-assign; 3 per phase |
-| 10 | 6 judgment scenarios | Three options including "can't tell yet — go look," correct for two items |
+| 10 | 6 judgment scenarios | Three options including "can't tell yet — go see," correct for two items |
 | 11 | — | No interaction; module is 10 minutes and ends on the role statement |
 | 12 | Field exercise form | Completeness gate per the rubric; blame-screen advisory; submission routes per deployment |
 
@@ -100,7 +100,7 @@ procurement blocker, not a nice-to-have.
 | `submitted` | field exercise | waste categories chosen, review path (`sampled` / `full` / `completeness-only`) | Rubric review routing; the observation gallery; badge `reviewStatus` |
 | `earned` | credential | badge ID, verification URL | Credential issuance |
 | `experienced` | glossary term, transcript, caption toggle | — | Tells us which accessibility features are actually load-bearing, so they are never "optimized away" |
-| `responded` | each go-look dossier entry (M1–M12) | completion flag only; **text never transmitted** | Whether the workplace tasks are being done; the dossier itself stays on the learner's device |
+| `responded` | each go-see dossier entry (M1–M12) | completion flag only; **text never transmitted** | Whether the workplace tasks are being done; the dossier itself stays on the learner's device |
 | `experienced` | coach rule codes (`coach/<code>`, `…/cleared`) on the field exercise | — | Which rubric lessons are not landing, per the coach specification §5; no draft text |
 | `reported` (custom verb) | andon cord, any screen | free text, screen ID | Feeds the public improvement board; the program's own response cadence is published |
 
@@ -110,6 +110,13 @@ submission quality can be reported by role without ever reporting an individual.
 
 Form ID on every knowledge-check statement is not optional: without it the item-exposure and
 retake-overlap rules in the assessment policy cannot be enforced or audited.
+
+### 4.2a Go-see reminders
+The LMS (or hosted platform) sends one reminder per open go-see task 48 hours after the
+module is completed if no `responded` completion flag has arrived — the task is done away
+from the screen, so the screen has to call the learner back. One reminder, not a sequence;
+text: the task, one line, and "write it when you're back." Corporate rollouts fold the same
+line into the CI lead's weekly nudge (playbook §4).
 
 ### 4.3 Data handling
 - Personal data minimized to what the credential and the client's reporting require.
@@ -139,5 +146,5 @@ independently of each other.
 - [ ] Accessibility gate passed (automated + keyboard + screen reader)
 - [ ] Reviewed against `modules.md` for content fidelity by the assessment lead
 - [ ] Vertical variants swapped and spot-checked (MFG / HC / TXN); role variants where the module has them
-- [ ] Go-look dossier task on the closing screen, saved locally, `responded` with completion flag only
+- [ ] Go-see dossier task on the closing screen, saved locally, `responded` with completion flag only
 - [ ] Andon cord present and emitting `reported` with the screen ID

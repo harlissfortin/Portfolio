@@ -41,7 +41,7 @@ is what prevents the failure the client would otherwise blame on the training.
 | −2 | Sponsor and CI lead briefed. Manager brief distributed. Reviewer calibration run |
 | −1 | Launch comms from the sponsor (not from L&D, and not from the vendor). Pre-assessment opens |
 | 1 | **Kickoff webinar.** Modules open. Help channel staffed |
-| 2–4 | Completion nudges at day 7 / 14 / 21 (§4). Submissions begin arriving; CI lead triages weekly |
+| 2–4 | Completion nudges at day 7 / 14 / 21 (§4), each carrying one go-see prompt ("this week: entry 5 — find one thing waiting"). Submissions begin arriving; CI lead triages weekly |
 | 3 | **First theme report back to all staff** — the single highest-value action in the rollout. Built from the submissions, which are the one-per-learner public face of the [process dossiers](../templates/process-dossier.md) every learner has been keeping since Module 1; a forty-person cohort is a forty-item problem inventory by this week |
 | 5 | Deadline week. Manager-level completion visibility (completion only, never content) |
 | 6 | Badges issued. Rollout report and QBR. Yellow Belt nomination conversation |
@@ -53,8 +53,10 @@ deadline, **≥ 90% of completers submitting a usable observation** (rubric ≥ 
 review). Below 70% completion, the cause is nearly always one of: no answer on learner time,
 no manager enablement, or no visible response to early submissions — diagnose in that order.
 
-Nudge sequence (from the CI lead's name, not the platform's): day 7 encouragement with the
-completion rate so far; day 14 a peer observation of the week ("here's one your colleague
+Nudge sequence (from the CI lead's name, not the platform's), each ending with the current
+go-see task — the dossier is where transfer happens, and a learner who is three modules in but
+has done no go-see is a learner who will submit a generic observation: day 7 encouragement
+with the completion rate so far; day 14 a peer observation of the week ("here's one your colleague
 submitted, and here's what happened with it"); day 21 deadline and a direct offer of help.
 **Never** a nudge that shames or copies a manager on an individual's status.
 
@@ -87,8 +89,10 @@ The client-facing asset that converts an awareness rollout into a CI program.
 **Gallery** (client-hosted or program-hosted): submissions displayed with the learner's name
 (their choice at submission — attributed or anonymous), tagged by waste category, department,
 and process. Filterable. Every entry carries a status: `new` → `read` → `triaged`
-(`just-do-it` / `local PDCA` / `escalated to project` / `noted, not now`) with a one-line
-reason. **A gallery without statuses is a suggestion box, and suggestion boxes teach people
+(`just-do-it` / `local PDCA` / `escalated to project` / `noted, not now` / `noted — not a
+problem, here's why`) with a one-line reason. The last status exists because an observation
+that turns out to be a misunderstanding still deserves an answer, not silence — it is the
+same set the program uses on its own public improvement board. **A gallery without statuses is a suggestion box, and suggestion boxes teach people
 to stop suggesting.**
 
 **Dashboard metrics:**

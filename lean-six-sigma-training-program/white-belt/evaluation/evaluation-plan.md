@@ -60,6 +60,7 @@ surface problems, in usable form, and keep doing it.
 | % of completers submitting a usable observation (rubric ≥ 5/8) | Field exercise review | ≥ 90% |
 | **% who submit a second, unprompted observation within 90 days** | Observation gallery | ≥ 15% — the single best behavior-change indicator this level has |
 | % of observations naming an internal customer (D4 ≥ 1) | Rubric scores | ≥ 85% |
+| % of completers recording ≥ 9 of 12 go-see dossier entries | `responded` completion flags (text never transmitted) | ≥ 70% — below this the go-see tasks are being skipped and the transfer claim is not earned |
 | 90-day pulse: "Since the course, have you raised a process problem at work?" | 3-item pulse survey at day 90 | ≥ 50% yes |
 | Yellow Belt progression rate | Enrollment data | Tracked, not targeted (it is a commercial metric, not a learning one) |
 

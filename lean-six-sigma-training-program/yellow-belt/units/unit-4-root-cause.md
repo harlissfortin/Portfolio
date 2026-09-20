@@ -109,7 +109,7 @@ statement (verbatim — no drift). Bones = cause categories:
 
 **The bridge to evidence (drumbeat of this unit):** a fishbone full of sticky notes is a
 map of *suspicions*. Nothing on it is true yet. The team's next move is always verification
-— go look, go measure, go test. In DMAIC terms: the fishbone is Analyze's brainstorm;
+— go see, go measure, go test. In DMAIC terms: the fishbone is Analyze's brainstorm;
 the check sheet, the run chart, and (at Green Belt) the hypothesis test are Analyze's proof.
 
 **Try (sim):** Sort 18 brainstormed causes onto the right bones for the vertical case; flag

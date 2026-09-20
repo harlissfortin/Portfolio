@@ -20,6 +20,12 @@ screen. It is one field ("What's wrong, in your words") plus the screen ID captu
 automatically. Nothing else is asked. It emits an xAPI `reported` statement carrying the
 screen ID and the free text, and posts to the board queue as `new`.
 
+**On the name.** On a production line the cord stops the line and brings a team leader
+within seconds. This cord cannot stop anything, and it does not pretend to. What it keeps
+from the original is the half that matters for a course: the report is acknowledged
+immediately on screen, it is never wrong to pull, and a named role answers it in the open,
+with a cadence you can check.
+
 Rules copied from the shop floor:
 - **Pulling the cord is never wrong.** A report that turns out to be a misunderstanding gets
   the status `noted — content clarified` or `noted — not a problem, here's why`, never a
@@ -30,7 +36,8 @@ Rules copied from the shop floor:
 - **Reporters are anonymous on the board** by default (initials on request). Their text is
   shown lightly edited for names and identifiers only.
 
-## 2. Statuses (identical to the client observation gallery, on purpose)
+## 2. Statuses (identical to the client observation gallery, on purpose — the rollout
+playbook §6 uses the same five)
 
 `new` → `read` → triaged as one of:
 
@@ -72,11 +79,17 @@ cycles that have actually run on the White Belt content to date, with their curr
 | 5 | Author (self-report) | Module 1 page read as generic e-learning; nothing distinguished it | `just-do-it` ✓ | Redesigned in shop-floor visual language (andon strip, floor tape, hazard stripe) |
 | 6 | Author (self-report) | Narration at 185 wpm too fast for instruction | `PDCA` ✓ adopted | Re-synthesized at 163 wpm speech-only; check: within the 140–170 instructional band; adopt |
 | 7 | LSS expert review | 94/6 misattributed to Deming's Japan work; special cause defined as "one person" | `just-do-it` ✓ | Attribution corrected to *Out of the Crisis* (1986); special cause redefined; Red Bead and Point 8 added — change log 2026-09-19 |
-| 8 | Author (self-report) | Learners finish awareness courses with no real observation of their own | `just-do-it` ✓ | Twelve go-look tasks and the process dossier added to every module |
+| 8 | Author (self-report) | Learners finish awareness courses with no real observation of their own | `just-do-it` ✓ | Twelve go-see tasks and the process dossier added to every module |
 | 9 | Program | Cut score is provisional (70%) until a modified-Angoff panel sits | `noted, not now` | Panel needs ≥ 8 SMEs and the first cohort's item statistics; review date: first cohort close |
 | 10 | Program | No empirical item statistics; bank has never met a learner | `noted, not now` | Resolved by the first 200 completions; nothing to do before then |
 | 11 | Program | Accessibility gate has been run on the prototype, not on a screen reader with a real user | `escalated to review` | Screen-reader pass with an assistive-technology user before launch; owner: production lead |
 | 12 | Program | Narration is a synthesized voice | `noted, not now` | Disclosed in every module footer; studio recording drops in without code changes; decision at first paid cohort |
+| 13 | Four-lens review (training / design / LSS / manufacturing) | The coach flagged the program's own worked examples ("accounts payable" had no place word; "twice" read as extra-processing; the healthcare example used "because") | `just-do-it` ✓ | Place vocabulary widened, count words excluded from K7, example rewritten; rule added: every worked example passes the coach clean |
+| 14 | Four-lens review | Benchmark library named dossier entries as a data source, contradicting the rule that dossiers are never transmitted | `just-do-it` ✓ | Sources moved to Yellow Belt storyboards and the optional size box; dossier struck as a source |
+| 15 | Four-lens review | No safety-hazard recognition in the coach, although the rubric escalates hazards the same day | `just-do-it` ✓ | H1 rule added (manufacturing and healthcare hazard vocabulary); submission path *escalate*; receipt tells the learner to use their site's channel today |
+| 16 | Four-lens review | "Andon cord" overpromises — a real cord stops the line and brings a leader in seconds | `noted — not a problem, here's why` | The name stays; the board states plainly what the cord does not do, and keeps the half that matters: instant acknowledgment, never wrong to pull, a named role answers in the open |
+| 17 | Four-lens review | "Go look" is the Lean practice of *gemba* / *genchi genbutsu* and should be taught by name | `just-do-it` ✓ | Renamed *go see* program-wide; glossary entry from Module 1; one CERT item added (E13) |
+| 18 | Four-lens review | Readiness strip used green for "looks ready," which reads as pass/fail against the spec's own rule | `just-do-it` ✓ | Both states in ink; hazard stripe marks "needs work"; green reserved for the receipt |
 
 ## 5. Who owns the board
 

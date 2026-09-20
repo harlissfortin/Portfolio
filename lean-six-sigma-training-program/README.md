@@ -10,8 +10,8 @@ to external clients across multiple industries.
 > reinforcement, (6) measurement & evidence, (7) corporate deployment, (8) content operations.
 >
 > - **[White Belt →](white-belt/README.md)** — **all eight components built.** 12 lesson
->   modules with spaced cumulative checks and a go-look dossier task on each, three vertical
->   production scripts plus the role layer, 80-item tagged item bank plus pre-assessment and
+>   modules with spaced cumulative checks and a go-see dossier task on each, three vertical
+>   production scripts plus the role layer, 81-item tagged item bank plus pre-assessment and
 >   retrieval pools, field-exercise rubric with calibrated sampled review and the built
 >   rubric coach, BoK crosswalk and credential spec with evidence policy,
 >   production/accessibility/LMS spec, working prototype, Module 1 production build with
@@ -109,7 +109,7 @@ By completion, the learner can:
 ### Practice / application component
 - Interactive waste-spotting simulations (click-to-find wastes in a video walkthrough of a
   clinic, plant floor, and office).
-- **Bring Your Own Process:** every module ends with a five-minute *go look* task in the
+- **Bring Your Own Process:** every module ends with a five-minute *go see* task in the
   learner's own workplace, accumulating into a personal
   [process dossier](white-belt/templates/process-dossier.md); by Module 12 the learner has
   found their first three improvement opportunities.
@@ -132,7 +132,7 @@ By completion, the learner can:
   [`white-belt/field-exercise-rubric.md`](white-belt/field-exercise-rubric.md).
 
 ### Assessment method
-- 20-question multiple-choice knowledge check assembled to blueprint from an 80-item tagged
+- 20-question multiple-choice knowledge check assembled to blueprint from an 81-item tagged
   bank, **provisional 70% cut (Angoff panel to confirm)**, unlimited retakes with ≤25%
   overlap; 10-item pre-assessment for test-out and pre/post gain; field exercise
   auto-checked for completeness and **quality-sampled by rubric** (10% of submissions, or
@@ -579,7 +579,7 @@ By completion, the candidate can:
 | **Format** | Self-paced | Self-paced + 2 live workshops | 8-wk live-virtual cohort (or 2×3-day on-site) | 16-wk hybrid + 2 immersions | 6-mo hybrid fellowship |
 | **Signature tools taught** | 8 wastes, DMAIC awareness, VA/NVA | SIPOC, process maps, 5S, PDCA, Pareto, 5 Whys, fishbone | VSM, MSA, capability, control charts, hypothesis tests, regression (simple), FMEA, control plans | DOE, multiple/logistic regression, advanced SPC, future-state VSM, kaizen leadership, change leadership | Hoshin Kanri, deployment design, RSM/simulation, DFSS, coaching & training design |
 | **Project requirement** | Field observation exercise | Real Just-Do-It mini-project (rubric-reviewed) | Real sponsored DMAIC project, independently reviewed + sponsor-verified | BB-scale project + DOE practicum + kaizen facilitation + GB coaching | Enterprise deployment capstone + assessed coaching + teach-back + panel defense |
-| **Exam** | 20 Q from 80-item bank; provisional 70% (Angoff) | 40 Q from 140-item bank; provisional 75% (Angoff) | 100 Q proctored; provisional 80% (Angoff) | 150 Q proctored; provisional 80% (Angoff) | None — panel defense w/ external examiner |
+| **Exam** | 20 Q from 81-item bank; provisional 70% (Angoff) | 40 Q from 140-item bank; provisional 75% (Angoff) | 100 Q proctored; provisional 80% (Angoff) | 150 Q proctored; provisional 80% (Angoff) | None — panel defense w/ external examiner |
 | **Certifying authority** | Program credential (awareness badge) | Program credential; IACET CEUs ⚙️ | Program credential; IASSC-BoK-aligned; CSSC-accredited provider ⚙️; independent reviewer | Same + MBB reviewer of record signs | Same + external examiner + public portfolio |
 | **Renewal** | None | None (optional refresher) | 3-yr CEU renewal (earnable free) | 3-yr: CEUs + project/coaching evidence | Active-status via practice evidence |
 
@@ -745,7 +745,7 @@ course materials, and where it is a learner-facing surface, prototyped.
 
 | # | Differentiator | What it is | Status | Where |
 |---|---|---|---|---|
-| 1 | **Bring Your Own Process** | The learner's real work is the case study from minute one: twelve go-look tasks, one per module, accumulating into a personal process dossier that seeds the Yellow Belt project and the corporate problem inventory | Built; in Module 1 production build with narration | [`white-belt/templates/process-dossier.md`](white-belt/templates/process-dossier.md), [`white-belt/modules.md`](white-belt/modules.md) |
+| 1 | **Bring Your Own Process** | The learner's real work is the case study from minute one: twelve go-see tasks, one per module, accumulating into a personal process dossier that seeds the Yellow Belt project and the corporate problem inventory | Built; in Module 1 production build with narration | [`white-belt/templates/process-dossier.md`](white-belt/templates/process-dossier.md), [`white-belt/modules.md`](white-belt/modules.md) |
 | 2 | **A credential that shows the work** | Badge carries the reviewed artifact, rubric scores and the reviewer of record, at the learner's choice, on a permanent verification page | Built; verification page prototyped | [`program-operations/credential-evidence-policy.md`](program-operations/credential-evidence-policy.md) |
 | 3 | **Run the course on Lean, visibly** | Andon cord in every module; a public improvement board with the same five statuses the program demands of clients; PDCA on content; the change log made public | Built; board seeded with the program's real history; cord in Module 1 | [`program-operations/improvement-board.md`](program-operations/improvement-board.md) |
 | 4 | **Radical outcome transparency** | Published outcomes page with definitions, minimum n per figure and an honest launch state at n = 0, live before the first sale | Built; page prototyped | [`program-operations/outcomes-page.md`](program-operations/outcomes-page.md) |

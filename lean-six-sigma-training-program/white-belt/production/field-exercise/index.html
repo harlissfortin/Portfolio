@@ -50,7 +50,7 @@ mark{background:var(--amber);color:var(--amber-ink);padding:0 .12em}
 .ready .n{font:700 12px/1 var(--m);letter-spacing:.06em}
 .ready .st{font:500 11px/1 var(--m);letter-spacing:.1em;text-transform:uppercase}
 .ready li.ok{border-color:var(--ink);color:var(--ink)}
-.ready li.ok .st{color:var(--done)}
+.ready li.ok .st{color:var(--ink)}
 .ready li.work{border-color:var(--ink);color:var(--ink)}
 .ready li.work::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:repeating-linear-gradient(135deg,var(--amber) 0 6px,transparent 6px 12px)}
 .ready li.work .st{color:var(--mark-amber)}
@@ -104,6 +104,8 @@ textarea[aria-invalid="true"],input[aria-invalid="true"]{border-bottom-color:var
 .coach li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:15.5px;line-height:1.45;padding:8px 12px;border-left:4px solid var(--amber);background:var(--raised)}
 .coach li.good{border-left-color:var(--done)}
 .coach li.gate{border-left-color:var(--ink)}
+.coach li.safety{border-left-color:var(--ink);background:var(--ink);color:var(--paper)}
+.coach li.safety .c,.coach li.safety .why{color:var(--paper);opacity:.85}
 .coach .c{font:700 11px/1.6 var(--m);letter-spacing:.1em;color:var(--steel);padding-top:2px}
 .coach li.good .c{color:var(--done)}
 .coach li .why{display:block;color:var(--steel);font-size:14px}
@@ -308,7 +310,7 @@ const R=(rx)=>new RegExp(rx,"i");
 const RULES={
  where:[
   {code:"W1",gate:true,d:1,test:t=>t.trim().split(/\s+/).filter(Boolean).length<3,msg:"Name the process and where it happens."},
-  {code:"W2",d:1,test:t=>!R("\\b(desk|line|cell|ward|unit|station|shift|queue|inbox|room|bay|floor|dock|counter|clinic|pharmacy|lab|office|warehouse|kitchen|register|portal|system|erp|crm|epic|sap|screen|bench|press|machine|area|department|dept|team|site|store|branch|plant|theatre|theater|triage|reception|intake|dispatch|yard|gate|bed|cart|tote|printer|e-?mail|ticket|form|report)\\b").test(t),msg:"Where would a camera stand? Add the place or the step."},
+  {code:"W2",d:1,test:t=>!R("\\b(desk|line|cell|ward|unit|station|shift|queue|inbox|room|bay|floor|dock|counter|clinic|pharmacy|lab|office|warehouse|kitchen|register|portal|system|erp|crm|epic|sap|screen|bench|press|machine|area|department|dept|team|site|store|branch|plant|theatre|theater|triage|reception|intake|dispatch|yard|gate|bed|cart|tote|printer|e-?mail|ticket|form|report|processing|payable|receivable|billing|claims|scheduling|admissions|discharge|rounds?|assembly|packing|picking|shipping|receiving|weld|paint|mou?lding|machining|inspection|maintenance|call cent(er|re)|help ?desk|front desk|nurses'? station)\\b").test(t),msg:"Where would a camera stand? Add the place or the step."},
  ],
  obs:[
   {code:"O1",gate:true,d:1,test:t=>{const w=t.trim().split(/\s+/).filter(Boolean).length;const s=(t.match(/[.!?](\s|$)/g)||[]).length;return w<25||s<2},msg:"Describe what you'd see on video — at least two sentences."},
@@ -317,6 +319,7 @@ const RULES={
   {code:"O4",d:2,test:t=>R("\\b(should|needs? to|we could|if only|just (buy|install|hire|get|add|fix)|ought to|the fix is|the solution)\\b").test(t),msg:"That's a solution. Keep it for box 6, offered as a hypothesis."},
   {code:"O5",d:2,test:t=>R("\\b(always|never|every (single )?time|constantly|all the time|nobody ever|everyone always)\\b").test(t),msg:"Absolutes read like a complaint. Try a count: “about three times a shift.”"},
   {code:"O6",d:1,test:t=>R("\\b(a lot|lots of|too much|too many|often|sometimes|takes forever|ages|forever|frequently|regularly)\\b").test(t)&&!R("\\d|\\b(one|two|three|four|five|six|seven|eight|nine|ten|dozen|half|twice|once|hour|minute|day|week|shift|percent)\\b").test(t),msg:"Can you put a rough number on that? Even “about” counts."},
+  {code:"H1",safety:true,d:0,test:(t,ctx)=>R("\\b(unguarded|guards? (is |are |was |were )?(removed|missing|off|open|bypassed|tied back)|no guard|reach(es|ing|ed)? in(to)? (the|a) (machine|press|guard)|interlock (bypassed|defeated|taped)|near[- ]miss|injur|spill|exposed wir|blocked (exit|fire)|fire exit|no ppe|without ppe|lock[- ]?out|tag[- ]?out|forklift.{0,40}(pedestrian|people|walk)|(pedestrian|people|walk).{0,40}forklift|sharps|needle ?stick|wrong (patient|medication|drug|dose|site)|electric shock|trip hazard|fell|fall from|ladder|confined space|hot surface|burn|chemical|fumes|pinch point|crush|loto|leak(s|ing)?|crane|overhead load|unlabel(l)?ed (drum|container|chemical)|no (label|sds)|eyewash|e-?stop (not working|broken|missing))\\b").test(ctx.where+" "+t+" "+ctx.who),msg:"This reads like a safety hazard. Submit it — and report it through your organization's safety channel today, without waiting for review. The program thanks people who report; it never penalizes them.",why:"Rubric §5: hazards are escalated the same day, never handled in the feedback box."},
   {code:"X1",d:1,test:(t,ctx)=>{const g=s=>{const w=s.toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(Boolean);const o=new Set();for(let i=0;i+4<=w.length;i++)o.add(w.slice(i,i+4).join(" "));return o};const a=g(t);if(a.size<6)return false;const m=g(MODEL[state.vert].obs);let s=0;for(const x of a)if(m.has(x))s++;return s/a.size>=0.6},msg:"This is close to the worked example. Reviewers see the example too — write yours."},
   {code:"O7",good:true,d:1,test:(t,ctx)=>R("\\d|\\b(one|two|three|four|five|six|seven|eight|nine|ten|dozen|half|twice|once|hourly|daily|weekly|per (day|shift|hour|week))\\b").test(t)&&!ctx.any(["O2","O3","O4","O5"]),msg:"Good — this has a count. A reviewer can picture it."},
  ],
@@ -327,7 +330,7 @@ const RULES={
   {code:"K4",d:3,test:(w,ctx)=>R("\\b(wait|waits|waiting|waited|idle|queue|queued|on hold|standing around|sat waiting|sits? waiting)\\b").test(ctx.obs)&&!w.includes("W"),msg:"Someone or something waits in this observation. Consider Waiting."},
   {code:"K5",d:3,test:(w,ctx)=>R("\\b(rework|reworked|wrong|error|errors|mistake|mistakes|redo|redone|reprint|reprinted|returned|corrected|correction|bounced|rejected|incorrect|misread|typo)\\b").test(ctx.obs)&&!w.includes("D"),msg:"Something came back or was redone. Consider Defects."},
   {code:"K6",d:3,test:(w,ctx)=>R("\\b(pile|piles|piled|backlog|stack|stacks|stacked|inbox (is )?full|queue of|waiting to be|build(s|ing)? up|accumulat)\\b").test(ctx.obs)&&!w.includes("I"),msg:"Work is piling up between steps. Consider Inventory."},
-  {code:"K7",d:3,test:(w,ctx)=>R("\\b(retype|retyped|re-?enter|re-?entered|twice|again|double[- ]?(entry|handling|check)|print(ed|s)? (and|then) (type|enter)|copy (it )?into|copied into|manually (re)?key)\\b").test(ctx.obs)&&!w.includes("E"),msg:"The same work is being done twice. Consider Extra-processing."},
+  {code:"K7",d:3,test:(w,ctx)=>R("\\b(retype|retyped|re-?enter|re-?entered|typed (it )?(in )?again|entered (it )?again|double[- ]?(entry|handling|check)|print(ed|s)? (and|then) (type|enter)|copy (it )?into|copied into|manually (re)?key)\\b").test(ctx.obs)&&!w.includes("E"),msg:"The same work is being done twice. Consider Extra-processing."},
   {code:"K8",d:3,test:(w)=>w.length>=5,msg:"Five wastes at once is usually a sign of a vague observation. Which two would you defend to a reviewer?"},
  ],
  who:[
@@ -348,9 +351,9 @@ const WHY={O3:"D2: a cause asserted as fact is a judgment, however plausible.",O
 const MODEL={
  TXN:{where:"Invoice processing, accounts payable.",obs:"Invoices arriving by email are printed, then the same details are typed into the ERP system by hand. Roughly one in ten comes back from the approver with a mistyped field, and it is corrected and re-entered.",w:"Extra-processing (print and retype), Defects (mistyped fields), Waiting (the correction loop adds one to two days)",who:"Suppliers on the corrected invoices are paid late and call to chase; the AP team spends part of each afternoon on corrections.",size:"About 60 invoices a day; corrections on about 6, at 15 minutes each.",
   role:{FL:"Written from the desk: what the clerk sees and touches. That is enough.",SV:"A supervisor's version would add what reaches them: the chase calls land on the team lead's line. Still no cause, still no name.",LD:"A leader's version notes that the same print-and-retype step exists in two other departments. Same observation; wider lens."}},
- HC:{where:"Morning medication rounds, Unit 4.",obs:"The nurse walks from the medication room to the patient bay and back for each of the first four patients, about 40 metres each way, because one item is missing from the tray each time. Two of the trips on Tuesday were for the same item. The round finished 25 minutes after the scheduled time.",w:"Motion (the nurse walking), Waiting (patients whose medication is late), Defects (an incomplete tray)",who:"Patients in bays 3 to 6 receive medication later than scheduled; the nurse loses about 25 minutes that would have gone to the 9:00 handover.",size:"About four extra trips per round, two rounds a day.",
-  role:{FL:"Written by the nurse doing the round. Note that it says what the camera would see, including the word “because” only where it describes a fact seen on the tray, not a theory about anyone.",SV:"A charge nurse's version adds what it costs the shift: the handover starts late for the whole team.",LD:"A director's version notes the same tray set-up is used on three units. Same observation; a system question."}},
- MFG:{where:"Weld cell 2, second shift.",obs:"Finished brackets are placed in a tote marked REWORK that already holds about a dozen. The operator walks to the fixture rack twice during the hour to swap a fixture that has been adjusted with a hand-cut shim. The staging area has no material for the next order for about 15 minutes at the start of the shift.",w:"Defects (the rework tote), Motion (the walks to the rack), Waiting (no material at shift start)",who:"The assembly cell downstream receives fewer good brackets per shift and reworks some itself; the operator loses about 20 minutes a shift to fixture swaps.",size:"About a dozen reworked brackets a shift; two fixture swaps an hour.",
+ HC:{where:"Morning medication rounds, Unit 4.",obs:"The nurse walks from the medication room to the patient bay and back for each of the first four patients, about 40 metres each way; each time one item is missing from the tray. Two of the trips on Tuesday were for the same item. The round finished 25 minutes after the scheduled time.",w:"Motion (the nurse walking), Waiting (patients whose medication is late), Defects (an incomplete tray)",who:"Patients in bays 3 to 6 receive medication later than scheduled; the nurse loses about 25 minutes that would have gone to the 9:00 handover.",size:"About four extra trips per round, two rounds a day.",
+  role:{FL:"Written by the nurse doing the round. It says only what the camera would see: the walk, the missing item, the clock. No theory about why the item is missing — that is Yellow Belt work.",SV:"A charge nurse's version adds what it costs the shift: the handover starts late for the whole team.",LD:"A director's version notes the same tray set-up is used on three units. Same observation; a system question."}},
+ MFG:{where:"Weld cell 2, second shift.",obs:"Brackets coming off the cell are placed in a tote marked REWORK that already holds about a dozen. The operator walks to the fixture rack twice during the hour to swap a fixture that has been adjusted with a hand-cut shim. The staging area has no material for the next order for about 15 minutes at the start of the shift.",w:"Defects (the rework tote), Motion (the walks to the rack), Waiting (no material at shift start)",who:"The assembly cell downstream receives fewer good brackets per shift and reworks some itself; the operator loses about 20 minutes a shift to fixture swaps.",size:"About a dozen reworked brackets a shift; two fixture swaps an hour.",
   role:{FL:"Written from the cell. The shim is described, not judged: nobody is praised or blamed for it.",SV:"A team lead's version adds what reaches them: the downstream cell's complaint arrives as a call at 15:30 most days.",LD:"A plant manager's version notes the shim fix has never been asked about. That is a non-utilized talent observation as much as a defect one."}}
 };
 const VERT={MFG:"Manufacturing",HC:"Healthcare",TXN:"Office"}, ROLE={FL:"Frontline",SV:"Supervisor",LD:"Leader"};
@@ -365,7 +368,7 @@ function renderModel(){
 /* ---- coach engine ---- */
 const touched={};
 let firedNow={};
-function ctxOf(){return {obs:state.draft.obs,any:codes=>codes.some(c=>firedNow[c])}}
+function ctxOf(){return {obs:state.draft.obs,where:state.draft.where,who:state.draft.who,any:codes=>codes.some(c=>firedNow[c])}}
 function runRules(){
   const d=state.draft, ctx=ctxOf(); firedNow={};
   const out={where:[],obs:[],waste:[],who:[],size:[],idea:[]};
@@ -379,7 +382,7 @@ function paint(all){
   for(const key of Object.keys(res)){
     const ul=document.getElementById("c_"+key);
     const show=(all||touched[key])?res[key]:[];
-    const html=show.map(r=>`<li class="${r.good?"good":r.gate?"gate":""}"><span class="c">${r.code}</span><span>${esc(r.msg)}${WHY[r.code]||r.why?`<span class="why">${esc(WHY[r.code]||r.why)}</span>`:""}</span></li>`).join("");
+    const html=show.map(r=>`<li class="${r.safety?"safety":r.good?"good":r.gate?"gate":""}"><span class="c">${r.code}</span><span>${esc(r.msg)}${WHY[r.code]||r.why?`<span class="why">${esc(WHY[r.code]||r.why)}</span>`:""}</span></li>`).join("");
     if(ul.innerHTML!==html) ul.innerHTML=html;
   }
   // record which advisory rules ever fired (codes only)
@@ -425,30 +428,40 @@ document.getElementById("fx").addEventListener("submit",ev=>{
   const gates=[["where","f_where"],["obs","f_obs"],["waste",null],["who","f_who"]].map(([k,id])=>[k,id,res[k].find(r=>r.gate)]).filter(x=>x[2]);
   ["f_where","f_obs","f_who"].forEach(id=>document.getElementById(id).setAttribute("aria-invalid","false"));
   if(gates.length){const [k,id,r]=gates[0]; say("Not yet: "+r.msg); if(id){const el=document.getElementById(id);el.setAttribute("aria-invalid","true");el.focus()} else document.querySelector("input[name=w]").focus(); return}
-  const blame=!!firedNow.O2;
-  const path=blame?"full (blame flag)":"sampled";
+  const blame=!!firedNow.O2, hazard=!!firedNow.H1;
+  const path=hazard?"escalate (safety)":blame?"full (blame flag)":"sampled";
   const flags=Object.fromEntries(Object.entries(state.fired).map(([c,v])=>[c,v.clear?"cleared":"open"]));
   emit("submitted","field-exercise",{result:{completion:true,extensions:{"https://lss.example/x/wastes":state.draft.w,"https://lss.example/x/review-path":path,"https://lss.example/x/coach-flags":flags}}});
-  state.submitted={at:new Date().toISOString(),path,flags,w:state.draft.w}; store.set("submitted",state.submitted);
-  const open=Object.entries(flags).filter(([c,s])=>s==="open"&&!/^(O7|S1)$/.test(c)).map(([c])=>c);
+  state.submitted={at:new Date().toISOString(),path,flags,w:state.draft.w,blame,hazard}; store.set("submitted",state.submitted);
+  state.draft={where:"",obs:"",w:[],who:"",size:"",idea:""}; store.set("draft",state.draft); state.fired={}; store.set("fired",state.fired);
+  showReceipt(); say("Submitted. Review path: "+path+".");
+});
+function showReceipt(){
+  const s=state.submitted; if(!s) return;
+  const open=Object.entries(s.flags).filter(([c,st])=>st==="open"&&!/^(O7|S1)$/.test(c)).map(([c])=>c);
   document.getElementById("fx").hidden=true;
   document.getElementById("shead").textContent="Submitted — your first contribution";
   document.querySelector(".kick").hidden=true;
   const dn=document.getElementById("done"); dn.hidden=false; dn.innerHTML=`<div class="receipt"><h3>Received</h3><dl>
-    <dt>Wastes named</dt><dd>${esc(state.draft.w.join(", ")||"—")}</dd>
-    <dt>Review path</dt><dd>${blame?"<b>Human review.</b> The blame flag was still showing, so a calibrated reviewer reads this one regardless of sampling. You'll get their feedback in four sentences or fewer.":"Completeness check passed. One in ten submissions (all, in a corporate rollout) is read by a calibrated reviewer; if yours is sampled you'll get their feedback."}</dd>
+    <dt>Wastes named</dt><dd>${esc(s.w.join(", ")||"—")}</dd>
+    <dt>Review path</dt><dd>${s.hazard?"<b>Escalated today.</b> Your observation reads like a safety hazard, so a human sees it the same day and it does not wait for sampling. Please also use your organization's safety channel now — this form is not one.":s.blame?"<b>Human review.</b> The blame flag was still showing, so a calibrated reviewer reads this one regardless of sampling. You'll get their feedback in four sentences or fewer.":"Completeness check passed. One in ten submissions (all, in a corporate rollout) is read by a calibrated reviewer; if yours is sampled you'll get their feedback."}</dd>
     <dt>Coach flags at submission</dt><dd>${open.length?esc(open.join(", "))+" still open — that's allowed; the coach advises, it doesn't decide.":"None open."}</dd>
-    <dt>What was sent</dt><dd>Your four answers, the wastes, and the list of coach rule codes that fired. Not the dossier, not the draft history.</dd>
+    <dt>What was sent</dt><dd>Your four answers, the wastes, and the list of coach rule codes that fired. Not the dossier, not the draft history. The draft has been cleared from this device.</dd>
    </dl></div>
    <ul class="tk"><li>This observation is a real contribution to a real problem inventory — the first of many.</li>
    <li>Your process dossier stays with you. Entries 5, 6 and 8 are usually your next three.</li>
-   <li>If this problem looks bigger than one observation, a Yellow Belt problem statement is the next tool. The reviewer will tell you if they think so.</li></ul>`;
-  document.getElementById("shead").focus({preventScroll:true}); window.scrollTo({top:0}); say("Submitted. Review path: "+path+".");
-});
+   <li>If this problem looks bigger than one observation, a Yellow Belt problem statement is the next tool. The reviewer will tell you if they think so.</li></ul>
+   <div class="nav"><button class="btn sec" type="button" id="another">Write another observation</button></div>`;
+  document.getElementById("another").addEventListener("click",()=>{state.submitted=null;store.set("submitted",null);
+    for(const [k,id] of Object.entries(F)) document.getElementById(id).value=""; document.querySelectorAll("input[name=w]").forEach(c=>c.checked=false); Object.keys(touched).forEach(k=>delete touched[k]);
+    dn.hidden=true; dn.innerHTML=""; document.getElementById("fx").hidden=false; document.querySelector(".kick").hidden=false;
+    document.getElementById("shead").textContent="One real observation from your own work"; paint(false); document.getElementById("f_where").focus()});
+  document.getElementById("shead").focus({preventScroll:true}); window.scrollTo({top:0});
+}
 
 /* ---- first paint ---- */
 renderModel();
-if(state.submitted){ /* fresh session after a submission: show the form again for another observation, with the draft cleared */ }
 emit("attempted");
 paint(false);
+if(state.submitted) showReceipt();
 </script>

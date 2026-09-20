@@ -34,9 +34,9 @@ says so with the sample size, has a claim no competitor can copy without doing t
 
 | Measure | Definition | Source in the program |
 |---|---|---|
-| Elapsed-vs-value ratio | Value-added time ÷ elapsed time for one work item, learner-observed | White Belt dossier entry 7 (submitted entries only, with consent) |
+| Elapsed-vs-value ratio | Value-added time ÷ elapsed time for one work item | Yellow Belt storyboard baselines (timing data, rubric-passed only); Green Belt Measure-phase data. **Never the White Belt dossier — dossiers are not transmitted** |
 | Waste-category distribution | Share of submitted observations by DOWNTIME category | White Belt field exercise submissions |
-| Search time | Minutes per day a learner reports searching for items/information | White Belt dossier entry 8 (submitted entries only) |
+| Search time | Minutes per day spent searching for items/information | Yellow Belt 5S mini-projects (audit-sheet baselines); the optional size box of a White Belt submission when it names searching, labeled learner-reported |
 | Triage latency | Days from observation submission to first status change, corporate rollouts | Rollout dashboard |
 | Second-observation rate | Share of White Belt holders submitting a second observation within 90 days | Evaluation plan, L3 |
 | Just-do-it cycle time | Days from a Yellow Belt problem statement to a checked countermeasure | Yellow Belt mini-project storyboards |
@@ -57,8 +57,9 @@ data. This page is published in this state on purpose.*
 
 ## How a row is born
 
-1. Field exercise and dossier data arrive tagged by vertical and role; learners consent at
-   submission to aggregate use (the terms of certification §7 cover this; declining changes
+1. Field exercise submissions and Yellow Belt storyboards arrive tagged by vertical and
+   role (dossier entries never leave the learner's device and are not a source); learners
+   consent at submission to aggregate use (the terms of certification §7 cover this; declining changes
    nothing about their credential).
 2. Monthly, the assessment lead tallies eligible observations per measure.
 3. At n ≥ 30 from ≥ 3 organizations the row moves to *forming*; at the next quarterly review

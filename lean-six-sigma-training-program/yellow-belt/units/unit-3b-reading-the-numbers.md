@@ -104,7 +104,7 @@ median and say so. Ask "mean or median?" whenever a number is presented alone.
   processes hiding in one data set: two shifts, two machines, two forms).
 
 **Try:** Three data sets shown as histograms with mean and median marked; for each: "Which
-center would you report, and what does the shape tell you to go look for?"
+center would you report, and what does the shape tell you to go see for?"
 
 ---
 
