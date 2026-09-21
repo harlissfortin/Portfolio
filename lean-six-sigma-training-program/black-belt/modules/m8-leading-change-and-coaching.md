@@ -218,7 +218,7 @@ The order is fixed because executives decide from the top of the page down:
 chart runs unbroken from the baseline; a window that starts after a bad month is a
 reconstructed baseline. The y-axis starts at zero or says why not; no dual axes. The prediction
 sits beside the result, so an unmet prediction is visible and said. n, window and definition
-are on the chart. Money appears only in the class Finance agreed (8.7), and an annualised
+are on the chart. Money appears only in the class Finance agreed (8.7), and an annualized
 figure only next to the measured one. An average of averages, a percentage of a percentage and
 a 60% improvement from two days are stories that are not true.
 
@@ -341,7 +341,7 @@ with the Black Belt template at
 | Mission / clinical / service | The metric itself; no money unless Finance agrees a rate | The sponsor's executive equivalent, named, signs |
 
 What F1 and F2 score: separate rows, never added across classes into one headline; the
-annualised figure only beside the measured figure, computed by Finance, seasonal assumption
+annualized figure only beside the measured figure, computed by Finance, seasonal assumption
 labelled; project cost (your hours, time contracts, spend) netted; the no-double-counting
 declaration against every project and Yellow Belt mini-project on the same ledger line. The
 partnership is a schedule: the Finance partner sees the metric at Tollgate 2 and states the
@@ -354,7 +354,7 @@ classified *service impact*, the Chief Nursing Officer signs as the executive eq
 the project is certifiable. Multiplying 140 h by a bed-day charge would have produced a number
 Finance could not sign.
 
-**When NOT to use.** Do not put soft hours in money in the headline; do not annualise a
+**When NOT to use.** Do not put soft hours in money in the headline; do not annualize a
 seasonal process from one season's window; do not claim forecast revenue; do not let CoPQ stand
 in for a benefit case — it says what the process costs, not what your change recovered.
 
@@ -477,7 +477,7 @@ Prerequisite: 8.6–8.7 complete; the case Tollgate 3 package scored alone, in w
   the decision is the sponsor's.
 
 Failure modes: the reviewer who softens a hold because the Green Belt worked hard; the sponsor
-who defers to the reviewer; the Finance role-player who signs the annualised figure. **Protect
+who defers to the reviewer; the Finance role-player who signs the annualized figure. **Protect
 the debrief**: if the simulation overruns, drop the third gate, never the Finance clinic or the
 close.
 
@@ -495,7 +495,7 @@ close.
 - **★ F1 Finance sign-off:** Finance partner named; benefit rows classified; calculation basis
   agreed in writing before the evidence window closes; no-double-counting declaration drafted.
 - **F2 Cost of the project:** hours, time contracts and spend totalled and netted;
-  annualisation basis stated or the figure withheld.
+  annualization basis stated or the figure withheld.
 - **S1 The record:** A3 and appendices assembled so a stranger can follow them; every chart
   labelled with its data source.
 - **Requirement 5:** two Green Belt tollgate reviews scheduled with the supervising reviewer;
@@ -522,9 +522,9 @@ structure. Files:
 | `resistance-log.csv` | date, unit or area, behaviour observed, reported by, follow-up | One Ability episode (design fails under real conditions); one interest episode (a metric penalises the change); one that looks like resistance and is a data conflict |
 | `event-log.csv` | case id, activity, timestamp, resource | The "request additional information" loop on 27% of cases; a timestamp entered in batches at 17:00 that fails the entry-step check |
 | `copq-ledger.csv` | quarter, ledger line, cost centre, amount, CoPQ category | Rework coded to overtime, not quality; one prevention cost miscoded as failure |
-| `benefit-rows.csv` | row, class claimed, working, measured over window, basis | A soft benefit presented as hard; an annualised figure with no measured figure beside it; one row already claimed by a Yellow Belt mini-project |
+| `benefit-rows.csv` | row, class claimed, working, measured over window, basis | A soft benefit presented as hard; an annualized figure with no measured figure beside it; one row already claimed by a Yellow Belt mini-project |
 | `gb-tollgate-packages/` | Tollgate 2, 3 and 4 one-pagers for the Green Belt invoice project | T2: baseline starts after a bad month; T3: p-value without effect size, rejected causes missing, countermeasure off-target; T4: control-plan owner without authority |
-| `readout-draft.md` | A candidate's draft executive readout | Opens with the fishbone; chart window starts at the pilot; prediction absent; annualised headline |
+| `readout-draft.md` | A candidate's draft executive readout | Opens with the fishbone; chart window starts at the pilot; prediction absent; annualized headline |
 
 ## Takeaways
 - An executive's position is what they release; the cost of your change in their metric is the
@@ -534,7 +534,7 @@ structure. Files:
 - The readout opens with the decision, shows one chart continuous from baseline with the
   prediction on it, and says what did not work.
 - In the reviewer's chair you record and do not coach; a hold is the most useful thing you
-  give. Finance signs rows it can trace, in separate classes, measured before annualised.
+  give. Finance signs rows it can trace, in separate classes, measured before annualized.
 
 ## Cumulative check
 **CC8.1.** (M6) A transactional process reports daily mean handling time from about 400 calls

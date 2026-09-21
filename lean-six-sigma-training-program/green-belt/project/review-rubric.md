@@ -88,3 +88,5 @@ labeled accordingly.
   review and quarterly thereafter; drift greater than 5 points total or any disagreement on a
   ★ item triggers re-calibration. Annual random re-review of 10% of certified projects per the
   audit policy.
+
+*v1.0 · 2026-09-20*

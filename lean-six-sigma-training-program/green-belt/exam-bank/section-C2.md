@@ -618,7 +618,7 @@ A. Run the chi-square; attribute agreement only matters for Gage R&R on measurem
 <!--
 Key tally (56 items): A = 14 (C2-3, 7, 9, 13, 16, 21, 25, 29, 34, 39, 45, 48, 53, 55) · B = 14 (C2-1, 5, 11, 15, 20, 23, 27, 30, 35, 37, 41, 43, 47, 51) · C = 14 (C2-4, 6, 10, 14, 17, 22, 24, 31, 38, 40, 46, 50, 52, 54) · D = 14 (C2-2, 8, 12, 18, 19, 26, 28, 32, 33, 36, 42, 44, 49, 56)
 Type: X = 36 (64%) · S = 13 · K = 7
-Bloom: Analyze = 33 · Apply = 16 · Understand = 7 · Remember = 0 (Apply/Analyze = 88%)
+Bloom: Analyze = 32 · Apply = 17 · Understand = 7 · Remember = 0 (Apply/Analyze = 88%)
 Vertical: MFG = 17 · HC = 16 · TXN = 16 · NEU = 7
 Negative stems: 0
 "When not to use" coverage: two-sample t (C2-4, 5, 9, 54) · paired t (C2-9, 40) · one-sample t (C2-38) · ANOVA (C2-13, 15, 51) · chi-square (C2-17, 56) · correlation (C2-21, 22, 23) · regression (C2-26, 27, 55) · CI/p-value (C2-31, 34, 35)

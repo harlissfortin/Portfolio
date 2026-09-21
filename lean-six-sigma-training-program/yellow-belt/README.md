@@ -1,8 +1,9 @@
 # Yellow Belt — Contributing to Improvement Projects
 
 **Format:** Hybrid-lite — self-paced e-learning + 2 live virtual workshops
-**Duration:** ~12–14 hours over 2–4 weeks (8–10 hrs self-paced, 2×90-min workshops, plus
-mini-project time in the learner's own work)
+**Duration:** ≈ 15 hours over a minimum of three weeks (≈ 10 h self-paced including the
+embedded simulation, 2 × 120-min workshops, 1 h exam, plus mini-project time in the learner's
+own work)
 **Prerequisites:** White Belt certificate, or the 1-hour bridge module (fee-waived)
 **Credential:** Certified Lean Six Sigma Yellow Belt — exam **and** rubric-reviewed real
 mini-project required. 1.2 IACET CEUs (pending accreditation).
@@ -12,7 +13,7 @@ mini-project required. 1.2 IACET CEUs (pending accreditation).
 | Component | Content | Time |
 |---|---|---|
 | **Unit 1** | Process Thinking: SIPOC & Process Mapping | 2.0 h self-paced |
-| **Workshop 1** | Process Mapping Clinic (live, virtual) | 1.5 h live |
+| **Workshop 1** | Process Mapping Clinic (live, virtual) | 2.0 h live |
 | **Unit 2** | Workplace Organization: 5S, Visual Management & Standard Work | 1.5 h self-paced |
 | **Unit 3A** | Data Basics I: Definitions & Collection | 1.0 h self-paced |
 | **Sim (collect)** | Collect 20 orders on your own check sheet — at least one day after 3A | 0.5 h embedded |
@@ -26,7 +27,7 @@ mini-project required. 1.2 IACET CEUs (pending accreditation).
 
 Plus a **12-item pre-assessment** before Unit 1 (test-out of Units 1–2 at 10/12; pre/post
 gain reported per cohort) and **cumulative checks** closing Units 2, 3A, 3B, 4 and 5.
-Total ≈ 14–15 hours over **a minimum of three weeks** — the units are released on a
+Total ≈ 15 hours over **a minimum of three weeks** — the units are released on a
 schedule (no binge path), because spacing is part of the learning design.
 
 Recommended sequence: Unit 1 → Workshop 1 → Unit 2 → Unit 3A → *(gap)* → Unit 3B →
@@ -97,3 +98,5 @@ yellow-belt/
   descriptive statistics, control-chart reading, and capability/MSA awareness items in the
   IASSC and ASQ Yellow Belt bodies of knowledge — at *reading* depth, not computation. The
   published crosswalk should list these as "awareness/interpretation" for this level.
+
+v1.0 · 2026-09-20

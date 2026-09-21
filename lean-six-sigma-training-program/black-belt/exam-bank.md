@@ -41,8 +41,10 @@ as defined in [`README.md`](README.md). Correct option ✅; rationale after the 
 
 ## Bank status
 
-Every item is awaiting the second-SME review the policy requires before entering the active
-bank (policy §2). No empirical statistics yet. Open-notes administration means items that
-can be answered by looking up a definition are defects; the second SME rejects them.
+Sections A, B and D have had the second-SME review the policy requires; the review note sits
+at the foot of each of those section files. Items in Sections C, E1, E2, F, G, H and I are
+still awaiting that review before entering the active bank (policy §2). No empirical
+statistics yet for any section. Open-notes administration means items that can be answered by
+looking up a definition are defects; the second SME rejects them.
 
 v1.0 · 2026-09-20

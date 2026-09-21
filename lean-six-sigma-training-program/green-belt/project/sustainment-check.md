@@ -76,7 +76,10 @@ An optional sixth line: *anything the Green Belt or the program should know.*
 ## 5. Setting the `sustained` flag
 
 The reviewer sets the flag from the answers and the monitoring record, and records the reason
-in one sentence. The rules:
+in one sentence. The table below is the program's definition of the value set: the badge
+metadata in [`bok-crosswalk-and-credential.md`](../bok-crosswalk-and-credential.md) §2.3a and
+the [evaluation plan](../evaluation/evaluation-plan.md) reference it rather than restate it,
+and no other page adds a value or a condition. The rules:
 
 | Flag value | Set when |
 |---|---|

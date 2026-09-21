@@ -92,3 +92,5 @@ Published in week 1.
 - **Calibration:** anchor set of four (clean pass; high-score fail on an undiagnosed model;
   honest-failure pass; Finance-unsigned fail) before first review and quarterly; any ★
   disagreement re-calibrates. Annual 10% re-review per the audit policy.
+
+*v1.0 · 2026-09-20*

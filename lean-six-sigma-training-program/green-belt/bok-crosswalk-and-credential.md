@@ -365,7 +365,7 @@ credential satisfies the first only.
 | `projectDomain` | The vertical (`manufacturing-supply-chain` \| `healthcare` \| `transactional-services`) plus a process type in the program's vocabulary — for example "changeover" (MFG), "discharge process" (HC), "order-to-cash invoicing" (TXN). Never the employer's name unless the holder chooses evidence option 3 and the organization consented in the rollout or partner-pool agreement |
 | `verifiedImpact` | `sponsor-verified` \| `sponsor-verified, finance-validated` \| `sponsor-verified, mission-metric` (clinical or service impact, no money claimed) \| `simulated` (Practicum). Set from the sponsor form, never from the learner's report |
 | `impactClass` | `hard` \| `soft` \| `cost-avoidance` \| `clinical-service` — the rubric C3 classification. The amount is never on the badge |
-| `sustained` | `pending` (before the day-90 check) \| `true` \| `false` \| `unreachable` (sponsor did not answer two requests) \| `not-applicable` (Practicum). Set only by the reviewer of record from the sustainment check (§2.3a) |
+| `sustained` | `pending` \| `true` \| `false` \| `unverified` \| `not-applicable`. Set only by the reviewer of record from the sustainment check; the value set and the rule for each value are given in §2.3a |
 | `reviewerOfRecord` | The independent reviewer's name and the verification URL of their own credential. Always held in the record; shown on the badge only with the holder's evidence consent (§2.4) |
 | `ceu` | Empty until IACET accreditation is granted; then `5.6 IACET CEUs` for awards from the accreditation date forward. Until then the certificate carries the words "5.6 IACET CEUs pending accreditation" and no CEU is claimed (§2.10) |
 | `issuedOn` | The date the third gate was met |
@@ -386,12 +386,17 @@ record asks; the sponsor answers; the reviewer sets the flag and files the spons
 in the project record. The flag feeds the program's published sustainment rate on the
 [outcomes page](../program-operations/outcomes-page.md) and the badge.
 
+The five values — `true`, `false`, `unverified`, `not-applicable`, `pending` — and the rule
+that sets each one are defined in one place, §5 of the
+[90-day sustainment check](project/sustainment-check.md). That page governs; nothing here or
+on any other program surface adds a value to the set or a condition to one of them.
+
 `false` is an outcome, not a fault. A control plan that did not hold after handover says
 something about the process, the handover or the organization. It is never grounds for
 revocation, never changes the credential, and is shown on the verification page with the
 same prominence as `true`. Holders are told this at award so nobody is tempted to shade the
-sponsor's answer. `unreachable` is shown as such; the program does not convert silence into
-a `true`.
+sponsor's answer. `unverified` is shown as such; the program does not convert silence, or an
+answer with no monitoring record behind it, into a `true`.
 
 ### 2.4 Evidence — the credential that shows the work
 
@@ -495,7 +500,7 @@ On revocation the verification URL resolves to "revoked" with a date and nothing
 evidence entry is removed; the program does not publish the reason. A revoked Green Belt does
 not satisfy Black Belt admission.
 
-What is **not** a ground for revocation: a `sustained` flag of `false` or `unreachable`; a
+What is **not** a ground for revocation: a `sustained` flag of `false` or `unverified`; a
 control plan the organization later abandoned; a re-review score difference; a benefit
 estimate Finance later revised; an honest pilot that did not move the metric. None of these
 is misconduct, and the program says so here so that no holder is tempted to make a result

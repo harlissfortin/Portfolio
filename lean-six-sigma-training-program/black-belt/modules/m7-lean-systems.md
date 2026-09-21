@@ -120,7 +120,7 @@ one-moment WIP count against a lead time tracked over weeks).
 
 ---
 
-## 7.3 Line balancing and workload levelling (60 min)
+## 7.3 Line balancing and workload leveling (60 min)
 
 **Hook.** The cell in 7.2 runs five operators and cannot make takt. The operators are not
 the reason.
@@ -133,7 +133,7 @@ against the takt line, with value-added, necessary non-value-added and non-value
 segments distinguished by label or pattern, not by colour alone. Balance delay =
 (stations × takt − content) ÷ (stations × takt).
 
-*Levelling* (heijunka) works the other axis: demand that arrives lumpy in time or in mix.
+*Leveling* (heijunka) works the other axis: demand that arrives lumpy in time or in mix.
 Level by volume (release the average per pitch) and by mix (alternate types so each resource
 sees a steady load).
 

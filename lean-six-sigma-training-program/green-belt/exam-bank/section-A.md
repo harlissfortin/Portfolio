@@ -304,3 +304,7 @@ A. Acceptable — the manager can sign at the end, when there are results to sig
 `[A · G1 · Analyze · NEU · X · CERT]` — The two tracks differ in what is verified, and a simulated dataset standing in for real data on a project claimed as real is a data-ethics stop; B is the strongest distractor because it accepts an unverifiable baseline for the first month and a sponsor who has not agreed to the scope.
 
 <!-- Key tally (42 items): A = 10 · B = 11 · C = 11 · D = 10. Type: S = 17 (40%) · X = 15 (36%) · K = 10 (24%). Bloom: Apply/Analyze = 31 (74%). Vertical: MFG 10 · HC 9 · TXN 11 · NEU 12. Negative stems: 1 (A33). -->
+
+---
+
+v1.0 · 2026-09-20

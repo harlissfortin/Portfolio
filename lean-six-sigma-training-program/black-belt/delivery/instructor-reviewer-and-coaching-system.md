@@ -27,10 +27,10 @@ is the pattern; this document states what changes at Black Belt and why.
 | Role | Who | Does | Does not |
 |---|---|---|---|
 | **Instructor** | A Master Black Belt, or a senior Black Belt with observed facilitation (§2) | Runs the sixteen weekly labs, the weekly project checkpoints inside them, office hours and the Tollgate 5 readout rehearsal; leads or co-leads both immersions | Score any capstone from a cohort they taught; know who will review their candidates |
-| **Master Black Belt coach** | A Master Black Belt on the coaching bench; the instructor may be one of them if they are a Master Black Belt | The six 1:1 sessions, the monthly written checkpoint to closure, the coaching notes; carries at most 8 candidates | Score, sign, or advise the reviewer; attend the reviewer's reading of the file; sit as reviewer of record on any file in the cohort |
+| **Master Black Belt coach** | A Master Black Belt on the coaching bench; the instructor may be one of them if they are a Master Black Belt | The six 1:1 sessions, the monthly written checkpoint to closure, the coaching notes; carries at most 8 candidates | Score, sign, or advise the reviewer; sit at a tollgate; attend the reviewer's reading of the file; sit as reviewer of record on any file in the cohort |
 | **Producer** | Program staff or a facilitator in the pathway | Breakouts, datasets, apparatus logistics for Immersion 1, chat triage, timing, accessibility support, in every lab above 8 candidates and in both immersions | Teach content |
 | **Practicum observer** | The instructor, plus a second calibrated observer (a bench Master Black Belt or a certified instructor) in each immersion | Scores the DOE practicum and the change-leadership practicum pass/redo on their rubrics; observes or video-reviews the kaizen event | Score the capstone; read the coaching notes |
-| **Reviewer of record** | A Master Black Belt on the reviewer bench, calibrated on the anchor set in the last quarter, who did not instruct, coach or observe this cohort | The five tollgate records; the 150-point review; the Finance and sponsor validation checks; the ≤ 4-sentence public feedback; the day-90 sustainment check; **signs the certificate** (§3) | Coach, suggest methods or countermeasures, attend any session, or read the coaching notes |
+| **Reviewer of record** | A Master Black Belt on the reviewer bench, calibrated on the anchor set in the last quarter, who did not instruct, coach or observe this cohort | Sits all five gates and writes their records; the 150-point review of the closed project; the Finance and sponsor validation checks; the ≤ 4-sentence public feedback; the day-90 sustainment check; **signs the certificate** (§3) | Coach, suggest methods or countermeasures, attend a coaching session or a monthly checkpoint, or read the coaching notes |
 | **Supervising reviewer** | The reviewer of record of a running Green Belt cohort | Seats the candidate for the two Green Belt tollgate reviews (requirement 5), compares records afterward, scores the practicum rubric | Contact the Green Belt learner on the candidate's behalf; count as the candidate's coach or reviewer |
 | **Assessment lead** | Program | Assigns reviewers blind (§4.2); runs reviewer calibration; owns appeals, integrity cases and data-ethics stops; publishes the cohort's coach–reviewer agreement | Coach or review live capstones |
 | **Engagement lead** | Program (corporate deployments) | Readiness gate, steering-group briefings, portfolio report, per the [corporate deployment playbook](corporate-deployment-playbook.md) | Any assessment role |
@@ -143,15 +143,22 @@ review by committee: one Master Black Belt, one signature.
 
 For each file assigned, the reviewer of record:
 
-1. **Reads every tollgate package** within 5 business days of the calendar tollgate (weeks 2,
-   5, 7, 12, 16) and returns the tollgate record in the format of the
+1. **Reads every tollgate package before the gate, and sits the gate.** The page and the
+   appendix reach the reviewer two business days before each calendar tollgate (weeks 2, 5,
+   7, 12, 16); the reviewer reads them, ★ items first, and is in the room at all five. At the
+   gate the reviewer asks questions for the record, writes what happened, and does not coach;
+   the sponsor decides. Within 2 business days the record goes back in the format of the
    [tollgate standard](../project/tollgate-standard.md): the status of each ★ item due
    (A2, I1, C1, F1, L1) and of the requirements due, one sentence each, *evidenced / at risk /
-   not evidenced*; a data-ethics line; no advice. The reviewer does not attend the tollgate
-   meeting. The sponsor decides; the record is what the reviewer saw.
-2. **Scores the full rubric** within 20 business days of submission, ★ items first, in the
-   rubric's feedback format; re-scores the whole file on the one included resubmission without
-   carrying anything over on trust.
+   not evidenced*; the decisions requested and the decisions obtained, with conditions, dates
+   and who decided each against the decision-rights table; who was in the room against who the
+   charter says must be; the Finance and leadership lines; a data-ethics line; a coaching flag
+   that names a topic; no advice. The record is what the reviewer saw and heard.
+2. **Scores the full rubric** on the closed project — the same Master Black Belt who sat the
+   five gates — within 20 business days of submission, ★ items first, in the rubric's feedback
+   format. The tollgate records are formative and carry no points: no item is carried forward
+   on trust because it looked evidenced at a gate. Re-scores the whole file on the one included
+   resubmission, again carrying nothing over.
 3. **Checks the validations.** Reads the Finance partner's signature against the calculation
    basis on the benefit-classification form, and the sponsor's statement on leadership (L1)
    against the canvas and the decision log. Where money is claimed and Finance has not signed,
@@ -176,11 +183,12 @@ For each file assigned, the reviewer of record:
    to the assessment lead the same day, in writing, per the terms of certification §4. The
    reviewer records what they saw and does not adjudicate.
 
-Turnaround is published and measured: tollgate records within 5 business days and final
-reviews within 20, each ≥ 95%. A reviewer carries **at most 8 live capstone files** at any
-time, because a Black Belt file with a designed experiment, a logbook, diagnostics, a
-future-state model and a leadership package takes a working day to read properly and the
-20-day promise has to be kept while the reviewer also has a job.
+Turnaround is published and measured: tollgate records within 2 business days of the gate and
+final reviews within 20, each ≥ 95%. A reviewer carries **at most 8 live capstone files** at
+any time, because each file brings five forty-minute gates and their two-day pre-reads, and
+because a Black Belt file with a designed experiment, a logbook, diagnostics, a future-state
+model and a leadership package takes a working day to read properly — and the 20-day promise
+has to be kept while the reviewer also has a job.
 
 ### 3.3 Liabilities — what the name is answerable for
 
@@ -191,7 +199,7 @@ they are signing.
 |---|---|
 | Having read the whole file, including the experiment logbook and the raw diagnostics, not the A3 alone | A candidate's fabrication that a competent reading of the file could not have detected (the terms of certification §4 process handles the candidate; the reviewer's review is read, not blamed) |
 | Every ★ decision, individually: if the annual 10% re-review finds a ★ item signed as earned that the anchor standard says was not, that is the reviewer's finding to answer, and it re-calibrates them before their next review | The sponsor's or Finance partner's judgment about the business: the reviewer checks that the signatures exist and match the basis written on the form, not whether the client's loaded rate is right |
-| Keeping the separation: no session attended, no coaching note read, no advice in a record. A breach voids the review; two breaches in a year end the bench place for the year | The candidate's later conduct in role: the credential attests to the work reviewed, on the date reviewed |
+| Keeping the separation: no coaching session or checkpoint attended, no coaching note read, no advice in a record or in the room at a gate. A breach voids the review; two breaches in a year end the bench place for the year | The candidate's later conduct in role: the credential attests to the work reviewed, on the date reviewed |
 | The public feedback being true, specific and free of anything from the file the candidate did not consent to publish | Sustainment beyond the day-90 check: the flag is a fact on one date, not a warranty |
 | The `sustained` flag being set only from the monitoring record, never from a sponsor's assurance without the chart | Revocation decisions: those belong to the assessment lead; a revoked credential resolves to "revoked" with a date and the reviewer's page carries no mark unless the re-review found their review at fault |
 
@@ -221,7 +229,7 @@ independence.
 | The candidate's name, project, sponsor, Finance partner | Yes | Yes (needed for the credential evidence record and the validation checks) |
 | The instructor's and coach's names | — | **No.** The file carries a cohort ID and the candidate's name; no roster, no faculty |
 | Coaching notes and the monthly written checkpoints | Writes them | **Never.** Stored outside the project file, not discoverable |
-| Tollgate packages and the sponsor's decisions | Yes | Yes |
+| Tollgate packages and the sponsor's decisions | Yes | Yes — the package two business days before each gate, the decisions in the room |
 | The reviewer's tollgate records | Yes, after the candidate receives them | Writes them |
 | The DOE practicum score, the kaizen observation, the Green Belt review records | Yes | Yes — as records to confirm, not to re-score |
 | The final score and feedback | Yes, after the candidate receives it | Writes it |
@@ -234,9 +242,9 @@ reviewer's name at Tollgate 1, with the candidate and sponsor, and may not conta
 ### 4.2 Blind assignment
 
 The assessment lead assigns the reviewer of record for every candidate **before week 1**, so
-that the same Master Black Belt reads all five tollgate packages and the final file. The
-procedure follows the Green Belt one with tighter conflict rules, because the bench is
-smaller and the reviewer's name is public:
+that the same Master Black Belt sits all five gates, reads all five packages and scores the
+final file. The procedure follows the Green Belt one with tighter conflict rules, because the
+bench is smaller and the reviewer's name is public:
 
 1. Start from the reviewer bench roster.
 2. Remove any Master Black Belt who: instructs, coaches or observes this cohort; has coached
@@ -265,10 +273,22 @@ files at a cap of eight: four–four–four, with the two constrained files plac
 
 ### 4.3 Tollgate records are assessment, not coaching
 
-Five tollgates, all on the calendar, the sponsor in the room for ten minutes and the
-steering group at Tollgates 1, 4 and 5. The reviewer is not in the room. Within five business
-days the reviewer returns the record: what is evidenced, what is at risk, what is not there,
-one sentence per ★ item due, and the data-ethics line. Nothing about how to fix it.
+Five tollgates, all on the calendar: fifteen minutes presented, fifteen of questions, ten in
+which the sponsor decides and the decisions are written on the page, with the steering group
+there at Tollgates 1, 4 and 5. The reviewer is in the room at all five, having read the page
+and the appendix two business days before, and asks questions — for the record and for the
+sponsor's decision, never about how to fix anything. Within 2 business days the reviewer
+returns the record to the candidate and the sponsor, and to the coach once the candidate has
+it: what is evidenced, what is at risk, what is not there, one sentence per ★ item due, the
+decisions obtained and who made them, and the data-ethics line. Nothing about how to fix it.
+
+Being in the room is what makes the record evidence rather than a reading of paper: the
+reviewer hears the question the sponsor asks and the answer given, sees who was there when a
+decision in their class was requested, and writes what happened. It is also where the
+separation is most easily lost. If the sponsor turns to the reviewer and asks what the
+candidate should do, the reviewer answers with what the record shows and what the rubric asks
+for, and says that *how* is the coach's conversation. A reviewer who names a countermeasure at
+a gate has become a second coach, and the file has no assessor left on it.
 
 A candidate who reads "★ A2 at risk — model reported without residual diagnostics; effect
 size stated as a coefficient with no practical sentence" at Tollgate 3 knows exactly what the
@@ -461,12 +481,13 @@ Reported per cohort to the assessment lead and into the
 - **Coach–reviewer ★ agreement** on A2, I1, C1, F1, L1: the coach's last-session status set
   against the reviewer's decision (target ≥ 85%). A miss is a calibration session, then an
   observation; never a ranking.
-- Reviewer turnaround: tollgate records within 5 business days and final reviews within 20,
-  each ≥ 95%.
+- Reviewer turnaround: tollgate records within 2 business days of the gate and final reviews
+  within 20, each ≥ 95%.
 - **Separation audit**, quarterly, on a 20% sample of live assignments: conflicts logged; no
-  faculty name in the reviewer's file; no coaching note in the project file; no session or
-  tollgate attended by the reviewer; no advice in a tollgate record ("try", "consider", "you
-  should" are findings). Target zero breaches; a breach voids the review and re-assigns.
+  faculty name in the reviewer's file; no coaching note in the project file; no coaching
+  session or monthly checkpoint attended by the reviewer; no advice in a tollgate record
+  ("try", "consider", "you should" are findings). Target zero breaches; a breach voids the
+  review and re-assigns.
 - Reviewer calibration: every active reviewer within 8 points on all four anchor files and
   exact on every ★ item, each quarter they review; drift events by reviewer; annual 10%
   re-review agreement.

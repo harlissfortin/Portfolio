@@ -136,7 +136,7 @@ mistake-proofing · **G7** control plan, handover, financial validation, closure
 - [`evaluation/evaluation-plan.md`](evaluation/evaluation-plan.md) — L1–L4 with sponsor-verified and Finance-validated impact, sustainment rate, published figures
 
 ### 7 · Corporate deployment
-- [`delivery/corporate-cohort-playbook.md`](delivery/corporate-cohort-playbook.md) — project pipeline from the Yellow Belt rollout report, sponsor readiness, the 2 × 3-day variant, Finance partnership
+- [`delivery/corporate-cohort-playbook.md`](delivery/corporate-cohort-playbook.md) — project pipeline from the White Belt rollout report and the Yellow Belt quarterly report, sponsor readiness, the 2 × 3-day variant, Finance partnership
 
 ### 8 · Content operations
 - Program-wide: [`../program-operations/`](../program-operations/)
@@ -152,7 +152,8 @@ green-belt/
 ├── project/  charter-template.md · tollgate-checklists.md · review-rubric.md ·
 │             sponsor-verification-and-finance-validation.md · sustainment-check.md ·
 │             partner-pool-and-practicum-track.md
-├── practicum/  case-mfg.md · case-hc.md · case-txn.md · data/*.csv · practicum-track-project.md
+├── practicum/  case-mfg.md · case-hc.md · case-txn.md · practicum-track-project.md ·
+│              data/*.csv · data/generate.py (fixed-seed dataset generator — facilitator only)
 ├── templates/  hypothesis-test-selector.md · data-collection-plan.md · msa-plan.md ·
 │               capability-worksheet.md · fmea.md · pilot-plan.md · control-plan.md · a3.md ·
 │               tollgate-one-pager.md · software-parity.md
@@ -165,4 +166,11 @@ green-belt/
 - Proctoring vendor and exhibit rendering tested on the delivery platform
 - Reviewer bench: at least four certified Black Belt/MBB reviewers who are not instructors
 - Partner-project pool: first ten sponsored projects sourced
+- Bridge assessment for entrants without a Yellow Belt: form, cut and remediation route not
+  yet written (the Black Belt calibration assessment,
+  [`../black-belt/bok-crosswalk-and-credential.md`](../black-belt/bok-crosswalk-and-credential.md) §2.9, is the model)
+- Yellow Belt quarterly report, which the corporate pipeline reads (playbook §1): pending the
+  Yellow Belt delivery build
 - IACET application for 5.6 CEUs
+
+v1.0 · 2026-09-20

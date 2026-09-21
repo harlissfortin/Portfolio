@@ -6,7 +6,8 @@ in person strongly encouraged, virtual possible) · corporate option: 4 × 4-day
 with virtual coaching between · **Time:** ≈ 100 h structured + 100–150 h project work ·
 **Cohort cap:** 16 per instructor
 **Prerequisites:** certified Green Belt (this program, or external plus the calibration
-assessment — gaps are bridged with targeted Green Belt modules, never waived) + one completed
+assessment in [`bok-crosswalk-and-credential.md`](bok-crosswalk-and-credential.md) §2.9 —
+gaps are bridged with targeted Green Belt modules, never waived) + one completed
 DMAIC project + sponsor commitment for a Black-Belt-scale project (cross-functional,
 strategically linked, target impact ≥ $75K annualized or an equivalent clinical or
 service-level impact).
@@ -122,7 +123,7 @@ Finance · **B10** DFSS and digital CI awareness.
 - [`templates/`](templates/) — DOE planning canvas, experiment logbook, regression diagnostics checklist, benefit-classification guide, stakeholder strategy canvas, kaizen leader's kit, executive readout
 
 ### 4 · Instructor & reviewer system
-- [`delivery/instructor-reviewer-and-coaching-system.md`](delivery/instructor-reviewer-and-coaching-system.md) — MBB coaching cadence, reviewer of record duties, coach/assessor separation, calibration
+- [`delivery/instructor-reviewer-and-coaching-system.md`](delivery/instructor-reviewer-and-coaching-system.md) — Master Black Belt coaching cadence, reviewer of record duties, coach/assessor separation, calibration
 
 ### 5 · Learner support & reinforcement
 - [`delivery/black-belt-guild.md`](delivery/black-belt-guild.md) — quarterly masterclasses, peer consulting circles, showcase, recertification every three years (24 CEUs + a project or 40 coaching hours)
@@ -146,7 +147,8 @@ black-belt/
 │            m7-lean-systems.md · m8-leading-change-and-coaching.md
 ├── project/ charter-and-strategic-linkage.md · tollgate-standard.md · review-rubric.md
 ├── practicum/ doe-practicum.md · change-leadership-practicum.md · kaizen-facilitation.md ·
-│              green-belt-tollgate-reviews.md · data/*.csv
+│              green-belt-tollgate-reviews.md ·
+│              data/ helicopter-2k.csv · simulator-runs.csv · generate.py
 ├── templates/ doe-planning-canvas.md · experiment-logbook.md · regression-diagnostics-checklist.md ·
 │              benefit-classification-guide.md · stakeholder-strategy-canvas.md ·
 │              kaizen-event-leaders-kit.md · executive-readout.md
@@ -160,3 +162,5 @@ black-belt/
 - Physical DOE kit sourcing and the transactional process simulator
 - Master Black Belt reviewer bench (minimum three, none of whom coach the cohort they review)
 - IACET application for 10 CEUs
+
+v1.0 · 2026-09-20

@@ -136,3 +136,5 @@ at enrollment and may switch without losing progress. Scripts:
 - Item statistics from first live cohorts (the bank has no empirical p-values yet)
 - Modules 2–12 production builds to the Module 1 standard (role layer and go-see task on each)
 - Benchmark library rows: none reach the publication threshold until the first cohorts submit
+
+v1.0 · 2026-09-20

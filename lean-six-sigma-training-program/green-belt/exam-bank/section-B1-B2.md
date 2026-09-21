@@ -456,3 +456,7 @@ A. Keep the 60 points; the parts did not change · B. Keep the 60 points but wid
 `[B2 · G3 · Analyze · MFG · X · CERT]` — The fixed system is acceptable and the earlier data were measured through one that was not; option A keeps points whose chart pattern would reflect the gauge, and option B invents a limit adjustment that does not exist.
 
 <!-- B2 tally: keys A 8 · B 8 · C 8 · D 8 — types S 13 · X 11 · K 8 — Bloom Remember 3 · Understand 5 · Apply 10 · Analyze 14 (Apply/Analyze 24 of 32 = 75%) — verticals NEU 9 · MFG 8 · HC 7 · TXN 8 — negative stems 0 — "when not to run a Gage R&R": B2-5, B2-15, B2-29, B2-31; "what to do when the measurement system fails": B2-4, B2-12, B2-22, B2-27, B2-32 -->
+
+---
+
+v1.0 · 2026-09-20

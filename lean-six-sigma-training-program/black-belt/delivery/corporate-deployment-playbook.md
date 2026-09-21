@@ -238,7 +238,7 @@ did the experiment show?" once a month; do not ask the team to implement before 
 | −4 | Sponsor and steering-group briefing (§7.3). Finance initials each basis. Bridging modules run |
 | −2 | Charter agreements signed. Data access confirmed per metric. Experiment and kaizen venues confirmed in writing. Kit shipped |
 | −1 | Launch comms from the executive sponsors. Time confirmations on file |
-| 1–16 | The calendar in the [level README](../README.md): weekly labs, six coaching sessions in weeks 2, 4, 8, 12, 16; tollgates in weeks 2, 5, 7, 12, 16 with the sponsor in the room and the steering group at 1, 4 and 5; Immersion 1 (DOE practicum) week 10; kaizen event weeks 13–14; Immersion 2 (change leadership) week 15; Green Belt tollgate reviews scheduled from week 16 |
+| 1–16 | The calendar in the [level README](../README.md): weekly labs, coaching sessions 1–5 in weeks 2, 4, 8, 12, 16 (session 6 falls in the closure period); tollgates in weeks 2, 5, 7, 12, 16 with the sponsor in the room and the steering group at 1, 4 and 5; Immersion 1 (DOE practicum) week 10; kaizen event weeks 13–14; Immersion 2 (change leadership) week 15; Green Belt tollgate reviews scheduled from week 16 |
 | 5 | **First portfolio readout to the executive sponsors** — every project's baseline, distribution and MSA result on one page each; the moment the organization sees its cross-functional processes measured |
 | 17 | Exam, proctored on site. Cohort L1 survey |
 | 17–52 | Monthly written checkpoints; session 6 booked by each candidate; executive readouts; submissions as each closes; reviews within 20 business days; Finance validation at each closure |

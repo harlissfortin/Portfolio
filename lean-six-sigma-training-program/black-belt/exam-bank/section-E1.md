@@ -545,7 +545,7 @@ A. "Padding is significant at p < 0.001 and speed at p < 0.001, with a significa
 `[E1 · B5 · Evaluate · HC · X · CERT]` — Effect sizes in the response's units, a comparison to today and the limit, the interaction read as two conditional effects, and a confirmation step; B is true but averages over an interaction that changes the number by a factor of nearly three, and D claims more than QC samples and one requirement can support.
 
 <!--
-Key tally (53 items): A = 13 (E1-3, 6, 9, 13, 17, 21, 25, 29, 32, 36, 41, 46, 51) · B = 13 (E1-1, 8, 12, 15, 19, 23, 27, 30, 34, 39, 43, 47, 50) · C = 13 (E1-4, 5, 11, 16, 24, 28, 33, 37, 40, 44, 48, 52, 53) · D = 14 (E1-2, 7, 10, 14, 18, 20, 22, 26, 31, 35, 38, 42, 45, 49)
+Key tally (53 items): A = 13 (E1-3, 6, 9, 13, 17, 21, 25, 29, 32, 36, 41, 46, 51) · B = 13 (E1-1, 8, 12, 15, 19, 23, 27, 30, 34, 39, 43, 47, 50) · C = 14 (E1-4, 5, 11, 16, 20, 24, 28, 33, 37, 40, 44, 48, 52, 53) · D = 13 (E1-2, 7, 10, 14, 18, 22, 26, 31, 35, 38, 42, 45, 49)
 Type: X = 24 (45%) · S = 19 (36%) · K = 10 (19%)
 Bloom: Analyze = 23 · Apply = 12 · Evaluate = 8 · Understand = 10 · Remember = 0 (Apply/Analyze/Evaluate = 43 = 81%)
 Vertical: MFG = 15 · HC = 15 · TXN = 13 · NEU = 10

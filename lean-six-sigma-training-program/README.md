@@ -115,7 +115,7 @@ By completion, the learner can:
 - The belt system and where the learner fits in a CI culture
 
 ### Delivery format & duration
-- **100% self-paced e-learning, 3–4 hours** (12–16 micro-modules of 10–15 min each,
+- **100% self-paced e-learning, 3–4 hours** (12 micro-modules of 10–20 min each,
   mobile-friendly, closed-captioned, available in vertical-flavored variants).
 - Corporate cohort: same content deployed via LMS/SCORM export with an optional 60-minute live
   kickoff webinar led by a facilitator.
@@ -150,8 +150,8 @@ By completion, the learner can:
   bank, **provisional 70% cut (Angoff panel to confirm)**, unlimited retakes with ≤25%
   overlap; 10-item pre-assessment for test-out and pre/post gain; field exercise
   auto-checked for completeness and **quality-sampled by rubric** (10% of submissions, or
-  100% peer-reviewed in corporate deployments) so the badge's "applied exercise" claim is
-  defensible.
+  100% in corporate rollouts, scored by a calibrated reviewer — the client's CI lead or a
+  program reviewer) so the badge's "applied exercise" claim is defensible.
 
 ### Reinforcement & alumni value
 - A designed 12-month sequence in which **every touchpoint asks for or reports on an
@@ -213,12 +213,13 @@ By completion, the learner can:
 - Role of the Yellow Belt on a Green/Black Belt project; effective tollgate participation
 
 ### Delivery format & duration
-- **Hybrid-lite: 8–10 hours self-paced e-learning + two 90-minute live virtual workshops**
+- **Hybrid-lite: ~10 hours self-paced e-learning + two 120-minute live virtual workshops**
   (process mapping clinic; root-cause simulation). Individual enrollees join monthly public
   workshop sessions; corporate cohorts get private sessions.
 - Corporate on-site option: 2-day instructor-led bootcamp (compresses everything, adds a live
   simulation).
-- Total: ~12–14 hours over 2–4 weeks.
+- Total: ~15 hours over a minimum of three weeks (units are released on a schedule — no
+  binge path, because the spacing is part of the learning design).
 
 ### Practice / application component
 - **Catapult/paper-airplane-style virtual simulation** (or the "pizza order" transactional sim):
@@ -355,8 +356,9 @@ Three gates, all required:
   14-day study period; item banks rotated.
 - **Project rubric (100 pts):** Define 15, Measure 20 (MSA attempted = mandatory item),
   Analyze 25 (root cause verified with data = mandatory item), Improve 20 (before/after
-  evidence = mandatory item), Control 15, storytelling 5. **Pass: 75 with all mandatory items
-  earned.** One revise-and-resubmit cycle included.
+  evidence = mandatory item), Control 15 (control plan handed to a named owner = mandatory
+  item), storytelling 5. **Pass: 75 with all mandatory items earned.** One
+  revise-and-resubmit cycle included.
 
 ### Reinforcement & alumni value
 - **90-day sustainment check:** reviewer emails the sponsor at day 90 asking whether the control
@@ -371,7 +373,7 @@ Three gates, all required:
   and knows it; certificate packet includes a personalized "Path to Black Belt" with their
   project cited.
 - Instructors nominate top projects for the annual **program showcase**; nominees get a Black
-  Belt scholarship/discount. Corporate buyers see the showcase — it sells the next cohort.
+  Belt scholarship. Corporate buyers see the showcase — it sells the next cohort.
 - Green Belt tuition partially creditable (25%) toward Black Belt within 24 months.
 
 ---
@@ -469,7 +471,7 @@ All five gates required:
 - **Project rubric:** 150 points across DMAIC + leadership evidence (team management,
   stakeholder navigation documented) + financial validation. **Pass: 120 with all mandatory
   items** (verified root cause, experimental or piloted solution evidence, control plan live at
-  ≥60 days, Finance sign-off).
+  ≥60 days, Finance sign-off, leadership evidence documented).
 - Practicum components scored pass/redo by observing instructor with structured rubric.
 
 ### Reinforcement & alumni value
@@ -589,11 +591,11 @@ By completion, the candidate can:
 | **Audience** | All employees; funnel entry | Team leads, frontline supervisors, project team members | Process owners, engineers, analysts leading first projects | Full/majority-time CI practitioners | CI program leaders, senior consultants |
 | **Buyer mix** | ~80% corporate licenses / free individual | ~60% corporate / 40% individual | ~50/50 | ~65% corporate / 35% individual | ~90% corporate-sponsored or practice-builders |
 | **Price positioning** (individual, USD list) ⚙️ | Free–$49 | $299–$399 | $1,900–$2,500 | $4,500–$6,000 | $12,000–$18,000 (fellowship) |
-| **Structured hours** | 3–4 | 12–14 | ~56 (+40–60 project) | ~100 (+100–150 project) | ~120 (+capstone in-role) |
+| **Structured hours** | 3–4 | ~15 | ~56 (+40–60 project) | ~100 (+100–150 project) | ~120 (+capstone in-role) |
 | **Format** | Self-paced | Self-paced + 2 live workshops | 8-wk live-virtual cohort (or 2×3-day on-site) | 16-wk hybrid + 2 immersions | 6-mo hybrid fellowship |
 | **Signature tools taught** | 8 wastes, DMAIC awareness, VA/NVA | SIPOC, process maps, 5S, PDCA, Pareto, 5 Whys, fishbone | VSM, MSA, capability, control charts, hypothesis tests, regression (simple), FMEA, control plans | DOE, multiple/logistic regression, advanced SPC, future-state VSM, kaizen leadership, change leadership | Hoshin Kanri, deployment design, RSM/simulation, DFSS, coaching & training design |
 | **Project requirement** | Field observation exercise | Real Just-Do-It mini-project (rubric-reviewed) | Real sponsored DMAIC project, independently reviewed + sponsor-verified | BB-scale project + DOE practicum + kaizen facilitation + GB coaching | Enterprise deployment capstone + assessed coaching + teach-back + panel defense |
-| **Exam** | 20 Q from 81-item bank; provisional 70% (Angoff) | 40 Q from 140-item bank; provisional 75% (Angoff) | 100 Q proctored; provisional 80% (Angoff) | 150 Q proctored; provisional 80% (Angoff) | None — panel defense w/ external examiner |
+| **Exam** | 20 Q from 81-item bank; provisional 70% (Angoff) | 40 Q from 140-item bank; provisional 75% (Angoff) | 100 Q proctored from 350-item bank; provisional 80% (Angoff) | 150 Q proctored from 525-item bank; provisional 80% (Angoff) | None — panel defense w/ external examiner |
 | **Certifying authority** | Program credential (awareness badge) | Program credential; IACET CEUs ⚙️ | Program credential; IASSC-BoK-aligned; CSSC-accredited provider ⚙️; independent reviewer | Same + MBB reviewer of record signs | Same + external examiner + public portfolio |
 | **Renewal** | None | None (optional refresher) | 3-yr CEU renewal (earnable free) | 3-yr: CEUs + project/coaching evidence | Active-status via practice evidence |
 
@@ -618,14 +620,14 @@ assures quality) · — = not covered
 | Data collection & operational definitions | — | P | L | L | M |
 | Pareto, run charts, basic graphs | A | P | L | L | M |
 | Measurement system analysis (MSA) | — | A | P | L | M |
-| Capability analysis (Cp/Cpk, DPMO) | — | A | P | L | M |
+| Capability analysis (Cp/Cpk, DPMO; non-normal at Black) | — | A | P | L | M |
 | Control charts / SPC | — | A | P | L | M |
 | Advanced SPC (EWMA, CUSUM, short-run) | — | — | — | P | L |
 | Root cause: 5 Whys, fishbone | — | P | L | L | M |
 | FMEA | — | — | P | L | M |
-| Hypothesis testing (t, ANOVA, chi-sq) | — | — | P | L | M |
+| Hypothesis testing (t, ANOVA, chi-sq; power & sample size at Black) | — | — | P | L | M |
 | Regression (simple) | — | — | P | L | M |
-| Regression (multiple, logistic) | — | — | — | P | L |
+| Regression (multiple, logistic), non-parametrics, two-way ANOVA | — | — | — | P | L |
 | Design of Experiments | — | — | A | L | M |
 | Response surface / advanced DOE | — | — | — | A | P |
 | Simulation (Monte Carlo, DES) | — | — | — | A | P |
@@ -639,7 +641,7 @@ assures quality) · — = not covered
 | Hoshin Kanri / strategy deployment | — | — | — | A | L |
 | CI deployment architecture & governance | — | — | — | A | L |
 | DFSS / DMADV | — | — | — | A | P |
-| Process mining / digital CI | — | — | A | P | L |
+| Process mining / digital CI | — | — | — | P | L |
 
 ---
 

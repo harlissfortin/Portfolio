@@ -252,7 +252,7 @@ A. Ask the sponsor directly for fifteen minutes, bring the one page and the one 
 | **Total** | **88 / 100** | |
 
 The outcome:
-A. Pass: 88 exceeds the 75-point threshold with room to spare · B. Pass with a note, because four of the five mandatory items were earned · C. Does not pass; A3 is mandatory, and the feedback leads with the single most useful step to verify the cause with data, followed by resubmission ✅ · D. Fail with no resubmission; a project that reaches Control without a verified cause has to restart at Analyze
+A. Pass: 88 exceeds the 75-point threshold with room to spare · B. Pass with a note, because three of the four mandatory items were earned · C. Does not pass; A3 is mandatory, and the feedback leads with the single most useful step to verify the cause with data, followed by resubmission ✅ · D. Fail with no resubmission; a project that reaches Control without a verified cause has to restart at Analyze
 `[F · G8 · Analyze · MFG · X · CERT]` — Mandatory items are pass/fail regardless of total, which is the credential's asymmetry; D ignores the one revise-and-resubmit cycle every project gets.
 
 **F5.** Your post-pilot data contain three weeks where turnaround spiked during a core-system outage. A team member says "that is not our process" and proposes deleting the three weeks from the dataset before it goes to the reviewer, with no note. You:
