@@ -137,6 +137,40 @@ mark{background:var(--tint);color:var(--ink);border-radius:3px}
 .tabs button[aria-selected="true"]{background:var(--tint);color:var(--ink);border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
 .st.pdca{background:var(--tint);color:var(--ink);border-color:var(--accent)}
 .row.you .tag{background:var(--tint);color:var(--accent-deep);border-radius:4px}
+/* ---- program index (landing tab) ---- */
+.ladder{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.rung{border:1px solid var(--hair);border-radius:6px;padding:18px 20px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.1fr);gap:8px 26px;align-items:start}
+@media (max-width:880px){.rung{grid-template-columns:minmax(0,1fr);gap:14px}}
+.rung.on{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--accent)}
+.rung.part{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--accent-deep)}
+.rung.plan{border-style:dashed}
+.rung .hd{grid-column:1/-1;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.rung .num{font:700 12px/1 var(--m);letter-spacing:.14em;color:var(--steel)}
+.rung .nm{font:700 clamp(21px,2.6vw,27px)/1.05 var(--d);letter-spacing:-.015em}
+.rung .role{font:400 15.5px/1.3 var(--b);color:var(--steel)}
+.rung .chip{margin-left:auto;font:700 11px/1 var(--m);letter-spacing:.1em;text-transform:uppercase;padding:6px 9px;border-radius:999px;border:1px solid var(--ink);white-space:nowrap}
+.rung .chip.on{background:var(--ink);color:var(--paper)}
+.rung .chip.part{background:var(--tint);color:var(--accent-deep);border-color:var(--accent)}
+.rung .chip.plan{background:transparent;color:var(--steel);border-color:var(--hair)}
+.rung dl{margin:0;font-size:15.5px}
+.rung dt{font:700 10.5px/1 var(--m);letter-spacing:.13em;text-transform:uppercase;color:var(--steel);margin-top:11px}
+.rung dt:first-child{margin-top:0}
+.rung dd{margin:4px 0 0;line-height:1.45}
+.rung ul{margin:4px 0 0;padding-left:18px}
+.rung li{margin:3px 0;line-height:1.4}
+.rung .has{font-variant-numeric:tabular-nums}
+.matrix{width:100%;border-collapse:collapse;font-size:15px}
+.matrix th{text-align:left;font:700 10.5px/1.4 var(--m);letter-spacing:.12em;text-transform:uppercase;color:var(--steel);padding:8px 10px;border-bottom:3px solid var(--ink)}
+.matrix th.c,.matrix td.c{text-align:center;width:11%}
+.matrix td{padding:11px 10px;border-bottom:1px solid var(--hair)}
+.matrix td.c span{display:inline-block;width:26px;height:26px;line-height:25px;border-radius:999px;font:700 13px/25px var(--m)}
+.matrix td.c .y{background:var(--ink);color:var(--paper)}
+.matrix td.c .n{border:1px dashed var(--hair);color:var(--steel)}
+.matrix td.c .s{background:var(--tint);color:var(--accent-deep);border:1px solid var(--accent)}
+.where{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:3px;list-style:none;padding:0;margin:0}
+.where li{border:1px solid var(--hair);border-radius:6px;padding:14px 16px}
+.where b{display:block;font-size:16.5px;margin-bottom:3px}
+.where span{font-size:14.5px;color:var(--steel);line-height:1.45}
 .eyebrow,.rail .lbl,fieldset.vert legend,.pstatus,.est,.notascore,.slot .n,.cadence .l,.refuse small,.signed,.cred .tier,.cred dt,.evid dt,.model dt,.receipt dt,.golook .gl,.field .fl .opt,.tool,.tabs button,.top .id,.board th,.st{letter-spacing:.08em}
 </style>
 
@@ -144,10 +178,11 @@ mark{background:var(--tint);color:var(--ink);border-radius:3px}
 <div class="wrap">
 <header class="top">
   <div class="id"><span><b>Open book</b></span><span>Lean Six Sigma program</span><span>Public pages</span><span id="upd">Updated 2026-09-20</span></div>
-  <h1>What we publish, so you don't have to take our word</h1>
+  <h1>The program, and everything we publish about it</h1>
   <div class="tape" aria-hidden="true"></div>
   <ul class="tabs" role="tablist" aria-label="Public pages">
-    <li><button role="tab" id="t-out" aria-selected="true" aria-controls="p-out">Outcomes</button></li>
+    <li><button role="tab" id="t-index" aria-selected="true" aria-controls="p-index">The program</button></li>
+    <li><button role="tab" id="t-out" aria-selected="false" aria-controls="p-out" tabindex="-1">Outcomes</button></li>
     <li><button role="tab" id="t-board" aria-selected="false" aria-controls="p-board" tabindex="-1">Improvement board</button></li>
     <li><button role="tab" id="t-refuse" aria-selected="false" aria-controls="p-refuse" tabindex="-1">What we refuse</button></li>
     <li><button role="tab" id="t-verify" aria-selected="false" aria-controls="p-verify" tabindex="-1">Verify a credential</button></li>
@@ -158,7 +193,27 @@ mark{background:var(--tint);color:var(--ink);border-radius:3px}
 <main id="main">
 
 <!-- ================= OUTCOMES ================= -->
-<section role="tabpanel" id="p-out" aria-labelledby="t-out">
+<!-- ================= INDEX ================= -->
+<section role="tabpanel" id="p-index" aria-labelledby="t-index">
+  <p class="eyebrow"><b>The program</b><span>Five levels · what each one is and what is built</span></p>
+  <h2 class="sh">A ladder you climb by doing the work</h2>
+  <p class="kick">Every level is earned on a real process, not on attendance. Each one below states its own hours, its prerequisite, and <b>every gate you have to pass</b> — including the gates that fail you regardless of your total score. Where a level is not finished, it says so.</p>
+  <ul class="ladder" id="ladder"></ul>
+
+  <p class="lvl">The eight components, by level</p>
+  <p class="kick" style="margin-bottom:14px">Every level is built against the same delivery model. A level is not "done" because its lessons exist.</p>
+  <div class="tblwrap"><table class="matrix"><thead><tr>
+    <th>Component</th><th class="c">White</th><th class="c">Yellow</th><th class="c">Green</th><th class="c">Black</th>
+  </tr></thead><tbody id="matrix"></tbody></table></div>
+  <p class="note">● built · ◐ served program-wide rather than per level · ○ not built yet. Yellow Belt has its curriculum and its assessment; its delivery, instructor, reinforcement, measurement and corporate components are the program's largest open gap, and the outcomes page will show it the day a Yellow cohort runs.</p>
+
+  <p class="lvl">Where things live</p>
+  <ul class="where" id="where"></ul>
+  <p class="signed"><b>Read next:</b> the outcomes page for what we publish · the improvement board for what is wrong with us right now · what we refuse for the things we will not sell</p>
+</section>
+
+<!-- ================= OUTCOMES ================= -->
+<section role="tabpanel" id="p-out" aria-labelledby="t-out" hidden>
   <p class="eyebrow"><b>Outcomes</b><span>Quarterly · every figure with its n and period</span></p>
   <h2 class="sh">The numbers, in the state they are in</h2>
   <p class="kick">This program has not yet run a live cohort. <b>These are the figures we will publish, with their definitions, and the sample size each one needs before it is shown.</b> The first update follows the first cohort's close. A slot below minimum n is never hidden, because a hidden slot is indistinguishable from a bad number.</p>
@@ -332,12 +387,85 @@ const REFUSE=[
  ["Hide a problem someone reported about the course","Every report is on the board with a status. Silence is the one status we don't allow","improvement board"],
 ];
 document.getElementById("refuse").innerHTML=REFUSE.map(([w,b,src])=>`<li><span class="no" aria-hidden="true">✕</span><div><b>We will not ${esc(w)}.</b><span>${esc(b)}.</span><small>${esc(src)}</small></div></li>`).join("");
+/* ---- program index ---- */
+const LEVELS=[
+ {n:"01",nm:"White Belt",role:"Awareness",st:"on",stl:"All 8 components",
+  format:"100% self-paced e-learning; optional live kickoff for corporate cohorts",
+  time:"3–4 hours across 12 micro-modules, plus twelve five-minute “go see” tasks done at your own workplace",
+  prereq:"None",
+  cred:"Lean Six Sigma White Belt (Awareness) — the parenthetical is part of the name. Evergreen, no CEUs claimed.",
+  gates:["All 12 modules completed","Knowledge check: 20 items drawn from an 81-item tagged bank, provisional 70% cut","“See a Waste” field exercise: a real observation from your own work, rubric-scored 5 of 8 with no dimension at zero"],
+  has:["12 modules · 12 dossier tasks","81-item bank + pre-assessment and retrieval pools","Module 1 built with narration and measured captions","Field-exercise form with the rubric coach"]},
+ {n:"02",nm:"Yellow Belt",role:"Contributor",st:"part",stl:"Components 1–2 built",
+  format:"Hybrid-lite: self-paced e-learning plus two live virtual workshops",
+  time:"≈ 15 hours over a minimum of three weeks — the units are released on a schedule, because spacing is part of the design",
+  prereq:"White Belt, or the one-hour bridge module (fee-waived)",
+  cred:"Certified Lean Six Sigma Yellow Belt — exam and a rubric-reviewed real mini-project. 1.2 IACET CEUs pending accreditation.",
+  gates:["Exam: 40 items from a 140-item tagged bank, provisional 75% cut","Mini-project: a real Just-Do-It improvement on an A3-lite storyboard, rubric-scored 7 of 10 with no dimension at zero"],
+  has:["6 teaching units (Data split into 3A/3B)","2 workshop facilitator guides, 120 minutes each","140-item tagged bank","Mini-project storyboard and rubric · 5 templates"]},
+ {n:"03",nm:"Green Belt",role:"Project leader",st:"on",stl:"All 8 components",
+  format:"Live-virtual cohort, 8 weeks, phase-locked to DMAIC — you run each phase on your own project the week you learn it. Corporate option: two 3-day on-site intensives a month apart. There is no zero-human-contact path.",
+  time:"≈ 56 hours structured (3 h self-paced + a 2.5 h live lab each week) plus 40–60 hours of project work. 8–20 learners per instructor.",
+  prereq:"Yellow Belt or the bridge assessment, and a real project identified before the course starts with a sponsor-signed charter. No employer project? The partner-project pool, or the separately labelled Practicum track.",
+  cred:"Certified Lean Six Sigma Green Belt. Practicum completions are named “(Practicum)” and say so everywhere. 5.6 IACET CEUs pending.",
+  gates:["Exam: 100 items from a 350-item tagged bank, proctored, provisional 80% cut","Project: 100-point rubric scored by a Black Belt or Master Black Belt who is not your instructor. Pass is 75 <b>and</b> every mandatory item — measurement system attempted, root cause verified with data, before/after evidence, control plan handed to a named owner.","Sponsor verification that the project happened and the results are real, with Finance validation where money is claimed"],
+  has:["8 week files with live-lab run of show","350-item tagged bank in 9 sections","3 vertical cases on real datasets with computed answer keys","10-template toolkit incl. Minitab / Excel / R parity","Day-90 sustainment check feeding the badge"]},
+ {n:"04",nm:"Black Belt",role:"Advanced practitioner",st:"on",stl:"All 8 components",
+  format:"Hybrid, 16 weeks in eight modules with design of experiments as the centrepiece, plus two 2-day immersions. Corporate option: four 4-day on-site waves with coaching between.",
+  time:"≈ 100 hours structured plus 100–150 hours of project work. Cohort capped at 16 — facilitation quality is the product at this level.",
+  prereq:"Certified Green Belt (external belts take a calibration assessment; gaps are bridged, never waived), one completed DMAIC project, and a sponsor committed to a cross-functional project worth ≥ $75K a year or the clinical equivalent.",
+  cred:"Certified Lean Six Sigma Black Belt, with a <b>named Master Black Belt as reviewer of record</b> on the certificate and the verification page. 10 IACET CEUs pending.",
+  gates:["Exam: 150 items from a 525-item tagged bank, proctored, open notes and closed internet, provisional 80% cut","Capstone project: 150-point rubric scored by an independent Master Black Belt. Pass is 120 <b>and</b> every mandatory item — verified root cause, experimental or piloted evidence, control plan live 60 days, Finance sign-off, documented leadership.","DOE practicum: design, run, analyse and present an experiment end to end","Kaizen facilitation: lead a real 3–5 day event, observed","Review two Green Belt tollgates to the reviewer standard"],
+  has:["8 modules; DOE is ≈ 20% of course time","525-item tagged bank in 10 sections","Two immersions with kits and generated experiment data","7-template toolkit","Black Belt Guild and deployment playbook"]},
+ {n:"05",nm:"Master Black Belt",role:"Deployment leader, coach and strategist",st:"plan",stl:"Blueprint only",
+  format:"Fellowship-style, hybrid, application-based admission",
+  time:"≈ 120 hours plus a capstone carried out in role",
+  prereq:"Certified Black Belt with a track record of completed projects and coaching hours",
+  cred:"Designed, not built. The blueprint specifies panel defence with an external examiner and a published admit rate.",
+  gates:["Not yet built — this level exists in the program blueprint and has no course files"],
+  has:["Blueprint section in the program README","The Black Belt Guild is the intended feeder: coaching in Green Belt cohorts accumulates the hours candidacy requires"]},
+];
+const ladder=document.getElementById("ladder");
+if(ladder) ladder.innerHTML=LEVELS.map(L=>`<li class="rung ${esc(L.st)}">
+  <div class="hd"><span class="num">${esc(L.n)}</span><span class="nm">${esc(L.nm)}</span><span class="role">${esc(L.role)}</span><span class="chip ${esc(L.st)}">${esc(L.stl)}</span></div>
+  <dl><dt>Format</dt><dd>${esc(L.format)}</dd><dt>Time</dt><dd>${esc(L.time)}</dd><dt>Prerequisite</dt><dd>${esc(L.prereq)}</dd></dl>
+  <dl><dt>Credential</dt><dd>${L.cred}</dd>
+      <dt>What is built</dt><dd><ul class="has">${L.has.map(h=>`<li>${esc(h)}</li>`).join("")}</ul></dd></dl>
+  <dl><dt>Gates — all required</dt><dd><ul>${L.gates.map(g=>`<li>${g}</li>`).join("")}</ul></dd></dl>
+ </li>`).join("");
+
+const COMPONENTS=[
+ ["1 · Curriculum and content design","y","y","y","y"],
+ ["2 · Assessment and credentialing","y","y","y","y"],
+ ["3 · Learner experience and delivery","y","n","y","y"],
+ ["4 · Instructor and reviewer system","y","n","y","y"],
+ ["5 · Learner support and reinforcement","y","n","y","y"],
+ ["6 · Measurement and evidence","y","n","y","y"],
+ ["7 · Corporate deployment","y","n","y","y"],
+ ["8 · Content operations","y","s","y","y"],
+];
+const MARK={y:["y","●","built"],n:["n","○","not built yet"],s:["s","◐","served program-wide"]};
+const mx=document.getElementById("matrix");
+if(mx) mx.innerHTML=COMPONENTS.map(r=>`<tr><td>${esc(r[0])}</td>`+r.slice(1).map(v=>{
+  const m=MARK[v]; return `<td class="c"><span class="${m[0]}" role="img" aria-label="${m[2]}">${m[1]}</span></td>`}).join("")+`</tr>`).join("");
+
+const WHERE=[
+ ["The courses","Lesson content, item banks, rubrics, templates and facilitator guides, one folder per level in the program repository."],
+ ["This page","Published outcomes, the improvement board, the refusals list and credential verification. Updated quarterly; the board within 15 working days of a report."],
+ ["Module 1, built","The White Belt opening module as learners see it: narration with measured captions, role-aware prompts, a go-see task and the andon cord."],
+ ["The See a Waste form","The White Belt field exercise with the rubric coach — instant private feedback while you draft; the verdict stays a calibrated human's."],
+ ["Assessment policy","How cut scores are set (modified Angoff), how items are written and reviewed, how banks are sized and retakes kept meaningful. One policy, every level."],
+ ["Program operations","The authoring style guide, the terms of certification, and the change log that records every substantive change with its rationale and effective date."],
+];
+const wh=document.getElementById("where");
+if(wh) wh.innerHTML=WHERE.map(w=>`<li><b>${esc(w[0])}</b><span>${esc(w[1])}</span></li>`).join("");
+
 /* ---- tabs ---- */
 const tabs=[...document.querySelectorAll('[role=tab]')];
 function show(id,push){tabs.forEach(t=>{const on=t.id===id;t.setAttribute("aria-selected",String(on));t.tabIndex=on?0:-1;document.getElementById(t.getAttribute("aria-controls")).hidden=!on});
   const hash="#"+id.replace(/^t-/,""); if(push!==false&&location.hash!==hash){try{history.replaceState(null,"",hash)}catch(e){}}
   document.getElementById("live").textContent=document.getElementById(id).textContent+" shown."}
-function fromHash(){const h=location.hash.replace(/^#/,""); const m=h.match(/^(out|board|refuse|verify)(?:\/(.+))?$/); if(!m) return false;
+function fromHash(){const h=location.hash.replace(/^#/,""); const m=h.match(/^(index|out|board|refuse|verify)(?:\/(.+))?$/); if(!m) return false;
   show("t-"+m[1],false); if(m[1]==="verify"&&m[2]){const v=document.getElementById("vid"); v.value=decodeURIComponent(m[2])} return true}
 window.addEventListener("hashchange",fromHash);
 tabs.forEach(t=>{t.addEventListener("click",()=>show(t.id));t.addEventListener("keydown",e=>{const i=tabs.indexOf(t);let j=null;if(e.key==="ArrowRight")j=(i+1)%tabs.length;if(e.key==="ArrowLeft")j=(i-1+tabs.length)%tabs.length;if(e.key==="Home")j=0;if(e.key==="End")j=tabs.length-1;if(j!==null){e.preventDefault();tabs[j].focus();show(tabs[j].id)}})});

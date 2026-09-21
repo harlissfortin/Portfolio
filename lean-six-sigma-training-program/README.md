@@ -16,18 +16,9 @@ to external clients across multiple industries.
 >   rubric coach, BoK crosswalk and credential spec with evidence policy,
 >   production/accessibility/LMS spec, working prototype, Module 1 production build with
 >   narration, kickoff facilitator guide, rollout playbook, reinforcement kit, evaluation plan
-> - **[Differentiation roadmap →](#differentiation-roadmap--status)** — all seven items
->   implemented at the design-and-prototype level; the public pages are at
->   [`program-operations/public/`](program-operations/public/)
 > - **[Yellow Belt →](yellow-belt/README.md)** — components 1–2 built: 6 teaching units
 >   (3A/3B split), 2 workshop facilitator guides (120 min each), 140-item tagged exam bank,
 >   mini-project storyboard + scoring rubric, 5-template toolkit. Components 3–8 pending
-> - **[Assessment policy →](assessment/standard-setting-and-item-policy.md)** — modified-Angoff
->   standard setting, item-writing rules, bank sizing, retake overlap, item analysis,
->   pre/post measurement (all levels)
-> - **[Program operations →](program-operations/)** — authoring style guide, terms of
->   certification, change log (all levels)
->
 > - **[Green Belt →](green-belt/README.md)** — **all eight components built.** 8-week
 >   phase-locked cohort (one file per week with live-lab run-of-show), 350-item tagged exam
 >   bank, 100-point project rubric with mandatory items, charter and tollgate standard, sponsor
@@ -41,6 +32,16 @@ to external clients across multiple industries.
 >   practicums, kaizen facilitation and Green Belt tollgate-review requirements, reviewer of
 >   record, toolkit, instructor and coaching system, Black Belt Guild, corporate deployment
 >   playbook, evaluation plan, BoK crosswalk and credential spec
+>
+> - **[Assessment policy →](assessment/standard-setting-and-item-policy.md)** — modified-Angoff
+>   standard setting, item-writing rules, bank sizing, retake overlap, item analysis,
+>   pre/post measurement (all levels)
+> - **[Program operations →](program-operations/)** — authoring style guide, terms of
+>   certification, change log (all levels)
+>
+> - **[Differentiation roadmap →](#differentiation-roadmap--status)** — all seven items
+>   implemented at the design-and-prototype level; the public pages are at
+>   [`program-operations/public/`](program-operations/public/)
 >
 > Master Black Belt exists at blueprint level (below) pending build-out.
 
