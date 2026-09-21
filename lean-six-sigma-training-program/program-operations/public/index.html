@@ -185,16 +185,16 @@ mark{background:var(--tint);color:var(--ink);border-radius:3px}
   <h2 class="sh">We run the course on Lean, in public</h2>
   <p class="kick">Every module has a cord. Pull it and your report lands here as <b>new</b>, reaches <b>read</b> within 5 working days and a triage status within 15. The course teaches that a gallery without statuses is a suggestion box; this board holds us to the same rule.</p>
   <ul class="cadence">
-    <li><div class="v">19</div><div class="l">Items on the board</div></li>
+    <li><div class="v">25</div><div class="l">Items on the board</div></li>
     <li><div class="v">0</div><div class="l">New &gt; 30 days</div></li>
     <li><div class="v">—</div><div class="l">Median days to triage · no learner reports yet</div></li>
-    <li><div class="v">15</div><div class="l">Closed with an outcome</div></li>
+    <li><div class="v">20</div><div class="l">Closed with an outcome</div></li>
   </ul>
   <div class="tblwrap"><table class="board">
     <thead><tr><th>#</th><th>Reported by</th><th>Problem</th><th>Status</th><th>Outcome / reason</th></tr></thead>
     <tbody id="boardBody"></tbody>
   </table></div>
-  <p class="note">Statuses are the same five the client observation gallery uses: just-do-it, PDCA, escalated to review, noted not now, noted not a problem. An item cannot close without its outcome sentence. Items 1–8 and 13–19 are the program's real history to date; 9–12 are open.</p>
+  <p class="note">Statuses are the same five the client observation gallery uses: just-do-it, PDCA, escalated to review, noted not now, noted not a problem. An item cannot close without its outcome sentence. Items 1–8 and 13–24 are the program's real history to date; 9–12 and 25 are open.</p>
   <p class="signed"><b>Owner:</b> content operations · anything escalated: assessment lead · reviewed quarterly with reviewer calibration</p>
 </section>
 
@@ -304,6 +304,12 @@ const BOARD=[
  [17,"Four-lens review","“Go look” is the Lean practice of gemba / genchi genbutsu and should be taught by name","done","just-do-it ✓","Renamed “go see” program-wide; glossary entry from Module 1; one certification item added"],
  [18,"Four-lens review","Readiness strip used green for “looks ready,” which reads as pass/fail","done","just-do-it ✓","Both states in ink; an accent bar marks “needs work”; green reserved for the receipt"],
  [19,"Program owner","The hi-vis theme (hazard stripes, amber, black tape, condensed capitals) read as a construction site, not a training program","done","just-do-it ✓","Re-themed as a quality-lab instrument sheet: cool paper, deep ink, one signal-blue accent, sentence-case headings, soft corners; safety flags use a distinct alert colour"],
+ [20,"Cross-level sweep","Skills matrix marked process mining as Green Belt awareness, but no Green Belt week teaches it","done","just-do-it ✓","Row corrected to Black Belt and above; regression, capability and hypothesis rows annotated with what each level actually covers"],
+ [21,"Cross-level sweep","Yellow Belt hours and Workshop 1 duration were never updated after the workshops were extended to 120 minutes","done","just-do-it ✓","Reconciled to ≈ 15 hours, Workshop 1 at 2.0 h, across the blueprint and the level README"],
+ [22,"Consistency sweep","Two surfaces used different value sets for the same sustained badge flag","done","just-do-it ✓","Five values defined once in the 90-day sustainment check; every other page references that definition"],
+ [23,"Consistency sweep","The Black Belt delivery document said the reviewer does not attend tollgates; the tollgate standard said the reviewer is in the room","done","just-do-it ✓","Standard governs: the reviewer sits all five gates, reads the package two days ahead, writes the record, does not coach, and scores the closed project"],
+ [24,"Second-SME review","Black Belt sections A, B and D held numerical exhibits whose internals did not reconcile, and items where a second answer was defensible","done","just-do-it ✓","29 items corrected; contestable items fixed by adding a discriminator to the stem, not by moving the key; review notes filed in each section"],
+ [25,"Second-SME review","Seven exam-bank sections have not yet had the second-SME review the assessment policy requires","later","noted, not now","The bank status page now says so per section rather than implying the whole bank is reviewed; scheduled before the first paid cohort"],
 ];
 document.getElementById("boardBody").innerHTML=BOARD.map(([n,by,p,cls,st,out])=>`<tr><td class="num">${String(n).padStart(2,"0")}</td><td class="by">${esc(by)}</td><td>${esc(p)}</td><td><span class="st ${cls}">${esc(st)}</span></td><td>${esc(out)}</td></tr>`).join("");
 /* ---- refusals ---- */
