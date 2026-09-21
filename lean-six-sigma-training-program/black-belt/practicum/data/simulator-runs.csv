@@ -1,0 +1,17 @@
+run_order,std_order,batch_size,validation_point,routing,template,staffing_clerks,A,B,C,D,E,seed,cycle_time_h
+1,5,1,approval,rule-based,current,5,-1,-1,1,-1,1,23250,26.97
+2,12,20,entry,manual,redesigned,3,1,1,-1,1,-1,40126,35.08
+3,15,1,entry,rule-based,redesigned,3,-1,1,1,1,-1,29003,24.72
+4,3,1,entry,manual,current,5,-1,1,-1,-1,1,78478,23.69
+5,14,20,approval,rule-based,redesigned,3,1,-1,1,1,-1,14541,34.19
+6,9,1,approval,manual,redesigned,3,-1,-1,-1,1,-1,21216,33.27
+7,6,20,approval,rule-based,current,3,1,-1,1,-1,-1,93475,34.77
+8,7,1,entry,rule-based,current,3,-1,1,1,-1,-1,93787,23.65
+9,4,20,entry,manual,current,3,1,1,-1,-1,-1,69626,34.11
+10,10,20,approval,manual,redesigned,5,1,-1,-1,1,1,11140,35.29
+11,1,1,approval,manual,current,3,-1,-1,-1,-1,-1,48317,33.58
+12,2,20,approval,manual,current,5,1,-1,-1,-1,1,83991,34.04
+13,16,20,entry,rule-based,redesigned,5,1,1,1,1,1,79053,29.77
+14,13,1,approval,rule-based,redesigned,5,-1,-1,1,1,1,38213,27.28
+15,8,20,entry,rule-based,current,5,1,1,1,-1,1,17980,30.8
+16,11,1,entry,manual,redesigned,5,-1,1,-1,1,1,86677,24.41
