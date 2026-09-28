@@ -15,6 +15,14 @@ The game ships as one HTML file (`index.html`) assembled by `tools/build.mjs` fr
 
 There is one script tag and one shared global scope. Each JS module defines exactly one global const (below) and nothing else at top level.
 
+## Size (lead override of spec §11.1)
+
+Completeness and clarity win over bytes:
+- **Do not cut features or tiers to save size.** Every Tier 1, 2 and 3 item in spec §11.1 ships.
+- **Do not minify or obfuscate.** Keep the code readable.
+- **Budgets:** there is no hard budget below 600 KB. `tools/build.mjs` warns above 350 KB and fails only above 600 KB.
+- **Still avoid bloat.** Share helpers through the contract instead of duplicating them, and keep long text in one table.
+
 ## Ownership
 
 | File | Owner | Global |
