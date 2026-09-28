@@ -37,7 +37,7 @@ const GAME = (() => {
 
   /* ---------- module state ---------- */
   const S = {
-    booted: false, flags: {}, settings: null, meta: null,
+    booted: false, flags: {}, settings: null, meta: null, runOpts: null, bootOpts: null,
     state: null, display: null, ui: 'BOOT', undo: [], lastRun: null, reducedMotion: false,
     rehearse: false, stack: [], listeners: {}, keys: {}, paused: new Set(),
     loopOn: false, raf: 0, last: 0, acc: 0, tick: 0, timers: [], gameSpeed: 1,
@@ -76,7 +76,7 @@ const GAME = (() => {
   const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   const randomSeed = () => Math.random().toString(36).slice(2, 7);
   const fmt = n => { const r = safe(() => sim().fmt(n)); return r != null ? String(r) : Math.floor(Number(n) || 0).toLocaleString('en-US'); };
-  const fmtAah = a => (a < 100 ? (Math.round(a * 10) / 10).toString() : fmt(a));
+  const fmtAah = a => { const r = safe(() => sim().fmtAah(a)); return r != null ? String(r) : a < 100 ? (Math.floor(a * 10) / 10).toFixed(1) : fmt(a); };
 
   /* ---------- DATA lookups (tables may be arrays or id-keyed objects) ---------- */
   function rows(name) {
@@ -90,7 +90,7 @@ const GAME = (() => {
   const lockOf = r => { const l = r && (r.lock != null ? r.lock : r.unlock); return l && l !== 'start' ? l : null; };
   const shellName = id => (row('SHELLS', id) || {}).name || cap(id);
   const colName = c => (COL[c] || [c || ''])[0];
-  const ruleName = id => (id === 'countdown' || id === 'countdown3' ? 'Midnight Countdown' : (row('HEADLINERS', id) || row('TWISTS', id) || {}).name || cap(id));
+  const ruleName = id => (id === 'countdown' || id === 'countdown3' ? 'Midnight Countdown' : (row('RULE_INFO', id) || row('HEADLINERS', id) || {}).name || cap(id));
   const kitName = id => (row('KITS', id) || {}).name || cap(id);
   function festName(f) {
     const r = rows('FESTIVALS')[f - 1];
@@ -295,9 +295,14 @@ const GAME = (() => {
   const targetAt = (st, s) => { const v = st ? safe(() => sim().target(st, s), null) : null; return isNum(v) ? v : 0; };
   const nextHeadliner = s => s - (s % 3) + 2;
   const moodVisible = () => { const st = cur(); return !!S.settings.mood && !!st && !(st.firstRun && st.show < 2); };
-  const moodOf = (st, rules) => safe(() => sim().mood(st, rules), null);
-  const moodWord = (st, rules) => MOOD[moodOf(st, rules)] || cap(moodOf(st, rules) || '');
-  const isCritical = () => !!S.state && S.state.phase === 'build' && hist(S.state).some(e => e && e.pass === false);
+  const moodOf = (st, rules, show) => safe(() => sim().mood(st, rules, show), null);
+  const moodWord = (st, rules, show) => { const m = moodOf(st, rules, show); return MOOD[m] || cap(m || ''); };
+  function isCritical() {
+    const st = S.state;
+    if (!st || st.phase !== 'build') return false;
+    const rs = st.runStats;
+    return rs && isNum(rs.rainUsed) ? rs.rainUsed > 0 : hist(st).some(e => e && e.pass === false);
+  }
   function previewShow() {
     const st = cur();
     if (!st) return 0;
@@ -319,7 +324,7 @@ const GAME = (() => {
     emit('preview', {rehearse: v, rules, show: preview.show});
     emit('change', {state: cur()});
     const st = cur();
-    if (v && st) announce('Rehearsing ' + (rules.map(ruleName).join(' and ') || 'the next show') + (moodVisible() ? ': ' + moodWord(st, rules) + '.' : '.'));
+    if (v && st) announce('Rehearsing ' + (rules.map(ruleName).join(' and ') || 'the next show') + (moodVisible() ? ': ' + moodWord(st, rules, preview.show) + '.' : '.'));
     else announce('Rehearse off.');
   }
 
@@ -350,6 +355,9 @@ const GAME = (() => {
   function restoreRun(saved) {
     resetRunFields();
     S.state = saved.state;
+    const st = saved.state;
+    S.runOpts = {kit: st.kit, renown: st.renown | 0, fairWeather: !!st.fairWeather, firstRun: !!st.firstRun, daily: !!st.daily,
+      unlocked: Array.isArray(st.unlocked) ? st.unlocked.slice() : [], discovered: Array.isArray(st.discovered) ? st.discovered.slice() : [], keepsake: null};
     S.buildMs = isNum(saved.buildMs) ? saved.buildMs : 0;
     S.counted = !!saved.counted;
     if (Array.isArray(saved.lit)) S.lit = saved.lit;
@@ -382,13 +390,17 @@ const GAME = (() => {
     if (!isObj(keepsake) || !isStr(keepsake.id)) keepsake = null;
     const opts = {kit, renown, fairWeather: o.fairWeather != null ? !!o.fairWeather : !!S.settings.fairWeather,
       firstRun, daily, unlocked: Array.isArray(o.unlocked) ? o.unlocked.slice() : unlockedList(),
+      discovered: Array.isArray(o.discovered) ? o.discovered.slice() : foundFusionKeys(),
       keepsake: keepsake ? {id: keepsake.id, col: keepsake.col || null} : null};
     let st = null;
     try { st = O.createState(seed, opts); } catch (e) { warn('createState', e); return null; }
     if (!st) return null;
-    if (keepsake || o.keepsake === null) m.keepsake = null;           // consumed by this createState (§7.3)
-    if (!firstRun && !daily && !o.replay && o.kit && kitUnlocked(kit)) m.kit = kit;
-    if (!firstRun && !daily && o.renown != null && renown <= renownMax()) m.renown.selected = renown;
+    S.runOpts = cloneJSON(opts);
+    if (!force) {
+      if (keepsake || o.keepsake === null) m.keepsake = null;         // consumed by this createState (§7.3)
+      if (!firstRun && !daily && !o.replay && o.kit && kitUnlocked(kit)) m.kit = kit;
+      if (!firstRun && !daily && o.renown != null && renown <= renownMax()) m.renown.selected = renown;
+    }
     return st;
   }
   // Emit the run start and open its first build (the page is complete at rest).
@@ -397,6 +409,8 @@ const GAME = (() => {
     callFX('critical', isCritical());
     if (S.state) callFX('setSeed', S.state.seed);
     callAudio('onEvent', {type: 'runStart'});
+    const bo = S.state ? safe(() => sim().describeBuild(S.state), null) : null;
+    if (bo) callAudio('onEvent', bo);
     callAudio('setCrowd', S.state ? S.state.crowd : 0);
     emit('runStart', {state: S.state, restored: !!restored});
     emit('change', {state: S.state});
@@ -453,7 +467,8 @@ const GAME = (() => {
     const st = S.state;
     if (!st || st.phase !== 'build') return;
     const crit = isCritical();
-    S.lastChance = crit && (S.missPending || st.show % 3 === 2);
+    const bo = safe(() => sim().describeBuild(st), null);
+    S.lastChance = bo && bo.lastChance != null ? !!bo.lastChance : crit && (S.missPending || st.show % 3 === 2);
     S.missPending = false;
     callFX('critical', crit);
     callAudio('onEvent', {type: 'critical', on: crit, lastChance: S.lastChance});
@@ -573,7 +588,7 @@ const GAME = (() => {
     if (!O || !st || S.res || st.phase !== 'build' || !(S.ui === 'BUILD' || S.ui === 'RESULT')) return [];
     const pre = simClone(st);
     const rules = rulesAt(pre, pre.show);
-    const fav = rules.includes('rival') ? safe(() => O.favourite(pre.tubes, pre.crowd), null) : safe(() => O.favourite(pre.tubes, pre.crowd), null);
+    const fav = rules.includes('rival') ? safe(() => O.favourite(pre.tubes, pre.crowd), null) : null;
     const t0 = now();
     let events;
     try { events = O.step(st, {type: 'light'}) || []; } catch (e) { warn('light', e); S.state = pre; return illegal({type: 'light'}, 'error'); }
@@ -807,15 +822,19 @@ const GAME = (() => {
     if (st.endless) r.bestAfterparty = Math.max(r.bestAfterparty || 0, apShows);
     let best = null;
     h.forEach((e, i) => { if (!best || (e.applause || 0) > best.applause) best = {applause: e.applause || 0, show: (e.show | 0) + 1, index: i}; });
-    const poster = {seed: st.seed, kit: st.kit, renown: st.renown | 0, won: seasonWon, show: shows || st.show + 1,
-      festival: Math.min(12, Math.floor(Math.max(0, shows - 1) / 3) + 1), score: best ? best.applause : 0, date: ymd(new Date()),
-      tubes: st.tubes.map(t => (t && t.shell ? {id: t.shell.id, col: t.shell.col, star: t.shell.star, rig: t.rig || null} : null))};
-    if (S.posterAdded && m.posters.length) m.posters[m.posters.length - 1] = poster;
-    else { m.posters.push(poster); m.posters = m.posters.slice(-5); S.posterAdded = true; }
+    // UI_END paints and saves the poster when it exposes posterOf; otherwise core keeps a plain one.
+    const endUI = typeof UI_END !== 'undefined' ? UI_END : null;
+    if (!can(endUI, 'posterOf')) {
+      const poster = {seed: st.seed, kit: st.kit, renown: st.renown | 0, won: seasonWon, show: shows || st.show + 1,
+        festival: Math.min(12, Math.floor(Math.max(0, shows - 1) / 3) + 1), score: best ? best.applause : 0, date: ymd(new Date()),
+        tubes: st.tubes.map(t => (t && t.shell ? {id: t.shell.id, col: t.shell.col, star: t.shell.star, rig: t.rig || null} : null))};
+      if (S.posterAdded && m.posters.length) m.posters[m.posters.length - 1] = poster;
+      else { m.posters.push(poster); m.posters = m.posters.slice(-5); S.posterAdded = true; }
+    }
     const pre = S.lastPreLight;
     S.lastRun = {
       won: seasonWon, lost: !seasonWon, abandoned: !!o.abandoned, afterparty: !!st.endless, afterpartyShows: apShows,
-      state: simClone(st), history: h, finalPreLight: pre, buildStart: pre && pre.runStats ? pre.runStats.buildStart || null : null,
+      state: simClone(st), history: litHistory(h), finalPreLight: pre, buildStart: pre && pre.runStats ? pre.runStats.buildStart || null : null,
       rules: pre ? rulesAt(pre, pre.show) : [], target: pre ? targetAt(pre, pre.show) : 0,
       seed: st.seed, kit: st.kit, renown: st.renown | 0, fairWeather: !!st.fairWeather, daily: !!st.daily, firstRun: !!st.firstRun,
       bestShow: best, newUnlocks: S.runUnlocks.slice(), milestoneDeltas: milestoneDeltas(), milestones: milestoneRows(),
@@ -824,7 +843,19 @@ const GAME = (() => {
     emit('meta', {meta: m});
     saveNow();
   }
+  // History entries plus the rack as lit ({tubes, rules, crowd, fav}) for the end screen's Shapley chart.
+  function litHistory(h) {
+    const same = S.lit.length === h.length;
+    return h.map((e, i) => {
+      if (!isObj(e)) return e;
+      let l = same ? S.lit[i] : null;
+      if (!l || l.show !== e.show) l = [...S.lit].reverse().find(x => x.show === e.show) || null;
+      return l ? {...e, lit: l} : {...e};
+    });
+  }
   function keepsakeOptions(st) {
+    const ko = safe(() => sim().keepsakeOptions(st, st.unlocked), null);
+    if (ko && Array.isArray(ko.options)) return ko.options;
     const common = sh => { const rw = row('SHELLS', sh.id); return !rw || !rw.rarity || rw.rarity === 'C'; };
     const owned = [...st.tubes.map(t => t && t.shell), ...(st.crate || [])].filter(Boolean).filter(common).map(sh => ({id: sh.id, col: sh.col}));
     const seen = new Set(), out = [];
@@ -837,7 +868,8 @@ const GAME = (() => {
   }
 
   /* ---------- milestones (§4.11) and the unlock flow (§7.2) ---------- */
-  const foundFusions = () => Object.values(S.meta.codex.fusions).filter(f => f && f.found).length;
+  const foundFusionKeys = () => Object.keys(S.meta.codex.fusions).filter(k => S.meta.codex.fusions[k] && S.meta.codex.fusions[k].found);
+  const foundFusions = () => foundFusionKeys().length;
   function colourCounts(cf) {
     if (isObj(cf)) return cf;
     if (Array.isArray(cf)) { const o = {}; cf.forEach(c => { o[c] = (o[c] || 0) + 1; }); return o; }
@@ -1314,12 +1346,16 @@ const GAME = (() => {
         if (settled) return;
         // One run per MessageChannel tick keeps the main thread responsive.
         const parts = [], ch = typeof MessageChannel === 'function' ? new MessageChannel() : null;
+        const exact = can(O, 'playRun') && can(O, 'runRecord') && can(O, 'summarizeRuns');
         let i = 0;
         const work = () => {
           const t0 = now();
-          do { parts.push(safe(() => O.runBots({bot, n: 1, seeds: [seeds[i]], opts}), null)); i++; } while (i < seeds.length && now() - t0 < 8);
+          do {
+            const sd = seeds[i++];
+            parts.push(exact ? safe(() => O.runRecord(O.playRun(sd, bot, opts).state), null) : safe(() => O.runBots({bot, n: 1, seeds: [sd], opts}), null));
+          } while (i < seeds.length && now() - t0 < 8);
           if (i < seeds.length) { if (ch) ch.port2.postMessage(0); else setTimeout(work, 0); }
-          else done(mergeSummaries(parts, job));
+          else done(exact ? safe(() => O.summarizeRuns(parts.filter(Boolean), {bot, opts}), {error: 'summarize failed'}) : mergeSummaries(parts, job));
         };
         if (ch) ch.port1.onmessage = work;
         work();
@@ -1372,9 +1408,11 @@ const GAME = (() => {
   }
   function installHooks() {
     window.__game = {
+      // reset(seed, opts): a fresh run with the boot run's createState options unless opts overrides them,
+      // so reset(bootSeed) reproduces the boot state (same seed + same actions → same hash).
       reset(seed, opts) {
-        const o = isObj(opts) ? {...opts} : {};
-        newRun({...o, seed: seed != null ? seed : o.seed, force: true, firstRun: !!o.firstRun});
+        const o = {...(S.bootOpts || {}), ...(isObj(opts) ? opts : {})};
+        newRun({...o, seed: seed != null ? String(seed) : o.seed != null ? o.seed : randomSeed(), force: true, firstRun: !!o.firstRun});
         return hash();
       },
       act(action) {
@@ -1453,6 +1491,7 @@ const GAME = (() => {
       S.state = createRun({seed: f.seed != null ? f.seed : undefined, kit: f.kit || undefined, renown: f.renown != null ? f.renown : undefined,
         force: !!(f.kit || f.renown != null)});
     }
+    S.bootOpts = S.runOpts ? cloneJSON(S.runOpts) : null;
     S.booted = true;
     // UI modules render into their containers.
     const mods = [typeof UI_PLAY !== 'undefined' ? UI_PLAY : null, typeof UI_PANELS !== 'undefined' ? UI_PANELS : null,

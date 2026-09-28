@@ -7,7 +7,7 @@
 /* ---------- shared panel frame ---------- */
 :is(#pause-menu,#settings,#logbook,#help) > .m-panel{
   display:flex;flex-direction:column;padding:0;overflow:hidden;position:relative;
-  background:radial-gradient(120% 44% at 50% 0%,rgba(242,193,78,.13),transparent 62%),var(--surface-2);
+  background:radial-gradient(120% 44% at 50% 0%,rgba(242,193,78,.13),transparent 62%),linear-gradient(var(--surface-2),var(--surface-2)),var(--bg);
   border:1px solid var(--brass);border-radius:16px;
   box-shadow:inset 0 0 0 3px var(--surface-2),inset 0 0 0 4px rgba(201,162,39,.32),0 24px 64px rgba(0,0,0,.55)}
 :is(#pause-menu,#settings,#logbook,#help) .m-head{display:flex;align-items:flex-start;gap:12px;flex:none;
@@ -16,10 +16,11 @@
 :is(#pause-menu,#settings,#logbook,#help) .m-eyebrow{margin:0 0 2px;font:700 var(--t-xs)/1.2 var(--f-ui);
   letter-spacing:.14em;text-transform:uppercase;color:var(--brass)}
 :is(#pause-menu,#settings,#logbook,#help) .m-head h2{margin:0;font:600 var(--t-xl)/1.1 var(--f-display);text-wrap:balance}
+:is(#pause-menu,#settings,#logbook,#help) .m-title-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
 :is(#pause-menu,#settings,#logbook,#help) .m-x{flex:none;width:var(--tap);height:var(--tap);padding:0;border-radius:999px;background:transparent}
 :is(#pause-menu,#settings,#logbook,#help) .m-x:hover{border-color:var(--brass);color:var(--aah)}
 :is(#pause-menu,#settings,#logbook,#help,#toasts) .m-ico{width:22px;height:22px;flex:none}
-:is(#pause-menu,#settings,#logbook,#help) .m-body{flex:1 1 auto;min-height:0;overflow:auto;padding:16px;
+:is(#pause-menu,#settings,#logbook,#help) .m-body{position:relative;flex:1 1 auto;min-height:0;overflow:auto;padding:16px;
   overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 :is(#pause-menu,#settings,#logbook,#help) .m-foot{flex:none;padding:12px 16px;border-top:1px solid var(--line);background:rgba(3,5,12,.25)}
 :is(#pause-menu,#settings,#logbook,#help) .m-wide{width:100%;min-height:52px;font-size:var(--t-m)}
@@ -34,20 +35,21 @@
 #pause-menu .b-B{fill:var(--c-B)} #pause-menu .b-W{fill:var(--c-W)}
 #pause-menu .pm-head{text-align:center;border-bottom:0;padding:6px 20px 4px}
 #pause-menu .m-head h2{font-size:var(--t-xxl)}
-#pause-menu .m-sub{margin:6px 0 0;color:var(--paper-dim);font-size:var(--t-s)}
+#pause-menu .m-sub{display:grid;margin:6px 0 0;color:var(--paper-dim);font-size:var(--t-s)}
+#pause-menu .m-sub span:first-child{color:var(--paper)}
 #pause-menu .m-sub:empty{display:none}
 #pause-menu .pm-body{display:grid;gap:12px;padding:12px 20px 20px}
 #pause-menu .pm-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 #pause-menu .pm-tile{flex-direction:column;min-height:76px;gap:6px;padding:10px 4px;background:var(--wood);border-color:var(--wood-hi)}
 #pause-menu .pm-tile .m-ico{color:var(--aah);width:26px;height:26px}
 #pause-menu .pm-tile:hover{border-color:var(--brass)}
-#pause-menu .pm-ticket{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:0 10px;
-  padding:4px 4px 4px 14px;border:1px dashed var(--brass);border-radius:var(--radius);background:var(--ink)}
-#pause-menu .pm-ticket-k{align-self:stretch;display:grid;align-items:center;padding-right:10px;border-right:1px dashed var(--brass);
-  font:700 var(--t-xs)/1 var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--brass)}
+#pause-menu .pm-ticket{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 8px;
+  padding:4px 6px 0 16px;border:1px dashed var(--brass);border-radius:var(--radius);background:var(--ink)}
+#pause-menu .pm-ticket-v{display:grid;min-width:0;padding-right:8px;border-right:1px dashed var(--brass)}
+#pause-menu .pm-ticket-k{padding-top:6px;font:700 var(--t-xs)/1 var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--brass)}
 #pause-menu .pm-seed-val{width:100%;min-width:0;min-height:var(--tap);padding:0;border:0;background:transparent;color:var(--paper);
-  font:italic 700 var(--t-l)/1 var(--f-display);text-overflow:ellipsis;user-select:text;-webkit-user-select:text}
-#pause-menu .pm-copy{padding:8px 12px;background:transparent}
+  font:italic 700 var(--t-l)/1.1 var(--f-display);text-overflow:ellipsis;user-select:text;-webkit-user-select:text}
+#pause-menu .pm-copy{align-self:center;padding:8px 12px;margin-bottom:4px;background:transparent}
 #pause-menu .pm-copied{grid-column:1/-1;padding:0 0 6px;color:var(--ok);font-size:var(--t-s)}
 #pause-menu .pm-copied:empty{display:none}
 #pause-menu .pm-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0}
@@ -87,7 +89,7 @@
 #settings .st-radios{display:block;border:0;min-width:0}
 #settings .st-radios legend{float:left;width:100%;padding:0}
 #settings .st-radios .st-hint{display:block;clear:both}
-#settings .st-seg{clear:both;display:flex;margin-top:8px;padding:3px;border:1px solid var(--wood-hi);border-radius:999px;background:var(--ink)}
+#settings .st-seg{position:relative;clear:both;display:flex;margin-top:8px;padding:3px;border:1px solid var(--wood-hi);border-radius:999px;background:var(--ink)}
 #settings .vh-radio{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
 #settings .st-seg label{flex:1;display:grid;place-items:center;min-height:var(--tap);padding:4px 10px;border-radius:999px;cursor:pointer;
   font:700 var(--t-s)/1.1 var(--f-ui);color:var(--paper-dim);text-align:center}
@@ -116,10 +118,10 @@
 /* ---------- LOGBOOK (full-screen sheet) ---------- */
 #logbook{place-items:stretch center;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 0}
 #logbook > .lb-sheet{width:min(100%,1040px);height:100%;max-height:100%;border-bottom:0;border-radius:16px 16px 0 0}
-#logbook .lb-total{align-self:center;margin:0;font:700 var(--t-s)/1 var(--f-ui);color:var(--brass);white-space:nowrap}
-#logbook .lb-tabs{flex:none;display:flex;gap:4px;overflow-x:auto;padding:6px 12px 0;border-bottom:1px solid var(--line);scrollbar-width:none}
+#logbook .lb-total{margin:0;font:700 var(--t-s)/1 var(--f-ui);color:var(--aah);white-space:nowrap}
+#logbook .lb-tabs{flex:none;display:flex;gap:0;overflow-x:auto;padding:6px 12px 0;border-bottom:1px solid var(--line);scrollbar-width:none}
 #logbook .lb-tabs::-webkit-scrollbar{display:none}
-#logbook .lb-tab{flex:none;display:inline-flex;align-items:baseline;gap:6px;min-height:48px;padding:12px 14px 8px;border:0;
+#logbook .lb-tab{flex:none;display:inline-flex;align-items:baseline;gap:6px;min-height:48px;padding:12px 12px 8px;border:0;
   border-bottom:3px solid transparent;border-radius:10px 10px 0 0;background:transparent;color:var(--paper-dim);font:700 var(--t-s)/1 var(--f-ui)}
 #logbook .lb-tab:hover{color:var(--paper)}
 #logbook .lb-tab[aria-selected="true"]{color:var(--paper);border-bottom-color:var(--brass);background:linear-gradient(180deg,transparent,rgba(201,162,39,.14))}
@@ -133,9 +135,9 @@
 #logbook .lb-count{font:600 var(--t-l)/1.2 var(--f-display)}
 #logbook .lb-count .num{color:var(--aah);font-family:var(--f-ui);font-weight:700}
 #logbook .lb-intro{margin-top:4px!important;color:var(--paper-dim);max-width:60ch}
-#logbook .lb-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:14px 8px}
+#logbook .lb-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:14px 8px}
 #logbook .lb-cell{display:flex;justify-content:center;min-width:0}
-#logbook .lb-tile{width:100%;max-width:104px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 0 4px;
+#logbook .lb-tile{width:100%;max-width:112px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 0 4px;
   border:0;border-radius:12px;background:none;color:var(--paper);text-align:center}
 #logbook .lb-cap{max-width:100%;font:400 var(--t-s)/1.2 var(--f-ui);hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -164,6 +166,9 @@
 #logbook .lb-plate:is([data-col="X"],[data-col="*"]){border-radius:50%;opacity:.22;
   background:conic-gradient(var(--c-R) 0 25%,var(--c-A) 0 50%,var(--c-G) 0 75%,var(--c-B) 0)}
 #logbook .lb-plate[data-col="X"]{border-radius:0;clip-path:polygon(50% 0,61% 30%,93% 20%,72% 45%,100% 62%,66% 66%,62% 100%,50% 72%,38% 100%,34% 66%,0 62%,28% 45%,7% 20%,39% 30%)}
+#logbook .lb-badge{position:absolute;left:3px;right:3px;bottom:3px;display:flex;align-items:center;justify-content:center;gap:3px;
+  padding:1px 4px;border-radius:6px;background:rgba(5,7,15,.85);color:var(--paper);font:700 var(--t-xs)/1.1 var(--f-ui)}
+#logbook .lb-badge .m-ico{width:14px;height:14px;color:var(--aah);stroke-width:2.4}
 #logbook .lb-mono{position:absolute;right:5px;bottom:3px;font:700 var(--t-xs)/1 var(--f-ui);color:var(--paper);text-shadow:0 1px 2px var(--ink),0 0 4px var(--ink)}
 /* silhouettes: undiscovered entries */
 #logbook .is-sil .m-picto{filter:brightness(0) drop-shadow(0 0 1px var(--paper-dim)) drop-shadow(0 0 1px var(--paper-dim));opacity:.9}
@@ -186,12 +191,16 @@
 #logbook .lb-ms-ico{position:relative;width:44%!important;height:44%!important;color:var(--aah);stroke-width:2.6}
 #logbook .lb-empty{padding:32px 8px;text-align:center;color:var(--paper-dim);font:italic 700 var(--t-m)/1.4 var(--f-display)}
 /* detail card, docked at the sheet's foot */
-#logbook .lb-detail{position:relative;flex:none;max-height:48%;overflow:auto;display:grid;grid-template-columns:auto minmax(0,1fr);
-  gap:12px 16px;align-items:start;padding:16px 60px calc(env(safe-area-inset-bottom,0px) + 16px) 16px;border-top:1px solid var(--brass);
+#logbook .lb-detail{position:relative;flex:none;max-height:50%;overflow:auto;display:grid;grid-template-columns:auto minmax(0,1fr);
+  grid-template-areas:"art head" "body body";gap:10px 14px;align-items:center;
+  padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 16px);border-top:1px solid var(--brass);
   background:linear-gradient(180deg,rgba(201,162,39,.12),transparent 48px),var(--surface-2);box-shadow:0 -14px 28px rgba(0,0,0,.45)}
 #logbook .lb-d-x{position:absolute;top:8px;right:8px}
-#logbook .lb-d-body h3{margin:0 0 8px}
-#logbook .lb-d-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+#logbook .lb-d-art{grid-area:art}
+#logbook .lb-d-head{grid-area:head;min-width:0;padding-right:44px}
+#logbook .lb-d-body{grid-area:body;min-width:0}
+#logbook .lb-d-head h3{margin:0 0 6px}
+#logbook .lb-d-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0}
 #logbook .lb-d-chips .chip{min-height:28px;padding:4px 10px;color:var(--paper)}
 #logbook .lb-d-line{margin:0 0 6px;color:var(--paper)}
 #logbook .lb-rule{display:grid;gap:4px}
@@ -217,6 +226,8 @@
 #logbook .lb-poster figcaption span{color:var(--paper-dim)}
 @media (min-width:700px){
   #logbook{padding:24px}
+  #logbook .lb-detail{grid-template-areas:"art head" "art body";align-items:start;padding-left:24px}
+  #logbook .lb-d-head{padding-right:56px}
   #logbook > .lb-sheet{border-bottom:1px solid var(--brass);border-radius:16px}
   #logbook .lb-body{padding:20px 24px 32px}
   #logbook .lb-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:18px 12px}
@@ -232,7 +243,8 @@
 #help .hp-sec h3{display:flex;align-items:center;gap:12px;margin:0 0 10px}
 #help .hp-sec + .hp-sec{margin-top:24px}
 #help .hp-gloss{margin:0}
-#help .hp-gloss > div{display:grid;grid-template-columns:minmax(104px,32%) 1fr;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+#help .hp-gloss > div{display:grid;grid-template-columns:7em minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+@media (min-width:600px){#help .hp-gloss > div{grid-template-columns:10em minmax(0,1fr)}}
 #help .hp-gloss dt{font-weight:700;color:var(--aah)}
 #help .hp-gloss dd{margin:0}
 #help .hp-keys{width:100%;border-collapse:collapse}
@@ -274,7 +286,7 @@
 @keyframes m-breathe{50%{transform:scale(1.05);opacity:.9}}
 
 /* ---------- high contrast: flat surfaces, white rules, no glows ---------- */
-:root[data-contrast="high"] :is(#pause-menu,#settings,#logbook,#help) > .m-panel{background:var(--surface-2);border:2px solid var(--paper);box-shadow:none}
+:root[data-contrast="high"] :is(#pause-menu,#settings,#logbook,#help) > .m-panel{background:var(--bg);border:2px solid var(--paper);box-shadow:none}
 :root[data-contrast="high"] #logbook .lb-art,
 :root[data-contrast="high"] #settings .st-switch,
 :root[data-contrast="high"] #settings .st-seg,

@@ -103,9 +103,13 @@ function pageInit() {
       .observe({ type: 'longtask', buffered: true });
   } catch (e) { /* no longtask API */ }
   try {
+    // Records arrive batched after the script yields, so rebuild each value from the next record's
+    // oldValue: a synchronous RESOLVING → RESULT → BUILD still logs all three states.
     new MutationObserver((recs) => {
-      for (const r of recs) if (r.target.id === 'app') pt.uiLog.push({ t: performance.now(), ui: r.target.getAttribute('data-ui') });
-    }).observe(document, { subtree: true, attributes: true, attributeFilter: ['data-ui'] });
+      const t = performance.now();
+      const app = recs.filter((r) => r.target.id === 'app');
+      app.forEach((r, k) => pt.uiLog.push({ t, ui: k + 1 < app.length ? app[k + 1].oldValue : r.target.getAttribute('data-ui') }));
+    }).observe(document, { subtree: true, attributes: true, attributeFilter: ['data-ui'], attributeOldValue: true });
   } catch (e) { /* ignore */ }
   addEventListener('pointerdown', () => pt.pointerDowns.push(performance.now()), true);
 
@@ -356,6 +360,19 @@ async function waitUi(page, states, timeout) {
     return null;
   }
 }
+// Wait until data-ui has left BUILD/RESULT since uiLog index log0; returns the current data-ui
+// (so an instant resolution that already went RESOLVING → RESULT → BUILD is not missed).
+async function waitLeft(page, log0, timeout) {
+  try {
+    await page.waitForFunction((i) => {
+      const pt = window.__pt; const u = pt.ui();
+      return u === 'RESOLVING' || u === 'END' || pt.uiLog.slice(i).some((x) => x.ui === 'RESOLVING' || x.ui === 'RESULT' || x.ui === 'END');
+    }, log0, { timeout, polling: 20 });
+    return await ui(page);
+  } catch (e) {
+    return null;
+  }
+}
 async function state(page) { return page.evaluate(() => (window.__game && window.__game.state ? window.__game.state() : null)); }
 
 async function shot(s, run, label) {
@@ -452,7 +469,7 @@ async function playShow(s, run, { label = null, shots = false, measure = false, 
   const log0 = await page.evaluate(() => window.__pt.uiLog.length);
   if (measure) await page.evaluate(() => window.__pt.startFrames());
   await page.locator('#fire').click({ timeout: 3000 });
-  const r = await waitUi(page, ['RESOLVING', 'RESULT', 'END'], 1500);
+  const r = await waitLeft(page, log0, 1500);
   let sawResolving = r === 'RESOLVING';
   if (sawResolving && shots) {
     // Mid-resolution: wait up to 600 ms into the chain, then shoot if still resolving.
@@ -795,7 +812,7 @@ async function flowKeys(browser, vp) {
       const b = await state(page);
       const log0 = await page.evaluate(() => window.__pt.uiLog.length);
       await press('f');
-      const r = await waitUi(page, ['RESOLVING', 'RESULT', 'END'], 1500);
+      const r = await waitLeft(page, log0, 1500);
       if (!r) { failFirst('light', 'F lights the fuse', `data-ui stayed ${await ui(page)}`); break; }
       if (r === 'RESOLVING' && R() < 0.5) { await sleep(120); if ((await ui(page)) === 'RESOLVING') { await page.keyboard.press(' '); stats.spaces++; } }
       const end = await waitUi(page, ['BUILD', 'END'], 30000);
@@ -992,9 +1009,11 @@ async function main() {
     console.error(`playtest: ${OPTS.file} not found; run node tools/build.mjs first`);
     process.exit(2);
   }
-  fs.mkdirSync(OPTS.out, { recursive: true });
-  const gi = path.join(OPTS.out, '.gitignore');
-  if (!fs.existsSync(gi)) fs.writeFileSync(gi, '*\n');
+  if (!fs.existsSync(OPTS.out)) {
+    // A directory we create holds only generated output: keep it out of git.
+    fs.mkdirSync(OPTS.out, { recursive: true });
+    fs.writeFileSync(path.join(OPTS.out, '.gitignore'), '*\n');
+  }
   for (const f of fs.readdirSync(OPTS.out)) if (/^(smoke|ui|keys|bots)-.*\.png$/.test(f)) fs.rmSync(path.join(OPTS.out, f));
   const tmpDir = prepareHost();
   const started = Date.now();

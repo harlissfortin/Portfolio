@@ -259,6 +259,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
   }
   const vOf = ev => num(ev.v) ?? num(ev.value) ?? num(ev.amount) ?? num(ev.n) ?? 0;
   function item(L, it) {
+    if (L.app) return;                     // payout-time gains (after the slam) are not part of the show
     if (!L.cur) { L.cur = {tube: null, pre: true, items: [], k: L.lines.length, v: 0}; L.lines.push(L.cur); }
     L.cur.items.push(it); L.cur.v++; L.cur.ooh = L.ooh; L.cur.aah = L.aah;
   }
@@ -268,6 +269,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     const t = ev.type;
     switch (t) {
       case 'burst': {
+        if (L.app) break;
         const sh = ev.shell && typeof ev.shell === 'object' ? ev.shell : {id: ev.shell || ev.shellId || ev.id, star: ev.star, col: ev.col};
         const tube = num(ev.tube) ?? num(ev.t);
         const seen = ev.seen || ev.up || ev.vis || (Array.isArray(ev.sees) ? ev.sees : null);

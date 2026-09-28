@@ -345,17 +345,27 @@ const UI_END = (() => {
     g.fillStyle = T.paper;
     for (let i = 0; i < W / 7; i++) { g.globalAlpha = .12 + rnd() * .45; const s = rnd() < .12 ? 2 : 1; g.fillRect(rnd() * W, rnd() * hz * .9, s, s); }
     g.globalAlpha = 1;
+    // measure the title block first so bursts can keep clear of it
+    const title = festName(p.festival || p.fest || 1);
+    const sub = p.won && !p.endless ? 'Happy New Year!' : (p.won ? 'The Afterparty went till dawn' : 'Show ' + p.show) + (p.seed ? ' · seed ' + p.seed : '');
+    const fTitle = '600 26px Fraunces, Georgia, "Times New Roman", serif', fSub = '700 16px "Atkinson Hyperlegible", system-ui, sans-serif';
+    g.font = fTitle; const tw = g.measureText(title).width;
+    g.font = fSub; const tBox = 14 + Math.max(tw, g.measureText(sub).width) + 10;
     // bursts in their tube columns
     const tubes = p.tubes || [], n = Math.max(tubes.length, 1);
-    const rackW = Math.min(W - 24, n * 104), x0 = (W - rackW) / 2, colW = rackW / n;
+    const rackW = Math.min(W - 24, n * 150), x0 = (W - rackW) / 2, colW = rackW / n;
     const spots = [];
     tubes.forEach((t, i) => {
       if (!t || !t.id) return;
-      const R = Math.min(colW * .5, 46) * (.84 + .08 * (t.star || 1));
-      spots.push({t, x: x0 + colW * (i + .5), y: 70 + (i % 2) * 18 + (rnd() - .5) * 10, R});
+      const R = Math.min(colW * .56, 56) * (.86 + .07 * (t.star || 1)), x = x0 + colW * (i + .5);
+      let y = Math.max(R + 8, 70 + (i % 2) * 18 + (rnd() - .5) * 10);
+      if (x - R * .7 < tBox && y - R * .7 < 62) y = Math.min(hz - R * .8, 62 + R * .7);
+      spots.push({t, x, y, R});
     });
-    for (const s of spots) {                                        // mortar trails
-      g.globalAlpha = .28; g.strokeStyle = hue(s.t.col, T); g.lineWidth = 1.5;
+    for (const s of spots) {                                        // mortar trails, fading in as they rise
+      const lg = g.createLinearGradient(0, hz, 0, s.y);
+      lg.addColorStop(0, 'rgba(0,0,0,0)'); lg.addColorStop(1, hue(s.t.col, T));
+      g.globalAlpha = .45; g.strokeStyle = lg; g.lineWidth = 1.5;
       g.beginPath(); g.moveTo(s.x, hz);
       for (let y = hz; y > s.y + s.R * .35; y -= 6) g.lineTo(s.x + Math.sin(y * .15 + s.x) * 1.5, y);
       g.stroke();
@@ -388,17 +398,17 @@ const UI_END = (() => {
     g.lineWidth = 3; g.strokeStyle = T.ink;
     for (let i = 0; i < 3; i++) { g.beginPath(); g.arc(bx0 + aw * (i + .5), hz, aw * .5, Math.PI, 0); g.stroke(); }
     if (T.hc) { g.strokeStyle = T.paper; g.lineWidth = 1; g.beginPath(); g.moveTo(0, hz + .5); g.lineTo(W, hz + .5); g.stroke(); }
-    // title block (drawn last, over a soft plate)
-    const title = festName(p.festival || p.fest || 1);
-    const sub = p.won && !p.endless ? 'Happy New Year!' : (p.won ? 'The Afterparty went till dawn' : 'Show ' + p.show) + (p.seed ? ' · seed ' + p.seed : '');
-    g.font = '600 26px Fraunces, Georgia, "Times New Roman", serif';
-    const tw = Math.max(g.measureText(title).width, 150);
-    const plate = g.createLinearGradient(0, 0, tw + 60, 0);
-    plate.addColorStop(0, T.hc ? 'rgba(0,0,0,.85)' : 'rgba(7,10,24,.62)'); plate.addColorStop(1, 'rgba(7,10,24,0)');
-    g.fillStyle = plate; g.fillRect(0, 0, tw + 60, 64);
+    // title block (drawn last, over a soft elliptical plate)
+    g.save();
+    g.scale((tBox + 30) / 80, 1);
+    const plate = g.createRadialGradient(0, 30, 0, 0, 30, 80);
+    const pc = T.hc ? '0,0,0' : '7,10,24';
+    plate.addColorStop(0, `rgba(${pc},.8)`); plate.addColorStop(.62, `rgba(${pc},.55)`); plate.addColorStop(1, `rgba(${pc},0)`);
+    g.fillStyle = plate; g.fillRect(0, 0, 80, 110);
+    g.restore();
     g.fillStyle = T.paper; g.textBaseline = 'alphabetic';
-    g.fillText(title, 14, 34);
-    g.font = '700 16px "Atkinson Hyperlegible", system-ui, sans-serif';
+    g.font = fTitle; g.fillText(title, 14, 34);
+    g.font = fSub;
     g.fillStyle = p.won ? T.aah : T.dim; g.fillText(sub, 14, 56);
     g.font = 'italic 700 16px Fraunces, Georgia, serif';
     g.textAlign = 'right'; g.fillStyle = T.brass;
@@ -416,12 +426,13 @@ const UI_END = (() => {
     return f => { q.push(f); ch.port2.postMessage(0); };
   })();
   function sliced(gen, done) {
-    const id = job;
+    const id = job, tm = out.timing = out.timing || {slices: 0, maxSlice: 0, start: now(), ms: 0};
     const tick = () => {
       if (id !== job) return;
       const t0 = now();
       let r;
       try { do { r = gen.next(); } while (!r.done && now() - t0 < 7); } catch (e) { warn('slice', e); r = {done: true, value: null}; }
+      tm.slices++; tm.maxSlice = Math.max(tm.maxSlice, now() - t0); tm.ms = now() - tm.start;
       if (id !== job) return;
       if (r.done) done(r.value); else defer(tick);
     };
@@ -535,12 +546,13 @@ const UI_END = (() => {
       if (c.act && c.act.type === 'sponsor') lines.push(c.pass ? `${what} would have kept the target at ${fmt(c.target)}: you'd have passed.` : `${what} would have left you ${fmt(c.target - c.applause)} short.`);
       else if (c.pass || c.applause >= target) lines.push(`${what} would have scored ${fmt(c.applause)}.`);
       else if (c.applause > got) lines.push(`Your closest fix: ${what.charAt(0).toLowerCase() + what.slice(1)} would have scored ${fmt(c.applause)}, still ${fmt(c.target - c.applause)} short.`);
-    }
+      else lines.push('No single swap or purchase would have beaten it: this rack was already at its best tonight.');
+    } else if (r) lines.push('No single swap or purchase would have beaten it: this rack was already at its best tonight.');
     return lines;
   }
 
   /* Pareto attribution (§8.6): mean per-show Shapley shares, grouped by shell id + Crowd. */
-  function localShapley(tubes, rules, crowd, fav) {
+  function* localShapley(tubes, rules, crowd, fav) {
     const occ = [];
     tubes.forEach((t, i) => { if (t && t.shell) occ.push(i); });
     const m = occ.length + 1, full = 1 << m, val = new Float64Array(full), fact = [1];
@@ -548,6 +560,7 @@ const UI_END = (() => {
     for (let mask = 1; mask < full; mask++) {
       const tb = tubes.map((t, i) => { const j = occ.indexOf(i); return j >= 0 && !(mask >> j & 1) ? Object.assign({}, t, {shell: null}) : t; });
       val[mask] = resolveA(tb, rules, (mask >> (m - 1) & 1) ? crowd : 0, fav);
+      if (mask % 16 === 0) yield;
     }
     const phi = new Array(m).fill(0);
     for (let mask = 0; mask < full; mask++) {
@@ -558,9 +571,9 @@ const UI_END = (() => {
     occ.forEach((ti, j) => { res[ti] = phi[j]; });
     return res;
   }
-  function sharesFor(x) {        // → Map(groupKey → share), shares sum to 1
+  function* sharesFor(x) {       // → Map(groupKey → share), shares sum to 1
     const S = sim();
-    let r = has(S, 'shapley') ? call(S, 'shapley', x.tubes, x.rules, x.crowd, x.fav) : (has(S, 'resolveShow') ? localShapley(x.tubes, x.rules, x.crowd, x.fav) : null);
+    let r = has(S, 'shapley') ? call(S, 'shapley', x.tubes, x.rules, x.crowd, x.fav) : (has(S, 'resolveShow') ? yield* localShapley(x.tubes, x.rules, x.crowd, x.fav) : null);
     if (!r) return null;
     if (r.shares) r = r.shares;
     const list = [], num = y => Math.max(0, +(y && typeof y === 'object' ? (y.share != null ? y.share : y.value) : y) || 0);
@@ -593,7 +606,7 @@ const UI_END = (() => {
     let count = 0;
     for (const x of list) {
       if (now() > deadline) break;
-      const m = sharesFor(x);
+      const m = yield* sharesFor(x);
       yield;
       if (!m) continue;
       count++;
@@ -698,7 +711,7 @@ const UI_END = (() => {
   const cross = (x, y, s) => `<path class="ec-miss" d="M${x - s},${y - s}L${x + s},${y + s}M${x + s},${y - s}L${x - s},${y + s}"/>`;
 
   function applauseSVG(W) {
-    const H = 216, L = 48, Rp = 12, Tp = 18, Bp = 30, pw = W - L - Rp, ph = H - Tp - Bp;
+    const H = 216, L = 56, Rp = 12, Tp = 18, Bp = 30, pw = W - L - Rp, ph = H - Tp - Bp;
     const N = v.endless || v.last.n > 24 ? Math.min(36, Math.ceil(v.last.n / 3) * 3) : 24;
     const tg = [];
     for (let s = 0; s < N; s++) tg[s] = baseTarget(s);
@@ -749,8 +762,8 @@ const UI_END = (() => {
   }
 
   function paretoSVG(items, W) {
-    const H = 206, L = 50, Rp = 12, Tp = 14, Bp = 40, pw = W - L - Rp, ph = H - Tp - Bp;
-    const maxBars = W < 420 ? 6 : 9;
+    const H = 206, L = 56, Rp = 12, Tp = 14, Bp = 40, pw = W - L - Rp, ph = H - Tp - Bp;
+    const maxBars = W < 420 ? 7 : 9;
     let bars = items;
     if (items.length > maxBars) {
       const rest = items.slice(maxBars - 1).reduce((a, b) => a + b.share, 0);
@@ -857,8 +870,8 @@ const UI_END = (() => {
         </ul>
         <div class="end-plot" id="end-chart"></div>
         <p class="vh" id="end-chart-sum">Festivals along the bottom, Applause on a log scale. ${v.shows.filter(x => x.pass).length} of ${v.shows.length} shows passed.</p>
-        <table class="vh"><caption>Applause and target by show</caption><tr><th>Show</th><th>Applause</th><th>Target</th><th>Result</th></tr>
-          ${v.shows.map(x => `<tr><td>${x.n}</td><td>${fmt(x.applause)}</td><td>${fmt(x.target)}</td><td>${x.pass ? 'pass' : 'miss'}${x.sponsored ? ', sponsored' : ''}</td></tr>`).join('')}</table>
+        <div class="vh"><table><caption>Applause and target by show</caption><tr><th>Show</th><th>Applause</th><th>Target</th><th>Result</th></tr>
+          ${v.shows.map(x => `<tr><td>${x.n}</td><td>${fmt(x.applause)}</td><td>${fmt(x.target)}</td><td>${x.pass ? 'pass' : 'miss'}${x.sponsored ? ', sponsored' : ''}</td></tr>`).join('')}</table></div>
       </section>
       <section class="end-sec end-best" aria-labelledby="end-h-best">
         <h3 id="end-h-best">Best show</h3>
@@ -886,7 +899,7 @@ const UI_END = (() => {
         <h3 id="end-h-keep">Keepsake</h3>
         <p class="end-dim" id="end-keep-d">Take one Common shell into your next run. It starts in the Crate.</p>
         <div class="end-keep" role="radiogroup" aria-labelledby="end-h-keep" aria-describedby="end-keep-d">
-          ${keeps.map((k, i) => `<button type="button" role="radio" class="end-kopt" aria-checked="false" data-keep="${i}" tabindex="-1" aria-label="${esc(shellName(k))}">${tokenHTML(k)}<span class="end-kname">${esc(shellRow(k.id).name)}</span></button>`).join('')}
+          ${keeps.map((k, i) => `<button type="button" role="radio" class="end-kopt" aria-checked="false" data-keep="${i}" tabindex="-1" aria-label="${esc(shellName(k))}">${tokenHTML(k)}<span class="end-kname" lang="en">${esc(shellRow(k.id).name)}</span></button>`).join('')}
           <button type="button" role="radio" class="end-kopt end-knone" aria-checked="true" data-keep="none" tabindex="0"><span class="end-tok end-tok-none" aria-hidden="true">—</span><span class="end-kname">None</span></button>
         </div>
       </section>
@@ -916,9 +929,9 @@ const UI_END = (() => {
     const daily = ((meta.unlocked || []).includes('m_win') || unlockedAll());
     el.innerHTML = `
       <button type="button" class="btn" data-end="replay">Replay seed</button>
+      <button type="button" class="btn" data-end="logbook">Logbook</button>
       <button type="button" class="btn" data-end="kit" aria-expanded="${picker === 'kit'}" aria-controls="end-pick"${ks.length < 2 ? ' aria-disabled="true"' : ''}>Kit: ${esc(kitRow(sel.kit).name)} <span aria-hidden="true">▾</span></button>
       <button type="button" class="btn" data-end="renown" aria-expanded="${picker === 'renown'}" aria-controls="end-pick"${rmax < 1 ? ' aria-disabled="true"' : ''}>Renown ${sel.renown} <span aria-hidden="true">▾</span></button>
-      <button type="button" class="btn" data-end="logbook">Logbook</button>
       ${daily ? '<button type="button" class="btn" data-end="daily">Daily Show</button>' : ''}`;
     const pk = root.querySelector('#end-pick');
     if (!picker) { pk.hidden = true; pk.innerHTML = ''; return; }

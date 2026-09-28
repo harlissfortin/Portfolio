@@ -207,6 +207,21 @@ const UI_MENUS = (() => {
 
   /* ---------- small shared bits ---------- */
   const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+  /* Soft-hyphenate long words for 2-line tile captions (hyphens:auto needs a
+     dictionary the browser may lack): VC|C nearest the middle, else V|C. */
+  const DIGRAPH = /^(ch|sh|th|ph|wh|ck|gh)$/i, V = /[aeiouy]/i;
+  const soft = (text) => String(text).replace(/[A-Za-z]{10,}/g, (w) => {
+    let best = -1;
+    for (const pass of [2, 1]) {
+      for (let i = 2; i < w.length - 3; i++) {
+        const ok = pass === 2 ? V.test(w[i - 1]) && !V.test(w[i]) && !V.test(w[i + 1]) && !DIGRAPH.test(w[i] + w[i + 1])
+          : V.test(w[i]) && !V.test(w[i + 1]);
+        if (ok && (best < 0 || Math.abs(i + 0.5 - w.length / 2) < Math.abs(best + 0.5 - w.length / 2))) best = i;
+      }
+      if (best >= 0) break;
+    }
+    return best < 0 ? w : w.slice(0, best + 1) + '\u00AD' + w.slice(best + 1);
+  });
   const eyebrow = (t) => h('p', { class: 'm-eyebrow' }, t);
   const closeBtn = (name, label) => h('button', { type: 'button', class: 'btn m-x', 'aria-label': label || 'Close', onclick: () => G.close(name) }, icon('close'));
   function head(name, kicker, title, extra) {
@@ -277,10 +292,13 @@ const UI_MENUS = (() => {
   function renderPause(keepArmed) {
     const st = (G && G.state) || {};
     const s = Number(st.show) || 0, f = Math.floor(s / 3) + 1;
-    let where = s >= 24 ? 'Afterparty · show ' + (s + 1) : festName(f) + ' · ' + (s === 23 ? 'Midnight Countdown' : SLOTS[s % 3]) + ' · show ' + (s + 1) + ' of 24';
-    if (st.phase === 'won') where = 'Happy New Year!';
-    P.where.textContent = st.seed != null ? where : '';
-    P.seed.value = st.seed != null ? String(st.seed) : '—';
+    const where = st.phase === 'won' ? ['Happy New Year!', 'Show ' + (s + 1)]
+      : s >= 24 ? ['Afterparty', 'Show ' + (s + 1) + ' of 36']
+        : [festName(f) + ' · ' + (s === 23 ? 'Midnight Countdown' : SLOTS[s % 3]), 'Show ' + (s + 1) + ' of 24'];
+    const run = st.seed != null;
+    P.where.replaceChildren(...(run ? where.map((t) => h('span', null, t)) : []));
+    P.seed.value = run ? String(st.seed) : '';
+    P.seed.closest('.pm-ticket').hidden = !run;
     P.copyNote.textContent = '';
     const tags = [];
     if (st.kit) tags.push(nameOf('KITS', st.kit));
@@ -656,7 +674,7 @@ const UI_MENUS = (() => {
       h('button', {
         type: 'button', class: 'lb-tile', 'data-state': e.state, 'data-key': e.key, 'aria-label': e.label,
         'aria-expanded': 'false', 'aria-controls': 'lb-detail', onclick: (ev) => toggleDetail(e, ev.currentTarget),
-      }, tileArt(e), h('span', { class: 'lb-cap', 'aria-hidden': 'true' }, e.cap)))));
+      }, tileArt(e), h('span', { class: 'lb-cap', 'aria-hidden': 'true' }, soft(e.cap))))));
     L.panel.replaceChildren(
       h('div', { class: 'lb-lede' }, h('p', { class: 'lb-count display' }, TAB_LABEL + ' ', h('span', { class: 'num' }, c[0] + '/' + c[1])), h('p', { class: 'lb-intro' }, INTRO[tab])),
       es.length ? grid : h('p', { class: 'lb-empty' }, 'Nothing here yet.'));

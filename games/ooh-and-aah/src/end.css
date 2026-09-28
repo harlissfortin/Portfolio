@@ -46,7 +46,7 @@
 #end .end-plot{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;line-height:0}
 #end .end-svg{display:block;max-width:100%}
 #end .end-svg text{font:700 16px/1 var(--f-ui);font-variant-numeric:tabular-nums}
-#end .ec-lbl{fill:var(--paper-dim)}
+#end .ec-lbl{fill:var(--paper-dim);font-weight:400}
 #end .ec-val{fill:var(--paper)}
 #end .ec-band{fill:var(--paper);opacity:.05}
 #end .ec-grid{stroke:var(--line);stroke-width:1}
@@ -114,11 +114,12 @@
   border:2px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--paper)}
 #end .end-kopt:hover{border-color:var(--paper-dim)}
 #end .end-kopt[aria-checked="true"]{border-color:var(--brass);background:rgba(242,193,78,.12);box-shadow:0 0 0 1px var(--brass)}
-#end .end-kname{font-size:var(--t-s);font-weight:700;max-width:10ch;text-align:center;line-height:1.15;hyphens:auto}
+#end .end-kname{font-size:var(--t-s);font-weight:700;max-width:11ch;text-align:center;line-height:1.15;hyphens:auto;overflow-wrap:anywhere}
 
 /* ---------- 10. buttons ---------- */
 #end .end-more{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 #end .end-more .btn{width:100%}
+#end .end-more [data-end="kit"]{grid-column:span 2}
 #end .end-pick{margin-top:10px;display:grid;gap:6px;padding:8px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
 #end .end-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:var(--tap);padding:8px 12px;text-align:left;
   border:2px solid transparent;border-radius:var(--radius-s);background:transparent;color:var(--paper)}
@@ -132,7 +133,7 @@
 #end #run-it-back{flex:1 1 auto;min-height:52px;font-size:var(--t-m)}
 #end .end-party{flex:0 1 40%;min-height:52px;border-color:var(--aah);color:var(--aah)}
 #end .end-kbd{display:none;margin-left:10px;padding:1px 7px;border-radius:5px;border:1px solid currentColor;font:700 var(--t-xs)/1.2 var(--f-ui);opacity:.7}
-@media (hover:hover) and (pointer:fine){ #end .end-kbd{display:inline-block} }
+@media (hover:hover) and (pointer:fine) and (min-width:600px){ #end .end-kbd{display:inline-block} }
 
 /* ---------- wide screens: two columns ---------- */
 @media (min-width:960px){

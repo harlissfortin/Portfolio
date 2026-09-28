@@ -678,7 +678,7 @@ async function simTimings(page, { iters }) {
   }, { iters });
 }
 
-async function measureShow(page, srv, key, cfg, notes) {
+async function measureShow(page, srv, key, cfg, notes, beforeLight = null) {
   const spec = RACKS[key];
   const res = { scenario: key, label: spec.label };
   let inj;
@@ -699,6 +699,7 @@ async function measureShow(page, srv, key, cfg, notes) {
     try { if (typeof window.__game.resolve === 'function') { let O = null; try { O = eval('OOH'); } catch (e) { /* ignore */ } const rules = O && O.rulesFor ? O.rulesFor(s, s.show) : (s.show === 23 ? ['countdown'] : []); res = await window.__game.resolve(s.tubes, { rules, crowd: s.crowd, fav: null }); res = { rules, bursts: res.bursts, applause: res.applause, ooh: res.ooh, aah: res.aah }; } } catch (e) { res = { error: String(e.message || e) }; }
     return { show: s.show + 1, tubes: s.tubes.map((t) => (t.shell ? `${t.shell.id}${t.shell.star > 1 ? '*' + t.shell.star : ''}:${t.shell.col}` : '-') + (t.rig ? `[${t.rig}]` : '')).join(' '), crowd: s.crowd, predicted: res };
   }).catch((e) => ({ error: e.message }));
+  if (beforeLight) { try { await beforeLight(); } catch (e) { notes.push(`${key}: ${e.message}`); } }
   await sleep(300);
   await page.evaluate(() => window.__oohTools.start());
   const lit = await lightShow(page, { timeoutMs: cfg.showTimeoutMs, allowAct: true });
@@ -980,17 +981,18 @@ async function main() {
       if (api && api.game) {
         for (const key of ['show7', 'cd14', 'cdwin']) {
           log(`  [${pn}] ${key}…`);
-          try {
-            P.scenarios[key] = await measureShow(page, srv, key, cfg, report.notes);
-            if (key === 'show7') P.sim = await simTimings(page, { iters }).catch((e) => ({ notes: [`SIM timings failed: ${e.message}`] }));
-            if (key === 'cd14') {
-              // resolve timings on the Countdown rack (the budgeted case); step timings stay from the mid-run state
-              const again = await injectScenario(page, srv, RACKS.cd14).catch(() => null);
-              if (again && again.how) {
-                const cd = await simTimings(page, { iters: { ...iters, step: 5, light: 5, act: 2 } }).catch(() => null);
-                if (cd && P.sim) { P.sim.resolveCountdown = cd.resolveCountdown; P.sim.resolveCountdownTrace = cd.resolveCountdownTrace; P.sim.countdownBursts = cd.countdownBursts; P.sim.countdownApplause = cd.countdownApplause; P.sim.resolveRack = 'cd14'; }
+          // SIM timings run on the injected, not-yet-lit state: step/act on the mid-run build (light
+          // then includes shop generation), resolveShow on the 6-tube Countdown rack (the budgeted case).
+          const before = key === 'show7'
+            ? async () => { P.sim = await simTimings(page, { iters }).catch((e) => ({ notes: [`SIM timings failed: ${e.message}`] })); }
+            : key === 'cd14'
+              ? async () => {
+                const cd = await simTimings(page, { iters: { ...iters, step: 3, light: 3, act: 2 } }).catch(() => null);
+                if (cd) { P.sim = P.sim || { notes: [] }; Object.assign(P.sim, { resolveCountdown: cd.resolveCountdown, resolveCountdownTrace: cd.resolveCountdownTrace, countdownBursts: cd.countdownBursts, countdownApplause: cd.countdownApplause, resolveRack: 'cd14' }); }
               }
-            }
+              : null;
+          try {
+            P.scenarios[key] = await measureShow(page, srv, key, cfg, report.notes, before);
           } catch (e) { P.scenarios[key] = { scenario: key, label: RACKS[key].label, error: e.message }; report.notes.push(`${pn}/${key}: ${e.message}`); }
         }
         if (opts.leak === 'both' || opts.leak === pn) {
