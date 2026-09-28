@@ -1,0 +1,30 @@
+<div id="app" data-ui="BOOT">
+  <canvas id="backdrop" aria-hidden="true"></canvas>
+  <aside id="board" aria-label="Festival board"></aside>
+  <main id="play" aria-label="Fireworks show">
+    <header id="hud"></header>
+    <div id="sponsor" hidden></div>
+    <div id="sky-wrap">
+      <canvas id="sky" aria-hidden="true"></canvas>
+      <div id="sky-overlay"></div>
+    </div>
+    <div id="rack" role="group" aria-label="Mortar rack"></div>
+    <div id="tools" role="toolbar" aria-label="Rack tools"></div>
+    <div id="shop" role="group" aria-label="Shop"></div>
+    <div id="workshop" role="group" aria-label="Workshop"></div>
+    <div id="firebar"><button id="fire" type="button" class="btn btn-primary">Light the fuse</button></div>
+  </main>
+  <aside id="showlog" aria-label="Show log"></aside>
+  <section id="end" class="overlay" role="dialog" aria-modal="true" aria-label="End of run" hidden></section>
+  <section id="pause-menu" class="overlay" role="dialog" aria-modal="true" aria-label="Paused" hidden></section>
+  <section id="settings" class="overlay" role="dialog" aria-modal="true" aria-label="Settings" hidden></section>
+  <section id="logbook" class="overlay" role="dialog" aria-modal="true" aria-label="Logbook" hidden></section>
+  <section id="help" class="overlay" role="dialog" aria-modal="true" aria-label="How to play" hidden></section>
+  <section id="inspect" class="sheet" role="dialog" aria-modal="true" aria-label="Inspect" hidden></section>
+  <div id="tap-continue" class="overlay" hidden></div>
+  <div id="toasts" aria-hidden="true"></div>
+  <pre id="debug" hidden></pre>
+  <pre id="sim-out" hidden></pre>
+  <div id="live-polite" class="vh" aria-live="polite"></div>
+  <div id="live-assertive" class="vh" aria-live="assertive"></div>
+</div>
