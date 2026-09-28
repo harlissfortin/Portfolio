@@ -51,6 +51,7 @@ const UI_MENUS = (() => {
     lock: '<path d="M6 11h12v10H6zM9 11V7a3 3 0 0 1 6 0v4"/>',
     unlock: '<path d="M6 11h12v10H6zM9 11V7a3 3 0 0 1 5.8-1"/>',
     spark: '<path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/>',
+    umbrella: '<path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9zM12 12v7a2 2 0 0 0 4 0"/>',
     // Headliners (§4.7 telegraph motifs)
     headwind: '<path d="M3 8h10a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h6"/>',
     drizzle: '<path d="M7 15a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8a3.5 3.5 0 0 1 .5 7zM8 18.5l-1 2.5M12.5 18.5l-1 2.5M17 18.5l-1 2.5"/>',
@@ -158,6 +159,7 @@ const UI_MENUS = (() => {
     return { info, done, v };
   }
   const lockHint = (lock) => { const p = msProgress(msIdFor(lock)); return p.info.name + ' ' + p.v + '/' + p.info.goal; };
+  const lockBadge = (lock) => { const p = msProgress(msIdFor(lock)); return p.v + '/' + p.info.goal; };
   const fusionParts = (r) => [r.a || r.from || r.left || String(r.id || '').split('>')[0], r.b || r.to || r.right || String(r.id || '').split('>')[1]];
   const fusionEntry = (r) => { const [a, b] = fusionParts(r), f = codex().fusions || {}; return f[a + '>' + b] || f[r.id] || f[r.key] || null; };
 
@@ -204,10 +206,13 @@ const UI_MENUS = (() => {
   }
 
   /* ---------- small shared bits ---------- */
+  const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
   const eyebrow = (t) => h('p', { class: 'm-eyebrow' }, t);
   const closeBtn = (name, label) => h('button', { type: 'button', class: 'btn m-x', 'aria-label': label || 'Close', onclick: () => G.close(name) }, icon('close'));
   function head(name, kicker, title, extra) {
-    return h('header', { class: 'm-head' }, h('div', { class: 'm-titles' }, eyebrow(kicker), h('h2', { class: 'display', id: name + '-title' }, title)), extra || null, closeBtn(name));
+    return h('header', { class: 'm-head' },
+      h('div', { class: 'm-titles' }, eyebrow(kicker), h('div', { class: 'm-title-row' }, h('h2', { class: 'display', id: name + '-title' }, title), extra || null)),
+      closeBtn(name));
   }
   function bunting() {
     const cols = ['R', 'A', 'G', 'B', 'W'];
@@ -260,7 +265,7 @@ const UI_MENUS = (() => {
       h('div', { class: 'm-body pm-body' },
         P.resume,
         h('div', { class: 'pm-tiles' }, tile('pause-settings', 'gear', 'Settings', 'settings'), tile('pause-logbook', 'book', 'Logbook', 'logbook'), tile('pause-help', 'help', 'Help', 'help')),
-        h('div', { class: 'pm-ticket' }, h('label', { for: 'pause-seed', class: 'pm-ticket-k' }, 'Seed'), P.seed, P.copy, P.copyNote),
+        h('div', { class: 'pm-ticket' }, h('div', { class: 'pm-ticket-v' }, h('label', { for: 'pause-seed', class: 'pm-ticket-k' }, 'Seed'), P.seed), P.copy, P.copyNote),
         P.tags,
         P.abandon));
     root.replaceChildren(panel);
@@ -306,7 +311,7 @@ const UI_MENUS = (() => {
     let raf = 0;
     const inp = h('input', {
       type: 'range', id, class: 'st-range', min: '0', max: '100', step: '5',
-      oninput: (e) => { out.textContent = e.target.value + '%'; cancelAnimationFrame(raf); raf = requestAnimationFrame(() => set(key, Number(e.target.value) / 100)); },
+      oninput: (e) => { out.textContent = e.target.value + '%'; e.target.style.setProperty('--p', e.target.value + '%'); cancelAnimationFrame(raf); raf = requestAnimationFrame(() => set(key, Number(e.target.value) / 100)); },
       onchange: (e) => { set(key, Number(e.target.value) / 100); if (key === 'soundVol') call(snd(), 'ui', 'tick'); },
     });
     S[key] = inp; S[key + 'Out'] = out;
@@ -356,7 +361,7 @@ const UI_MENUS = (() => {
         switchRow('set-mood', 'mood', 'Crowd mood', 'The Restless / Hopeful / Eager read before you light. No effect on records.'),
         vibe ? switchRow('set-haptics', 'haptics', 'Haptics', 'Short buzzes on drops, multipliers and misses.') : null),
       section('Assist',
-        h('div', { class: 'st-assist' }, h('p', { class: 'st-badge' }, icon('spark'), 'Assist'),
+        h('div', { class: 'st-assist' }, h('p', { class: 'st-badge' }, icon('umbrella'), 'Assist'),
           switchRow('set-fair', 'fairWeather', 'Fair Weather', 'Every target ×0.75, and the Midnight Countdown may be relit once. Runs are labelled Fair Weather, milestones still count, Renown does not advance.'),
           S.fairNote)),
       section('Your save',
@@ -401,7 +406,7 @@ const UI_MENUS = (() => {
     for (const k of ['sound', 'music', 'highContrast', 'instant', 'mood', 'fairWeather', 'haptics']) if (S[k]) S[k].checked = !!setting(k);
     for (const k of ['soundVol', 'musicVol']) {
       const v = Math.round(100 * (setting(k) != null ? Number(setting(k)) : (k === 'musicVol' ? 0.35 : 0.8)));
-      S[k].value = String(v); S[k + 'Out'].textContent = v + '%';
+      S[k].value = String(v); S[k + 'Out'].textContent = v + '%'; S[k].style.setProperty('--p', v + '%');
       S[k].closest('.st-row').dataset.off = setting(k === 'soundVol' ? 'sound' : 'music') ? 'false' : 'true';
     }
     const radios = { reducedMotion: setting('reducedMotion') || 'auto', speed: Number(setting('speed') || 1), chips: setting('chips') || 'full' };
@@ -475,10 +480,10 @@ const UI_MENUS = (() => {
       const unlocked = isUnlocked(r.lock), seen = shellSeen(r.id);
       const state = !unlocked ? 'locked' : seen ? 'found' : 'unseen';
       const fest = r.fest || r.f || 1;
-      const cap = state === 'found' ? r.name : state === 'locked' ? lockHint(r.lock) : 'Festival ' + fest + '+';
+      const cap = state === 'found' ? r.name : state === 'locked' ? msInfo(msIdFor(r.lock)).name : 'Festival ' + fest + '+';
       return {
-        key: r.id, state, cap, art: (sz) => shellArt(r, i, sz, state !== 'found'),
-        label: state === 'found' ? r.name + ', ' + colName(r.col) + ', ' + (RARITY[r.rarity] || '') : state === 'locked' ? 'Locked shell. ' + cap : 'Not seen yet. Offered from Festival ' + fest,
+        key: r.id, state, cap, art: (sz) => shellArt(r, i, sz, state !== 'found'), badge: state === 'locked' ? lockBadge(r.lock) : null,
+        label: state === 'found' ? r.name + ', ' + colName(r.col) + ', ' + (RARITY[r.rarity] || '') : state === 'locked' ? 'Locked shell. ' + lockHint(r.lock) : 'Not seen yet. Offered from Festival ' + fest,
         detail: () => shellDetail(r, i, state, fest),
       };
     });
@@ -491,16 +496,16 @@ const UI_MENUS = (() => {
   function shellDetail(r, i, state, fest) {
     if (state === 'locked') {
       const p = msProgress(msIdFor(r.lock));
-      return dPanel(shellArt(r, i, 96, true), 'Locked shell', [p.info.name + ': ' + p.v + '/' + p.info.goal + (p.info.unit ? ' ' + p.info.unit : '')],
+      return dPanel(shellArt(r, i, 80, true), 'Locked shell', [p.info.name + ': ' + p.v + '/' + p.info.goal + (p.info.unit ? ' ' + p.info.unit : '')],
         ['Unlocks with the ' + p.info.name + ' milestone. ' + p.info.cond]);
     }
-    if (state === 'unseen') return dPanel(shellArt(r, i, 96, true), 'Not seen yet', ['Festival ' + fest + '+'], ['Offered in shops from Festival ' + fest + ' (' + festName(fest) + ').']);
+    if (state === 'unseen') return dPanel(shellArt(r, i, 80, true), 'Not seen yet', ['Festival ' + fest + '+'], ['Offered in shops from Festival ' + fest + ' (' + festName(fest) + ').']);
     const tags = Array.isArray(r.tags) ? r.tags.join(', ') : r.tags;
     const partners = rows(DATA().FUSIONS).filter((f) => fusionParts(f).includes(r.id) && fusionEntry(f) && fusionEntry(f).found)
       .map((f) => { const [a, b] = fusionParts(f); return nameOf('SHELLS', a) + ' → ' + nameOf('SHELLS', b) + ' (' + f.name + ')'; });
     const owned = ((codex().shells || {})[r.id] || {}).owned;
     const lines = [1, 2, 3].map((st) => { const t = shellText(r, st); return t ? h('span', { class: 'lb-star' }, h('b', null, '★' + st + ' '), t) : null; });
-    return dPanel(shellArt(r, i, 96, false), r.name,
+    return dPanel(shellArt(r, i, 80, false), r.name,
       [RARITY[r.rarity] || r.rarity, '$' + r.cost, 'Hang ' + (r.shots > 1 ? r.hang + ' each' : r.hang), colName(r.col) + (r.col === '*' ? ' (rolled)' : ''), 'Festival ' + fest + '+'],
       [h('span', { class: 'lb-rule' }, lines), tags ? 'Styles: ' + tags + '.' : null, partners.length ? 'Fuses: ' + partners.join('; ') + '.' : null,
         owned ? 'Bought ' + owned + (owned === 1 ? ' time.' : ' times.') : null]);
@@ -523,11 +528,11 @@ const UI_MENUS = (() => {
         label: state === 'found' ? r.name + ': ' + an + ' then ' + bn : state === 'seen' ? an + ' then an undiscovered partner' : 'Undiscovered fusion',
         detail: () => {
           if (state === 'found') {
-            return dPanel(art(96), r.name, [an + ' → ' + bn, 'Fired ' + (e.fired || 0) + '×'],
+            return dPanel(art(80), r.name, [an + ' → ' + bn, 'Fired ' + (e.fired || 0) + '×'],
               ['Fire ' + an + ' immediately before ' + bn + '. ' + bn + '’s first burst gains: ' + (r.text || paramText(r.params || r.bonus)) + '.']);
           }
           const lk = r.lock && !isUnlocked(r.lock) ? ' First possible after ' + lockHint(r.lock) + '.' : '';
-          return dPanel(art(96), cap, [state === 'seen' ? 'Partner unknown' : 'Unknown'],
+          return dPanel(art(80), cap, [state === 'seen' ? 'Partner unknown' : 'Unknown'],
             [state === 'seen' ? 'Something fired right after a ' + an + ' fuses with it. Try a partner in the next tube.' + lk
               : 'Own a shell that starts this fusion to see its first half.' + lk]);
         },
@@ -557,9 +562,9 @@ const UI_MENUS = (() => {
         art: (sz) => glyphArt(r.id, sz, !seen),
         label: seen ? r.name + ' headliner' : 'Unseen headliner. ' + (win ? 'Posted in ' + win : ''),
         detail: () => seen
-          ? dPanel(glyphArt(r.id, 96), r.name, [win, typeof r.counters === 'string' ? 'Counters: ' + r.counters : null],
+          ? dPanel(glyphArt(r.id, 80), r.name, [win, typeof r.counters === 'string' ? 'Counters: ' + r.counters : null],
             [r.rule || r.text || '', r.telegraph ? 'On the rack: ' + r.telegraph + '.' : null, ((codex().headliners || {})[r.id] > 0) ? 'Faced ' + codex().headliners[r.id] + '×.' : null])
-          : dPanel(glyphArt(r.id, 96, true), 'Unseen headliner', [win], ['It is posted a festival ahead, so you will see it coming.' + (win ? ' Look for it in ' + win + '.' : '')]),
+          : dPanel(glyphArt(r.id, 80, true), 'Unseen headliner', [win], ['It is posted a festival ahead, so you will see it coming.' + (win ? ' Look for it in ' + win + '.' : '')]),
       };
     });
   }
@@ -569,7 +574,7 @@ const UI_MENUS = (() => {
       return {
         key: r.id, state: seen ? 'found' : 'unseen', cap: seen ? r.name : 'Festival 2+',
         art: (sz) => glyphArt(r.id, sz, !seen), label: seen ? r.name + ' rig' : 'Rig not installed yet',
-        detail: () => dPanel(glyphArt(r.id, 96, !seen), seen ? r.name : 'Not installed yet', ['$' + r.cost, seen ? 'Installed ' + n + '×' : 'Festival 2+'],
+        detail: () => dPanel(glyphArt(r.id, 80, !seen), seen ? r.name : 'Not installed yet', ['$' + r.cost, seen ? 'Installed ' + n + '×' : 'Festival 2+'],
           [seen ? (r.text || r.effect || '') + ' Rigs stay with the tube, not the shell.' : 'Rig cards appear in the workshop from Festival 2. Install one to record it.']),
       };
     });
@@ -588,12 +593,12 @@ const UI_MENUS = (() => {
     return rows(DATA().KITS).map((r) => {
       const open = isUnlocked(r.lock);
       return {
-        key: r.id, state: open ? 'found' : 'locked', cap: open ? r.name : lockHint(r.lock),
+        key: r.id, state: open ? 'found' : 'locked', cap: open ? r.name : msInfo(msIdFor(r.lock)).name, badge: open ? null : lockBadge(r.lock),
         art: (sz) => kitArt(r, sz, !open), label: open ? r.name + ' kit' : 'Locked kit. ' + lockHint(r.lock),
         detail: () => {
           const rack = kitRack(r).map((t) => nameOf('SHELLS', t.id) + (t.col && t.col !== 'W' ? ' (' + colName(t.col) + ')' : '')).join(', ');
-          if (!open) { const p = msProgress(msIdFor(r.lock)); return dPanel(kitArt(r, 96, true), 'Locked kit', [lockHint(r.lock)], ['Unlocks with the ' + p.info.name + ' milestone. ' + p.info.cond]); }
-          return dPanel(kitArt(r, 96), r.name, ['$' + (r.coins != null ? r.coins : r.$ || 0), 'Crowd ' + (r.crowd || 0), 'Wins ' + (wins[r.id] || 0)],
+          if (!open) { const p = msProgress(msIdFor(r.lock)); return dPanel(kitArt(r, 80, true), 'Locked kit', [lockHint(r.lock)], ['Unlocks with the ' + p.info.name + ' milestone. ' + p.info.cond]); }
+          return dPanel(kitArt(r, 80), r.name, ['$' + (r.coins != null ? r.coins : r.$ || 0), 'Crowd ' + (r.crowd || 0), 'Wins ' + (wins[r.id] || 0)],
             [rack ? 'Starts with ' + rack + '.' : null, r.text || r.rule || r.desc || null]);
         },
       };
@@ -614,7 +619,7 @@ const UI_MENUS = (() => {
       return {
         key: id, state: p.done ? 'found' : 'seen', cap: p.info.name, art: (sz) => ringArt(p, sz),
         label: p.info.name + (p.done ? ', done' : ', ' + p.v + ' of ' + p.info.goal),
-        detail: () => dPanel(ringArt(p, 96), p.info.name, [p.done ? 'Done' : 'Best ' + p.v + '/' + p.info.goal + (p.info.unit ? ' ' + p.info.unit : '')],
+        detail: () => dPanel(ringArt(p, 80), p.info.name, [p.done ? 'Done' : 'Best ' + p.v + '/' + p.info.goal + (p.info.unit ? ' ' + p.info.unit : '')],
           [p.info.cond, p.info.unlocks ? (p.done ? 'Unlocked: ' : 'Unlocks: ') + p.info.unlocks + '.' : null]),
       };
     });
@@ -635,6 +640,11 @@ const UI_MENUS = (() => {
     milestones: 'Teaching goals. Progress counts in lost runs too, and each unlock applies from your next run.',
   };
 
+  function tileArt(e) {
+    const art = e.art(72);
+    if (e.badge) art.append(h('span', { class: 'lb-badge num' }, icon('lock'), e.badge));
+    return art;
+  }
   function renderTab() {
     const tab = L.tab, TAB_LABEL = (TABS.find((t) => t[0] === tab) || [])[1];
     L.panel.removeAttribute('tabindex');
@@ -646,7 +656,7 @@ const UI_MENUS = (() => {
       h('button', {
         type: 'button', class: 'lb-tile', 'data-state': e.state, 'data-key': e.key, 'aria-label': e.label,
         'aria-expanded': 'false', 'aria-controls': 'lb-detail', onclick: (ev) => toggleDetail(e, ev.currentTarget),
-      }, e.art(72), h('span', { class: 'lb-cap', 'aria-hidden': 'true' }, e.cap)))));
+      }, tileArt(e), h('span', { class: 'lb-cap', 'aria-hidden': 'true' }, e.cap)))));
     L.panel.replaceChildren(
       h('div', { class: 'lb-lede' }, h('p', { class: 'lb-count display' }, TAB_LABEL + ' ', h('span', { class: 'num' }, c[0] + '/' + c[1])), h('p', { class: 'lb-intro' }, INTRO[tab])),
       es.length ? grid : h('p', { class: 'lb-empty' }, 'Nothing here yet.'));
@@ -659,7 +669,7 @@ const UI_MENUS = (() => {
     const rec = (k, v, sub) => h('div', { class: 'lb-rec' + (v == null ? ' is-empty' : '') }, h('dt', null, k), h('dd', { class: 'num' }, v == null ? 'Not yet' : v, sub ? h('span', { class: 'lb-rec-sub' }, sub) : null));
     L.panel.tabIndex = 0;
     L.panel.replaceChildren(
-      h('div', { class: 'lb-lede' }, h('p', { class: 'lb-count display' }, 'Records'), h('p', { class: 'lb-intro' }, (m.runs || 0) + ' runs · ' + (m.wins || 0) + ' wins')),
+      h('div', { class: 'lb-lede' }, h('p', { class: 'lb-count display' }, 'Records'), h('p', { class: 'lb-intro' }, plural(m.runs || 0, 'run') + ' · ' + plural(m.wins || 0, 'win'))),
       h('dl', { class: 'lb-records' },
         rec('Best show', bs && bs.score != null ? fmt(bs.score) : null, bs ? 'Show ' + ((bs.show != null ? bs.show : 0)) + (bs.seed ? ' · seed ' + bs.seed : '') : null),
         rec('Best run', br && br.shows ? 'Show ' + br.shows : null, br && br.total != null ? fmt(br.total) + ' total Applause' : null),
@@ -693,9 +703,9 @@ const UI_MENUS = (() => {
   /* --- detail card (tap a tile for its rule text) --- */
   function dPanel(art, title, chips, lines) {
     return [h('div', { class: 'lb-d-art' }, art),
-      h('div', { class: 'lb-d-body' }, h('h3', { class: 'display' }, title),
-        h('p', { class: 'lb-d-chips' }, chips.filter(Boolean).map((c) => h('span', { class: 'chip' }, c))),
-        lines.filter(Boolean).map((l) => h('p', { class: 'lb-d-line' }, l)))];
+      h('div', { class: 'lb-d-head' }, h('h3', { class: 'display' }, title),
+        h('p', { class: 'lb-d-chips' }, chips.filter(Boolean).map((c) => h('span', { class: 'chip' }, c)))),
+      h('div', { class: 'lb-d-body' }, lines.filter(Boolean).map((l) => h('p', { class: 'lb-d-line' }, l)))];
   }
   function toggleDetail(entry, tile) {
     if (L.open === tile) return closeDetail(true);
@@ -769,7 +779,7 @@ const UI_MENUS = (() => {
         h('table', { class: 'hp-keys' }, h('tbody', null, KEYMAP.map(([k, d]) => h('tr', null,
           h('th', { scope: 'row' }, keyCell(k)), h('td', null, d)))))));
     const foot = h('footer', { class: 'm-foot' }, h('button', { type: 'button', id: 'help-done', class: 'btn btn-primary m-wide', onclick: () => G.close('help') }, 'Back to the show'));
-    root.replaceChildren(h('div', { class: 'panel m-panel hp-panel' }, head('help', 'How to play', 'The rules'), body, foot));
+    root.replaceChildren(h('div', { class: 'panel m-panel hp-panel' }, head('help', 'The playbill', 'How to play'), body, foot));
   }
 
   /* ======================================================================
@@ -857,8 +867,17 @@ const UI_MENUS = (() => {
   /* ======================================================================
      WIRING
      ====================================================================== */
+  const OVERLAY_EL = { pause: 'pause-menu', settings: 'settings', logbook: 'logbook', help: 'help' };
+  function stackAbove(el) {
+    let z = 50;
+    for (const o of document.querySelectorAll('#app > .overlay, #app > .sheet')) {
+      if (o !== el && !o.hidden && o.id !== 'tap-continue') z = Math.max(z, (parseInt(getComputedStyle(o).zIndex, 10) || 40) + 1);
+    }
+    el.style.zIndex = String(z);
+  }
   function onOverlay(p) {
     const name = p && p.name, open = !!(p && p.open);
+    if (open && OVERLAY_EL[name]) stackAbove($(OVERLAY_EL[name]));
     if (!open) {
       disarmAll();
       if (name === 'logbook') closeDetail(false);
@@ -881,6 +900,7 @@ const UI_MENUS = (() => {
   function init(game) {
     G = game;
     if (!G) return;
+    for (const id of ['pause-menu', 'settings', 'logbook', 'help', 'toasts', 'tap-continue']) { const el = $(id); if (el && !el.closest('[lang]')) el.setAttribute('lang', 'en'); }
     buildPause(); buildSettings(); buildLogbook(); buildHelp(); buildTap();
     call(G, 'on', 'overlay', onOverlay);
     call(G, 'on', 'toast', (p) => toast(p && (p.text || p), p && p.kind));

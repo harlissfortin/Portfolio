@@ -45,7 +45,7 @@ const EVENTS = [
   [{ type: 'matched' }, ['drop']],
   [{ type: 'rerolled' }, ['shuffle']],
   [{ type: 'fuseLit' }, ['hiss']],
-  [{ type: 'launch', tube: 0 }, ['launch']],
+  [{ type: 'launch', tube: 0 }, ['thump']],
   [{ type: 'burst', tube: 0, shell: { id: 'crackle', col: 'W', star: 2 }, col: 'W', sees: 3 }, ['burst', 'link']],
   [{ type: 'burst', tube: 1, shell: 'glitter', col: 'A', sees: [1, 2], half: true }, ['burst', 'link']],
   [{ type: 'burst', tube: 2, shell: 'peony', col: 'W', washed: true }, ['burst', 'link']],
@@ -68,7 +68,7 @@ const EVENTS = [
   [{ type: 'payout', total: 7, base: 5, interest: 2 }, ['payout']],
   [{ type: 'rainCheck' }, []],
   [{ type: 'critical' }, []],
-  [{ type: 'relight' }, ['relight']],
+  [{ type: 'relight' }, ['rise']],
   [{ type: 'milestone', id: 'm_busy', value: 6 }, ['tick']],
   [{ type: 'runLost' }, ['drone']],
   [{ type: 'illegal', reason: 'coins' }, ['error']],
@@ -77,7 +77,7 @@ const EVENTS = [
 
 // Every recipe, rendered offline: [recipe, params, min peak].
 const RENDERS = [
-  ['pluck', { col: 'R' }, .05], ['pluck', { col: 'B' }, .05], ['coin', {}, .02], ['coins', { n: 5 }, .02],
+  ['pluck', { col: 'R' }, .05], ['pluck', { col: 'B' }, .05], ['coin', {}, .02], ['coin', { n: 5 }, .02],
   ['drop', { col: 'G', up: 1, coin: 1 }, .05], ['shuffle', {}, .02], ['tick', {}, .02], ['error', {}, .02],
   ['hiss', {}, .02], ['thump', {}, .1], ['burst', { col: 'R', tier: 0 }, .05], ['burst', { col: 'W', tier: 6, crackle: 1 }, .05],
   ['burst', { col: 'D', g: .15 }, .01], ['chime', { f: 523.25 }, .05], ['chime', { f: 3520 }, .05], ['page', {}, .02],
@@ -188,7 +188,7 @@ try {
   d = await page.evaluate(() => { const b = AUDIO._t.count.fanfare || 0; AUDIO.onEvent({ type: 'runWon' }); return (AUDIO._t.count.fanfare || 0) - b; });
   check(d === 1, 'runWon → fanfare');
   await page.evaluate(() => AUDIO.onEvent({ type: 'buildOpen', show: 3, rules: [] }));
-  await sleep(40);
+  await sleep(3100);
   d = await page.evaluate(() => { const b = AUDIO._t.count.fanfare || 0; AUDIO.onEvent({ type: 'applause', score: 500, target: 400, pass: true }); AUDIO.onEvent({ type: 'applause', score: 900, target: 400, pass: true, runBest: true }); return (AUDIO._t.count.fanfare || 0) - b; });
   check(d === 1, 'Twilight clear: no fanfare; a run-best flag → fanfare');
 
@@ -211,7 +211,7 @@ try {
   }
 
   // De-dup and the voice limiter.
-  d = await page.evaluate(() => { const b = AUDIO._t.count.launch || 0; for (let i = 0; i < 20; i++) AUDIO.onEvent({ type: 'launch', tube: 0 }); return AUDIO._t.count.launch - b; });
+  d = await page.evaluate(() => { const b = AUDIO._t.count.thump || 0; for (let i = 0; i < 20; i++) AUDIO.onEvent({ type: 'launch', tube: 0 }); return AUDIO._t.count.thump - b; });
   check(d === 1, `30 ms de-dup: 20 identical launches in one tick → ${d} voice`);
   await sleep(3200);
   const lim = await page.evaluate(() => {
@@ -269,9 +269,9 @@ try {
   check(st === 'suspended', 'suspend() suspends the context');
   d = await page.evaluate(() => { const b = AUDIO._t.count.clear || 0; AUDIO.onEvent({ type: 'clear' }); return (AUDIO._t.count.clear || 0) - b; });
   check(d === 0, 'no one-shots are queued while suspended');
-  await page.click('#go', { position: { x: 5, y: 5 } }).catch(() => {});
+  await page.mouse.click(600, 500); // a gesture outside the unlock button: only AUDIO's own wake listener sees it
   st = await page.evaluate(async () => { await new Promise(r => setTimeout(r, 200)); return AUDIO._t.ctx().state; });
-  check(st === 'suspended', 'an explicit suspend() is not undone by a stray gesture… (core calls resume())');
+  check(st === 'suspended', 'an explicit suspend() is not undone by a stray gesture (the core calls resume())');
   st = await page.evaluate(async () => { AUDIO.resume(); await new Promise(r => setTimeout(r, 300)); return AUDIO._t.ctx().state; });
   check(st === 'running', 'resume() resumes the context');
   st = await page.evaluate(async () => {
@@ -294,8 +294,15 @@ try {
   console.log('Offline renders (raw recipe output, before the bus, master and compressor):');
   const res = await page.evaluate(async list => {
     const out = [];
-    for (const [n, p] of list) out.push(await AUDIO._t.render(n, p, 3.5));
-    return { out, recipes: AUDIO._t.recipes };
+    for (const [n, p] of list) {
+      const c = new OfflineAudioContext(1, 44100 * 3.5, 44100);
+      AUDIO._t.run(n, p, .01, c.destination, c);
+      const d = (await c.startRendering()).getChannelData(0);
+      let peak = 0, s = 0;
+      for (const x of d) { peak = Math.max(peak, Math.abs(x)); s += x * x; }
+      out.push({ peak, rms: Math.sqrt(s / d.length) });
+    }
+    return { out, recipes: Object.keys(AUDIO._t.R) };
   }, RENDERS);
   const covered = new Set(RENDERS.map(r => r[0]));
   const missing = res.recipes.filter(r => !covered.has(r));

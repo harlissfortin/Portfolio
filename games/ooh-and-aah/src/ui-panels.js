@@ -48,7 +48,10 @@ const UI_PANELS = (() => {
   const fmtX = f => '×' + (Math.round(f * 100) / 100);
 
   /* ---------- data lookups (tolerant of array- or map-shaped tables) ---------- */
+  // GAME.label (core) holds the shared name helpers; fall back to DATA lookups when it is absent.
+  const label = (k, v) => { const L = G && G.label; if (L && typeof L[k] === 'function') { try { const r = L[k](v); if (r) return String(r); } catch (e) { /* fall through */ } } return null; };
   function festName(f) {
+    if (f <= 8) { const n = label('festival', f); if (n && n !== 'Afterparty') return n; }
     const F = data().FESTIVALS;
     let r = F && (Array.isArray(F) ? F[f - 1] : (F.names ? F.names[f - 1] : F[f]));
     if (r && typeof r === 'object') r = r.name;
@@ -61,9 +64,9 @@ const UI_PANELS = (() => {
   }
   function hl(id) {
     const r = row(data().HEADLINERS, id) || row(data().TWISTS, id) || {};
-    return {id, name: r.name || cap(id), rule: r.rule || r.text || r.desc || ''};
+    return {id, name: r.name || label('rule', id) || cap(id), rule: r.rule || r.text || r.desc || ''};
   }
-  function shellName(id) { const r = row(data().SHELLS, id); return (r && r.name) || cap(id); }
+  function shellName(id) { const r = row(data().SHELLS, id); return (r && r.name) || label('shell', id) || cap(id); }
   function fusionName(ev) {
     let n = ev.name || ev.fusion || ev.id || '';
     const r = row(data().FUSIONS, n);
@@ -96,6 +99,7 @@ const UI_PANELS = (() => {
     countdown: 'M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0zM10 5.5V10l3 2',
     _: 'M7.5 7.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M10 14.5v.5'
   };
+  IC.countdown3 = IC.countdown;
   const icon = (id, cls) => `<svg class="${cls || 'pn-ic'}" viewBox="0 0 20 20" aria-hidden="true"><path d="${IC[id] || IC._}"/></svg>`;
   const WEDGE = (c, d) => `<path style="fill:var(--c-${c})" d="${d}"/>`;
   const SHAPE = {
@@ -114,56 +118,79 @@ const UI_PANELS = (() => {
   function renderBoard() {
     const st = G && G.state;
     if (!boardEl || !st) return;
-    const s = st.show | 0, curF = Math.floor(s / 3) + 1, building = st.phase === 'build';
-    const nF = (st.endless || s >= 24) ? 12 : 8, hm = histMap(st), shows = nF * 3;
-    const played = hist(st).length;
+    const s = st.show | 0, building = st.phase === 'build';
+    const nF = (st.endless || s >= 24) ? 12 : 8, shows = nF * 3;
+    const ctx = {st, s, curF: Math.floor(s / 3) + 1, building, hm: histMap(st)};
     let rows = '';
-    for (let f = 1; f <= nF; f++) {
-      const past = f < curF || (!building && f === curF && hm[f * 3 - 1]);
-      const now = f === curF && !past;
-      const posted = f <= curF + 1 || !building;
-      const hlIds = f <= 8 ? [st.headliners && st.headliners[f - 1]] : ((st.endlessTwists && st.endlessTwists[f]) || []);
-      const hls = hlIds.filter(Boolean).map(hl);
-      const tw = f > 1 && f <= 8 && st.twilightTwists ? st.twilightTwists[f - 1] : null;
-      let cells = '', say = [];
-      for (let k = 0; k < 3; k++) {
-        const si = (f - 1) * 3 + k, es = hm[si], e = lastOf(es);
-        const isNow = building && si === s;
-        const t = e && !isNow ? e.target : tgt(st, si);
-        const sp = (e && e.sponsored) || (isNow && st.sponsor && st.sponsor.accepted);
-        const cls = ['bd-cell', e ? (e.pass ? 'is-pass' : 'is-miss') : '', isNow ? 'is-now' : '', sp ? 'is-sp' : '', !e && !isNow ? 'is-todo' : ''].filter(Boolean).join(' ');
-        const mark = isNow ? '▸' : e ? (e.pass ? '✓' : '✗') : '';
-        const twI = k === 0 && tw && posted ? icon(tw, 'pn-ic bd-tw') : '';
-        const lbl = `${SLOT[k]} ${fmt(t)}${sp ? ', sponsored' : ''}${e ? (e.pass ? ', passed with ' : ', missed with ') + fmt(e.applause) : ''}${isNow ? ', tonight' : ''}${k === 0 && tw && posted ? ', twist ' + hl(tw).name : ''}`;
-        say.push(lbl);
-        cells += `<div class="${cls}"${isNow ? ' aria-current="step"' : ''} title="${esc(lbl)}"><span class="bd-mk" aria-hidden="true">${mark}</span><span class="bd-t num">${fmt(t)}</span>${twI}</div>`;
-      }
-      let mini = '', card = '';
-      if (!hls.length || !posted) mini = `<span class="bd-hlmini is-sealed" title="Headliner not posted yet">${icon('_')}<span>Unposted</span></span>`;
-      else if (past || f > curF + 1) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}<span>${esc(hls.map(h => h.name).join(' + '))}</span></span>`;
-      else card = hls.map(h => `<div class="bd-hl"><span class="bd-hl-ic">${icon(h.id)}</span><div class="bd-hl-tx"><b>${esc(h.name)}</b>${h.rule ? ` <span>${esc(h.rule)}</span>` : ''}</div></div>`).join('');
-      const aria = `Festival ${f}, ${festName(f)}. ${say.join('. ')}. Headliner: ${posted && hls.length ? hls.map(h => h.name).join(' and ') : 'not posted yet'}.`;
-      rows += `<li class="bd-row${past ? ' is-past' : ''}${now ? ' is-now' : ''}${!past && !now ? ' is-future' : ''}" aria-label="${esc(aria)}">
-<div class="bd-name"><span class="bd-num num" aria-hidden="true">${f}</span><span class="bd-fest">${esc(festName(f))}</span>${mini}</div>
-<div class="bd-cells" aria-hidden="true">${cells}</div>${card}</li>`;
-    }
+    for (let f = 1; f <= nF; f++) rows += festivalRow(ctx, f);
     const renown = st.renown | 0;
     const sub = st.phase === 'won' ? 'Happy New Year!' : st.phase === 'lost' ? 'The crowd went home' : `Show ${Math.min(s + 1, shows)} of ${shows}`;
+    const oldList = boardEl.querySelector('.bd-list'), keep = oldList ? oldList.scrollTop : 0;
     boardEl.innerHTML = `<div class="bd">
-<header class="bd-head"><h2 class="bd-title">The festival year</h2><p class="bd-sub"><span class="num">${esc(sub)}</span>${renown ? ` <span class="bd-tag">Renown ${renown}</span>` : ''}${st.fairWeather ? ' <span class="bd-tag">Fair Weather</span>' : ''}</p></header>
-<div class="bd-cols" aria-hidden="true"><span></span><span>Twilight</span><span>Evening</span><span>Headliner</span></div>
+<header class="bd-head"><h2 class="bd-title">The festival year</h2><p class="bd-sub"><span class="num">${esc(sub)}</span>${renown ? `<span class="bd-tag">Renown ${renown}</span>` : ''}${st.fairWeather ? '<span class="bd-tag">Fair Weather</span>' : ''}</p></header>
+<div class="bd-cols" aria-hidden="true"><span>Twilight</span><span>Evening</span><span>Headliner</span></div>
 <ol class="bd-list">${rows}</ol>
-<section class="bd-curve" aria-label="Target curve">${spark(st, hm, shows, s, building)}</section>
+<section class="bd-curve" aria-label="Target curve">${spark(st, ctx.hm, shows, s, building)}</section>
 </div>`;
-    const nowRow = boardEl.querySelector('.bd-row.is-now');
-    if (nowRow && played !== histLen) { const L = boardEl.querySelector('.bd-list'); if (L) L.scrollTop = Math.max(0, nowRow.offsetTop - L.offsetTop - 48); }
+    // keep the reader's scroll position; after each new result, bring tonight's festival into view
+    const list = boardEl.querySelector('.bd-list'), nowRow = boardEl.querySelector('.bd-row.is-now');
+    const played = hist(st).length;
+    if (list) {
+      list.scrollTop = keep;
+      if (nowRow && played !== histLen) {
+        const top = nowRow.offsetTop - list.offsetTop, bottom = top + nowRow.offsetHeight;
+        if (top < list.scrollTop || bottom > list.scrollTop + list.clientHeight) list.scrollTop = Math.max(0, bottom - list.clientHeight + 8);
+      }
+    }
     histLen = played;
+  }
+
+  /* One festival: a single stamped line once it is over, else its three targets
+     plus the posted Headliner card (current and next festival). */
+  function festivalRow(c, f) {
+    const {st, s, curF, building, hm} = c;
+    const past = f < curF || (!building && f === curF && !!hm[f * 3 - 1]);
+    const now = f === curF && !past;
+    const posted = f <= curF + 1 || !building;
+    const hlIds = f <= 8 ? [st.headliners && st.headliners[f - 1]] : ((st.endlessTwists && st.endlessTwists[f]) || []);
+    const hls = hlIds.filter(Boolean).map(hl);
+    const tw = f > 1 && f <= 8 && st.twilightTwists ? st.twilightTwists[f - 1] : null;
+    const say = [];
+    let cells = '', stamps = '';
+    for (let k = 0; k < 3; k++) {
+      const si = (f - 1) * 3 + k, e = lastOf(hm[si]);
+      const isNow = building && si === s;
+      const t = e && !isNow ? e.target : tgt(st, si);
+      const sp = (e && e.sponsored) || (isNow && st.sponsor && st.sponsor.accepted);
+      const twist = k === 0 && tw && posted ? hl(tw) : null;
+      const lbl = `${SLOT[k]} ${fmt(t)}${sp ? ', sponsored' : ''}${e ? (e.pass ? ', passed with ' : ', missed with ') + fmt(e.applause || 0) : ''}${isNow ? ', tonight' : ''}${twist ? ', twist: ' + twist.name : ''}`;
+      say.push(lbl);
+      const state = e ? (e.pass ? 'is-pass' : 'is-miss') : '';
+      if (past) {
+        stamps += `<span class="bd-stamp ${state || 'is-skip'}${sp ? ' is-sp' : ''}" title="${esc(lbl)}">${e ? (e.pass ? '✓' : '✗') : '–'}</span>`;
+      } else {
+        const cls = ['bd-cell', state, isNow ? 'is-now' : '', sp ? 'is-sp' : '', !e && !isNow ? 'is-todo' : ''].filter(Boolean).join(' ');
+        const mark = isNow ? '▸' : e ? (e.pass ? '✓' : '✗') : '';
+        cells += `<div class="${cls}" title="${esc(lbl)}"><span class="bd-mk" aria-hidden="true">${mark}</span><span class="bd-t num">${fmt(t)}</span>${twist ? icon(tw, 'pn-ic bd-tw') : ''}</div>`;
+      }
+    }
+    let mini = '', card = '';
+    const names = hls.map(h => h.name).join(' + ');
+    if (!hls.length || !posted) mini = `<span class="bd-hlmini is-sealed" title="Headliner not posted yet">${icon('_')}<span>Unposted</span></span>`;
+    else if (past) mini = `<span class="bd-hlmini" title="${esc(names)}">${hls.map(h => icon(h.id)).join('')}</span>`;
+    else if (f > curF + 1) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}<span>${esc(names)}</span></span>`;
+    else card = hls.map(h => `<div class="bd-hl"><span class="bd-hl-ic">${icon(h.id)}</span><p class="bd-hl-tx"><b>${esc(h.name)}</b>${h.rule ? ` ${esc(h.rule)}` : ''}</p></div>`).join('');
+    const aria = `Festival ${f}, ${festName(f)}${now ? ', tonight' : ''}. ${say.join('. ')}. Headliner: ${posted && hls.length ? names : 'not posted yet'}.`;
+    const cls = past ? ' is-past' : now ? ' is-now' : ' is-future';
+    return `<li class="bd-row${cls}" aria-label="${esc(aria)}"${now ? ' aria-current="step"' : ''}>
+<div class="bd-name" aria-hidden="true"><span class="bd-num num">${f}</span><span class="bd-fest">${esc(festName(f))}</span>${mini}${stamps ? `<span class="bd-stamps">${stamps}</span>` : ''}</div>
+${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card ? `<div aria-hidden="true">${card}</div>` : ''}</li>`;
   }
 
   /* log-y target curve (dashed step line) with Applause dots, drawn to scale */
   function spark(st, hm, n, s, building) {
     const box = boardEl.querySelector('.bd-curve');
-    const W = Math.max(240, Math.round((box && box.clientWidth) || boardEl.clientWidth - 34 || 286)), H = 150;
+    const W = Math.max(240, Math.round((box && box.clientWidth) || boardEl.clientWidth - 34 || 286)), H = 136;
     const L = 44, R = 8, T = 10, B = 26, pw = W - L - R, ph = H - T - B;
     const tg = [], dots = [];
     for (let i = 0; i < n; i++) { const e = lastOf(hm[i]); tg.push(e && !(building && i === s) ? e.target : tgt(st, i)); }
@@ -322,7 +349,11 @@ const UI_PANELS = (() => {
 
   function metaHTML(L) {
     const sn = L && L.snap;
-    if (!sn) return '<p class="sl-sub">No show lit yet.</p>';
+    if (!sn) {
+      const st = G && G.state;
+      if (!st || st.phase !== 'build') return '';
+      return `<p class="sl-sub">Next up: <span class="num">Show ${(st.show | 0) + 1}</span> · ${esc(showName(st.show | 0))}</p>`;
+    }
     const rules = (sn.rules || []).map(id => { const h = hl(id); return `<span class="sl-rule" title="${esc(h.rule)}">${icon(id)}${esc(h.name)}</span>`; }).join('');
     return `<p class="sl-sub"><span class="num">Show ${sn.s + 1}</span> · ${esc(showName(sn.s))}</p>
 <p class="sl-tg"><span>Target <b class="num">${fmt(sn.target)}</b></span>${sn.sponsored ? '<span class="sl-sp">Sponsored ×1.5</span>' : ''}${rules}</p>`;
@@ -362,8 +393,8 @@ const UI_PANELS = (() => {
     const sees = seesText(ln);
     const chips = (sees ? `<span class="sl-sees">${esc(sees)}</span>` : '') + ln.items.map(it => itemHTML(it, L)).join('');
     const tot = `<span class="sl-run num" title="Running Ooh × Aah">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
-    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(col)}<span class="sl-name">${esc(name)}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛</span>' : ''}${shot}${flags}</span>${tot}</div>
-<div class="sl-chips">${chips || '<span class="sl-t">no score</span>'}</div>`;
+    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(col)}<span class="sl-name">${esc(name)}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛</span>' : ''}${shot}${flags}</span></div>
+<div class="sl-chips">${chips || '<span class="sl-t">no score</span>'}${tot}</div>`;
   }
 
   function sumHTML(L) {
@@ -426,10 +457,10 @@ const UI_PANELS = (() => {
     while (kids.length > L.lines.length) P.lines.lastChild.remove();
     P.sum.innerHTML = sumHTML(L);
     if (L.live && added) P.lines.scrollTo({top: P.lines.scrollHeight, behavior: reduced() ? 'auto' : 'smooth'});
-    if (!L.live && force) P.lines.scrollTop = 0;
   }
   function emptyHTML() {
-    return `<p class="sl-empty-h">The fuse hasn't been lit.</p><p>Every burst of your next show is itemised here: what it saw in the sky, the Ooh and Aah it added, fusions, multipliers, and the crowd's cheer.</p>`;
+    const again = hist(G && G.state).length > 0;
+    return `<p class="sl-empty-h">${again ? 'Light the fuse to fill the log.' : 'The fuse hasn\'t been lit yet.'}</p><p>Every burst of your next show is itemised here: what it saw in the sky, the Ooh and Aah it added, fusions, multipliers, and the crowd's cheer.</p>`;
   }
   function lastSummaryHTML() {
     const e = lastOf(hist(G && G.state));
@@ -480,6 +511,8 @@ const UI_PANELS = (() => {
       renderBoard();
     } else setOpen(G && typeof G.top === 'function' && G.top() === 'showlog');
   }
+  // GAME.boot() attaches canvas#backdrop when the page opens at desktop width; this covers a
+  // window that grows into the desktop layout later.
   function attachBackdrop() {
     if (backdropOn || !isDesk() || typeof FX === 'undefined' || !FX || typeof FX.attachBackdrop !== 'function') return;
     const c = document.getElementById('backdrop');
@@ -491,6 +524,8 @@ const UI_PANELS = (() => {
   function startLive(events) {
     if (inFlight && log && log.live) return;
     inFlight = true;
+    const now = capture(G && G.state);                 // core shows the pre-light state until the slam
+    if (now && (!snap || now.s === snap.s)) snap = now;
     lit = {sn: snap, events: events || null, fresh: false};
     log = newLog(snap ? JSON.parse(JSON.stringify(snap)) : null);
     paintLog(true);
@@ -506,10 +541,12 @@ const UI_PANELS = (() => {
     p = p || {};
     const sn = (log && log.snap) || (lit && lit.sn) || (snap && JSON.parse(JSON.stringify(snap)));
     const evs = Array.isArray(p.events) ? p.events : (lit && lit.events);
+    const streamed = !!(log && log.live && log.lines.length);
     log = evs ? buildLog(evs, sn, p.entry, p.summary) : (log ? (settle(log, p.entry, p.summary), log) : buildLog([], sn, p.entry, p.summary));
     inFlight = false;
     if (lit) lit.fresh = true;
-    paintLog(true);
+    paintLog(!streamed);
+    if (streamed && P) P.lines.scrollTop = P.lines.scrollHeight;
     renderBoard();
     if (lit) lit.fresh = false;
     snap = capture(G.state);
@@ -548,6 +585,7 @@ const UI_PANELS = (() => {
       return false;
     });
     if (mq) { const h = () => onMode(); if (mq.addEventListener) mq.addEventListener('change', h); else if (mq.addListener) mq.addListener(h); }
+    backdropOn = isDesk();                             // already attached by GAME.boot()
     onMode();
     renderBoard();
     paintLog(true);
