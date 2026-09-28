@@ -229,7 +229,7 @@ function topLevelDecls(code) {
   while ((m = re.exec(code))) {
     if (depth[m.index] !== 0) continue;
     // A named function *expression* (`= function f(){}`, `(function f(){})`) declares nothing at top level.
-    if (m[3] && /(^|[=(,:?&|!+\-*[]|\breturn)\s*$/.test(code.slice(Math.max(0, m.index - 12), m.index))) continue;
+    if (m[3] && /([=(,:?&|!+\-*[]|\breturn)\s*$/.test(code.slice(Math.max(0, m.index - 12), m.index))) continue;
     found.push({ kind: m[1] || m[3], name: m[2] || m[4], index: m.index });
   }
   return found;
@@ -443,7 +443,7 @@ function main() {
     if (s.missing) continue;
     const r = spawnSync(process.execPath, ['--check', s.path], { encoding: 'utf8' });
     if (r.status !== 0) {
-      const msg = (r.stderr || r.stdout || '').trim().split('\n').filter((l) => l.trim() && !/^\s*at |^Node\.js v/.test(l)).slice(0, 6).join(' | ');
+      const msg = (r.stderr || r.stdout || '').split(s.path).join(f).trim().split('\n').filter((l) => l.trim() && !/^\s*at |^Node\.js v/.test(l)).slice(0, 6).join(' | ');
       const lm = /:(\d+)\s*$/m.exec((r.stderr || '').split('\n')[0] || '');
       add('FAIL', f, lm ? Number(lm[1]) : 0, `node --check failed: ${msg}`);
     } else checked.push(f);

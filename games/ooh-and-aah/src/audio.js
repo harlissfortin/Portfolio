@@ -246,7 +246,7 @@ const AUDIO = (() => {
   };
   for (const k in api) { const f = api[k]; api[k] = (...a) => { try { f(...a); } catch (e) {} }; }
   api._t = {
-    voices: () => ctx ? voices.filter(v => v.o.e > ctx.currentTime).length : 0, steals: () => steals, count, ctx: () => ctx, music: () => mOn, recipes: Object.keys(R),
+    voices: () => ctx ? voices.filter(v => v.o.e > ctx.currentTime).length : 0, steals: () => steals, count, ctx: () => ctx, music: () => mOn, gains: () => [sfx.gain.value, mus.gain.value], recipes: Object.keys(R),
     render(name, p, secs = 3) {
       const c = new OfflineAudioContext(1, 44100 * secs, 44100);
       run(name, p, .01, c.destination, c);
