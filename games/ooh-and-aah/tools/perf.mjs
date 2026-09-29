@@ -22,6 +22,7 @@
 //   --no-isolation      do not send COOP/COEP (default sends them for 5 µs timers)
 //   --headed            show the browser
 //   --json              also print the JSON report to stdout
+//   --max-minutes=N     hard wall-clock deadline for the whole run (default 20, --quick 8)
 //   -h, --help
 //
 // What it measures, per profile:
@@ -49,11 +50,17 @@
 // The report states which method each scenario used.
 //
 // Budgets (verdict FAIL): FX render ≤ 6 ms (p95, mobile), OOH.step ≤ 2 ms (p95 per action type, mobile),
-// resolveShow 6-tube Countdown ≤ 0.2 ms (mean, mobile), particles ≤ 400, file ≤ the hard ceiling
-// (read from CONTRACT.md "Size", which overrides §11.1: warn > 350 KB, fail > 600 KB at the time of writing).
+// resolveShow 6-tube Countdown ≤ 0.2 ms (p95, mobile), particles ≤ 400, file ≤ the hard ceiling
+// (read from CONTRACT.md "Size", which overrides §11.1: warn > 800 KB, fail > 1,200 KB at the time of writing).
 // Guides (verdict WARN; not in the spec): file ≤ the warning line, dropped frames, long tasks, heap slope,
 // boot time, action round trip ≤ 1 frame, console errors, non-font network requests.
-// Timings under CPU throttling are wall-clock and so already scaled by the throttle.
+// Timings under CPU throttling are wall-clock and so already scaled by the throttle. Wall-clock timings
+// are also inflated by other processes on the host: the report records the load average and, per show,
+// main-thread CPU time (CDP ThreadTime) next to busy time (TaskDuration); busy ≫ CPU×throttle means the
+// renderer was waiting for a core, and timing verdicts are then marked "(host overloaded)".
+//
+// Bounded: every wait has a timeout, page calls are raced against a timer, and --max-minutes (default
+// 20; 8 with --quick) is a hard deadline after which the partial report is written (exit 2).
 //
 // Output: OUT/perf-report.md (readable), OUT/perf.report.json (everything, incl. raw frame intervals).
 // Exit codes: 0 = all budgets pass, 1 = a budget FAILs, 2 = could not run.
@@ -65,6 +72,7 @@ import path from 'node:path';
 import http from 'node:http';
 import zlib from 'node:zlib';
 import crypto from 'node:crypto';
+import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'module';
@@ -127,11 +135,17 @@ export const r2 = (x) => (x == null || !Number.isFinite(x) ? x : Math.round(x * 
 export const r3 = (x) => (x == null || !Number.isFinite(x) ? x : Math.round(x * 1000) / 1000);
 function fmtMs(x, d = 2) { return x == null || !Number.isFinite(x) ? 'n/a' : `${x.toFixed(d)} ms`; }
 function roundObj(o, f = r2) { if (!o) return o; const out = {}; for (const [k, v] of Object.entries(o)) out[k] = typeof v === 'number' ? f(v) : v; return out; }
+export function withTimeout(p, ms, what = 'page call') {
+  let t; const timer = new Promise((_, rej) => { t = setTimeout(() => rej(new Error(`${what} timed out after ${ms} ms`)), ms); });
+  return Promise.race([Promise.resolve(p), timer]).finally(() => clearTimeout(t));
+}
 export async function waitFor(fn, timeoutMs, everyMs = 100) {
   const end = Date.now() + timeoutMs;
   for (;;) {
     let v = null;
-    try { v = await fn(); } catch { v = null; }
+    // A page call cannot outlive the deadline (a busy or hung page would otherwise stall the tool).
+    const left = Math.max(250, Math.min(10000, end - Date.now()));
+    try { v = await withTimeout(fn(), left); } catch { v = null; }
     if (v) return v;
     if (Date.now() >= end) return null;
     await sleep(everyMs);
@@ -454,6 +468,7 @@ export async function newContext(browser, prof, { fonts = false, reducedMotion =
     return route.abort();
   });
   await ctx.addInitScript({ content: PAGE_LIB });
+  ctx.setDefaultTimeout(30000); ctx.setDefaultNavigationTimeout(30000);
   ctx.__external = external;
   if (log) ctx.on('page', (p) => attachLogs(p, log));
   return ctx;
@@ -604,6 +619,17 @@ async function cdpMetrics(cdp) {
   try { const h = await cdp.send('Runtime.getHeapUsage'); out.heapUsed = h.usedSize; out.heapTotal = h.totalSize; } catch { /* ignore */ }
   return out;
 }
+// Main-thread CPU (ThreadTime) vs busy wall time (TaskDuration) between two CDP metric snapshots.
+function cpuStats(m0, m1, frames) {
+  if (!m0 || !m1 || m0.ThreadTime == null || m1.ThreadTime == null) return null;
+  const d = (k) => (m1[k] != null && m0[k] != null ? (m1[k] - m0[k]) * 1000 : null);
+  const wall = d('Timestamp'); const thread = d('ThreadTime'); const task = d('TaskDuration');
+  const n = Math.max(1, frames || 0);
+  return { wallMs: Math.round(wall), threadMs: Math.round(thread), taskMs: Math.round(task), scriptMs: Math.round(d('ScriptDuration')),
+    layoutMs: Math.round((d('LayoutDuration') || 0) + (d('RecalcStyleDuration') || 0)), cpuPerFrameMs: r2(thread / n), busyPerFrameMs: r2(task / n),
+    cpuPct: wall ? r2((100 * thread) / wall) : null, busyPct: wall ? r2((100 * task) / wall) : null, waitRatio: thread ? r2(task / thread) : null };
+}
+export function hostLoad() { const l = os.loadavg(); return { cores: os.cpus().length, load1: r2(l[0]), load5: r2(l[1]) }; }
 async function gc(cdp) { try { await cdp.send('HeapProfiler.collectGarbage'); await cdp.send('HeapProfiler.collectGarbage'); } catch { /* ignore */ } }
 
 function frameStats(rec, refresh) {
@@ -738,6 +764,7 @@ async function measureShow(page, srv, key, cfg, notes, beforeLight = null) {
   }).catch((e) => ({ error: e.message }));
   if (beforeLight) { try { await beforeLight(); } catch (e) { notes.push(`${key}: ${e.message}`); } }
   await sleep(300);
+  const m0 = cfg.cdp ? await withTimeout(cdpMetrics(cfg.cdp), 5000).catch(() => null) : null;
   await page.evaluate(() => window.__oohTools.start());
   const lit = await lightShow(page, { timeoutMs: cfg.showTimeoutMs, allowAct: true });
   // Keep recording through the slam / finale tail: the core holds RESULT (or opens END ~1.6 s after the
@@ -745,8 +772,11 @@ async function measureShow(page, srv, key, cfg, notes, beforeLight = null) {
   if (lit.ok && lit.endUi !== 'END') await waitSettled(page, ['END', 'BUILD'], 1800);
   await sleep(200);
   const rec = await page.evaluate(() => window.__oohTools.stop());
+  const m1 = cfg.cdp ? await withTimeout(cdpMetrics(cfg.cdp), 5000).catch(() => null) : null;
   res.light = lit;
   res.frames = frameStats(rec, cfg.refreshMs);
+  res.cpu = cpuStats(m0, m1, res.frames && res.frames.frames);
+  res.host = hostLoad();
   if (!lit.ok) notes.push(`${key}: ${lit.error}`);
   const after = await page.evaluate(async () => { const s = await window.__game.state(); const h = s.runStats && s.runStats.history; const last = h && h[h.length - 1]; return { phase: s.phase, show: s.show + 1, last: last ? { show: last.show, applause: last.applause, target: last.target, pass: last.pass, bursts: last.bursts } : null }; }).catch(() => null);
   res.outcome = after;
@@ -793,14 +823,18 @@ async function measureLeak(page, srv, cdp, shows, cfg) {
 
 // Records the build at rest; the median interval also calibrates the refresh period used to count
 // dropped frames (headless Chromium normally runs rAF at 60 Hz).
-async function measureIdle(page, ms) {
+async function measureIdle(page, ms, cdp = null) {
   await page.evaluate(() => window.__oohTools.wrapFx());
+  const m0 = cdp ? await withTimeout(cdpMetrics(cdp), 5000).catch(() => null) : null;
   await page.evaluate(() => window.__oohTools.start());
   await sleep(ms);
   const rec = await page.evaluate(() => window.__oohTools.stop());
+  const m1 = cdp ? await withTimeout(cdpMetrics(cdp), 5000).catch(() => null) : null;
   const med = summarize(rec && rec.deltas);
   const refreshMs = med && med.p50 > 5 && med.p50 < 40 ? med.p50 : 1000 / 60;
-  return { stats: frameStats(rec, refreshMs), refreshMs };
+  const stats = frameStats(rec, refreshMs);
+  if (stats) stats.cpu = cpuStats(m0, m1, stats.frames);
+  return { stats, refreshMs };
 }
 
 // ------------------------------------------------------------------ budgets
@@ -989,10 +1023,12 @@ function parseArgs(argv) {
       case 'no-isolation': o.isolation = false; break;
       case 'headed': o.headed = true; break;
       case 'json': o.json = true; break;
+      case 'max-minutes': o.maxMinutes = Math.max(1, Number(v) || 20); break;
       default: console.error(`unknown option --${k}\n\n${USAGE}`); process.exit(2);
     }
   }
   if (o.quick && o.shows === 10) o.shows = 3;
+  if (!o.maxMinutes) o.maxMinutes = o.quick ? 8 : 20;
   return o;
 }
 
@@ -1010,7 +1046,8 @@ async function main() {
   const consoleLog = [];
   const report = {
     tool: 'tools/perf.mjs', generatedAt: new Date().toISOString(), file: fileStats(src.file, src.html), buildNote: src.note || null,
-    browserVersion: browser.version(), config: { throttle: opts.throttle, quick: opts.quick, leak: opts.leak, shows: opts.shows, fonts: opts.fonts, isolation: opts.isolation },
+    browserVersion: browser.version(), config: { throttle: opts.throttle, quick: opts.quick, leak: opts.leak, shows: opts.shows, fonts: opts.fonts, isolation: opts.isolation, maxMinutes: opts.maxMinutes },
+    host: { ...hostLoad(), start: hostLoad() },
     api: null, profiles: {}, console: consoleLog, externalRequests: [], notes: [], sizeLimits: sizeLimits(),
   };
   const PROFILES = {
@@ -1019,6 +1056,9 @@ async function main() {
   };
   const iters = opts.quick ? { resolve: 1000, step: 30, light: 15, act: 10 } : { resolve: 3000, step: 100, light: 40, act: 30 };
   const log = (s) => process.stdout.write(s + '\n');
+  const run = { report, opts, browser, srv, log, watchdog: null };
+  const finish = (reason) => finishRun(run, reason);
+  run.watchdog = setTimeout(() => { log(`perf: deadline of ${opts.maxMinutes} min reached; writing the partial report`); finish(`hard deadline of ${opts.maxMinutes} min reached`); }, opts.maxMinutes * 60000);
   log(`perf: ${rel(src.file)} (${report.file.kb} KB) → ${rel(opts.out)}${src.note ? ` [${src.note}]` : ''}`);
   for (const pn of opts.profiles) {
     const prof = PROFILES[pn];
@@ -1032,14 +1072,15 @@ async function main() {
       const cdp = await ctx.newCDPSession(page);
       if (prof.throttle > 1) await cdp.send('Emulation.setCPUThrottlingRate', { rate: prof.throttle });
       await cdp.send('Performance.enable').catch(() => {});
-      const cfg = { showTimeoutMs: 15000 * prof.throttle, refreshMs: null };
+      P.host = hostLoad();
+      const cfg = { showTimeoutMs: 15000 * prof.throttle, refreshMs: null, cdp };
       log(`  [${pn}] boot…`);
       P.boot = await measureBoot(page, srv, opts.quick ? 1 : 3);
       const api = await page.evaluate(() => window.__oohTools.probeApi()).catch(() => null);
       report.api = report.api || api;
       if (!api || !api.game) report.notes.push(`${pn}: window.__game is missing; scenario and SIM measurements skipped`);
       log(`  [${pn}] idle…`);
-      const idle = await measureIdle(page, opts.quick ? 1200 : 3000);
+      const idle = await measureIdle(page, opts.quick ? 1200 : 3000, cdp);
       P.idle = idle.stats; cfg.refreshMs = idle.refreshMs; P.refreshMs = r2(idle.refreshMs);
       if (api && api.game) {
         for (const key of ['show7', 'cd14', 'cdwin']) {
@@ -1066,26 +1107,37 @@ async function main() {
     } catch (e) {
       P.error = e.message; report.notes.push(`${pn}: ${e.message}`);
     } finally {
-      if (ctx) { report.externalRequests.push(...ctx.__external); await ctx.close().catch(() => {}); }
+      if (ctx) { report.externalRequests.push(...ctx.__external); await withTimeout(ctx.close(), 10000).catch(() => {}); }
       P.wallSeconds = Math.round((Date.now() - t0) / 1000);
     }
   }
+  finish(null);
+}
+
+// Writes the report from whatever has been measured. reason = null (normal end) or why the run stopped.
+let FINISHED = false;
+async function finishRun(ctx, reason) {
+  if (FINISHED) return; FINISHED = true;
+  const { report, opts, browser, srv, log } = ctx;
+  clearTimeout(ctx.watchdog);
+  if (reason) { report.incomplete = reason; report.notes.push(`INCOMPLETE: ${reason}; the report covers what was measured before that`); }
+  report.host.end = hostLoad();
   report.externalRequests = [...new Set(report.externalRequests)];
   report.stubbedModules = stubbedModules(report);
   if (report.stubbedModules.length) report.notes.push(`build stubs in this file (tools/build.mjs --allow-missing): ${report.stubbedModules.join(', ')}`);
-  await browser.close();
-  await srv.close();
+  await withTimeout(browser.close(), 10000).catch(() => {});
+  await withTimeout(srv.close(), 3000).catch(() => {});
   report.checks = evaluate(report);
-  report.verdict = report.checks.some((c) => c.verdict === 'FAIL') ? 'FAIL' : report.checks.some((c) => c.verdict === 'WARN') ? 'PASS with warnings' : 'PASS';
+  report.verdict = reason ? 'INCOMPLETE' : report.checks.some((c) => c.verdict === 'FAIL') ? 'FAIL' : report.checks.some((c) => c.verdict === 'WARN') ? 'PASS with warnings' : 'PASS';
   const jsonPath = path.join(opts.out, 'perf.report.json');
   const mdPath = path.join(opts.out, 'perf-report.md');
   fs.writeFileSync(jsonPath, JSON.stringify(report, null, 1));
   fs.writeFileSync(mdPath, mdReport(report));
   log('');
   for (const c of report.checks) log(`  ${c.verdict.padEnd(4)}  ${c.label}: ${c.measured} (budget ${c.budget})`);
-  log(`\nperf: ${report.verdict} → ${rel(mdPath)}, ${rel(jsonPath)}`);
+  log(`\nperf: ${report.verdict}${reason ? ` (${reason})` : ''} → ${rel(mdPath)}, ${rel(jsonPath)}`);
   if (opts.json) process.stdout.write(JSON.stringify(report) + '\n');
-  process.exit(report.verdict === 'FAIL' ? 1 : 0);
+  process.exit(reason ? 2 : report.verdict === 'FAIL' ? 1 : 0);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

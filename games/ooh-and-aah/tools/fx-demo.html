@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FX self-test</title>
+<!-- Ooh × Aah: fx.js self-test demo. Owner: fx. Loads the real src/sim.js + src/fx.js (no build step).
+     Open it directly (file://) to click through the scenarios, or drive it with tools/fx-demo.mjs, which
+     steps FX deterministically (FX.update(1/60) + FX.render() per frame), times every render and screenshots.
+     Query: ?rm=1 (reduced motion) · ?hc=1 (high contrast) · ?scene=<name> (auto-play) · ?live=1 (own rAF loop) -->
+<style>
+  :root{--bg:#070A18;--paper:#F4EFE6;--dim:#B9B2C7;--aah:#F2C14E;--x:#56B4E9;--line:#2A2F4A;--wood:#3A2A1C;--wood-hi:#5A4330;--brass:#C9A227}
+  :root[data-contrast="high"]{--bg:#000;--paper:#FFF;--dim:#E6E6E6;--aah:#FFD166;--x:#8AD7FF;--line:#FFF;--wood:#1A1A1A;--wood-hi:#FFF;--brass:#FFD166}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--paper);font:16px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+  #backdrop{position:fixed;inset:0;width:100vw;height:100vh;display:none;opacity:.55}
+  #app{position:relative;height:100%;margin:0 auto;display:flex;flex-direction:column;max-width:560px}
+  body.desk #backdrop{display:block}
+  body.desk #app{max-width:600px;box-shadow:0 0 0 1px var(--line),0 0 60px rgba(0,0,0,.7)}
+  #hud{flex:none;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:rgba(5,7,15,.92);border-bottom:1px solid var(--line);font-weight:700}
+  #hud .coins{color:var(--aah)}
+  #sky-wrap{position:relative;flex:1 1 0;min-height:300px;overflow:hidden}
+  #sky{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #readout{position:absolute;left:0;right:0;top:10px;display:flex;justify-content:center;gap:10px;align-items:baseline;font-weight:700;letter-spacing:.06em;pointer-events:none;text-shadow:0 1px 2px #000}
+  #readout b{font:italic 700 26px/1 Georgia,serif;margin-left:4px}
+  #readout .a{color:var(--aah)}
+  #rack{flex:none;height:150px;position:relative;background:linear-gradient(var(--wood-hi),var(--wood) 14%,#23180f);border-top:2px solid var(--brass);display:flex;justify-content:space-evenly;align-items:flex-start;padding-top:22px}
+  .tube{width:44px;height:64px;border-radius:6px 6px 3px 3px;background:#120c08;border:2px solid var(--brass);display:flex;align-items:flex-end;justify-content:center}
+  .tube canvas{margin-bottom:4px}
+  #bar{flex:none;height:64px;display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap;padding:4px 8px;background:#0b0e1f}
+  #bar button{font:700 13px system-ui;color:var(--paper);background:#1b1f38;border:1px solid var(--line);border-radius:8px;padding:6px 8px;min-height:30px}
+  #bar button[aria-pressed="true"]{border-color:var(--aah);color:var(--aah)}
+  body.shot #bar{visibility:hidden}
+  #sheet{display:none;position:fixed;inset:0;overflow:auto;background:var(--bg);padding:12px;box-sizing:border-box}
+  body.picto #sheet{display:block}
+  #sheet h2{font:600 16px system-ui;margin:8px 0}
+  #sheet .grid{display:flex;flex-wrap:wrap;gap:8px}
+  #sheet figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:2px;font:12px system-ui;color:var(--dim);width:64px}
+</style>
+</head><body>
+<canvas id="backdrop" aria-hidden="true"></canvas>
+<div id="app">
+  <div id="hud"><span id="show">Spring Lanterns · Show 1</span><span class="coins" id="coins">$12</span></div>
+  <div id="sky-wrap">
+    <canvas id="sky" aria-hidden="true"></canvas>
+    <div id="readout"><span class="o" id="ro-o">OOH <b>0</b></span><span>×</span><span class="a" id="ro-a">AAH <b>1</b></span></div>
+  </div>
+  <div id="rack"></div>
+  <div id="bar"></div>
+</div>
+<div id="sheet"></div>
+<script src="../src/sim.js"></script>
+<script src="../src/fx.js"></script>
+<script>
+'use strict';
+/* ------------------------------------------------------------------------------------------------
+   Scenarios. Chains come from the real SIM (OOH.step(state, {type:'light'})) where possible, so the
+   event shapes are exactly the ones the game feeds FX; the rest are hand-built with the SIM's fields.
+------------------------------------------------------------------------------------------------ */
+const Q = new URLSearchParams(location.search);
+const $ = s => document.querySelector(s);
+const sky = $('#sky'), rack = $('#rack');
+const DESK = innerWidth >= 1200;
+if (DESK) document.body.classList.add('desk');
+if (Q.get('hc') === '1') document.documentElement.dataset.contrast = 'high';
+
+function mkState(ids, o) {
+  o = o || {};
+  const S = OOH.createState(o.seed || 'fx-demo');
+  S.show = o.show || 1; S.crowd = o.crowd || 0;
+  let u = 100;
+  S.tubes = ids.map(s => { if (!s) return {shell: null, rig: null}; const [id, col, star, rig] = s.split(':'); return {shell: {uid: u++, id, col: col || 'R', star: +(star || 1), paid: 3}, rig: rig || null}; });
+  return S;
+}
+function light(S) { return OOH.step(S, {type: 'light'}); }
+const SETS = {
+  mixed: ['peony:R:2', 'salute:W:2', 'willow:A:2', 'echo:W:2', 'crossette:B:2', 'thunder:W:3'],
+  fusion: ['palm:G:2', 'fern:G:2', 'heart:R:2', 'strontium:R:2', 'glitter:A:2', 'finale:B:3'],
+  rhythm: ['comet:B:2', 'strobe:W:2', 'mine:R:2', 'candle:A:2', 'girandola:A:2', 'waterfall:W:2'],
+  droop: ['kamuro:A:2', 'dahlia:R:2', 'smiley:A:2', 'crackle:W:2', 'horsetail:G:2', 'brocade:A:2'],
+  blue: ['tourbillon:X:2', 'crest:A:2', 'puresky:B:2', 'barrage:B:2', 'prism:B:2', 'bluemoon:B:2'],
+  late: ['nishiki:A:2', 'cake:R:2', 'saturn:B:2', 'chrys:G:2', 'echo:W:3', 'salute:W:3']
+};
+const SCENES = {
+  // first show of a run: 3 tubes, tiny numbers, a Pass
+  first: () => { const S = mkState(['willow:A:1', 'peony:R:1', 'strobe:W:1', null], {crowd: 0}); return {S, fest: 1, ev: light(S)}; },
+  mixed: () => { const S = mkState(SETS.mixed, {show: 4, crowd: 40}); return {S, fest: 2, ev: light(S)}; },
+  fusion: () => { const S = mkState(SETS.fusion, {show: 5, crowd: 60}); return {S, fest: 2, ev: light(S)}; },
+  rhythm: () => { const S = mkState(SETS.rhythm, {show: 7, crowd: 90}); return {S, fest: 3, ev: light(S)}; },
+  droop: () => { const S = mkState(SETS.droop, {show: 10, crowd: 140}); return {S, fest: 4, ev: light(S)}; },
+  blue: () => { const S = mkState(SETS.blue, {show: 13, crowd: 220}); return {S, fest: 5, ev: light(S)}; },
+  late: () => { const S = mkState(SETS.late, {show: 16, crowd: 320}); return {S, fest: 6, ev: light(S)}; },
+  // the biggest chain: a 6-tube Countdown (two passes, 12+ bursts) that misses and ends the run
+  countdown: () => { const S = mkState(SETS.mixed, {show: 23, crowd: 600}); return {S, fest: 8, ev: light(S)}; },
+  // the events the SIM rarely produces in a demo: coin gains, a wild rainbow, encore, critical/rain check, relight, run won
+  misc: () => {
+    const S = mkState(['peony:X:2', 'glitter:A:3', 'heart:R:2', 'palm:G:2', 'bluemoon:B:3', 'finale:W:3'], {show: 20, crowd: 500});
+    const ev = light(S).filter(e => !/^(payout|milestone|buildOpen|runLost|runWon)$/.test(e.type));
+    const out = [];
+    for (const e of ev) {
+      out.push(e);
+      if (e.type === 'burst' && e.tube === 1) out.push({type: 'coinGain', v: 3, tube: 1, rig: 'lucky'});
+      if (e.type === 'burst' && e.tube === 3) out.push({type: 'crowdGain', v: 12, tube: 3, crowd: S.crowd + 12});
+      if (e.type === 'burst' && e.tube === 4) out.push({type: 'extend', n: 3, by: 1, tube: 4});
+    }
+    const ap = out.find(e => e.type === 'applause');
+    if (ap) { ap.encore = true; ap.pass = true; ap.target = Math.max(1, Math.floor(ap.score / 3.4)); }
+    out.push({type: 'payout', total: 14}, {type: 'milestone', id: 'busySky', value: 6, goal: 8}, {type: 'runWon', show: 20, applause: ap ? ap.score : 0});
+    return {S, fest: 7, ev: out};
+  },
+  // a miss (crowd deflates) that uses the rain check → critical rim
+  miss: () => {
+    const S = mkState(['peony:R:1', 'strobe:W:1', null, null], {show: 9, crowd: 30});
+    const ev = light(S).filter(e => !/^(milestone|buildOpen|runLost)$/.test(e.type));
+    const ap = ev.find(e => e.type === 'applause');
+    if (ap) { ap.pass = false; ap.target = Math.max(ap.score * 3, 200); ap.short = ap.target - ap.score; }
+    ev.push({type: 'rainCheck', left: 0}, {type: 'critical', on: true, lastChance: true});
+    return {S, fest: 3, ev};
+  },
+  relight: () => {
+    const S = mkState(['willow:A:1', 'peony:R:1', null, null], {show: 6, crowd: 20});
+    const ev = light(S).filter(e => !/^(milestone|buildOpen|runLost)$/.test(e.type));
+    const ap = ev.find(e => e.type === 'applause');
+    if (ap) { ap.pass = false; ap.target = ap.score * 2; }
+    ev.push({type: 'relight', left: 0});
+    return {S, fest: 2, ev};
+  },
+  // every shell in the sky at once (one burst per shell, instant chain) = worst-case particle pressure
+  all: () => {
+    const ids = Object.keys(OOH.DATA.SHELLS), ev = [{type: 'fuseLit', show: 1, target: 100, rules: []}];
+    ids.forEach((id, i) => { ev.push({type: 'launch', tube: i % 6, n: i}); ev.push({type: 'burst', tube: i % 6, shell: id, col: 'RAGBWF'[i % 6], star: 2, sees: 0, up: [], n: i, hang: 2}); });
+    const S = mkState(['peony:R', 'peony:A', 'peony:G', 'peony:B', 'peony:W', 'peony:F']);
+    return {S, fest: 1, ev};
+  }
+};
+
+/* ------------------------------------------------------------------------------------------------
+   The stage: mock rack (DOM tubes with FX.pictogram tokens) → FX.setScene with real tube centres.
+------------------------------------------------------------------------------------------------ */
+let cur = null, handle = null, slamAt = -1, doneAt = -1, presented = [], simT = 0;
+const colOfShell = sh => sh ? (sh.col || 'W') : null;
+function layoutRack(S) {
+  rack.innerHTML = '';
+  S.tubes.forEach(t => {
+    const d = document.createElement('div'); d.className = 'tube';
+    if (t.shell) { try { const c = FX.pictogram(t.shell.id, t.shell.col, t.shell.star, 32, {highContrast: Q.get('hc') === '1'}); if (c) d.appendChild(c); } catch (e) { console.error(e); } }
+    rack.appendChild(d);
+  });
+}
+function tubeXs() {
+  const cr = sky.getBoundingClientRect();
+  return [...rack.children].map(el => { const r = el.getBoundingClientRect(); return r.left + r.width / 2 - cr.left; });
+}
+function anchors() {
+  const cr = sky.getBoundingClientRect(), f = el => { const r = el.getBoundingClientRect(); return {x: r.left + r.width / 2 - cr.left, y: r.top + r.height / 2 - cr.top}; };
+  return {ooh: f($('#ro-o')), aah: f($('#ro-a')), coins: f($('#coins'))};
+}
+function pushScene(S, fest, extra) {
+  const xs = tubeXs(), tf = (S.runStats && S.runStats.timesFired) || {};
+  FX.setScene(Object.assign({
+    festival: fest, show: S.show, crowd: S.crowd, rules: OOH.rulesFor(S, S.show), seed: 'fx-demo',
+    tubes: S.tubes.map((t, i) => ({x: xs[i], soot: (i * 3 + S.show) % 6, shellCol: colOfShell(t.shell), rig: t.rig})),
+    haze: ((S.show - 1) % 3) / 3, mood: 'hopeful', cheer: 0.5, target: 0, anchors: anchors()
+  }, extra || {}));
+}
+function readout() {
+  const L = presented.filter(e => typeof e.ooh === 'number' && typeof e.aah === 'number').pop();
+  if (!L) return;
+  $('#ro-o b').textContent = FX.fmt(L.ooh); $('#ro-a b').textContent = (Math.round(L.aah * 10) / 10).toString();
+}
+function load(name, o) {
+  o = o || {};
+  const mk = SCENES[name];
+  if (!mk) throw new Error('no scene ' + name);
+  FX.setOptions({reducedMotion: !!o.rm, highContrast: !!o.hc, speed: o.speed || 1, instant: false, test: false});
+  document.documentElement.dataset.contrast = o.hc ? 'high' : '';
+  if (FX.dim) FX.dim(false);
+  if (FX.critical) FX.critical(false);
+  cur = mk();
+  $('#show').textContent = 'Festival ' + cur.fest + ' · Show ' + cur.S.show;
+  layoutRack(cur.S);
+  FX.resize();
+  // the build that led here: crowd, mood, haze; then open the build (resets the sky)
+  pushScene(cur.S, cur.fest);
+  FX.event({type: 'buildOpen', show: cur.S.show, target: 100, mood: o.mood || 'hopeful'});
+  presented = []; slamAt = -1; doneAt = -1;
+  return {events: cur.ev.length, types: [...new Set(cur.ev.map(e => e.type))]};
+}
+function play(o) {
+  o = o || {};
+  const fl = cur.ev.find(e => e.type === 'fuseLit');
+  if (fl) FX.setScene({target: fl.target});
+  handle = FX.play(cur.ev, {speed: o.speed || 1, instant: !!o.instant,
+    onPresent: e => { presented.push(e); readout(); },
+    onSlam: () => { slamAt = simT; },
+    onDone: () => { doneAt = simT; }});
+  return handle;
+}
+/* Deterministic stepping for the harness: n frames at 60 Hz; every render timed. */
+const times = [];
+function step(ms, o) {
+  o = o || {};
+  const n = Math.max(1, Math.round(ms / (1000 / 60)));
+  for (let k = 0; k < n; k++) {
+    simT += 1 / 60;
+    FX.update(1 / 60);
+    const t0 = performance.now();
+    FX.render();
+    if (o.flush) sky.getContext('2d').getImageData(0, 0, 1, 1);
+    times.push(performance.now() - t0);
+  }
+  return FX.stats();
+}
+function until(what, extraMs, capMs) {
+  let waited = 0; capMs = capMs || 20000;
+  while (waited < capMs && (what === 'slam' ? slamAt < 0 : doneAt < 0)) { step(1000 / 60); waited += 1000 / 60; }
+  if (extraMs) step(extraMs);
+  return waited;
+}
+function timing(reset) {
+  const a = times.slice().sort((x, y) => x - y), q = p => a.length ? +a[Math.min(a.length - 1, Math.floor(p * a.length))].toFixed(3) : 0;
+  const r = {frames: a.length, p50: q(0.5), p95: q(0.95), p99: q(0.99), max: a.length ? +a[a.length - 1].toFixed(3) : 0, mean: a.length ? +(a.reduce((s, v) => s + v, 0) / a.length).toFixed(3) : 0};
+  if (reset) times.length = 0;
+  return r;
+}
+/* Real-time loop (manual use and the ?live=1 perf probe). */
+let live = false, lastTs = 0;
+function loop(ts) {
+  if (!live) return;
+  const dt = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 1 / 60; lastTs = ts;
+  simT += dt; FX.update(dt);
+  const t0 = performance.now(); FX.render(); times.push(performance.now() - t0);
+  requestAnimationFrame(loop);
+}
+function startLive() { if (!live) { live = true; lastTs = 0; requestAnimationFrame(loop); } }
+function stopLive() { live = false; }
+
+/* The pictogram sheet: every shell as a token, at 1× and in high contrast (§4.1, §4.4). */
+function sheet(hc) {
+  document.body.classList.add('picto');
+  const el = $('#sheet'); el.innerHTML = '';
+  const ids = Object.keys(OOH.DATA.SHELLS), cols = ['R', 'A', 'G', 'B', 'W', 'F'];
+  const add = (title, fn) => { const h = document.createElement('h2'); h.textContent = title; el.appendChild(h); const g = document.createElement('div'); g.className = 'grid'; el.appendChild(g); fn(g); };
+  const fig = (g, cv, label) => { const f = document.createElement('figure'); if (cv) f.appendChild(cv); const c = document.createElement('figcaption'); c.textContent = label; f.appendChild(c); g.appendChild(f); };
+  add('Every shell (token, row colour, ' + (hc ? 'high contrast' : 'normal') + ')', g => ids.forEach((id, i) => {
+    const row = OOH.DATA.SHELLS[id], col = row && row.col && row.col !== '*' ? row.col : cols[i % 6];
+    fig(g, FX.pictogram(id, col, 1 + (i % 3), 44, {token: true, highContrast: hc}), id);
+  }));
+  add('Colours (peony, 3★, washed, hang)', g => {
+    cols.concat(['X']).forEach(c => fig(g, FX.pictogram('peony', c, 3, 44, {token: true, highContrast: hc}), c));
+    fig(g, FX.pictogram('willow', 'A', 1, 44, {token: true, washed: true, highContrast: hc}), 'washed');
+    fig(g, FX.pictogram('palm', 'G', 2, 44, {token: true, hang: 3, highContrast: hc}), 'hang 3');
+    fig(g, FX.pictogram('peony', 'R', 1, 26, {highContrast: hc}), '26px');
+  });
+  return ids.length;
+}
+
+window.DEMO = {load, play, step, until, timing, startLive, stopLive, sheet, scenes: Object.keys(SCENES),
+  get slamAt() { return slamAt; }, get doneAt() { return doneAt; }, get presented() { return presented.map(e => e.type); },
+  handle: () => handle, errors: []};
+addEventListener('error', e => DEMO.errors.push(String(e.message)));
+
+/* Boot. */
+FX.init(sky, {seed: 'fx-demo', reducedMotion: Q.get('rm') === '1', highContrast: Q.get('hc') === '1'});
+if (DESK && FX.attachBackdrop) FX.attachBackdrop($('#backdrop'));
+const bar = $('#bar');
+for (const n of Object.keys(SCENES)) {
+  const b = document.createElement('button'); b.textContent = n;
+  b.onclick = () => { load(n, {rm: Q.get('rm') === '1', hc: Q.get('hc') === '1'}); play(); startLive(); };
+  bar.appendChild(b);
+}
+for (const [k, lab] of [['rm', 'reduced motion'], ['hc', 'high contrast']]) {
+  const b = document.createElement('button'); b.textContent = lab; b.setAttribute('aria-pressed', String(Q.get(k) === '1'));
+  b.onclick = () => { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on)); const p = new URLSearchParams(location.search); p.set(k, on ? '1' : '0'); location.search = p; };
+  bar.appendChild(b);
+}
+{ const b = document.createElement('button'); b.textContent = 'finale'; b.onclick = () => { FX.finale(); startLive(); }; bar.appendChild(b); }
+{ const b = document.createElement('button'); b.textContent = 'pictograms'; b.onclick = () => sheet(Q.get('hc') === '1'); bar.appendChild(b); }
+$('#sky-wrap').addEventListener('pointerdown', () => { if (handle) handle.fastForward(); });
+load(Q.get('scene') || 'first', {rm: Q.get('rm') === '1', hc: Q.get('hc') === '1'});
+step(50);
+if (Q.get('scene')) { play(); startLive(); }
+else if (Q.get('live') === '1') startLive();
+</script>
+</body></html>

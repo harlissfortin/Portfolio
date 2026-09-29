@@ -87,13 +87,21 @@
  *     --full <list>        viewports that get the full interactive flow (default 360x740,1440x900)
  *     --checks <letters>   subset, e.g. --checks abk (default: all a–l)
  *     --query <qs>         URL flags for the page (default "fresh=1"; e.g. "fresh=1&seed=abc")
- *     --no-fonts           abort Google Fonts requests (default: allowed, 4 s timeout, failures ignored)
+ *     --fonts              let Google Fonts load (default: aborted, so the run is offline and
+ *                          deterministic; text renders in the fallback font stack)
+ *     --budget <s>         total time budget in seconds (default 480). Past it, remaining
+ *                          steps are skipped (SKIP, noted); a watchdog at budget + 90 s writes
+ *                          the partial JSON and exits 2, so the tool never hangs.
  *     --timeout <ms>       per-wait timeout (default 15000)
  *     --keep-shots         do not delete old PNGs in --out before the run
- *     --verbose            log progress
+ *     --verbose            log progress (with elapsed seconds) to stderr
+ *     --details            also print every finding per check (default: grouped by owning module)
  *
  * OUTPUT
- *   stdout: a PASS/FAIL table (checks × viewports) and the detailed findings with selectors.
+ *   stdout: a PASS/FAIL table (checks × viewports), then the findings deduplicated and grouped
+ *   by owning module (src/CONTRACT.md: play, panels, end, menus, core, fx, lead = base.css /
+ *   body.html, harness = this tool), each with check letter, selector, expected vs actual and
+ *   where it was seen. JSON: runs[].issues[].module and byModule.
  *   <out>/a11y-report.json: the machine-readable report (every run, issue, note and screenshot).
  *   <out>/*.png: screenshots (per viewport BUILD states, RESOLVING, overlays, high contrast,
  *   greyscale rack, reduced motion).
@@ -144,7 +152,8 @@ const OPTS = {
   full: opt('full', '360x740,1440x900').split(',').map(s => s.trim()).filter(Boolean),
   checks: new Set((opt('checks', 'abcdefghijkl')).toLowerCase().replace(/[^a-l]/g, '').split('')),
   query: opt('query', 'fresh=1'),
-  fonts: !flag('no-fonts'),
+  fonts: flag('fonts') && !flag('no-fonts'),
+  budget: Math.max(60, +opt('budget', 480) || 480),
   timeout: +opt('timeout', 15000) || 15000,
   keepShots: flag('keep-shots'),
   verbose: flag('verbose'),
@@ -170,8 +179,11 @@ const CHECKS = {
 const SEV = { SKIP: 0, PASS: 1, REVIEW: 2, WARN: 3, FAIL: 4, ERROR: 5 };
 const worst = list => list.reduce((a, b) => (SEV[b] > SEV[a] ? b : a), 'SKIP');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const log = (...a) => { if (OPTS.verbose) console.error('[a11y]', ...a); };
 const T0 = Date.now();
+const log = (...a) => { if (OPTS.verbose) console.error(`[a11y ${((Date.now() - T0) / 1000).toFixed(0)}s]`, ...a); };
+/** Seconds left in the --budget; every long loop checks it so the run stays bounded. */
+const timeLeft = () => OPTS.budget - (Date.now() - T0) / 1000;
+const overBudget = (reserve = 0) => timeLeft() < reserve;
 
 /* ============================================================================
    REPORT MODEL
@@ -188,6 +200,7 @@ function record(check, vp, context, { issues = [], notes = [], stats = null, ski
   if (error) status = 'ERROR';
   else if (skip) status = 'SKIP';
   else status = worst(['PASS', ...issues.map(i => (i.level === 'INFO' ? 'PASS' : i.level))]);
+  for (const i of issues) if (!i.module) i.module = moduleOf(check, i, context);
   const run = { check, viewport: vp, context, status, issues, notes: skip ? [skip, ...notes] : notes, stats, error: error ? String(error.stack || error) : undefined };
   REPORT.runs.push(run);
   log(`${check} ${vp} ${context}: ${status}${issues.length ? ' (' + issues.length + ')' : ''}${error ? ' ' + error : ''}`);
@@ -198,6 +211,37 @@ async function guard(check, vp, context, fn) {
   try { return await fn(); } catch (e) { record(check, vp, context, { error: e }); return null; }
 }
 const fx = (n, d = 1) => (typeof n === 'number' && isFinite(n) ? +n.toFixed(d) : n);
+
+/* ============================================================================
+   OWNING MODULE (src/CONTRACT.md "Ownership" + "UI modules" scopes)
+   Every issue gets issue.module so findings can be routed to the file owner.
+============================================================================ */
+const MODULE_FILES = {
+  play: 'ui-play.js, play.css', panels: 'ui-panels.js, panels.css', end: 'ui-end.js, end.css',
+  menus: 'ui-menus.js, menus.css', core: 'core.js', fx: 'fx.js', lead: 'base.css, body.html', harness: 'tools/audit/a11y.mjs',
+};
+const SCOPE_RE = [
+  ['end', /#(end|run-it-back)\b|\bend overlay/],
+  ['menus', /#(pause-menu|settings|logbook|help|toasts|tap-continue)\b|\b(pause|settings|logbook|help) overlay/],
+  ['panels', /#(board|showlog)\b/],
+  ['play', /#(hud|hud-[\w-]+|sponsor|sky-overlay|rack|tools|shop|workshop|fire|inspect)\b|\[data-(tube|card|crate|act)[=\]]|\binspect overlay|^(HUD|Sponsor|tubes|Crate|tools|cards|workshop|Light)$/],
+  ['fx', /canvas#sky|^FX\b/],
+];
+function moduleOf(check, issue, context = '') {
+  const sel = String(issue.sel || ''), msg = String(issue.msg || '');
+  if (issue.level === 'ERROR' || sel === '(harness)' || sel === 'matchMedia') return 'harness';
+  if (check === 'g') return /aria-live=|hidden from assistive|ignored in the accessibility|missing$/.test(msg) ? 'lead' : 'core';
+  if (check === 'h' && /^GAME\./.test(sel)) return 'core';
+  if (check === 'i' && sel === 'html') return 'core';
+  // overlay mechanics (open focus, trap, Esc, restore) live in core's overlay stack (GAME.open/close/trapTab)
+  if (check === 'f' && /focus did not move into|focus escaped|focus not restored|did not return focus|did not restore focus|Esc did not close/.test(msg)) return 'core';
+  if (check === 'f' && /no keyboard path opened the (pause|logbook|help|settings)/.test(msg)) return 'menus';
+  if (/^html\b|^body\b|^document\b|^#app\b/.test(sel)) return 'lead';
+  for (const [m, re] of SCOPE_RE) if (re.test(sel)) return m;
+  for (const [m, re] of SCOPE_RE) if (re.test(context)) return m;
+  if (/^GAME\./.test(sel)) return 'core';
+  return 'lead';
+}
 
 /* ============================================================================
    IN-PAGE HELPERS (serialised into the game page; must be self-contained)
@@ -1310,6 +1354,7 @@ async function focusVisibleAudit(G, stops, label) {
   const { page, vp } = G;
   const issues = [], perStop = [];
   for (const s of stops) {
+    if (overBudget(30)) { perStop.push({ sel: s.sel, verdict: 'not checked (time budget)' }); continue; }
     const prep = await page.evaluate(id => window.__A11Y.prepFocus(id), s.id).catch(() => null);
     if (!prep) { perStop.push({ sel: s.sel, verdict: 'gone' }); continue; }
     const r = prep.rect, pad = 10;
@@ -1811,7 +1856,8 @@ async function auditViewport(vp, full) {
 
     // ---- overlays (f): pause, settings (+ i), logbook, help, inspect
     const fromFire = async key => { await page.evaluate(() => window.__A11Y.focusSel('#fire')); await page.keyboard.press(key); };
-    if (want('f') || want('e') || want('i') || want('a')) {
+    if ((want('f') || want('e') || want('i') || want('a')) && overBudget(60)) REPORT.notes.push(`${vp}: overlay checks skipped (time budget)`);
+    else if (want('f') || want('e') || want('i') || want('a')) {
       await auditOverlay(G, 'pause', [
         { name: 'key P', run: () => fromFire('p') },
         { name: 'key Esc', run: () => fromFire('Escape') },
@@ -1916,6 +1962,7 @@ async function auditViewport(vp, full) {
     // ---- play on to the run end (F2 workshop state on the way, g assertive, end overlay)
     let ended = false, sawF2 = false, rainCheck = false, endT = 0, shows = 0;
     for (; shows < 12; shows++) {
+      if (overBudget(45)) { REPORT.notes.push(`${vp}: stopped playing after ${shows + 1} show(s) (time budget); ending the run by Abandon`); break; }
       const st = await uiState(page);
       if (st.ui === 'END' || (await isOpen(page, '#end'))) { ended = true; break; }
       const ws = await page.evaluate(() => { const w = document.getElementById('workshop'); return !!w && window.__A11Y.shown(w) && window.__A11Y.controls('#workshop').length > 0; });
@@ -2005,6 +2052,41 @@ function buildTable() {
   }
   return rows;
 }
+/** Deduplicated FAIL/WARN/REVIEW/ERROR findings grouped by owning module (for routing fixes). */
+function moduleSummary() {
+  const out = {};
+  for (const run of REPORT.runs) {
+    const list = run.error ? [{ level: 'ERROR', sel: '(harness)', msg: run.error.split('\n')[0], module: 'harness' }] : run.issues;
+    for (const i of list) {
+      if (i.level === 'INFO' || i.level === 'PASS') continue;
+      const m = i.module || moduleOf(run.check, i, run.context);
+      const g = out[m] = out[m] || { files: MODULE_FILES[m] || m, counts: {}, findings: [] };
+      const key = `${run.check}|${i.level}|${i.sel}|${String(i.msg).replace(/[\d.]+(px|:1|ms|\/255)?/g, '#')}`;
+      let f = g.findings.find(x => x.key === key);
+      if (!f) { f = { key, check: run.check, level: i.level, sel: i.sel, msg: i.msg, where: [] }; g.findings.push(f); g.counts[i.level] = (g.counts[i.level] || 0) + 1; }
+      const w = `${run.viewport} ${run.context}`;
+      if (!f.where.includes(w)) f.where.push(w);
+    }
+  }
+  for (const g of Object.values(out)) { g.findings.sort((a, b) => SEV[b.level] - SEV[a.level] || a.check.localeCompare(b.check)); for (const f of g.findings) delete f.key; }
+  return out;
+}
+function printModules(mods) {
+  const order = ['ERROR', 'FAIL', 'WARN', 'REVIEW'];
+  const lines = ['Findings by owning module (deduplicated; REVIEW items are counted only, see JSON):'];
+  const names = Object.keys(mods).sort((a, b) => (mods[b].counts.FAIL || 0) - (mods[a].counts.FAIL || 0));
+  for (const m of names) {
+    const g = mods[m];
+    lines.push(`  [${m}] ${g.files}: ${order.filter(l => g.counts[l]).map(l => `${g.counts[l]} ${l}`).join(', ')}`);
+    for (const f of g.findings.filter(x => x.level !== 'REVIEW').slice(0, 25)) {
+      const where = f.where.length > 3 ? `${f.where.slice(0, 3).join('; ')} (+${f.where.length - 3})` : f.where.join('; ');
+      lines.push(`    ${f.level.padEnd(5)} (${f.check}) ${f.sel}: ${f.msg.slice(0, 220)}  @ ${where}`);
+    }
+    const more = g.findings.filter(x => x.level !== 'REVIEW').length - 25;
+    if (more > 0) lines.push(`    … ${more} more in the JSON report (byModule.${m})`);
+  }
+  return lines;
+}
 function printReport(rows) {
   const vps = OPTS.viewports;
   const pad = (s, n) => String(s).padEnd(n);
@@ -2023,8 +2105,10 @@ function printReport(rows) {
   lines.push(`OVERALL: ${SEV[overall] >= SEV.FAIL ? 'FAIL' : 'PASS'}${overall === 'WARN' || overall === 'REVIEW' ? ' (with ' + overall + ' items)' : ''}`);
   lines.push('Cells: status + number of findings at that level. REVIEW = needs visual inspection (canvas/image background). SKIP = state not reachable.');
   lines.push('');
-  // details
-  for (const r of rows) {
+  REPORT.byModule = moduleSummary();
+  lines.push(...printModules(REPORT.byModule), '');
+  // per-check details (--details)
+  for (const r of (flag('details') ? rows : [])) {
     const runs = REPORT.runs.filter(x => x.check === r.check);
     const agg = new Map();
     for (const run of runs) {
@@ -2087,17 +2171,36 @@ async function main() {
   try { BROWSER = await chromium.launch({ args: ['--disable-gpu', '--font-render-hinting=none'] }); }
   catch (e) { SERVER.close(); fail('Chromium failed to launch: ' + e.message); }
   REPORT.browser = BROWSER.version();
+  const watchdog = setTimeout(() => {
+    console.error(`a11y audit: watchdog fired (budget ${OPTS.budget}s + 90s); writing the partial report`);
+    REPORT.notes.push(`WATCHDOG: the run exceeded ${OPTS.budget + 90}s and was cut short; later checks are missing`);
+    try { const rows = buildTable(); REPORT.table = rows; REPORT.screenshots = SHOTS; printReport(rows); } catch (e) { /* ignore */ }
+    REPORT.summary = { status: 'ERROR', error: 'watchdog timeout', seconds: +((Date.now() - T0) / 1000).toFixed(1) };
+    try { fs.writeFileSync(OPTS.json, JSON.stringify(REPORT, null, 2)); } catch (e) { /* ignore */ }
+    process.exit(2);
+  }, (OPTS.budget + 90) * 1000);
+  watchdog.unref();
   const ictx = await BROWSER.newContext();
   IMGPAGE = await ictx.newPage();
   await IMGPAGE.setContent('<!doctype html><title>img</title>');
   await IMGPAGE.evaluate(imgHelpers);
 
   try {
-    for (const vp of OPTS.viewports) {
-      log('viewport', vp);
-      await auditViewport(vp, OPTS.full.includes(vp));
+    // primary viewport first, then reduced motion (so a tight budget still covers h), then the rest
+    const order = [PRIMARY, 'h', ...OPTS.viewports.filter(v => v !== PRIMARY)];
+    for (const step of order) {
+      if (step === 'h' && !want('h')) continue;
+      if (overBudget(step === 'h' ? 25 : 35)) {
+        const why = `skipped: --budget ${OPTS.budget}s exhausted`;
+        REPORT.notes.push(`${step === 'h' ? 'reduced motion' : step}: ${why}`);
+        if (step === 'h') record('h', PRIMARY, 'reduced motion', { skip: why });
+        else for (const c of 'abcdk') if (want(c)) record(c, step, 'viewport', { skip: why });
+        continue;
+      }
+      log(step === 'h' ? 'reduced motion' : 'viewport ' + step);
+      if (step === 'h') await reducedMotionAudit();
+      else await auditViewport(step, OPTS.full.includes(step));
     }
-    if (want('h')) await reducedMotionAudit();
   } finally {
     await BROWSER.close().catch(() => {});
     SERVER.close();

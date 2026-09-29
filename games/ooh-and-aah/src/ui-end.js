@@ -444,9 +444,9 @@ const UI_END = (() => {
           r = gen.next();
           const t2 = now();
           if (t2 - t1 > (tm.worstStep || 0)) { tm.worstStep = t2 - t1; tm.worstIn = name; }
-          stepMax = Math.min(6, Math.max(stepMax * .98, t2 - t1));
+          stepMax = Math.min(4, Math.max(stepMax * .98, t2 - t1));
           t1 = t2;
-        } while (!r.done && t1 - t0 + stepMax < 7.5);
+        } while (!r.done && t1 - t0 + stepMax < 6);
       } catch (e) { warn('slice', e); r = {done: true, value: null}; }
       tm.slices++; tm.maxSlice = Math.max(tm.maxSlice, now() - t0); tm.ms = now() - tm.start;
       if (id !== job) return;
@@ -587,10 +587,14 @@ const UI_END = (() => {
     tubes.forEach((t, i) => { if (t && t.shell) occ.push(i); });
     const m = occ.length + 1, full = 1 << m, val = new Float64Array(full), fact = [1];
     for (let i = 1; i <= m; i++) fact[i] = fact[i - 1] * i;
+    // Same coalition game as OOH.shapley: tubes outside S emptied (rigs stay), Crowd in or out.
+    const S = sim();
     for (let mask = 1; mask < full; mask++) {
-      const tb = tubes.map((t, i) => { const j = occ.indexOf(i); return j >= 0 && !(mask >> j & 1) ? Object.assign({}, t, {shell: null}) : t; });
-      val[mask] = resolveA(tb, rules, (mask >> (m - 1) & 1) ? crowd : 0, fav);
-      if (mask % 16 === 0) yield;
+      const tb = tubes.map(t => ({shell: null, rig: t ? t.rig : null}));
+      for (let j = 0; j < occ.length; j++) if (mask >> j & 1) tb[occ[j]].shell = tubes[occ[j]].shell;
+      const r = S.resolveShow(tb, {rules, crowd: (mask >> (m - 1) & 1) ? crowd : 0, fav});
+      val[mask] = (r && r.applause) || 0;
+      if (mask % 8 === 0) yield;
     }
     const phi = new Array(m).fill(0);
     for (let mask = 0; mask < full; mask++) {
@@ -603,7 +607,8 @@ const UI_END = (() => {
   }
   function* sharesFor(x) {       // → Map(groupKey → share), shares sum to 1
     const S = sim();
-    let r = has(S, 'shapley') ? call(S, 'shapley', x.tubes, x.rules, x.crowd, x.fav) : (has(S, 'resolveShow') ? yield* localShapley(x.tubes, x.rules, x.crowd, x.fav) : null);
+    // The local copy yields every 8 coalitions, so no slice runs a whole show's 128 resolves at once.
+    let r = has(S, 'resolveShow') ? yield* localShapley(x.tubes, x.rules, x.crowd, x.fav) : (has(S, 'shapley') ? call(S, 'shapley', x.tubes, x.rules, x.crowd, x.fav) : null);
     if (!r) return null;
     if (r.shares) r = r.shares;
     const list = [], num = y => Math.max(0, +(y && typeof y === 'object' ? (y.share != null ? y.share : y.value) : y) || 0);
@@ -652,6 +657,11 @@ const UI_END = (() => {
   /* ---------- lesson (§4.12) ---------- */
   function lessonOf(nm) {
     const sum = Object.assign({}, v.lr, {won: v.won, nearMiss: nm, bestReorder: nm && nm.bestReorder, lastShow: v.last.e});
+    // Lesson 1 (Countdown) needs the best arrangement, which the near-miss search already found:
+    // answer it here rather than let lessonFor repeat all 720 resolves in one synchronous call.
+    const L1 = (D().LESSONS || [])[0], reo0 = nm && nm.bestReorder;
+    if (!v.won && L1 && L1.text && /\{n\}/.test(L1.text) && v.last.rules.some(x => /^countdown/.test(x)) && reo0 && reo0.pass)
+      return L1.text.split('{n}').join(fmt(reo0.applause));
     let r = call(sim(), 'lessonFor', sum);
     if (r && typeof r === 'object') r = r.text || r.line || '';
     if (typeof r === 'string' && r) return r;
@@ -1042,11 +1052,18 @@ const UI_END = (() => {
       out.nearMiss = r;
       const el = root.querySelector('#end-near');
       if (el) el.innerHTML = nearMissLines(r).map(t => `<p>${esc(t)}</p>`).join('');
-      const t0 = now();
-      out.lesson = lessonOf(r);
-      if (out.timing) out.timing.lessonMs = now() - t0;
-      const ls = root.querySelector('#end-lesson');
-      if (ls) ls.textContent = out.lesson;
+    };
+    const lesson = r => {          // its own macrotask, after the near-miss text has painted
+      const id = job;
+      defer(() => {
+        if (id !== job) return;
+        const t0 = now();
+        out.lesson = lessonOf(r);
+        if (out.timing) out.timing.lessonMs = now() - t0;
+        const ls = root.querySelector('#end-lesson');
+        if (ls) ls.textContent = out.lesson;
+        pareto();
+      });
     };
     const pareto = () => sliced(paretoGen(deadline), items => { out.pareto = items || []; paintPareto(); }, 'pareto');
     if (!v.lost) { out.lesson = lessonOf(null); pareto(); return; }
@@ -1059,8 +1076,8 @@ const UI_END = (() => {
     if (fp && has(S, 'nearMissGen')) { try { gen = S.nearMissGen(fp, rules, L.target); } catch (e) { warn('nearMissGen', e); } }
     if (!gen && fp && has(S, 'resolveShow')) gen = nearMissGen(ctx, deadline);
     if (!gen && fp && has(S, 'nearMiss')) gen = (function* () { yield; return call(S, 'nearMiss', fp, rules, L.target); })();
-    if (!gen || typeof gen.next !== 'function') { finishNear(null); pareto(); return; }
-    sliced(gen, r => { finishNear(normNear(r)); pareto(); }, 'nearMiss');
+    if (!gen || typeof gen.next !== 'function') { finishNear(null); lesson(null); return; }
+    sliced(gen, r => { const nm = normNear(r); finishNear(nm); lesson(nm); }, 'nearMiss');
   }
 
   /* ---------- persistence through GAME ---------- */

@@ -8,9 +8,12 @@
 // Graph: one-shot voices → sfx ─┐
 //        music bus       → mus ─┴→ master 0.9 → compressor (−18 dB, knee 12, 4:1, 3 ms, 250 ms) → destination
 //
-// Optional payload fields read beyond §9: buildOpen.show is the 0-based s (s mod 3 = 2 is a Headliner; a
-// 'countdown…' rule is the Countdown); buildOpen/critical {lastChance} overrides the heartbeat rationing;
-// applause {top|topTier|runBest} forces the top-tier fanfare; payout {total|coins} sets the number of blips.
+// Payload fields read (as emitted by sim.js / core.js): buildOpen {show (0-based s; s mod 3 = 2 is a Headliner),
+// rules[], lastChance}; critical {on, lastChance} (core, every build open); burst {col, star, sees (count), n, shell
+// (id), uid, dud, half, washed}; bought/upgraded {col, uid}, sold/moved {uid} (colour remembered by uid);
+// crowdCheer {v, crowd}; applause {score, target, pass}; payout {shellCoins, interest, base, sponsor.coins} (coins
+// earned → blips, max 5); topTier {reason} (core, at the slam) and runWon play the fanfare (3 s de-dup).
+// colourSet / sponsorChanged / restored are voiced by ui-play through ui(), so they are silent here.
 const AUDIO = (() => {
   const W = typeof window == 'object' ? window : {}, AC = W.AudioContext || W.webkitAudioContext, rnd = Math.random;
   const S = {sound: true, soundVol: .8, music: true, musicVol: .35};
@@ -20,7 +23,7 @@ const AUDIO = (() => {
   const PEN = [523.25, 587.33, 659.25, 783.99, 880];                      // C-major pentatonic from C5
   const PAD = [[130.81, 164.81, 196], [110, 130.81, 164.81], [87.31, 110, 130.81], [98, 123.47, 146.83]]; // C Am F G
   let ctx, sfx, mus, bus, river, voices = [], last = {}, count = {}, steals = 0, phase = 'off', crowd = 0, held = 0;
-  let mOn = 0, nChord = 0, ci = 0, nBox = 0, nBeat = 0, step = 0, cur = {}, crit = 0, first = 0, heart = 0, lastFan = -9;
+  let mOn = 0, nChord = 0, ci = 0, nBox = 0, nBeat = 0, step = 0, cur = {}, crit = 0, first = 0, heart = 0, lastFan = -9, UC = {};
   const safe = f => (...a) => { try { return f(...a); } catch (e) {} };
 
   // 2 s white noise and brown noise (leaky integrator), built once per context.
@@ -201,6 +204,7 @@ const AUDIO = (() => {
   const big = e => /countdown/.test(e.rules) || (e.k ?? e.show % 3) === 2; // a Headliner or Countdown build
   const fan = () => { if (ctx && ctx.currentTime - lastFan > 3) { lastFan = ctx.currentTime; play('fanfare'); } };
   const reset = () => { crit = first = heart = 0; };
+  const colOf = e => e.col || e.shell && e.shell.col || UC[e.uid];
   const ON = {
     // The heartbeat plays on the first build after the rain check is spent, then on Headliner/Countdown builds.
     buildOpen(e) { if (!e.show) reset(); cur = e; heart = e.lastChance ?? (first || crit && big(e)); first = 0; play('page'); },
@@ -209,7 +213,8 @@ const AUDIO = (() => {
     moodChanged: e => play('murmur', {b: e.bucket}, 'mood'),
     fuseLit() { step = heart = 0; play('hiss'); },
     burst(e) {
-      const sh = e.shell || {}, k = step++, sees = e.sees?.length ?? e.sees | 0;
+      const sh = e.shell || {}, k = typeof e.n == 'number' ? e.n : step, sees = e.sees?.length ?? e.sees | 0;
+      step = k + 1; if (e.uid != null && e.col) UC[e.uid] = e.col;
       play('burst', {
         col: e.dud ? 'D' : e.washed ? 'W' : e.col || sh.col, g: e.dud ? .15 : e.half ? .35 : .5,
         tier: e.dud ? 0 : cl((sh.star || e.star || 1) - 1 + (sees >> 1), 0, 6), crackle: /^(crackle|glitter|brocade)$/.test(sh.id || sh),
@@ -217,28 +222,31 @@ const AUDIO = (() => {
       // Link chime: one pentatonic step per burst; 10 steps span C5–A6, then the climb restarts an octave up.
       e.dud || play('chime', {f: PEN[k % 5] * 2 ** ((k % 10) / 5 | 0) * 2 ** (k / 10 | 0)}, 'link');
     },
-    gainOoh: e => play('vowel', vow(0, tierG(e.v)), 'ooh'),
-    gainAah: e => play('vowel', vow(1, tierG(e.v)), 'aah'),
+    gainOoh: e => e.v > 0 && play('vowel', vow(0, tierG(e.v)), 'ooh'),
+    gainAah: e => e.v > 0 && play('vowel', vow(1, tierG(e.v)), 'aah'),
     multAah: e => play('bell', {tier: tierX(e.factor)}),
     extend: () => play('chime', {f: 1760, g: .1, r: .35}, 'extend'),
-    crowdCheer: e => play('roar', {g: cl(.12 * Math.log10((e.v ?? crowd) + 1), .03, .4)}),
+    crowdCheer: e => e.v !== 0 && play('roar', {g: cl(.12 * Math.log10((e.crowd ?? crowd) + 1), .03, .4)}), // ∝ log(crowd)
     applause(e) { // pass: applause 1.2–2.5 s, gain ∝ log10(ratio + 1); miss: falling two-tone
       const r = e.target > 0 ? e.score / e.target : 1;
       if (e.pass === false || e.pass == null && r < 1) return play('miss');
       play('roar', {g: cl(.3 * Math.log10(r + 1), .05, .5), d: 1.2 + 1.3 * cl((r - 1) / 3, 0, 1)}, 'applause');
       if (e.top || e.topTier || e.runBest || big(cur)) fan();
     },
-    payout: e => play('coin', {n: cl(Math.round(e.total ?? e.coins ?? e.v ?? 3), 1, 5)}, 'payout'),
+    payout(e) { // one blip per coin earned (shell coins + interest + base + Sponsor), at most 5
+      const n = e.shellCoins != null ? (e.shellCoins | 0) + (e.interest | 0) + (e.base | 0) + (e.sponsor && e.sponsor.coins | 0) : e.total ?? e.v ?? 3;
+      n > 0 && play('coin', {n: cl(Math.round(n), 1, 5)}, 'payout');
+    },
     runLost() { reset(); play('drone'); },
     runWon() { reset(); fan(); },
-    runStart: reset, finale: fan, topTier: fan,
+    runStart() { reset(); UC = {}; }, finale: fan, topTier: fan,
   };
   const SIMPLE = {rerolled: 'shuffle', launch: 'thump', fusion: 'fusion', clear: 'clear', repeat: 'echo', crowdGain: 'swell',
     coinGain: 'coin', relight: 'rise', milestone: 'tick', illegal: 'error'};
   for (const k in SIMPLE) ON[k] = () => play(SIMPLE[k]);
   // Build actions: a pluck at the colour's pitch, a coin blip when money moves, an octave twin on upgrade.
   'bought upgraded sold rigInstalled tubeAdded moved matched'.split(' ').forEach((k, i) =>
-    ON[k] = e => play('drop', {col: e.col || e.shell && e.shell.col, coin: i < 5, up: i == 1}));
+    ON[k] = e => { const col = colOf(e); if (e.uid != null && col) UC[e.uid] = col; play('drop', {col, coin: i < 5, up: i == 1}); });
 
   const api = {
     unlock() {

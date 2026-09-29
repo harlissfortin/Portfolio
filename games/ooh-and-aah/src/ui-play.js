@@ -1697,7 +1697,9 @@ const UI_PLAY = (() => {
       if (building() && e.target.closest('button') == null && (held || flash)) { clearHeld(true); flash = null; render(); }
     });
     E.play.addEventListener('focusin', e => { // keyboard hover while holding
-      if (!held) return;
+      // Only keyboard focus: a pointer focus arrives between pointerdown and click, and re-rendering the
+      // rack then would detach the node under the finger and swallow the click (the tap never commits).
+      if (!held || drag || !safe(() => e.target.matches(':focus-visible'), true)) return;
       const it = itemOf(itemEl(e.target));
       if (it && it.kind === 'slot' && targets.has(slotKey(it.slot))) setHover(it.slot); else if (hover) setHover(null);
     });

@@ -66,6 +66,28 @@ const EVENTS = [
   [{ type: 'applause', ooh: 290, aah: 3, score: 870, target: 300, pass: true, encore: true }, ['applause']],
   [{ type: 'applause', ooh: 90, aah: 2, score: 180, target: 300, pass: false }, ['miss']],
   [{ type: 'payout', total: 7, base: 5, interest: 2 }, ['payout']],
+  // Real shapes as emitted by sim.js / core.js (integration audit).
+  [{ type: 'buildOpen', show: 2, slot: 2, rules: ['blackout'], critical: true, lastChance: true, sponsor: null }, ['page']],
+  [{ type: 'critical', on: true, lastChance: false }, []],
+  [{ type: 'critical', on: false }, []],
+  [{ type: 'fuseLit', show: 0, rules: [], target: 60, order: [0, 1], total: 2 }, ['hiss']],
+  [{ type: 'launch', tube: 0, shot: 0, n: 0, pass: 0 }, ['thump']],
+  [{ type: 'burst', tube: 0, shell: 'crackle', uid: 7, col: 'W', star: 2, sees: 3, up: [1, 2, 3], dud: false, half: false, washed: false, n: 4, of: 7 }, ['burst', 'link']],
+  [{ type: 'gainAah', v: 0, tube: 0, capped: true }, []],
+  [{ type: 'crowdCheer', v: 84, crowd: 12, ooh: 300, aah: 4 }, ['roar']],
+  [{ type: 'crowdCheer', v: 0, crowd: 0 }, []],
+  [{ type: 'payout', pass: true, shellCoins: 1, shellCrowd: 0, interest: 2, base: 4, sponsor: null, coins: 23, crowd: 9 }, ['payout']],
+  [{ type: 'payout', pass: false, shellCoins: 0, interest: 0, base: 0, sponsor: null, coins: 23, crowd: 9 }, []],
+  [{ type: 'sold', from: { zone: 'tube', i: 0 }, uid: 7, id: 'crackle', value: 2, coins: 9 }, ['drop']],
+  [{ type: 'moved', from: { zone: 'tube', i: 0 }, to: { zone: 'crate', i: 0 }, uid: 7, id: 'crackle', swapped: false }, ['drop']],
+  [{ type: 'rigInstalled', tube: 1, id: 'brass', cost: 4, coins: 5 }, ['drop']],
+  [{ type: 'tubeAdded', tube: 5, cost: 8, coins: 1 }, ['drop']],
+  [{ type: 'matched', perm: [1, 0] }, ['drop']],
+  [{ type: 'rerolled', cost: 1, coins: 4, cards: [] }, ['shuffle']],
+  [{ type: 'topTier', reason: 'headliner' }, ['fanfare']],
+  [{ type: 'colourSet', card: 0, id: 'peony', col: 'B' }, []],
+  [{ type: 'sponsorChanged', accepted: true }, []],
+  [{ type: 'restored', order: [] }, []],
   [{ type: 'rainCheck' }, []],
   [{ type: 'critical' }, []],
   [{ type: 'relight' }, ['rise']],
@@ -177,7 +199,8 @@ try {
     check(want === got, `${ev.type}${ev.dud ? ' (dud)' : ''}${ev.pass === false ? ' (miss)' : ''} → [${got}]`);
     await sleep(40);
   }
-  // Top tier: a Headliner clear, then runWon (fanfare gated to one per 3 s).
+  // Top tier: a Headliner clear, then runWon (fanfare gated to one per 3 s; the topTier row above just played one).
+  await sleep(3100);
   await page.evaluate(() => AUDIO.onEvent({ type: 'buildOpen', show: 2, rules: ['fog'] }));
   await sleep(40);
   let d = await page.evaluate(() => { const b = AUDIO._t.count.fanfare || 0; AUDIO.onEvent({ type: 'applause', score: 500, target: 400, pass: true }); return (AUDIO._t.count.fanfare || 0) - b; });

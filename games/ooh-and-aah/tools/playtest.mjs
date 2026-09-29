@@ -3,7 +3,7 @@
 //
 //   node tools/playtest.mjs [--flow=smoke|ui|keys|bots|full] [--viewports=360x740,…] [--seed=S]
 //                           [--shows=N] [--out=DIR] [--json=FILE] [--file=index.html] [--jobs=N]
-//                           [--fonts=stub|live] [--bots-timeout=MS] [--verbose]
+//                           [--fonts=abort|stub|live] [--bots-timeout=MS] [--task-timeout=MS] [--verbose]
 //
 // Loads index.html inside an artifact-like host skeleton (and, in the smoke flow, raw) and checks
 // the page contract, layout, tap targets, focus, the play loop and the test hooks (spec §11.2,
@@ -34,9 +34,13 @@ const USAGE = `Usage: node tools/playtest.mjs [options]
   --json=FILE         JSON report path (default <out>/report.json)
   --file=FILE         page under test (default index.html next to tools/)
   --jobs=N            run up to N (flow × viewport) tasks in parallel (default 1; timings get noisier)
-  --fonts=stub|live   stub: answer Google Fonts with empty CSS (default, deterministic);
-                      live: let the request through (a font failure is never an error)
+  --fonts=MODE        abort: abort every Google Fonts request (default; font loads never stall);
+                      stub: answer them with empty CSS / 404; live: let them through
+                      (a font failure is never an error)
   --bots-timeout=MS   how long to wait for the ?sim=50 summary (default 120000)
+  --task-timeout=MS   hard budget per (flow × viewport) task; overrides the per-flow defaults
+                      (smoke 90 s, ui 180 s, keys 180 s, bots 120 s, ?sim=50 bots-timeout + 30 s).
+                      A task over budget FAILs with its last step and data-ui, and its page is closed
   --verbose           print every check, not only warnings and failures
   -h, --help          show this help`;
 
@@ -44,7 +48,7 @@ function parseArgs(argv) {
   const o = {
     flows: FLOWS.slice(), viewports: '360x740,360x640,375x548,1440x900', seed: 'playtest', shows: 6,
     out: path.join(HERE, 'shots'), json: null, file: path.join(GAME_DIR, 'index.html'), jobs: 1,
-    fonts: 'stub', botsTimeout: 120000, verbose: false,
+    fonts: 'abort', botsTimeout: 120000, taskTimeout: 0, verbose: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -71,8 +75,9 @@ function parseArgs(argv) {
       case 'json': o.json = path.resolve(v()); break;
       case 'file': o.file = path.resolve(v()); break;
       case 'jobs': o.jobs = Math.max(1, parseInt(v(), 10) || 1); break;
-      case 'fonts': o.fonts = v(); if (!['stub', 'live'].includes(o.fonts)) bad('--fonts must be stub or live'); break;
+      case 'fonts': o.fonts = v(); if (!['abort', 'stub', 'live'].includes(o.fonts)) bad('--fonts must be abort, stub or live'); break;
       case 'bots-timeout': o.botsTimeout = Math.max(1000, parseInt(v(), 10) || 120000); break;
+      case 'task-timeout': o.taskTimeout = Math.max(5000, parseInt(v(), 10) || 0); break;
       case 'verbose': o.verbose = true; break;
       default: bad(`unknown option --${k}`);
     }
@@ -286,14 +291,29 @@ class Run {
   constructor(flow, vp, variant) {
     Object.assign(this, { flow, viewport: vp.name, variant, checks: [], shots: [], perf: null, notes: {}, ms: 0 });
     this.label = `${flow} ${vp.name}${variant === 'raw' ? ' raw' : ''}`;
+    this.step = 'start';    // what the flow is doing now (named in a timeout FAIL)
+    this.session = null;    // the open page session, closed by the task guard on timeout
+    this.frozen = false;    // set when the task guard gave up: late checks are dropped
   }
-  add(status, name, detail) { this.checks.push({ status, name, detail: detail === undefined ? '' : detail }); return status === 'PASS'; }
+  add(status, name, detail) {
+    if (this.frozen) return status === 'PASS';
+    this.checks.push({ status, name, detail: detail === undefined ? '' : detail });
+    return status === 'PASS';
+  }
   pass(n, d) { return this.add('PASS', n, d); }
   fail(n, d) { return this.add('FAIL', n, d); }
   warn(n, d) { return this.add('WARN', n, d); }
   info(n, d) { return this.add('INFO', n, d); }
   check(ok, n, d, level = 'FAIL') { return this.add(ok ? 'PASS' : level, n, d); }
   get status() { return this.checks.some((c) => c.status === 'FAIL') ? 'FAIL' : 'PASS'; }
+}
+
+// Every await on the page is bounded: Playwright actions by the context default, page.evaluate by
+// this wrapper (a hung main thread would otherwise block evaluate forever).
+const EVAL_MS = 15000;
+function withTimeout(p, ms, msg) {
+  let t;
+  return Promise.race([p, new Promise((_, rej) => { t = setTimeout(() => rej(new Error(msg)), ms); })]).finally(() => clearTimeout(t));
 }
 
 const isFontUrl = (u) => /^https?:\/\/fonts\.(googleapis|gstatic)\.com\//i.test(u || '');
@@ -325,11 +345,15 @@ async function openSession(browser, run, vp, variant, query) {
   const context = await browser.newContext({
     viewport: { width: vp.w, height: vp.h }, deviceScaleFactor: 1, isMobile: mobile, hasTouch: mobile, reducedMotion: 'no-preference',
   });
+  context.setDefaultTimeout(5000);
+  context.setDefaultNavigationTimeout(10000);
   const s = { context, page: null, errors: [], warnings: 0, consoleTexts: [], external: [], fontIssues: 0, t0: 0 };
+  run.session = s;
   await context.route('**/*', (route) => {
     const u = route.request().url();
     if (/^(file|data|blob|about):/i.test(u)) return route.continue();
     if (isFontUrl(u)) {
+      if (OPTS.fonts === 'abort') return route.abort('failed').catch(() => {});
       if (OPTS.fonts === 'live') return route.continue().catch(() => {});
       if (/fonts\.googleapis\.com/i.test(u)) return route.fulfill({ status: 200, contentType: 'text/css', body: '/* Google Fonts stubbed by playtest (--fonts=stub) */' });
       return route.fulfill({ status: 404, body: '' });
@@ -340,6 +364,10 @@ async function openSession(browser, run, vp, variant, query) {
   await context.addInitScript(pageInit);
   const page = await context.newPage();
   s.page = page;
+  const rawEval = page.evaluate.bind(page);
+  page.evaluate = (fn, arg, ms = EVAL_MS) => withTimeout(rawEval(fn, arg), ms,
+    `page.evaluate got no answer in ${ms} ms during "${run.step}" (main thread hung or busy; last data-ui ${page.__lastUi})`);
+  page.on('crash', () => s.errors.push(`page crashed during "${run.step}"`));
   page.on('pageerror', (e) => s.errors.push(`pageerror: ${e.message}${e.stack ? ' @ ' + String(e.stack).split('\n').slice(1, 2).join('').trim() : ''}`));
   page.on('console', (m) => {
     const type = m.type();
@@ -356,7 +384,7 @@ async function openSession(browser, run, vp, variant, query) {
   const file = variant === 'raw' ? OPTS.file : hostFile;
   s.url = pathToFileURL(file).href + (query ? `?${query}` : '');
   s.t0 = Date.now();
-  await page.goto(s.url, { waitUntil: 'commit' });
+  await page.goto(s.url, { waitUntil: 'commit', timeout: 10000 });
   return s;
 }
 
@@ -369,13 +397,18 @@ async function closeSession(s, run) {
   await s.context.close().catch(() => {});
 }
 
-const ui = (page) => page.evaluate(() => window.__pt && window.__pt.ui());
+// RESULT is a build state (spec §2.4: no tap; the result card stays up until the first build
+// action, and #fire is live), so a show is over at RESULT, BUILD or END.
+const READY = ['BUILD', 'RESULT'];
+const isReady = (u) => READY.includes(u);
+const ui = async (page) => { const u = await page.evaluate(() => window.__pt && window.__pt.ui(), undefined, 5000); page.__lastUi = u; return u; };
 async function waitUi(page, states, timeout) {
   const want = Array.isArray(states) ? states : [states];
   try {
     await page.waitForFunction((w) => w.includes(window.__pt && window.__pt.ui()), want, { timeout, polling: 25 });
     return await ui(page);
   } catch (e) {
+    if (/Target (page, context or browser )?closed|has been closed/i.test(String(e && e.message))) throw e;
     return null;
   }
 }
@@ -389,6 +422,7 @@ async function waitLeft(page, log0, timeout) {
     }, log0, { timeout, polling: 20 });
     return await ui(page);
   } catch (e) {
+    if (/Target (page, context or browser )?closed|has been closed/i.test(String(e && e.message))) throw e;
     return null;
   }
 }
@@ -397,7 +431,7 @@ async function state(page) { return page.evaluate(() => (window.__game && window
 async function shot(s, run, label) {
   const name = `${run.flow}-${run.viewport}-${run.variant}-${label}.png`.replace(/[^\w.-]+/g, '_');
   const p = path.join(OPTS.out, name);
-  try { await s.page.screenshot({ path: p }); run.shots.push(rel(p)); } catch (e) { run.warn(`screenshot ${label}`, e.message); }
+  try { await s.page.screenshot({ path: p, timeout: 8000 }); run.shots.push(rel(p)); } catch (e) { run.warn(`screenshot ${label}`, String(e.message).split('\n')[0]); }
 }
 
 // Dismiss the "Tap to continue" overlay (shown after blur / tab hidden) if it is up.
@@ -486,15 +520,23 @@ function perfSummary(run, fr, label) {
   else run.check(p.p95 <= 34 && p.longestTask <= 100, `frame timing (${label}): p95 ≤ 34 ms, no long task > 100 ms`, txt, 'WARN');
 }
 
-// Click #fire (a real pointer click) and follow the show through RESOLVING → RESULT → BUILD|END.
+// Click #fire (a real pointer click) and follow the show through RESOLVING → RESULT (or END).
+// `end` is RESULT, BUILD or END when the show finished, null when it did not (see `stuck`).
 async function playShow(s, run, { label = null, shots = false, measure = false, during = null, timeout = 30000 } = {}) {
   const page = s.page;
   const before = await state(page);
   const hist0 = before && before.runStats && before.runStats.history ? before.runStats.history.length : null;
   const log0 = await page.evaluate(() => window.__pt.uiLog.length);
   if (measure) await page.evaluate(() => window.__pt.startFrames());
+  run.step = `click #fire (show ${before ? before.show + 1 : '?'})`;
   await page.locator('#fire').click({ timeout: 3000 });
-  const r = await waitLeft(page, log0, 1500);
+  const r = await waitLeft(page, log0, 2000);
+  if (!r) {
+    if (measure) await page.evaluate(() => window.__pt.stopFrames());
+    const u = await ui(page);
+    return { before, after: before, end: null, stuck: `${u} (clicking #fire did not start the show within 2 s)`, log: [], sawResolving: false, sawResult: false, advanced: false };
+  }
+  run.step = `show ${before ? before.show + 1 : '?'} resolving`;
   let sawResolving = r === 'RESOLVING';
   if (sawResolving && shots) {
     // Mid-resolution: wait up to 600 ms into the chain, then shoot if still resolving.
@@ -504,23 +546,25 @@ async function playShow(s, run, { label = null, shots = false, measure = false, 
     else run.warn('mid-RESOLVING screenshot', 'the resolution ended within 600 ms');
   }
   if (sawResolving && during) await during();
-  const res = await waitUi(page, ['RESULT', 'BUILD', 'END'], timeout);
+  const end = await waitUi(page, ['RESULT', 'BUILD', 'END'], timeout);
   if (measure) perfSummary(run, await page.evaluate(() => window.__pt.stopFrames()), label || 'resolution');
-  if (res === 'RESULT' && shots) await shot(s, run, 'RESULT');
-  const end = await waitUi(page, ['BUILD', 'END'], timeout);
+  if (end === 'RESULT' && shots) await shot(s, run, 'RESULT');
   const log = await page.evaluate((i) => window.__pt.uiLog.slice(i).map((x) => x.ui), log0);
   sawResolving = sawResolving || log.includes('RESOLVING');
   const after = await state(page);
   const hist1 = after && after.runStats && after.runStats.history ? after.runStats.history.length : null;
-  return { before, after, end, log, sawResolving, sawResult: log.includes('RESULT') || res === 'RESULT', advanced: hist0 !== null && hist1 === hist0 + 1 };
+  const stuck = end ? null : `${await ui(page)} ${Math.round(timeout / 1000)} s after lighting (ui log: ${log.join(' → ') || 'none'})`;
+  return { before, after, end, stuck, log, sawResolving, sawResult: log.includes('RESULT') || end === 'RESULT', advanced: hist0 !== null && hist1 === hist0 + 1 };
 }
 
 // ---------------------------------------------------------------- flow: smoke
-async function flowSmoke(browser, vp, variant) {
-  const run = new Run('smoke', vp, variant);
+async function flowSmoke(browser, vp, variant, run = new Run('smoke', vp, variant)) {
+  run.step = 'open';
   const s = await openSession(browser, run, vp, variant, `seed=${encodeURIComponent(OPTS.seed)}`);
   try {
+    run.step = 'boot';
     if (!(await boot(s, run, { needHooks: false }))) return run;
+    run.step = 'BUILD layout';
     await dismissTapContinue(s, run);
     await sleep(250);
     await layout(s, run, 'BUILD', { fireStrict: true });
@@ -544,23 +588,42 @@ async function flowSmoke(browser, vp, variant) {
     await sleep(100);
     const show = await playShow(s, run, { shots: true, measure: true, label: 'first show' });
     run.check(show.sawResolving, 'Light the fuse enters RESOLVING', `ui log: ${show.log.join(' → ')}`);
-    run.check(show.sawResult, 'the show reaches RESULT', `ui log: ${show.log.join(' → ')}`, 'WARN');
-    run.check(!!show.end, 'the show returns to BUILD or END', `ended in ${show.end}`);
-    if (show.end === 'BUILD') {
-      await sleep(200);
-      await layout(s, run, 'BUILD after a show', { fireStrict: true });
+    run.check(show.sawResult || show.end === 'END', 'the show reaches RESULT', `ui log: ${show.log.join(' → ')}`, 'WARN');
+    if (!run.check(!!show.end, 'the show ends in RESULT, BUILD or END', show.end ? `ended in ${show.end}` : `stuck in ${show.stuck}`)) {
+      await shot(s, run, 'stuck');
+      return run;
+    }
+    run.check(show.advanced, 'the show is recorded (runStats.history grows by 1)', show.advanced ? '' : `history ${show.before && show.before.runStats ? show.before.runStats.history.length : '?'} → ${show.after && show.after.runStats ? show.after.runStats.history.length : '?'}`);
+    if (isReady(show.end)) {
+      run.step = 'RESULT layout';
+      await sleep(800); // the shop slides up ≥ 600 ms after the slam (spec §2.4)
+      await layout(s, run, `${show.end} after a show`, { fireStrict: true });
+      await shot(s, run, `${show.end}-settled`);
+      if (show.end === 'RESULT') {
+        // The result card stays until the first build action (spec §2.4): one act → BUILD.
+        const acted = await s.page.evaluate(() => {
+          const g = window.__game; const a = g.legalActions().find((x) => x.type !== 'light' && x.type !== 'match');
+          if (!a) return null; g.act(a); return a.type;
+        });
+        if (acted) {
+          const b = await waitUi(s.page, ['BUILD'], 1000);
+          run.check(b === 'BUILD', 'the first build action dismisses RESULT → BUILD', `after ${acted}: data-ui ${b || (await ui(s.page))}`);
+        }
+      }
     }
     // Race to the end: animations off, keep lighting with an empty-handed policy.
+    run.step = 'race to END';
     await s.page.evaluate(() => window.__game && window.__game.skipAnimations && window.__game.skipAnimations(true));
     let shows = 1;
     for (let i = 0; i < 40 && (await ui(s.page)) !== 'END'; i++) {
       await dismissTapContinue(s, run);
       const u = await ui(s.page);
-      if (u !== 'BUILD' && u !== 'RESULT') { await waitUi(s.page, ['BUILD', 'RESULT', 'END'], 10000); continue; }
+      if (!isReady(u)) { await waitUi(s.page, ['BUILD', 'RESULT', 'END'], 10000); continue; }
       const r = await playShow(s, run, { timeout: 15000 });
-      if (!r.end) { run.fail('reach END by lighting every show', `stuck in ${await ui(s.page)} after show ${shows + 1}`); break; }
+      if (!r.end) { run.fail('reach END by lighting every show', `show ${shows + 1} stuck in ${r.stuck}`); break; }
       shows++;
     }
+    run.step = 'END';
     const u = await ui(s.page);
     if (run.check(u === 'END', 'reach END by lighting every show', `after ${shows} shows (data-ui ${u})`)) {
       await sleep(500);

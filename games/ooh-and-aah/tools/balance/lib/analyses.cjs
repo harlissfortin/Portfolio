@@ -678,8 +678,9 @@ def('invariants', 'SIM invariants and consistency (§11.7)', {
     rows.push(row('NaN / Infinity in Applause, Ooh or Aah', 'all', String(tot('nan')), '0', '0', tot('nan') ? 'FAIL' : 'OK'));
     rows.push(row('Applause ≥ 1e300', 'all', String(tot('huge')), '0', '0', tot('huge') ? 'FAIL' : 'OK'));
     rows.push(row('legalActions empty in build', 'all', String(tot('legalEmpty')), '0', '0', tot('legalEmpty') ? 'FAIL' : 'OK'));
-    const tm = Math.max(0, ...all.map(r => r.st.tubesMax));
-    rows.push(row('max tubes', 'all', String(tm), '≤ 6', '6', tm <= 6 ? 'OK' : 'FAIL'));
+    const fin = k => all.map(r => r.st[k]).filter(Number.isFinite); // native playRun records carry no per-step stats
+    const tmA = fin('tubesMax'), tm = tmA.length ? Math.max(...tmA) : NaN;
+    rows.push(row('max tubes', 'all', tmA.length ? String(tm) : 'not recorded', '≤ 6', '6', !tmA.length ? 'N/A' : tm <= 6 ? 'OK' : 'FAIL'));
     rows.push(row('SIM Applause ≠ resolveShow(rack as lit)', 'all', `${tot('mismatch')}/${lights} shows`, '0', '0', tot('mismatch') ? 'FAIL' : 'OK'));
     rows.push(row('pass verdict ≠ (Applause ≥ target)', 'all', `${tot('passMismatch')}/${lights} shows`, '0', '0', tot('passMismatch') ? 'FAIL' : 'OK'));
     const ms = tot('moodSeen');
@@ -694,7 +695,7 @@ def('invariants', 'SIM invariants and consistency (§11.7)', {
       let same = 0, n = 0; for (const r of A2) { const o = A1.find(x => x.seed === r.seed); if (!o) continue; n++; if (key(o) === key(r)) same++; }
       rows.push(row('determinism: same seed + bot → same ' + (A2[0] && A2[0].hash ? 'hashState' : 'trace'), b, `${same}/${n} replays identical`, 'all', 'all', n ? (same === n ? 'OK' : 'FAIL') : 'N/A'));
     }
-    const lm = tot('lightMs') / Math.max(1, lights); const lmax = Math.max(0, ...all.map(r => r.st.lightMsMax));
+    const lm = tot('lightMs') / Math.max(1, lights); const lmA = fin('lightMsMax'), lmax = lmA.length ? Math.max(...lmA) : NaN;
     rows.push(row('step(light) time mean · max', 'all', `${f3(lm)} ms · ${f2(lmax)} ms`, 'mean ≤ 2 ms', '≤ 2 ms', lights ? (lm <= 2 ? 'OK' : 'FAIL') : 'N/A'));
     if (ctx.bench) rows.push(row('resolveShow, 6-tube Countdown (golden #10)', '—', `${f1(ctx.bench.us)} µs · Applause ${fmtN(ctx.bench.applause)}`, '≤ 200 µs', '≈ 17 µs; 274,095', ctx.bench.us <= 200 ? 'OK' : 'FAIL'));
     return { rows, details };

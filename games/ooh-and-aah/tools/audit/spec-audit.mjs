@@ -365,7 +365,8 @@ function parseSpec(text) {
   S.fusions = T('4.5').rows.map((r) => {
     const [a, b] = strip(r['A → B']).split('→').map((x) => x.trim());
     const first = strip(r['First possible with']);
-    return { n: num(r['#']), aName: a, bName: b, a: S.shellId(a), b: S.shellId(b), name: strip(r.Name), params: parseParams(r['Bonus params']), firstRaw: first, lock: /^start/i.test(first) ? null : S.milestoneId(first), _raw: r._raw, _line: r._line };
+    const fm = /\(F(\d+)\)/.exec(first);
+    return { n: num(r['#']), aName: a, bName: b, a: S.shellId(a), b: S.shellId(b), name: strip(r.Name), params: parseParams(r['Bonus params']), firstRaw: first, fest: fm ? +fm[1] : null, lock: /^start/i.test(first) ? null : S.milestoneId(first), _raw: r._raw, _line: r._line };
   });
   for (const f of S.fusions) { f.key = `${f.a}>${f.b}`; if (!f.a || !f.b) S.errors.push(`§4.5 fusion ${f.name}: unresolved shell name`); }
 
@@ -403,8 +404,10 @@ function parseSpec(text) {
       else if (S.shellId(part)) m.unlockShells.push(S.shellId(part));
       else m.unlockOther.push(part);
     }
-    const g = /(\d+)\+?\s*bursts|reaches (\d+)|(\d+)\+ coloured|(\d+) rigs|(\d+) of the 12/.exec(m.condition);
-    m.goal = g ? +(g[1] || g[2] || g[3] || g[4] || g[5]) : null;
+    const g = /(\d+)\+?\s*bursts|reaches (\d+)|(\d+)\+ coloured|(\d+) rigs|(\d+) of the 12|^(\d+) colours up|★(\d)/.exec(m.condition);
+    // Conditions without a number ("Fire any fusion", "Pass Festival 4's Headliner", "Win a run") have goal 1.
+    m.goal = g ? +(g[1] || g[2] || g[3] || g[4] || g[5] || g[6] || g[7]) : 1;
+    m.conditionText = m.condition.replace(/\s*\([^)]*(%|never|novice)[^)]*\)\s*$/, '').trim();
   }
 
   // §4.9 Sponsors
@@ -416,11 +419,17 @@ function parseSpec(text) {
   // §4.13 tooltips
   S.tooltips = T('4.13').rows.map((r) => ({ id: strip(r.Id), trigger: strip(r.Trigger), text: unq(r.Text), _raw: r._raw, _line: r._line }));
 
-  // §4.1 colours
+  // §4.1 colours. The Rainbow's bracket names its shell (Tourbillon), not a chemical; the fusion
+  // accent row has no id and its shape cell reads "Braid / ✦".
   S.colours = T('4.1').rows.map((r) => {
     const nm = /^(\w+)(?:\s*\(([^)]+)\))?/.exec(strip(r.Colour)); const shape = strip(r['Token shape']);
     const hex = (s) => { const m = /#[0-9A-Fa-f]{6}/.exec(s); return m ? m[0].toUpperCase() : null; };
-    return { id: strip(r.Id), name: nm ? nm[1] : strip(r.Colour), chem: nm ? nm[2] : null, glyph: [...shape][0], shape: shape.replace(/^\S+\s*/, ''), role: strip(r.Role), hex: hex(r.Default), hc: hex(r['High-contrast']), _raw: r._raw, _line: r._line };
+    const id = strip(r.Id);
+    if (/^fusion/i.test(strip(r.Colour))) {
+      const parts = shape.split('/').map((x) => x.trim());
+      return { id: 'fusion', name: strip(r.Colour), chem: null, glyph: parts[1] || null, shape: (parts[0] || '').toLowerCase(), role: strip(r.Role), hex: hex(r.Default), hc: hex(r['High-contrast']), _raw: r._raw, _line: r._line };
+    }
+    return { id, name: nm ? nm[1] : strip(r.Colour), chem: id === 'X' ? null : nm ? nm[2] : null, shellName: id === 'X' && nm ? nm[2] : null, glyph: [...shape][0], shape: shape.replace(/^\S+\s*/, ''), role: strip(r.Role), hex: hex(r.Default), hc: hex(r['High-contrast']), _raw: r._raw, _line: r._line };
   });
 
   // §5.1 targets, festival names, bases
