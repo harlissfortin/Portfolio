@@ -33,6 +33,8 @@
 //   --save-records=F   also write every run record as JSON lines, appended as each run finishes
 //                      (a killed pass keeps what it played);  --load-records=F  re-analyse saved
 //                      records without playing (the SIM is still loaded for bench/ceiling)
+//   --drift-sample=K   with --load-records and a SIM other than the one that played them: replay K
+//                      spread records and report how many still play identically (default 40; 0 = off)
 //   --resume=F         like --save-records=F, but first load F and play only the runs it lacks
 //                      (refused if F was played by a different SIM hash or driver)
 //   --shapley-runs=K   human runs whose every show is checked against shapley() (default 30)
@@ -146,11 +148,15 @@ function simDriverUsable() {
 }
 
 // ------------------------------------------------------------------ plan
-const { analyses, jobs } = AN.plan({
+let recordsSimHash = null, driftNote = null; // --load-records: the SIM that played the loaded records (from the file header)
+const planOpts = {
   only: onlyA, skip: skipA, bots: botsF, seeds: SEEDS, sweepSeeds: SWEEP,
   shapleyRuns: intArg('shapley-runs', 30), endlessRuns: intArg('endless-runs', 25), replayRuns: 5,
   xcheckRuns: intArg('xcheck-seeds', 50), xcheck: altAvailable && driver === 'sim', native: !!api.playRun && !args['no-native'],
-});
+};
+const { analyses, jobs } = AN.plan(planOpts);
+let allJobsMemo = null; // every job of an unrestricted plan (for re-timing a loaded record of any config)
+const allJobs = () => allJobsMemo || (allJobsMemo = AN.plan({ ...planOpts, only: null, skip: null, bots: null }).jobs);
 
 // ------------------------------------------------------------------ run
 const t0 = Date.now();
@@ -160,7 +166,7 @@ async function runAll() {
   if (typeof args['load-records'] === 'string') {
     const lines = fs.readFileSync(args['load-records'], 'utf8').split('\n').filter(Boolean);
     let bad = 0;
-    for (const l of lines) { let x; try { x = JSON.parse(l); } catch (e) { bad++; continue; } if (x.header) { if (x.simHash !== simHash) log(`note: records were played by SIM sha1 ${x.simHash}; the loaded SIM is ${simHash}`); continue; } if (x.error) errors.push(x); else records.push(x); }
+    for (const l of lines) { let x; try { x = JSON.parse(l); } catch (e) { bad++; continue; } if (x.header) { recordsSimHash = recordsSimHash || x.simHash; if (x.simHash !== simHash) log(`note: records were played by SIM sha1 ${x.simHash}; the loaded SIM is ${simHash}`); continue; } if (x.error) errors.push(x); else records.push(x); }
     log(`loaded ${records.length} records from ${args['load-records']}${bad ? ` (${bad} unreadable lines skipped)` : ''}`);
     return;
   }
@@ -238,6 +244,28 @@ function analyse() {
   for (const r of records) (R[r.cfg] = R[r.cfg] || []).push(r);
   for (const k of Object.keys(R)) R[k].sort((a, b) => (typeof a.seed === 'number' && typeof b.seed === 'number' ? a.seed - b.seed : 0) || (a.rndSeed || 0) - (b.rndSeed || 0));
   const ctx = { R, errors, driver, hasShapley: !!api.shapley };
+  // Re-time one run in the main thread (after the workers are gone) so the step-time gate can tell a
+  // slow SIM step from a worker that was descheduled on a loaded machine.
+  ctx.retime = (cfg, seed) => {
+    const j = allJobs().find(x => x.cfg === cfg && x.seed === seed); if (!j) return null;
+    const d = j.driver === 'other' ? (driver === 'sim' ? 'spec' : 'sim') : j.driver === 'native' ? driver : driver;
+    return makeRunner(api, { driver: d, simSponsor: SIM_SPONSOR }).playRun({ ...j, probes: {} });
+  };
+  ctx.retimeNote = recordsSimHash && recordsSimHash !== simHash ? `re-timed on SIM sha1 ${simHash}, records played by ${recordsSimHash}` : '';
+  // --load-records against a SIM other than the one that played them: replay a spread sample and say
+  // whether the loaded SIM still plays those runs identically (same hashState), i.e. whether the
+  // loaded report still describes this SIM.
+  const nDrift = args['drift-sample'] !== undefined ? Math.max(0, parseInt(args['drift-sample'], 10) || 0) : 40;
+  if (typeof args['load-records'] === 'string' && recordsSimHash !== simHash && nDrift) {
+    const pool = records.filter(r => r.hash && !/^(xcheck|native|replay|first)\./.test(r.cfg));
+    const step = Math.max(1, Math.floor(pool.length / nDrift)); let same = 0, n = 0; const diffs = [];
+    for (let i = 0; i < pool.length && n < nDrift; i += step) {
+      const r = pool[i]; let x = null; try { x = ctx.retime(r.cfg, r.seed); } catch (e) { diffs.push(`${r.cfg}#${r.seed} threw ${e.message}`); }
+      if (!x) continue; n++; if (x.hash === r.hash) same++; else diffs.push(`${r.cfg}#${r.seed} (${r.won ? 'won' : 'lost at ' + (r.lastS + 1)} → ${x.won ? 'won' : 'lost at ' + (x.lastS + 1)})`);
+    }
+    driftNote = `${same}/${n} sampled records replay identically on SIM sha1 ${simHash}` + (diffs.length ? ` — differ: ${diffs.slice(0, 5).join(', ')}` : '');
+    log('drift check: ' + driftNote);
+  }
   const SB = makeRunner(api, { driver: 'spec' }).SB;
   if (analyses.some(a => a.id === 'loops')) { try { ctx.ceiling = AN.ceiling(api, SB); } catch (e) { ctx.ceilingError = String(e.message); } }
   if (analyses.some(a => a.id === 'invariants')) {
@@ -264,7 +292,8 @@ function render(results, meta) {
   const counts = { OK: 0, FAIL: 0, WARN: 0, INFO: 0, 'N/A': 0 };
   for (const s of results) for (const r of s.rows) counts[r.status] = (counts[r.status] || 0) + 1;
   L.push('OOH × AAH — BALANCE REPORT (spec §12)');
-  L.push(`date ${meta.date} · SIM ${meta.sim} (${meta.simKind}, sha1 ${meta.simHash}) · driver ${meta.driver}`);
+  L.push(`date ${meta.date} · SIM ${meta.sim} (${meta.simKind}, sha1 ${meta.simHash}) · driver ${meta.driver}` + (meta.records ? ` · records ${meta.records}` : ''));
+  if (meta.drift) L.push(`drift check: ${meta.drift}`);
   L.push(`seeds 1..${meta.seeds} (sweeps 1..${meta.sweepSeeds}) · ${meta.runs} runs · ${meta.errors} errors · ${meta.seconds} s on ${meta.workers} workers`);
   L.push(`gates: ${counts.OK} OK · ${counts.FAIL} FAIL · ${counts.WARN} WARN · ${counts.INFO} INFO · ${counts['N/A']} N/A`);
   L.push('OK inside the gate · FAIL outside · WARN outside but within 95% sampling error at this seed count · INFO no gate · N/A not run');
@@ -295,7 +324,9 @@ await runAll();
 const results = analyse();
 const meta = {
   date: new Date().toISOString().replace('T', ' ').slice(0, 16), sim: path.relative(GAME, simFile).startsWith('..') ? simFile : path.relative(GAME, simFile),
-  simKind: api.kind, simHash, driver: driverNote || driver, seeds: SEEDS, sweepSeeds: SWEEP, workers: WORKERS,
+  simKind: api.kind, simHash, driver: driverNote || driver,
+  drift: driftNote,
+  records: typeof args['load-records'] === 'string' ? `loaded from ${path.basename(args['load-records'])} (played by SIM sha1 ${recordsSimHash || 'unknown: file has no header'})` : null, seeds: SEEDS, sweepSeeds: SWEEP, workers: WORKERS,
   runs: records.length, errors: errors.length, seconds: ((Date.now() - t0) / 1000).toFixed(0), analyses: analyses.map(a => a.id), node: process.version,
 };
 const { text, counts, flagged } = render(results, meta);

@@ -700,7 +700,7 @@ const UI_PLAY = (() => {
     E.head.hidden = !hid;
     if (hid) {
       const h = ruleInfo(hid), tonight = view.hs === s;
-      E.head.innerHTML = ruleIcon(hid) + `<span class="hh-name">${esc(h.name)}</span>`;
+      E.head.innerHTML = `<span class="hh-pill">${ruleIcon(hid)}<span class="hh-name">${esc(h.name)}</span></span>`;
       E.head.setAttribute('aria-label', `${tonight ? 'Tonight' : 'Headliner, show ' + (view.hs + 1)}: ${h.name}. ${h.text} Open the card.`);
       E.head.classList.toggle('now', tonight);
     }
@@ -1859,6 +1859,9 @@ const UI_PLAY = (() => {
     on('tip', p => { if (p && p.id) { tip = { id: p.id, own: false }; seenLocal.add(p.id); renderTip(); } });
     on('tipDone', p => { if (tip && !tip.own && (!p || p.id === tip.id)) { tip = null; renderTip(); } });
     if (fnIn(G, 'onKey')) G.onKey('play', onPlayKey);
+    // the fit ladders measure text: measure again once the web fonts arrive (their widths differ from the fallbacks)
+    const fonts = document.fonts;
+    if (fonts) { safe(() => fonts.ready.then(() => render())); if (fnIn(fonts, 'addEventListener')) fonts.addEventListener('loadingdone', () => render()); }
     measure();
     render();
   }

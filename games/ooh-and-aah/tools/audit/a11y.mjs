@@ -554,8 +554,9 @@ function pageHelpers() {
         }
         it.ellipsis = !!ell;
         const host = el.closest('button, [role="button"], a, [aria-label], [title], [role="tab"], label');
-        const lab = host ? ((host.getAttribute('aria-label') || '') + ' ' + (host.getAttribute('title') || '')).toLowerCase() : '';
-        it.fullInName = !!(lab.trim() && lab.includes(text.toLowerCase().slice(0, 40)));
+        const lab = host ? ((host.getAttribute('aria-label') || (host.matches('button, [role="button"], a, [role="tab"], label') ? host.textContent : '') || '') + ' ' + (host.getAttribute('title') || '')).toLowerCase() : '';
+        const norm = s => s.replace(/[\u00ad\u200b-\u200d\u2060\ufeff]/g, '').replace(/\s+/g, ' ').trim().toLowerCase(); // soft hyphens, zero-width chars
+        it.fullInName = !!(lab.trim() && norm(lab).includes(norm(text).slice(0, 40)));
       }
       // spill: text wider than its own box with overflow visible
       if (cs.overflowX === 'visible' && cs.display !== 'inline' && !isSvg) {

@@ -62,22 +62,23 @@
 #hud-show .hs-pips i.hl{width:14px;height:14px;border-radius:0;background:none;box-shadow:none;color:var(--paper-dim)}
 #hud-show .hs-pips i.hl.now{color:var(--aah);filter:drop-shadow(0 0 4px rgba(242,193,78,.55))}
 #hud-show .hs-pips .ic{display:block;width:14px;height:14px}
-#hud .hud-tgt{grid-area:tgt;display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;overflow:hidden}
+#hud .hud-tgt{grid-area:tgt;display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;overflow-x:clip;overflow-y:visible}
 #hud .hud-tgt > *{flex:none}
 #hud .hud-tgt:is([data-fit="1"],[data-fit="2"],[data-fit="3"]) .hh-name{display:none}
-#hud .hud-tgt:is([data-fit="1"],[data-fit="2"],[data-fit="3"]) .hud-head{padding:0 7px}
+#hud .hud-tgt:is([data-fit="1"],[data-fit="2"],[data-fit="3"]) .hh-pill{padding:0 9px}
 #hud .hud-tgt:is([data-fit="2"],[data-fit="3"]) .nx2{display:none}
 #hud .hud-tgt[data-fit="3"] .hud-next{display:none}
 #hud-target{font:400 16px/1 var(--f-ui);color:var(--paper-dim)}
 #hud-target b{font:600 20px/1 var(--f-display);color:var(--paper);margin-left:2px}
 #hud .hud-next{font:400 16px/1 var(--f-ui);color:var(--paper-dim);font-variant-numeric:tabular-nums}
 #hud .hud-next .crown{width:14px;height:14px;vertical-align:-1px;margin-left:1px;fill:var(--aah)}
-#hud .hud-head{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:36px;height:26px;padding:0 10px 0 6px;
-  border-radius:999px;border:1px solid rgba(201,162,39,.55);background:rgba(201,162,39,.12);color:var(--paper);
-  font:700 16px/1 var(--f-ui)}
-#hud .hud-head::before{content:"";position:absolute;inset:-9px -4px}
+/* the Headliner chip: the button is the 44 × 44 hit area, the pill inside it is the visual */
+#hud .hud-head{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:44px;margin:-8px 0;padding:0;
+  border:0;border-radius:14px;background:none;color:var(--paper);font:700 16px/1 var(--f-ui)}
+#hud .hh-pill{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:36px;height:26px;padding:0 10px 0 6px;
+  border-radius:999px;border:1px solid rgba(201,162,39,.55);background:rgba(201,162,39,.12)}
 #hud .hud-head .ic{width:16px;height:16px}
-#hud .hud-head.now{background:var(--brass);color:var(--ink);border-color:var(--brass)}
+#hud .hud-head.now .hh-pill{background:var(--brass);color:var(--ink);border-color:var(--brass)}
 #hud .hud-coins{grid-area:coins}
 #hud .hud-crowd{grid-area:crowd;display:flex;align-items:center;gap:4px}
 #hud-coins,#hud-crowd{font:600 20px/1 var(--f-display);font-variant-numeric:tabular-nums}
@@ -97,16 +98,17 @@
 #play[data-mode="compact"] #hud,#play[data-mode="scroll"] #hud{grid-template-columns:34px minmax(0,1fr) auto auto 34px;
   grid-template-rows:44px;grid-template-areas:"pause tgt coins crowd rain";column-gap:10px}
 #play[data-mode="compact"] #hud .hud-title,#play[data-mode="scroll"] #hud .hud-title{display:none}
-#play[data-mode="compact"] #hud .hud-head,#play[data-mode="scroll"] #hud .hud-head{padding:0 5px;height:24px}
-#play[data-mode="compact"] #hud .hud-head::before,#play[data-mode="scroll"] #hud .hud-head::before{inset:-10px -4px}
+#play[data-mode="compact"] #hud .hh-pill,#play[data-mode="scroll"] #hud .hh-pill{padding:0 5px;height:24px}
 #play[data-mode="compact"] #hud .hh-name,#play[data-mode="scroll"] #hud .hh-name,
 #play[data-mode="compact"] #hud .nx2,#play[data-mode="scroll"] #hud .nx2{display:none}
 
 /* ---------- 3. Sponsor toggle (a 40 px strip with a 44 px hit area) ---------- */
-#sponsor .sp-toggle{position:relative;width:100%;height:40px;display:flex;align-items:center;gap:10px;padding:0 6px 0 12px;
-  border-radius:10px;border:1px solid rgba(201,162,39,.6);background:linear-gradient(90deg,rgba(201,162,39,.16),rgba(11,16,38,.9) 70%);
-  color:var(--paper);font:400 16px/1 var(--f-ui);text-align:left}
-#sponsor .sp-toggle::before{content:"";position:absolute;inset:-2px 0}
+/* the button is the 44 px hit area; its ::before paints the 40 px strip */
+#sponsor .sp-toggle{position:relative;isolation:isolate;width:100%;height:44px;margin:-2px 0;display:flex;align-items:center;gap:10px;
+  padding:0 7px 0 13px;border:0;border-radius:10px;background:none;color:var(--paper);font:400 16px/1 var(--f-ui);text-align:left}
+#sponsor .sp-toggle::before{content:"";position:absolute;inset:2px 0;z-index:-1;border-radius:10px;border:1px solid rgba(201,162,39,.6);
+  background:linear-gradient(90deg,rgba(201,162,39,.16),rgba(11,16,38,.9) 70%)}
+#sponsor .sp-toggle:focus-visible{outline-offset:0}
 #sponsor .sp-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #sponsor .sp-text b{font-weight:700}
 #sponsor:not([data-fit="0"]) .sp-text{display:flex;flex-direction:column;justify-content:center;line-height:18px}
@@ -119,7 +121,7 @@
 #sponsor .sp-knob{width:22px;height:22px;border-radius:50%;background:var(--paper-dim);transition:transform .18s var(--ease-out)}
 #sponsor [aria-pressed="true"] .sp-switch{background:var(--brass);border-color:var(--brass);color:var(--ink)}
 #sponsor [aria-pressed="true"] .sp-knob{background:var(--ink);box-shadow:inset 0 0 0 5px var(--paper)}
-#sponsor [aria-pressed="true"]{border-color:var(--brass);background:linear-gradient(90deg,rgba(201,162,39,.32),rgba(11,16,38,.92) 75%)}
+#sponsor [aria-pressed="true"]::before{border-color:var(--brass);background:linear-gradient(90deg,rgba(201,162,39,.32),rgba(11,16,38,.92) 75%)}
 
 /* ---------- 4. Sky and its DOM overlay ---------- */
 #sky-wrap{position:relative;margin-inline:calc(-1 * var(--gutter));overflow:hidden;container:sky / size;

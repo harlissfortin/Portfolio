@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap');
 
 /* ============================================================
    Ooh × Aah — base layer (lead-owned; see CONTRACT.md)
@@ -13,7 +13,7 @@
   --wood:#3A2A1C; --wood-hi:#5A4330; --brass:#C9A227;
   --paper:#F4EFE6; --paper-dim:#B9B2C7; --line:#2A2F4A;
   --ooh:#FFFFFF; --ooh-bg:rgba(255,255,255,.12); --aah:#F2C14E; --x-ring:#56B4E9;
-  --danger:#E0533D; --ok:#7BD389; --focus:#FFD166;
+  --danger:#F07560; --ok:#7BD389; --focus:#FFD166; /* danger lifted from spec #E0533D to reach 4.5:1 on every surface */
   --surface:rgba(11,16,38,.86); --surface-2:rgba(27,20,64,.92); --scrim:rgba(3,5,12,.72);
   /* colour language (§4.1): shape + colour + pictogram + monogram */
   --c-R:#D55E00; --c-A:#E69F00; --c-G:#009E73; --c-B:#56B4E9; --c-W:#F0F0F0; --c-fusion:#CC79A7;
@@ -32,6 +32,7 @@
     --bg:#070A18; --sky-top:#0B1026; --sky-horizon:#1B1440; --ink:#05070F;
     --wood:#3A2A1C; --wood-hi:#5A4330; --brass:#C9A227;
     --paper:#F4EFE6; --paper-dim:#B9B2C7; --line:#2A2F4A;
+    --ooh:#FFFFFF; --aah:#F2C14E; --danger:#F07560; --ok:#7BD389; --focus:#FFD166;
     color-scheme:dark;
   }
 }
@@ -39,6 +40,7 @@
   --bg:#070A18; --sky-top:#0B1026; --sky-horizon:#1B1440; --ink:#05070F;
   --wood:#3A2A1C; --wood-hi:#5A4330; --brass:#C9A227;
   --paper:#F4EFE6; --paper-dim:#B9B2C7; --line:#2A2F4A;
+  --ooh:#FFFFFF; --aah:#F2C14E; --danger:#F07560; --ok:#7BD389; --focus:#FFD166;
   color-scheme:dark;
 }
 :root[data-contrast="high"]{

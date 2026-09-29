@@ -717,7 +717,19 @@ def('invariants', 'SIM invariants and consistency (§11.7)', {
     const tS = tot('tSteps'), tL = tot('tLight') / Math.max(1, lights), tO = tot('tOver2');
     const tMaxR = all.filter(r => Number.isFinite(r.st.tMax)).sort((a, c) => c.st.tMax - a.st.tMax)[0];
     rows.push(row('step(light) time, fastest of 3, mean', 'all', tS ? `${f3(tL)} ms (${lights} lights)` : 'not recorded', '≤ 2 ms', '≤ 2 ms', tS ? (tL <= 2 ? 'OK' : 'FAIL') : 'N/A'));
-    rows.push(row('any step, fastest of 3: max · share > 2 ms', 'all', tS ? `${f2(tMaxR.st.tMax)} ms (${tMaxR.st.tMaxType}, ${tMaxR.cfg}#${tMaxR.seed}) · ${tO}/${tS}` : 'not recorded', '≤ 2 ms (§11.7)', '≤ 2 ms', !tS ? 'N/A' : tO === 0 ? 'OK' : tO / tS <= 0.001 ? 'WARN' : 'FAIL'));
+    let stepSt = !tS ? 'N/A' : tO === 0 ? 'OK' : tO / tS <= 0.001 ? 'WARN' : 'FAIL', retimed = '';
+    if (tO && ctx.retime) {
+      // replay the (up to 3) runs with the slowest steps in the main thread; a real slow step reproduces
+      const worst = all.filter(r => r.st.tMax > 2).sort((a, c) => c.st.tMax - a.st.tMax).slice(0, 3); const again = [];
+      for (const r of worst) { try { const x = ctx.retime(r.cfg, r.seed); if (x) again.push({ r, x }); } catch (e) { details.push(`re-time of ${r.cfg}#${r.seed} threw: ${e.message}`); } }
+      if (again.length) {
+        const slow = again.filter(o => o.x.st.tMax > 2);
+        retimed = ` · re-timed ${again.length} worst runs in the main thread: max ${again.map(o => f2(o.x.st.tMax)).join(', ')} ms`;
+        stepSt = slow.length ? 'FAIL' : 'OK';
+        details.push(`slow steps re-timed: ${again.map(o => `${o.r.cfg}#${o.r.seed} ${o.r.st.tMaxType} ${f2(o.r.st.tMax)} ms in the worker → ${f2(o.x.st.tMax)} ms (${o.x.st.tMaxType}) replayed`).join(' | ')}${slow.length ? ' — the slow step reproduces: a real SIM cost' : ' — worker outliers were machine noise'}${ctx.retimeNote ? ' (' + ctx.retimeNote + ')' : ''}`);
+      }
+    }
+    rows.push(row('any step, fastest of 3: max · share > 2 ms', 'all', tS ? `${f2(tMaxR.st.tMax)} ms (${tMaxR.st.tMaxType}, ${tMaxR.cfg}#${tMaxR.seed}) · ${tO}/${tS}${retimed}` : 'not recorded', '≤ 2 ms (§11.7)', '≤ 2 ms', stepSt));
     details.push('step timings: "as played" is one wall-clock timing per step inside a worker (noisy on a loaded machine); "fastest of 3" also steps two clones of the same state and keeps the fastest.');
     if (ctx.bench) rows.push(row('resolveShow, 6-tube Countdown (golden #10)', '—', `${f1(ctx.bench.us)} µs · Applause ${fmtN(ctx.bench.applause)}`, '≤ 200 µs', '≈ 17 µs; 274,095', ctx.bench.us <= 200 ? 'OK' : 'FAIL'));
     return { rows, details };
