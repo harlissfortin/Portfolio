@@ -571,7 +571,7 @@ A fusion needs A's tube to fire immediately before B's tube. It applies to B's f
 | showman | Showman | T1 Girandola, T2 Peony (Red), T3 Strobe, T4 empty | 4 | 5 | Sponsors never appear | Packed House |
 
 - Every kit's starting rack passes show 1 in the best arrangement: Apprentice 150, Salvo Crew 270, Chemist 220, Showman 192.
-- The Night Market passes show 1 after buying any one card from its show-0 shop: 0 failures in 1,000 seeds, minimum 210.
+- The Night Market passes show 1 after buying any one card from its show-0 shop: 0 failures in 1,000 seeds. The lowest result is 126 (a non-Red Palm, 42 × 3), still above the target of 100.
 - The keepsake (§7.3), if chosen, starts in Crate slot 1.
 
 ### 4.9 Sponsors (Festival 3+, Twilight and Evening shows)
@@ -818,7 +818,7 @@ The first-ever run is detected when there is no meta save, or `meta.runs == 0`. 
 | 0:10 | The shop before show 2 is curated: Chrysanthemum (Green), Palm (Red), Comet (Green), $3 each. Lifting a card shows canopy arcs and local chips on every tube (t_sky). | The sky (Hang / sees) |
 | 0:10–0:30 | The chips make order matter from minute one; every card's naive placement (the empty T4) is its worst:<br>• Chrysanthemum: T4 = 243; before the Strobe = 303.<br>• Palm: T4 = 189; right after the Red Peony = **378** (+3 Aah).<br>• Comet: T4 = 183; moved to T1 (empty sky) = 273. | Order matters |
 | ~0:35 | Show 2 (target 130): the Palm build scores **378** (×2.9). **Encore!** Crowd +1 +2 → 4. Coins: $5 + $1 interest + $4 = $10 (t_interest). | First compounding; ×6 Aah (t_aah) |
-| ~1:00 | Show 3, **Headwind** (the Goomba; target 150), posted since load. The crowd's mood appears (t_head, t_mood).<br>• A Willow-first rack loses only the Willow's 20 Ooh (the dud still hangs): **276**, Eager.<br>• The chip-suggested Comet opener scores **162**: Hopeful, passes.<br>• Naive T4 racks read Restless (Comet in T4: 126; Palm in T4: 132). One swap fixes them (216 / 264). | Rearranging; the Crowd mood |
+| ~1:00 | Show 3, **Headwind** (the Goomba; target 150), posted since load. The crowd's mood appears (t_head, t_mood).<br>• A Willow-first rack loses only the Willow's 20 Ooh (the dud still hangs): **276**, Eager.<br>• The chip-suggested Comet opener scores **162**: Hopeful, passes.<br>• Naive T4 racks read low: Comet in T4 scores 126 (ratio 0.84, Restless) and Palm in T4 scores 132 (ratio 0.88, Hopeful, under the §3.3 thresholds). One swap fixes them (216 / 264). | Rearranging; the Crowd mood |
 | ~1:30 | First F2 shop: the workshop row appears (rig card and tube button; t_rig, t_tube). Salute, Roman Candle, Heart and Girandola enter the pool. The first-run override always offers a fusion partner: Palm for Palm owners, Salute for Comet owners, and Salute + Comet otherwise. | Workshop; clearers; multi-burst |
 | 1:45–2:30 | Likely first fusion (Thunderclap Comet or Palm Grove): braid banner, "Logbook: Fusions 1/12", milestone First Fusion. | Fusion |
 | ~2:30 | Shows 5–6. The F2 Headliner (Drizzle or The Critic) has been drawn on the rack since show 1. | Posted counter |
@@ -1114,7 +1114,7 @@ Milestones are checked on SIM events during a run. Unlocks apply to the **next**
 |---|---|---|---|
 | `buildOpen {show, target, rules, sponsor, mood}` | L1: the target rolls in; the Headliner chip pulses when k=2; the Sponsor strip slides down. | Soft page chime | — |
 | `moodChanged {bucket, preview}` | L2: the Fire pill cross-fades to the new word; the crowd's arms re-pose (220 ms); the cheer-meter band moves. | Crowd murmur, one step higher for each better bucket (−30 dB) | — |
-| `bought / upgraded / moved / sold / rigInstalled / tubeAdded / matched` | L1: the token pops in (easeOutBack, 180 ms). Upgrade: the twins slam together with a gold ring and a new star pip. Sell: coins fly to the HUD. Tube: a new tube rises from the planks. Match: the shells arc to their new tubes (260 ms, staggered 30 ms). | Pluck pitched by colour (Red G4, Gold A4, Green E4, Blue C5, White D4); coin blip | 8 ms on drop |
+| `bought / upgraded / moved / sold / rigInstalled / tubeAdded / matched / restored` | L1: the token pops in (easeOutBack, 180 ms). Upgrade: the twins slam together with a gold ring and a new star pip. Sell: coins fly to the HUD. Tube: a new tube rises from the planks. Match: the shells arc to their new tubes (260 ms, staggered 30 ms). | Pluck pitched by colour (Red G4, Gold A4, Green E4, Blue C5, White D4); coin blip | 8 ms on drop |
 | `rerolled` | Cards flip, staggered 60 ms | Card shuffle (3 noise clicks) | — |
 | `fuseLit` | The ember crawls along the fuse to the first tube (280 ms) | Hiss (band-passed noise) | — |
 | `launch {tube}` | L2: the tube recoils (squash 1.25 × 0.8, 120 ms). L3: a mortar trail up its column. | Launch thump | — |
@@ -1184,6 +1184,8 @@ Milestones are checked on SIM events during a run. Unlocks apply to the **next**
 ### 11.1 Single-file layout
 
 The target is ≤ 150 KB of unminified, readable code; the hard ceiling is 190 KB.
+
+> **Build decision (supersedes the budget and the tier cuts below):** every tier ships and nothing is minified. The shipped file is about 750 KB unminified (about 225 KB gzipped). `tools/build.mjs` warns above 800 KB and fails above 1,200 KB. See `src/CONTRACT.md` § Size.
 
 ```
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1297,7 +1299,7 @@ hashState(state) → hex                // cyrb128 of canonical JSON (keys sorte
   - A long-press (≥ 450 ms) or ⓘ opens the inspect sheet.
   - Also set `overscroll-behavior:none`, `user-select:none`, `-webkit-touch-callout:none` and a transparent tap highlight, and prevent `contextmenu`.
   - Buffer input for 120 ms during RESOLVING.
-- **Lifecycle:** on `visibilitychange` to hidden, or `blur`: pause, save and suspend audio. Resume only through the "Tap to continue" overlay.
+- **Lifecycle:** when the page becomes hidden (`visibilitychange` to hidden, or `blur` while `document.hidden`): pause, save and suspend audio. Resume only through the "Tap to continue" overlay. Keyboard focus leaving the page (Tab past the last control) is not a reason to pause. *(Build decision: a plain `blur` paused the game on every Tab wrap.)*
 - **In-page bots** (`?sim=N`): run in a Blob Worker built from the RNG, DATA, SIM and BOTS module sources (`Function.prototype.toString`). If a Worker can't be created, fall back to one run per `MessageChannel` tick. Never block the main thread for more than 16 ms.
 
 ### 11.6 Test hooks and URL flags
@@ -1344,7 +1346,7 @@ hashState(state) → hex                // cyrb128 of canonical JSON (keys sorte
 - `legalActions` is non-empty in `build`;
 - the same seed plus the same action log gives the same hash;
 - at most 6 tubes and 400 particles;
-- every `shapley` result sums to the show's Applause within 1e-6 relative.
+- every `shapley` result's shares sum to 1 (100% of the show's Applause) within 1e-6.
 
 ### 11.8 Golden tests (must match exactly)
 
