@@ -107,6 +107,14 @@ const UI_PLAY = (() => {
     lamp: svg(S_('M12 21V10M8 10h8l-1.8-5h-4.4zM9 21h6')),
     fog: svg(S_('M3 8.5h18M5 12.5h14M3 16.5h18')),
     bolt: svg(F_('M13.5 2 5 13.5h5.6L9.5 22 19 9.8h-5.8z')),
+    drop: svg(S_('M12 3.5c3.2 4.6 5.6 7.8 5.6 10.8a5.6 5.6 0 0 1-11.2 0c0-3 2.4-6.2 5.6-10.8z')),
+    hush: svg(F_('M3.5 9.2h4l5-4.4v14.4l-5-4.4h-4z') + S_('M16 9.5l4.5 5M20.5 9.5 16 14.5')),
+    wind: svg(S_('M20.5 12H4.5M10 6.5 4.5 12l5.5 5.5')),
+    ferry: svg(S_('M3 15.5h18l-2.6 4.5H5.6zM6 15.5v-4.2h12v4.2M9.5 11.3V7.5h5v3.8')),
+    wires: svg(S_('M3.5 6.5c7 0 10 11 17 11M3.5 17.5c7 0 10-11 17-11')),
+    rival: svg(S_('M5.5 21V3.5M5.5 4.5h12l-2.5 4 2.5 4h-12')),
+    clock: svg('<circle cx="12" cy="12" r="8.6"/>' + S_('M12 7v5.2l3.4 2')),
+    cut: svg(S_('M2.5 12h8M14.5 12h7M11 7.5l2.6 9')),
     half: '<b class="half-b" aria-hidden="true">½</b>',
     rig: {
       tall: svg(S_('M8 21V6.5l4-3.5 4 3.5V21M12 16V9M9.6 11.2 12 8.8l2.4 2.4')),
@@ -714,7 +722,9 @@ const UI_PLAY = (() => {
     fitLadder(E.hudTgt, 3, () => E.hudTgt.scrollWidth > E.hudTgt.clientWidth + 0.5);
   }
   function ruleIcon(id) {
-    const m = { headwind: ICON.gust, critic: ICON.monocle, streetlights: ICON.lamp, fog: ICON.fog, powercut: ICON.bolt };
+    const m = { headwind: ICON.gust, critic: ICON.monocle, streetlights: ICON.lamp, fog: ICON.fog, powercut: ICON.bolt, drizzle: ICON.drop,
+      ordinance: ICON.hush, windshift: ICON.wind, ferry: ICON.ferry, crossed: ICON.wires, rival: ICON.rival, countdown: ICON.clock,
+      countdown3: ICON.clock, shortfuse: ICON.cut };
     return m[id] || ICON.crown;
   }
 
@@ -728,10 +738,12 @@ const UI_PLAY = (() => {
     const k = SPONSORS[sp.kind] || [cap(sp.kind), 'pays a reward', 'pays a reward'];
     E.spBtn.setAttribute('aria-pressed', sp.accepted ? 'true' : 'false');
     const pay = String(k[1]).replace(/^pays /, '');
-    E.spBtn.querySelector('.sp-text').innerHTML = `<b class="sp-w">Sponsor </b><span class="sp-x">×1.5 </span><span class="sp-a">→ </span><b class="num">${fmt(t)}</b> · <span class="sp-p">pays </span>${esc(pay)}`;
-    // 360 px: drop "×1.5", then "pays", then the arrow, then the word "Sponsor" (all stay in the aria-label and Inspect)
     const tx = E.spBtn.querySelector('.sp-text');
-    fitLadder(E.sponsor, 4, () => overflows(tx));
+    tx.innerHTML = `<span class="sp-l1"><b>Sponsor</b> <span class="sp-x">×1.5 </span>→ <b class="num">${fmt(t)}</b></span>` +
+      `<span class="sp-l2"><span class="sp-dot"> · </span><span class="sp-p">pays </span>${esc(pay)}</span>`;
+    // 360 px: the reward moves to a second line, then "pays" goes, then "×1.5" (all stay in the aria-label and Inspect)
+    const l1 = tx.firstElementChild, l2 = tx.lastElementChild;
+    fitLadder(E.sponsor, 3, () => overflows(tx) || overflows(l1) || overflows(l2));
     E.spBtn.querySelector('.sp-word').textContent = sp.accepted ? 'Accepted' : 'Accept';
     E.spBtn.setAttribute('aria-label', `Sponsor, ${k[0]}: target times 1.5, to ${fmt(t)}; ${k[2]} if you pass. ${sp.accepted ? 'Accepted' : 'Not accepted'}.`);
   }
@@ -866,25 +878,38 @@ const UI_PLAY = (() => {
     }
     return out;
   }
-  // Canopy arc: from the shell being placed (or the selected shell) over the tubes that will see it.
+  // Canopy arcs (§8.4): from where the held shell would fire over the tubes that will see it. Hovering (or
+  // keyboard focus on) a legal drop draws that one; a held card with up to 3 legal tubes and no hover draws
+  // each faintly; a selected racked shell draws its own.
   function renderArc() {
-    let src = null, tubes = null;
-    if (held && hover && hover.zone === 'tube' && targets.has(slotKey(hover))) { const hy = hypoFor(slotKey(hover)); if (hy) { src = hover.i; tubes = hy.state.tubes; } }
-    else if (held && held.kind === 'shell' && held.slot.zone === 'tube') { src = held.slot.i; tubes = S().tubes; }
-    E.skyWrap.classList.toggle('has-arc', src != null);
-    if (src == null || !tubes || !tubes[src] || !tubes[src].shell) { E.arc.innerHTML = ''; E.arc.removeAttribute('data-on'); E.skyWrap.classList.remove('has-arc'); return; }
-    const seen = [...skyRun(tubes, view.rules).seenBy[src]];
+    const arcs = [];
+    const hy = k => hypoFor(k);
+    if (held && hover && hover.zone === 'tube' && targets.has(slotKey(hover))) { const h = hy(slotKey(hover)); if (h) arcs.push({ src: hover.i, tubes: h.state.tubes, strong: true }); }
+    else if (held && held.kind === 'shell' && held.slot.zone === 'tube') arcs.push({ src: held.slot.i, tubes: S().tubes, strong: true });
+    else if (held && held.kind === 'card') {
+      const keys = [...targets.keys()].filter(k => k.startsWith('tube:'));
+      if (keys.length <= 3) keys.forEach(k => { const h = hy(k); if (h) arcs.push({ src: +k.slice(5), tubes: h.state.tubes, strong: keys.length === 1 }); });
+    }
+    const live = arcs.filter(a => a.tubes[a.src] && a.tubes[a.src].shell);
+    E.skyWrap.classList.toggle('has-arc', live.length > 0);
+    if (!live.length) { E.arc.innerHTML = ''; E.arc.removeAttribute('data-on'); return; }
     const rr = E.rack.getBoundingClientRect(), x = j => { const r = E.tubes[j].btn.getBoundingClientRect(); return r.left + r.width / 2 - rr.left; };
-    const col = shellCol(tubes[src].shell), H = 20; // the arc rises from the brass rim into the sky
+    const H = 20; // the arcs rise from the brass rim into the sky
     E.arc.setAttribute('viewBox', `0 0 ${Math.round(rr.width)} ${H + 6}`);
     E.arc.style.width = Math.round(rr.width) + 'px';
-    E.arc.dataset.col = col;
+    E.arc.dataset.col = shellCol(live[0].tubes[live[0].src].shell);
     E.arc.dataset.on = '1';
-    if (!seen.length) { E.arc.innerHTML = `<circle class="src" cx="${x(src)}" cy="${H}" r="4"/>`; return; }
-    const xs = [src, ...seen].map(x), lo = Math.min(...xs), hi = Math.max(...xs);
-    let d = `<path class="span" d="M${lo} ${H} C${lo + 4} 1 ${hi - 4} 1 ${hi} ${H}"/>`;
-    seen.forEach(j => { d += `<circle class="dot" cx="${x(j)}" cy="${H}" r="3.5"/>`; });
-    E.arc.innerHTML = d + `<circle class="src" cx="${x(src)}" cy="${H}" r="5"/>`;
+    let svgOut = '';
+    for (const a of live) {
+      const seen = [...skyRun(a.tubes, view.rules).seenBy[a.src]], cls = a.strong ? '' : ' alt';
+      if (seen.length) {
+        const xs = [a.src, ...seen].map(x), lo = Math.min(...xs), hi = Math.max(...xs);
+        svgOut += `<path class="span${cls}" d="M${lo} ${H} C${lo + 4} 1 ${hi - 4} 1 ${hi} ${H}"/>`;
+        seen.forEach(j => { svgOut += `<circle class="dot${cls}" cx="${x(j)}" cy="${H}" r="3.5"/>`; });
+      }
+      svgOut += `<circle class="src${cls}" cx="${x(a.src)}" cy="${H}" r="${a.strong ? 5 : 4}"/>`;
+    }
+    E.arc.innerHTML = svgOut;
   }
 
   /* ---------- Tools row: Crate ×2 · Undo · Match · Restore · Rehearse ---------- */

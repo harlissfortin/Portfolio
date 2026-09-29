@@ -775,7 +775,18 @@ function pageHelpers() {
     if (!el || !H.shown(el)) return null;
     try { el.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) { /* ignore */ }
     if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
-    return { rect: rectOf(el), style: H.focusStyle(el), stillFocused: document.activeElement === el };
+    const r = rectOf(el), cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    let coveredBy = null, clippedBy = null;
+    if (cx >= 0 && cy >= 0 && cx < innerWidth && cy < innerHeight) { const h = document.elementFromPoint(cx, cy); if (h && h !== el && !el.contains(h)) coveredBy = H.sel(h); }
+    else coveredBy = '(off-screen)';
+    // an outline drawn outside the box is lost if a non-scrolling ancestor clips tightly around it
+    for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+      const cs = getComputedStyle(n); if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue;
+      const b = n.getBoundingClientRect();
+      if (r.x - b.left < 3 || r.y - b.top < 3 || b.right - (r.x + r.w) < 3 || b.bottom - (r.y + r.h) < 3) { clippedBy = H.sel(n); }
+      break;
+    }
+    return { rect: r, style: H.focusStyle(el), stillFocused: document.activeElement === el, coveredBy, clippedBy };
   };
   H.doFocus = id => {
     const el = H.get(id); if (!el) return null;
@@ -1511,7 +1522,7 @@ async function focusVisibleAudit(G, stops, label) {
     if (!f || !f.focused) { verdict = 'WARN'; issues.push({ level: 'WARN', sel: s.sel, msg: 'element refused programmatic focus (could not verify ring)' }); }
     else if (pixelOK) verdict = 'PASS';
     else if (!px && ind.length) verdict = 'PASS';
-    else if (ind.length) { verdict = 'WARN'; issues.push({ level: 'WARN', sel: s.sel, msg: `focus style changes (${ind.join(', ')}) but no visible pixel change (clipped or covered?)`, pixels: px ? px.signal : null }); }
+    else if (ind.length) { verdict = 'WARN'; issues.push({ level: 'WARN', sel: s.sel, msg: `focus style changes (${ind.join(', ')}) but no visible pixel change` + (prep.coveredBy ? ` (the element is covered by ${prep.coveredBy})` : prep.clippedBy ? ` (the ring is drawn outside the box and ${prep.clippedBy} clips it: overflow with <3px room; an inset ring (outline-offset < 0) would show)` : ' (clipped or covered?)'), pixels: px ? px.signal : null }); }
     else { verdict = 'FAIL'; issues.push({ level: 'FAIL', sel: s.sel, msg: 'no visible focus indicator (no outline/box-shadow/border/background change; no pixel change)', pixels: px ? px.signal : null }); }
     if (f && f.focused && !f.fv && verdict !== 'FAIL') issues.push({ level: 'INFO', sel: s.sel, msg: 'did not match :focus-visible on programmatic focus' });
     perStop.push({ sel: s.sel, group: s.group, verdict, style: ind, pixels: px ? { band: px.signal.band, inner: px.signal.inner, noiseBand: px.noise.band } : null });

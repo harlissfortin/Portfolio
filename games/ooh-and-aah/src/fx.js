@@ -843,8 +843,9 @@ const FX = (() => {
   let trauma = 0, hitStop = 0, zoomT0 = -9, zoomDur = 0, zoomX = 0, zoomY = 0;
   const addTrauma = tr => { if (!opt.reducedMotion) trauma = Math.min(1, trauma + 0.15 + 0.08 * tr); };
   function addHitStop(ms, x, y) {
+    if (opt.reducedMotion) return;   // reduced motion: the chain keeps its fixed 300 ms beat, no freeze, no zoom (§9)
     hitStop = Math.max(hitStop, ms / 1000);
-    if (!opt.reducedMotion) { zoomT0 = T; zoomDur = Math.max(0.12, ms / 1000 + 0.08); zoomX = x; zoomY = y; }
+    zoomT0 = T; zoomDur = Math.max(0.12, ms / 1000 + 0.08); zoomX = x; zoomY = y;
   }
 
   /* ---------- live readout mirror: cheer meter, anchors ---------- */
