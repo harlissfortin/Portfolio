@@ -123,9 +123,17 @@ const UI_MENUS = (() => {
   function msInfo(id) {
     const r = find(DATA().MILESTONES, id) || {}, un = r.unlocks || {};
     const list = Array.isArray(un) ? un.map(unlockName) : typeof un === 'string' ? [un]
-      : [...(un.shells || []).map(unlockName), ...(un.kits || []).map(unlockName), ...(un.other || [])];
+      : [...(un.shells || []).map(unlockName), ...(un.kits || []).map(unlockName), ...(un.other || []).map(otherText)];
     return { id, name: r.name || id, goal: Number(r.goal) || 1, metric: r.metric || '', cond: r.text || '', unlocks: list.join(', ') };
   }
+  const otherText = (t) => String(t).replace(/its left half as a silhouette/i, 'its first shell');
+  const hurtsLine = (t) => {
+    t = String(t).trim().replace(/\s*\([^)]*["“][^)]*\)/g, '').replace(/\.$/, '');
+    const c = t.indexOf(': ');
+    if (c > 0 && !/^hurts$/i.test(t.slice(0, c))) t = t.slice(c + 2);
+    const up = t.charAt(0).toUpperCase() + t.slice(1);
+    return /^(hurts|every)\b/i.test(t) || c > 0 ? up + '.' : 'Hurts: ' + t + '.';
+  };
   const msIdFor = (lock) => { const m = rows(DATA().MILESTONES).find((r) => r.id === lock || r.name === lock); return m ? m.id : lock; };
   function isUnlocked(lock) {
     if (!lock || lock === 'start') return true;
@@ -284,7 +292,7 @@ const UI_MENUS = (() => {
     P.seed.closest('.pm-ticket').hidden = !run;
     P.copyNote.textContent = '';
     const tags = [];
-    if (st.kit) tags.push(nameOf('KITS', st.kit));
+    if (st.kit) tags.push('Kit: ' + nameOf('KITS', st.kit));
     if (st.renown) tags.push('Renown ' + st.renown);
     if (st.fairWeather) tags.push('Fair Weather');
     if (st.daily) tags.push('Daily Show');
@@ -351,19 +359,19 @@ const UI_MENUS = (() => {
     const body = h('div', { class: 'm-body st-body' },
       section('Sound',
         switchRow('set-sound', 'sound', 'Sound effects'), volumeRow('set-sound-vol', 'soundVol', 'Effects volume'),
-        switchRow('set-music', 'music', 'Music', 'The river, the pad and the music box.'), volumeRow('set-music-vol', 'musicVol', 'Music volume')),
+        switchRow('set-music', 'music', 'Music', 'River sounds and a music box.'), volumeRow('set-music-vol', 'musicVol', 'Music volume')),
       section('Motion & display',
         radioRow('motion', 'reducedMotion', 'Reduced motion', [['auto', 'Auto'], ['on', 'On'], ['off', 'Off']], ''),
         switchRow('set-contrast', 'highContrast', 'High contrast', 'Pure black sky, white outlines, no glows.'),
         radioRow('speed', 'speed', 'Show speed', [[0.5, '50%'], [0.75, '75%'], [1, '100%']]),
-        switchRow('set-instant', 'instant', 'Instant results', 'Skip the chain animation and show a breakdown list.')),
+        switchRow('set-instant', 'instant', 'Instant results', 'Skip the fireworks and list each burst’s score.')),
       section('Play',
-        radioRow('chips', 'chips', 'Chips while holding a shell', [['full', 'Full'], ['partners', 'Partners only']], 'Partners only shows just the fusion and direction badges.'),
-        switchRow('set-mood', 'mood', 'Crowd mood', 'The Restless / Hopeful / Eager read before you light. No effect on records.'),
+        radioRow('chips', 'chips', 'Hints while holding a shell', [['full', 'Full'], ['partners', 'Fusions only']], 'Full shows what each tube would add. Fusions only shows just the ✦ hints.'),
+        switchRow('set-mood', 'mood', 'Crowd mood', 'Shows Restless, Hopeful or Eager before you light.'),
         vibe ? switchRow('set-haptics', 'haptics', 'Haptics', 'Short buzzes on drops, multipliers and misses.') : null),
       section('Assist',
-        h('div', { class: 'st-assist' }, h('p', { class: 'st-badge' }, icon('umbrella'), 'Labelled assist'),
-          switchRow('set-fair', 'fairWeather', 'Fair Weather', 'Every target ×0.75, and the Midnight Countdown may be relit once. Runs are labelled Fair Weather, milestones still count, Renown does not advance.'),
+        h('div', { class: 'st-assist' },
+          switchRow('set-fair', 'fairWeather', 'Fair Weather', 'Every target ×0.75, and you can relight the Midnight Countdown once. These runs are marked Fair Weather. Milestones still count. Renown does not go up.'),
           S.fairNote)),
       section('Your save',
         h('div', { class: 'st-block' },
@@ -514,14 +522,16 @@ const UI_MENUS = (() => {
   function shellDetail(r, i, state, fest) {
     if (state === 'locked') return dPanel(shellArt(r, i, 80, true), 'Locked shell', [lockHint(r.lock)], [lockLine(r.lock)]);
     if (state === 'unseen') return dPanel(shellArt(r, i, 80, true), 'Not seen yet', ['Festival ' + fest + '+'], ['Offered in shops from Festival ' + fest + ' (' + festName(fest) + ').']);
-    const tags = Array.isArray(r.tags) ? r.tags.join(', ') : r.tags;
+    const TAG_WORDS = { mono: 'one-colour skies', rainbow: 'mixed colours', canopy: 'long-hanging skies', salvo: 'many bursts',
+      thunder: 'clearing the sky', crowd: 'a big Crowd', position: 'a set place in the fire order' };
+    const tags = (Array.isArray(r.tags) ? r.tags : String(r.tags || '').split(/[,·]\s*/)).map((t) => TAG_WORDS[String(t).trim().toLowerCase()]).filter(Boolean).join(', ');
     const partners = rows(DATA().FUSIONS).filter((f) => fusionParts(f).includes(r.id) && (fusionEntry(f) || {}).found)
       .map((f) => { const [a, b] = fusionParts(f); return nameOf('SHELLS', a) + ' → ' + nameOf('SHELLS', b) + ' (' + f.name + ')'; });
     const owned = ((codex().shells || {})[r.id] || {}).owned;
     const lines = [1, 2, 3].map((st) => { const t = shellText(r, st); return t ? h('span', { class: 'lb-star' }, h('b', null, '★' + st + ' '), t) : null; });
     return dPanel(shellArt(r, i, 80, false), r.name,
       [rarityOf(r), '$' + r.cost, 'Hang ' + r.hang + (r.shots > 1 ? ' each' : ''), colName(r.col), 'Festival ' + fest + '+'],
-      [h('span', { class: 'lb-rule' }, lines), r.shots > 1 ? r.shots + ' bursts per shell.' : null, tags ? 'Styles: ' + tags + '.' : null,
+      [h('span', { class: 'lb-rule' }, lines), r.shots > 1 ? r.shots + ' bursts per shell.' : null, tags ? 'Works with: ' + tags + '.' : null,
         partners.length ? 'Fuses: ' + partners.join('; ') + '.' : null, owned ? 'Bought ' + plural(owned, 'time') + '.' : null]);
   }
 
@@ -543,10 +553,10 @@ const UI_MENUS = (() => {
         label: state === 'found' ? r.name + ': ' + an + ' then ' + bn : state === 'seen' ? an + ' then an undiscovered partner' : 'Undiscovered fusion',
         detail: () => state === 'found'
           ? dPanel(art(80), r.name, [an + ' → ' + bn, 'Fired ' + (e.fired || 0) + '×'],
-            ['Fire ' + an + ' immediately before ' + bn + '. ' + bn + '’s first burst gains: ' + (simFn('describeFusion', key) || untemplate(r.text)).replace(/\.$/, '') + '.'])
+            ['Fire ' + an + ' right before ' + bn + '. ' + bn + '’s first burst gains: ' + (simFn('describeFusion', key) || untemplate(r.text)).replace(/\.$/, '') + '.'])
           : dPanel(art(80), cap, [state === 'seen' ? 'Partner unknown' : 'Unknown'],
-            [(state === 'seen' ? 'A shell fired right after a ' + an + ' fuses with it. Try partners in the next tube.'
-              : 'Own the shell that starts this fusion to see its first half.') + later]),
+            [(state === 'seen' ? 'One shell fuses when it fires right after a ' + an + '. Try different shells in the next tube.'
+              : 'Own the shell that starts this fusion to see it here.') + later]),
       };
     });
   }
@@ -560,11 +570,11 @@ const UI_MENUS = (() => {
       return {
         key: r.id, state: seen ? 'found' : 'unseen', cap: seen ? r.name : 'Unseen',
         art: (sz) => glyphArt(r.id, sz, !seen),
-        label: seen ? r.name + ' headliner' : 'Unseen headliner. ' + (win ? 'Posted in ' + win : ''),
+        label: seen ? r.name + ' headliner' : 'Unseen headliner. ' + (win ? 'Appears in ' + win : ''),
         detail: () => seen
           ? dPanel(glyphArt(r.id, 80), r.name, [win, faced ? 'Faced ' + faced + '×' : null],
-            [r.text || r.rule || '', r.counters ? 'Counters: ' + r.counters + '.' : null, r.telegraph ? 'On the rack: ' + r.telegraph + '.' : null])
-          : dPanel(glyphArt(r.id, 80, true), 'Unseen headliner', [win], ['Headliners are posted a festival ahead, so you will see it coming.' + (win ? ' Look for it in ' + win + '.' : '')]),
+            [r.text || r.rule || '', r.counters ? hurtsLine(r.counters) : null, r.telegraph ? 'On the rack: ' + r.telegraph + '.' : null])
+          : dPanel(glyphArt(r.id, 80, true), 'Unseen headliner', [win], ['Each Headliner is announced a festival ahead, so you will see it coming.' + (win ? ' Look for it in ' + win + '.' : '')]),
       };
     });
   }
@@ -618,7 +628,7 @@ const UI_MENUS = (() => {
         key: r.id, state: p.done ? 'found' : 'seen', cap: p.info.name, art: (sz) => ringArt(p, sz),
         label: p.info.name + (p.done ? ', done' : ', ' + p.v + ' of ' + p.info.goal),
         detail: () => dPanel(ringArt(p, 80), p.info.name, [p.done ? 'Done' : 'Best ' + p.v + '/' + p.info.goal],
-          [p.info.cond + '.', p.info.metric && !p.done ? 'Progress: ' + p.info.metric + ' (best in any run).' : null,
+          [p.info.cond + '.', p.info.metric && !p.done ? 'Progress: ' + p.info.metric + (r.id === 'm_logbook' ? '' : ', best in any run') + '.' : null,
             p.info.unlocks ? (p.done ? 'Unlocked: ' : 'Unlocks: ') + p.info.unlocks + '.' : null]),
       };
     });
@@ -632,11 +642,11 @@ const UI_MENUS = (() => {
   };
   const INTRO = {
     shells: 'Every shell you have been offered. Tap one for its rule at each ★.',
-    fusions: 'Fire A immediately before B and B’s first burst fuses. Found fusions show their bonus.',
-    headliners: 'The third show of each festival twists the rules. Each is posted a festival ahead.',
+    fusions: 'Fire a shell right before its partner, and the partner’s first burst fuses. Found fusions show their bonus.',
+    headliners: 'The third show of each festival twists the rules. Each is announced a festival ahead.',
     rigs: 'Tube upgrades. They stay on the tube when shells move.',
     kits: 'Starting racks. Each trades a constraint for a bonus.',
-    milestones: 'Teaching goals. Progress counts in lost runs too, and each unlock applies from your next run.',
+    milestones: 'Goals that unlock new shells and kits. Progress counts in lost runs too. Each unlock starts with your next run.',
   };
 
   function tileArt(e) {

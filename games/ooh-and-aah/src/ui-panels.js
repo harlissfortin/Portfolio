@@ -72,6 +72,13 @@ const UI_PANELS = (() => {
     }
     return String(n);
   }
+  function tubeCount(L) {
+    const n = ((L.snap && L.snap.tubes) || []).length;
+    if (n) return n;
+    let m = 0;
+    for (const ln of L.lines) if (ln.tube != null) m = Math.max(m, ln.tube + 1);
+    return m || 'the last tube';
+  }
   // Aah: 1 decimal below 100, none above (§3.1).
   const fmtA = a => { const r = call(sim(), 'fmtAah', a); return r != null ? String(r) : a < 100 ? (Math.floor(a * 10) / 10).toFixed(1) : fmt(a); };
   const fmtX = f => '×' + String(Math.round(f * 100) / 100);
@@ -163,7 +170,7 @@ const UI_PANELS = (() => {
     // Re-rendering replaces the board: keep keyboard focus on the same control (or the list).
     const fEl = document.activeElement, hadFocus = fEl && boardEl.contains(fEl) ? (fEl.dataset && fEl.dataset.bd) || (fEl.classList.contains('bd-list') ? 'list' : null) : null;
     boardEl.innerHTML = `<div class="bd${showScores ? ' is-scores' : ''}">
-<header class="bd-head"><h2 class="bd-title">The festival year</h2><p class="bd-sub"><span class="num">${esc(sub)}</span>${renown ? `<span class="bd-tag">Renown ${renown}</span>` : ''}${st.fairWeather ? '<span class="bd-tag">Fair Weather</span>' : ''}<button type="button" class="bd-scores" data-bd="scores" aria-pressed="${showScores}">Scores</button></p></header>
+<header class="bd-head"><h2 class="bd-title">Your run</h2><p class="bd-sub"><span class="num">${esc(sub)}</span>${renown ? `<span class="bd-tag">Renown ${renown}</span>` : ''}${st.fairWeather ? '<span class="bd-tag">Fair Weather</span>' : ''}<button type="button" class="bd-scores" data-bd="scores" aria-pressed="${showScores}">Scores</button></p></header>
 <div class="bd-cols" aria-hidden="true"><span>Twilight</span><span>Evening</span><span>Headliner</span></div>
 <ol class="bd-list" tabindex="0" aria-label="Festivals">${rows}</ol>
 <section class="bd-curve" aria-label="Target curve">${spark(st, ctx.hm, shows, s, building)}</section>
@@ -237,11 +244,11 @@ const UI_PANELS = (() => {
     }
     const names = hls.map(h => h.name).join(' + ');
     let mini = '', card = '';
-    if (!hls.length || !posted) mini = `<span class="bd-hlmini is-sealed">${icon('_')}<span>Unposted</span></span>`;
+    if (!hls.length || !posted) mini = `<span class="bd-hlmini is-sealed">${icon('_')}<span>Not announced yet</span></span>`;
     else if (past) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}</span>`;
     else if (f > curF + 1) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}<span>${esc(names)}</span></span>`;
     else card = hls.map(h => `<p class="bd-hl">${icon(h.id, 'pn-ic bd-hl-ic')}<b>${esc(h.name)}</b>${h.rule ? ' ' + esc(h.rule) : ''}</p>`).join('');
-    const aria = `Festival ${f}, ${festName(f)}${now ? ', tonight' : ''}. ${say.join('. ')}. Headliner: ${posted && hls.length ? names : 'not posted yet'}.`;
+    const aria = `Festival ${f}, ${festName(f)}${now ? ', tonight' : ''}. ${say.join('. ')}. Headliner: ${posted && hls.length ? names : 'not announced yet'}.`;
     // "Scores": under the column heads, each show's Applause (✓ / ✗) over its target, then the notes
     // the stamps, rings and icons only mark: sponsored shows, a twist, a past festival's Headliner.
     let more = '';
@@ -380,7 +387,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
         const pass = ev.pass | 0;
         if (pass > L.pass) {
           L.pass = pass;
-          L.lines.push({sep: true, v: 1, text: pass === 1 && L.snap && (L.snap.rules || []).includes('countdown') ? 'The fuse turns: 1 → N' : 'The fuse turns again'});
+          L.lines.push({sep: true, v: 1, text: pass === 1 && L.snap && (L.snap.rules || []).includes('countdown') ? 'The fuse turns: 1 → ' + tubeCount(L) : 'The fuse turns again'});
         }
         if (num(ev.n) != null) L.byN[ev.n] = {id, col: ev.col};
         L.cur = {
@@ -408,10 +415,10 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
         L.cur = null;
         break;
       case 'payout': L.pay = ev; break;
-      case 'rainCheck': L.notes.push({k: 'rain', text: 'Rain check used. Miss again and the season ends.'}); break;
+      case 'rainCheck': L.notes.push({k: 'rain', text: 'Rain check used. Miss one more show and the run ends.'}); break;
       case 'relight': L.notes.push({k: 'relight', text: 'The crowd stays for one more! Relight the Countdown.'}); break;
       case 'runLost': L.notes.push({k: 'lost', text: 'The crowd went home.'}); break;
-      case 'runWon': L.notes.push({k: 'won', text: ev.final ? 'The Afterparty is over. What a year!' : 'Happy New Year!'}); break;
+      case 'runWon': L.notes.push({k: 'won', text: ev.final ? 'The Afterparty is over. What a run!' : 'Happy New Year!'}); break;
       default: break;
     }
   }
@@ -563,7 +570,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
     const sees = seesText(ln, L);
     const chips = flags + (sees ? `<span class="sl-sees">${esc(sees)}</span>` : '') + chipsHTML(ln);
     const tot = `<span class="sl-run num">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
-    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}</span>${isFav ? '<span class="sl-fav">♛ Favourite</span>' : ''}</div>
+    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}</span>${isFav ? '<span class="sl-fav">♛ Crowd Favourite</span>' : ''}</div>
 <div class="sl-chips">${chips}${tot}</div>`;
   }
   function lineLabel(ln, L) {
@@ -590,14 +597,14 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
   function sumHTML(L) {
     let h = '';
     if (L.cheer) {
-      h += `<div class="sl-cheer"><span class="sl-cheer-ic">${crowdIcon}</span><span>Crowd cheer${L.cheer.half ? ' <span class="sl-flag">½ Late Ferry</span>' : ''}</span><span class="chip sl-c">+${fmt(L.cheer.v)} Ooh</span></div>`;
+      h += `<div class="sl-cheer"><span class="sl-cheer-ic">${crowdIcon}</span><span>Crowd${L.cheer.half ? ' <span class="sl-flag">½ Late Ferry</span>' : ''}</span><span class="chip sl-c">+${fmt(L.cheer.v)} Ooh</span></div>`;
     }
     const a = L.app;
     if (a && a.score != null) {
       const t = a.target != null ? a.target : (L.snap && L.snap.target) || 0;
       const ratio = a.ratio != null ? a.ratio : t ? a.score / t : 0;
       const verdict = a.pass
-        ? `<span class="sl-ok">✓ Pass ×${(Math.floor(ratio * 10) / 10).toFixed(1)}</span>${a.encore ? '<span class="sl-encore">Encore!</span>' : ''}`
+        ? `<span class="sl-ok">✓ Pass · ${(Math.floor(ratio * 10) / 10).toFixed(1)}× target</span>${a.encore ? '<span class="sl-encore">Encore!</span>' : ''}`
         : `<span class="sl-bad">✗ ${fmt(a.short != null ? a.short : Math.max(0, t - a.score))} short</span>`;
       h += `<div class="sl-app ${a.pass ? 'is-pass' : 'is-miss'}">
 <div class="sl-app-row"><span class="sl-app-lbl">Applause<span class="sl-app-tg num">target ${fmt(t)}</span></span><span class="sl-app-v"><span class="sl-app-n num">${fmt(a.score)}</span>${a.score >= 1e4 ? `<span class="sl-app-x num">${Math.floor(a.score).toLocaleString('en-US')}</span>` : ''}</span></div>
@@ -615,13 +622,14 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
   function payHTML(p, a) {
     if (!p) return '';
     const bits = [];                                   // [text, kind]: coin | crowd | card | none
-    if (p.base) bits.push([`+$${p.base} show`, 'coin']);
+    if (p.base) bits.push([`+$${p.base} show fee`, 'coin']);
     if (p.interest) bits.push([`+$${p.interest} interest`, 'coin']);
     const sp = p.sponsor && typeof p.sponsor === 'object' ? p.sponsor : null;
     if (sp && sp.coins) bits.push([`+$${sp.coins} sponsor`, 'coin']);
     if (p.shellCoins) bits.push([`+$${p.shellCoins} from shells`, 'coin']);
-    const cr = (p.crowdPass || 0) + (p.crowdHeadliner || 0) + (p.crowdEncore || 0);
-    if (cr) bits.push([`Crowd +${cr}${p.crowdEncore ? ` (Encore +${p.crowdEncore})` : ''}`, 'crowd']);
+    const cr = (p.crowdPass || 0) + (p.crowdHeadliner || 0);
+    if (cr) bits.push([`Crowd +${cr}`, 'crowd']);
+    if (p.crowdEncore) bits.push([`Encore: Crowd +${p.crowdEncore}`, 'crowd']);
     if (sp && sp.crowd) bits.push([`Crowd +${sp.crowd} sponsor`, 'crowd']);
     if (sp && sp.collector) bits.push(['Collector card next shop', 'card']);
     if (!a.pass) bits.unshift(['No payout on a miss', 'none']);
@@ -687,7 +695,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
   function emptyHTML() {
     const again = hist(G && G.state).length > 0;
     return `<p class="sl-empty-h">${again ? 'Light the fuse to fill the log.' : 'The fuse hasn’t been lit yet.'}</p>` +
-      '<p>Every burst of your next show is itemised here: what it saw in the sky, the Ooh and Aah it added, fusions, multipliers, and the crowd’s cheer.</p>' +
+      '<p>Your next show appears here burst by burst: what each burst saw in the sky, the Ooh and Aah it added, fusions, multipliers and the Crowd’s Ooh.</p>' +
       exampleHTML();
   }
   // A worked example line (the spec's own), drawn with the real line markup and labelled part by part.

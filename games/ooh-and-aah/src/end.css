@@ -99,7 +99,8 @@
 
 /* ---------- 7. unlocks ---------- */
 #end .end-ms + .end-ms{margin-top:12px}
-#end .end-ms-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+#end .end-ms-top{margin:0}
+#end .end-ms-p{color:var(--paper-dim);white-space:nowrap}
 #end .end-bar{height:10px;margin-top:6px;border-radius:999px;background:var(--line);overflow:hidden}
 #end .end-bar i{display:block;height:100%;min-width:4px;border-radius:999px;background:var(--aah)}
 :root[data-contrast="high"] #end .end-bar{background:var(--bg);box-shadow:inset 0 0 0 1px var(--line)}

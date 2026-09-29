@@ -567,7 +567,7 @@ const UI_END = (() => {
       case 'buy': return `Buying ${shellName(card)} into tube ${a.to.i + 1}`;
       case 'upgrade': { const s = at(a.to); return `Upgrading ${shellName(s)} to ★${(s && s.star || 1) + 1}`; }
       case 'buyRig': return `Adding the ${rigName((fp.shop && fp.shop.rig && fp.shop.rig.id) || a.rig || 'rig')} to tube ${a.tube + 1}`;
-      case 'move': return a.from.zone === 'crate' ? `Moving ${shellName(at(a.from))} from the Crate into tube ${a.to.i + 1}` : `Benching ${shellName(at(a.from))} in the Crate`;
+      case 'move': return a.from.zone === 'crate' ? `Moving ${shellName(at(a.from))} from the Crate into tube ${a.to.i + 1}` : `Moving ${shellName(at(a.from))} to the Crate`;
       case 'sell': return `Selling ${shellName(at(a.from))}`;
       case 'buyTube': return 'Buying another tube';
       case 'match': return 'Pressing Match';
@@ -585,13 +585,15 @@ const UI_END = (() => {
       pick: b && !kept ? {kind: b.kind, desc: b.desc, applause: b.applause, pass: b.pass, act: b.action, target: off ? baseTarget(v.last.s) : r.target} : null,
       bestReorder: r.bestArrangement || null};
   }
-  /* Display lines for a near-miss result, e.g. "412 short (95%) at Harvest Moon · Late Ferry." */
+  /* Display lines for a near-miss result, e.g. "875 of 1,800 (48%) at Midsummer's Headliner, Short Fuse." */
   function nearMissLines(r) {
     const last = v.last, target = (r && r.target) || last.target, got = r && r.actual != null ? r.actual : last.applause;
-    const short = Math.max(0, target - got), p = target ? Math.floor(got / target * 100) : 0;
+    const p = target ? Math.floor(got / target * 100) : 0;
     const rules = (r && r.rules) || last.rules || [];
-    const where = festName(last.f) + ' · ' + (rules.length ? rules.map(ruleName).join(' + ') : SLOT[last.k] || 'show ' + last.n);
-    const lines = [`${fmt(short)} short (${p}%) at ${where}.`];
+    const fn = festName(last.f), slot = SLOT[last.k] || 'show ' + last.n;
+    const at = /['’]|s$/.test(fn) || /^the /i.test(fn) ? `the ${fn.replace(/^the /i, '')} ${slot}` : `${fn}'s ${slot}`;
+    const where = at + (rules.length ? ', ' + rules.map(ruleName).join(' + ') : '');
+    const lines = [`${fmt(got)} of ${fmt(target)} (${p}%) at ${where}.`];
     const cost = r && (r.cost != null ? r.cost : r.ruleCost);
     if (rules.length && cost > 0) lines.push(`${rules.map(ruleName).join(' + ')} cost you ${fmt(cost)}.`);
     const c = r && (r.pick || r.best || r.candidate);
@@ -701,7 +703,7 @@ const UI_END = (() => {
     if (/restless/i.test(L.mood)) return `The crowd was Restless when you lit show ${L.n}. Keep building until it reads Hopeful or Eager.`;
     if (L.k === 2 && reo && reo.pass) return `Rearranging for ${ruleName(L.rules[0])} would have scored ${fmt(reo.applause)}. Try Rehearse (H) before Headliners.`;
     if (L.sponsored) return 'Sponsors raise the target ×1.5. Take one when the crowd stays Eager with Accept on.';
-    return "Bursts hang for their Hang; readers count what's still up. Build a canopy before you cash it in.";
+    return 'Put long-hanging shells first and the shells that count the sky after them.';
   }
 
   /* ---------- milestones, silhouettes, keepsakes, kits ---------- */
@@ -722,11 +724,24 @@ const UI_END = (() => {
       return {id: x.id, name: x.name || m.name || cap(String(x.id).replace(/^m_/, '')), goal, value, done, unit: m.unit || '', m, d: delta[x.id]};
     }).filter(x => !x.done).sort((a, b) => b.value / b.goal - a.value / a.goal);
   }
+  const MS_DO = {m_fusion: 'fire any fusion', m_busy: 'fire {g} bursts in one show',
+    m_mono: 'fire {g} bursts of one colour in one show, not counting White',
+    m_spectrum: 'have {g} colours up at once, or fire all 4 colours in one show', m_crowd: 'grow the Crowd to {g}',
+    m_triple: 'upgrade a shell to ★{g}', m_headliner: 'pass the Festival 4 Headliner', m_rigger: 'install {g} rigs at once',
+    m_win: 'win a run', m_logbook: 'discover {g} of the 12 fusions'};
+  function msTask(ms) {
+    const t = MS_DO[ms.id] || String(ms.m.text || '').replace(/\.$/, '');
+    return t.charAt(0).toLowerCase() + t.slice(1).split('{g}').join(String(ms.goal));
+  }
+  function msSoFar(ms) {
+    if (ms.goal <= 1 || !(ms.value > 0)) return '';
+    return (ms.id === 'm_logbook' ? ms.value + ' found' : 'best ' + ms.value) + (ms.d > 0 ? ', +' + ms.d + ' this run' : '');
+  }
   function unlocksOf(ms) {
     const u = ms.m.unlocks;
     if (typeof u === 'string') return u;
     if (u && typeof u === 'object' && !Array.isArray(u)) {
-      const nm = (u.shells || []).map(id => shellRow(id).name).concat((u.kits || []).map(id => 'the ' + kitRow(id).name + ' kit'), (u.other || []).map(String));
+      const nm = (u.shells || []).map(id => shellRow(id).name).concat((u.kits || []).map(id => 'the ' + kitRow(id).name + ' kit'), (u.other || []).map(x => /^every fusion shows its/i.test(x) ? 'the first shell of every fusion in the Logbook' : String(x)));
       return andList(nm.map(x => ({Afterparty: 'the Afterparty', 'Daily Show': 'the Daily Show'})[x] || x));
     }
     const names = Array.isArray(u) ? u.map(id => (row(D().SHELLS, id) || row(D().KITS, id) || {name: cap(id)}).name)
@@ -898,7 +913,7 @@ const UI_END = (() => {
      Rendering
   ============================================================ */
   function headline() {
-    if (v.kind === 'win') return {eyebrow: '', main: 'Happy New Year!', sub: 'You fired the whole festival year, right through the Midnight Countdown.'};
+    if (v.kind === 'win') return {eyebrow: '', main: 'Happy New Year!', sub: 'You won the run, right through the Midnight Countdown.'};
     if (v.kind === 'party-win') return {eyebrow: '', main: 'The Afterparty went till dawn!', sub: 'Every Afterparty show cleared. The river town will talk about this for years.'};
     if (v.kind === 'abandoned') { const s = v.st.show || 0; return {eyebrow: 'You called it a night:', main: `${festName(Math.floor(s / 3) + 1)}, show ${s + 1}`}; }
     const where = `${festName(v.last.f)}, show ${v.last.n}`;
@@ -979,7 +994,7 @@ const UI_END = (() => {
     <div class="end-col">
       <section class="end-sec" aria-labelledby="end-h-unl">
         <h3 id="end-h-unl">Next unlocks</h3>
-        ${near.map(m => `<div class="end-ms"><div class="end-ms-top"><b>${esc(m.name)}</b><span class="num">${m.value}/${m.goal}${m.d > 0 ? ` <span class="chip chip-aah">+${m.d}</span>` : ''}</span></div>
+        ${near.map(m => `<div class="end-ms"><p class="end-ms-top"><b>${esc(m.name)}</b>: ${esc(msTask(m))}${msSoFar(m) ? ` <span class="end-ms-p num">(${esc(msSoFar(m))})</span>` : ''}</p>
           <div class="end-bar" role="progressbar" aria-label="${esc(m.name)}" aria-valuemin="0" aria-valuemax="${m.goal}" aria-valuenow="${m.value}"><i style="width:${Math.round(m.value / m.goal * 100)}%"></i></div>
           ${unlocksOf(m) ? `<p class="end-dim">Unlocks ${esc(unlocksOf(m))}</p>` : ''}</div>`).join('') || '<p class="end-dim">Everything is unlocked. Try a higher Renown.</p>'}
         ${sil ? `<div class="end-sil">${tokenHTML({id: sil.id, col: sil.col, sil: !!sil.sil})}<div><b>${esc(sil.label)}</b><p class="end-dim">${esc(sil.hint)}</p></div></div>` : ''}
@@ -1077,12 +1092,12 @@ const UI_END = (() => {
     const ks = kits(), rmax = renownMax(), meta = G.meta || {};
     const daily = has(G, 'canDaily') ? !!call(G, 'canDaily') : ((meta.unlocked || []).includes('m_win') || unlockedAll());
     el.innerHTML = `
-      <button type="button" class="btn" data-end="replay">Replay seed</button>
+      <button type="button" class="btn" data-end="replay">Play this seed again</button>
       <button type="button" class="btn" data-end="logbook">Logbook</button>
       <button type="button" class="btn" data-end="kit" aria-expanded="${picker === 'kit'}" aria-controls="end-pick"${ks.length < 2 ? ' aria-disabled="true"' : ''}>Kit: ${esc(kitRow(sel.kit).name)} <span aria-hidden="true">▾</span></button>
       <button type="button" class="btn" data-end="renown" aria-expanded="${picker === 'renown'}" aria-controls="end-pick"${rmax < 1 ? ' aria-disabled="true"' : ''}>Renown ${sel.renown} <span aria-hidden="true">▾</span></button>
       ${daily ? '<button type="button" class="btn" data-end="daily">Daily Show</button>' : ''}
-      ${ks.length < 2 || rmax < 1 ? `<p class="end-dim end-more-hint">${ks.length < 2 && rmax < 1 ? 'Milestones open more kits; a win opens Renown.' : ks.length < 2 ? 'Milestones open more kits.' : 'Win a season to raise your Renown.'}</p>` : ''}`;
+      ${ks.length < 2 || rmax < 1 ? `<p class="end-dim end-more-hint">${ks.length < 2 && rmax < 1 ? 'Milestones open more kits; a win opens Renown.' : ks.length < 2 ? 'Milestones open more kits.' : 'Win a run to raise your Renown.'}</p>` : ''}`;
     const pk = root.querySelector('#end-pick');
     if (!picker) { pk.hidden = true; pk.innerHTML = ''; return; }
     pk.hidden = false;
@@ -1123,7 +1138,7 @@ const UI_END = (() => {
     if (!plot) { el.innerHTML = '<div class="end-plot"></div>'; plot = el.firstChild; }
     const W = Math.floor(plot.clientWidth || 300), p = paretoSVG(items, W);
     el.innerHTML = `<div class="end-plot">${p.svg}</div><p class="end-cap" id="end-pareto-cap">${esc(paretoCaption(items))}</p>
-      <ul class="end-key">${p.bars.map((b, i) => `<li${i > p.vital || b.key === 'other' ? ' class="dim"' : ''}>${b.key === 'crowd' ? '<b><svg class="end-key-ico" width="22" height="14" viewBox="-11 -9 22 16" aria-hidden="true"><g class="ep-crowd"><circle cx="-6" cy="-3" r="3"/><circle cx="6" cy="-3" r="3"/><circle cx="0" cy="-5" r="3.4"/><path d="M-11,6q5,-8 11,-8q6,0 11,8z"/></g></svg></b>' : b.key === 'other' ? '<b>…</b>' : `<b>${esc(b.mono)}</b>`} ${esc(b.key === 'crowd' ? 'the Crowd' : b.key === 'other' ? 'everything else' : b.name)} <span class="num">${pct(b.share)}</span></li>`).join('')}</ul>`;
+      <ul class="end-key">${p.bars.map((b, i) => `<li${i > p.vital || b.key === 'other' ? ' class="dim"' : ''}>${b.key === 'crowd' ? '<b><svg class="end-key-ico" width="22" height="14" viewBox="-11 -9 22 16" aria-hidden="true"><g class="ep-crowd"><circle cx="-6" cy="-3" r="3"/><circle cx="6" cy="-3" r="3"/><circle cx="0" cy="-5" r="3.4"/><path d="M-11,6q5,-8 11,-8q6,0 11,8z"/></g></svg></b>' : b.key === 'other' ? '<b>…</b>' : `<b>${esc(b.mono)}</b>`} ${esc(b.key === 'crowd' ? 'Crowd' : b.key === 'other' ? 'everything else' : b.name)} <span class="num">${pct(b.share)}</span></li>`).join('')}</ul>`;
   }
 
   /* ---------- async jobs: near-miss → lesson, then Pareto (all within 1 s) ---------- */

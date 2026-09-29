@@ -93,6 +93,8 @@
 #board .bd-hlmini span{overflow:hidden;text-overflow:ellipsis}
 #board .bd-hlmini .pn-ic{color:var(--brass)}
 #board .bd-hlmini.is-sealed .pn-ic{color:var(--paper-dim)}
+#board .bd-name:has(.is-sealed){flex-wrap:wrap;row-gap:0}
+#board .bd-hlmini.is-sealed{flex:none}
 #board .bd-stamps{flex:none;display:inline-flex;gap:2px;margin-left:6px}
 #board .bd-stamp{width:22px;height:22px;border-radius:5px;display:grid;place-items:center;font:700 var(--t-xs)/1 var(--f-ui);
   color:var(--paper-dim);background:var(--pn-soft)}

@@ -100,8 +100,6 @@
 /* the labelled assist */
 #settings .st-assist{padding:6px;border:1px dashed var(--x-ring);border-radius:12px;background:rgba(86,180,233,.06)}
 #settings .st-assist .st-row{margin:0;background:transparent}
-#settings .st-badge{display:inline-flex;align-items:center;gap:6px;margin:4px 8px 0;font:700 var(--t-xs)/1.2 var(--f-ui);
-  letter-spacing:.12em;text-transform:uppercase;color:var(--x-ring)}
 #settings .st-warn{display:block;padding:0 12px 8px;color:var(--aah)}
 /* save tools */
 #settings .st-block{display:grid;justify-items:start;gap:8px;margin:0 0 8px;padding:12px;border-radius:var(--radius);background:rgba(255,255,255,.035)}
