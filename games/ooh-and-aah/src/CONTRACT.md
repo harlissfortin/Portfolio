@@ -8,10 +8,10 @@ The game ships as one HTML file (`index.html`) assembled by `tools/build.mjs` fr
 
 1. `src/head.html`: the two metas and `<title>Ooh × Aah</title>` (spec §11.2).
 2. `<style>` + the CSS files in this order + `</style>`:
-   `base.css`, `play.css`, `panels.css`, `end.css`, `menus.css`.
+   `base.css`, `play.css`, `panels.css`, `end.css`, `menus.css`, `tutorial.css`.
 3. `src/body.html`: the static DOM skeleton (empty containers; each module renders into its own container).
 4. `<script>` + the JS files in this order, then the line `GAME.boot();` + `</script>`:
-   `sim.js`, `audio.js`, `fx.js`, `core.js`, `ui-play.js`, `ui-panels.js`, `ui-end.js`, `ui-menus.js`.
+   `sim.js`, `audio.js`, `fx.js`, `core.js`, `ui-play.js`, `ui-panels.js`, `ui-end.js`, `ui-menus.js`, `ui-tutorial.js`.
 
 There is one script tag and one shared global scope. Each JS module defines exactly one global const (below) and nothing else at top level.
 
@@ -37,6 +37,7 @@ Completeness and clarity win over bytes:
 | `ui-panels.js`, `panels.css` | panels | `UI_PANELS` |
 | `ui-end.js`, `end.css` | end | `UI_END` |
 | `ui-menus.js`, `menus.css` | menus | `UI_MENUS` |
+| `ui-tutorial.js`, `tutorial.css` | tutorial | `UI_TUTORIAL` |
 
 Edit only the files you own. If you need something from another module that is not in this contract, code against the most natural extension of the contract, guard it (`typeof X.fn === 'function'`), and list it in your report so the integrator can wire it.
 
@@ -175,3 +176,42 @@ Each defines `const UI_X = (() => { …; return { init(game), … } })()`. `GAME
 - shared primitives: `.btn`, `.btn-primary`, `.chip`, `.overlay`, `.sheet`, `.card-surface`, `.vh`, focus rings, and reduced motion.
 
 Module CSS files scope every selector under their own containers and use only the tokens from `base.css`; they never redefine tokens.
+
+## Tutorial ("Rehearsal Night")
+
+An optional, interactive tutorial of about 2 minutes. The player plays scripted mini-shows that cannot be failed, with one instruction at a time. It is never a gate: the game still opens straight into play.
+
+**Entry points:**
+- A dismissible offer on the first launch ("New here? Play the 2-minute tutorial"). It is shown while `meta.tutorial` is unset, and dismissing it sets `meta.tutorial = 'skipped'`.
+- A "Play the tutorial" button in Help.
+- A "Tutorial" button in Pause.
+
+**Rules while it runs:**
+- It never writes a run save, meta progress, milestones, the Logbook or records, and it queues no first-run tips or toasts.
+- The run in progress is set aside in memory and restored on exit. Exit comes from finishing, Skip or Esc.
+- Finishing sets `meta.tutorial = 'done'` and offers "Start your first run" (a fresh first run) or "Back to my run".
+
+**SIM (`sim.js`):**
+- `DATA.TUTORIAL` is an array of step definitions `{id, title, text, expect}`, one per step, with player-facing text in plain words. `expect` is what completes the step:
+  - `{type:'light'}` / `{type:'result'}`
+  - `{type:'buy', card, tube}`
+  - `{type:'move', to}`
+  - `{type:'upgrade', tube}`
+  - `{type:'fusion', key}`
+  - `{type:'next'}` (the player taps Next)
+- `tutorialState(i) → State` builds the exact scripted state for step `i`: rack, Crate, shop cards, coins, Crowd, show index and rules. Every state is a valid SIM state, so `step`, `legalActions`, `previewChips` and `resolveShow` work on it unchanged.
+- `tools/test-sim.mjs` plays each step's intended action on `tutorialState(i)` and asserts the expected outcome. For example, the fusion step's swap-in really fuses, and no step can fail its target.
+
+**Core (`core.js`):**
+- `GAME.startTutorial()`, `GAME.tutorialGoto(i)` (loads `OOH.tutorialState(i)` as the live state, ui BUILD) and `GAME.endTutorial({startRun})`.
+- `GAME.tutorial` is `null` or `{step, total}`.
+- It emits `'tutorial'` `{active, step, def}` on every change.
+- While the tutorial is active, the show flow works normally (light → FX → RESULT) but never reaches END, and all persistence, meta, tips and toasts are suppressed. `announce()` still works for screen readers.
+
+**UI (`ui-tutorial.js`, `tutorial.css`):**
+- It renders into `#tutorial` a coach-mark layer: a callout with the step title and text, progress dots (3 / 8), Next when `expect.type === 'next'`, and "Skip tutorial".
+- It spotlights the step's target elements (by the DOM ids above) and dims everything else.
+- It gates input: pointer and key events outside the allowed targets and its own controls are swallowed in the capture phase, while Esc (skip) always works.
+- It advances when a GAME event matches `expect`.
+- It is keyboard-operable, announces each step via `announce()`, moves focus to the target, and honours reduced motion.
+- It also renders the first-launch offer. `UI_MENUS` adds the Help and Pause entries (calling `GAME.startTutorial()`).

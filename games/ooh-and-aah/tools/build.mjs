@@ -22,8 +22,8 @@ const GAME_DIR = path.resolve(HERE, '..');
 // ---------------------------------------------------------------- contract
 const HEAD = 'head.html';
 const BODY = 'body.html';
-const CSS = ['base.css', 'play.css', 'panels.css', 'end.css', 'menus.css'];
-const JS = ['sim.js', 'audio.js', 'fx.js', 'core.js', 'ui-play.js', 'ui-panels.js', 'ui-end.js', 'ui-menus.js'];
+const CSS = ['base.css', 'play.css', 'panels.css', 'end.css', 'menus.css', 'tutorial.css'];
+const JS = ['sim.js', 'audio.js', 'fx.js', 'core.js', 'ui-play.js', 'ui-panels.js', 'ui-end.js', 'ui-menus.js', 'ui-tutorial.js'];
 const BOOT = 'GAME.boot();';
 const GLOBALS = {
   'sim.js': ['OohSim', 'OOH'],
@@ -34,6 +34,7 @@ const GLOBALS = {
   'ui-panels.js': ['UI_PANELS'],
   'ui-end.js': ['UI_END'],
   'ui-menus.js': ['UI_MENUS'],
+  'ui-tutorial.js': ['UI_TUTORIAL'],
 };
 const KIB = 1024;
 const WARN_KB = 900; // lead override of spec §11.1 (CONTRACT.md "Size")
