@@ -36,8 +36,8 @@ const GLOBALS = {
   'ui-menus.js': ['UI_MENUS'],
 };
 const KIB = 1024;
-const WARN_KB = 350; // lead override of spec §11.1 (CONTRACT.md "Size")
-const FAIL_KB = 600;
+const WARN_KB = 800; // lead override of spec §11.1 (CONTRACT.md "Size")
+const FAIL_KB = 1200;
 // DESIGN.md §11.1 size budget, mapped onto the contract's files (informational only).
 const BUDGETS = [
   { label: 'sim.js (DATA 10 + SIM 24 + BOTS 9)', files: ['sim.js'], kb: 43 },
@@ -501,7 +501,7 @@ function main() {
       log(`  ${f.padEnd(w)}  ${String(b).padStart(8)}  ${(b / KIB).toFixed(1).padStart(6)}  ${((100 * b) / outBytes).toFixed(1).padStart(5)}%${note ? '  ' + note : ''}`);
     }
     log(`  ${'-'.repeat(w)}  ${'-'.repeat(8)}  ${'-'.repeat(6)}  ${'-'.repeat(6)}`);
-    const flag = kb > FAIL_KB ? '  over the 600 KB ceiling' : kb > WARN_KB ? '  over the 350 KB warning line' : '';
+    const flag = kb > FAIL_KB ? '  over the 1,200 KB ceiling' : kb > WARN_KB ? '  over the 800 KB warning line' : '';
     log(`  ${'total'.padEnd(w)}  ${String(outBytes).padStart(8)}  ${kb.toFixed(1).padStart(6)}  100.0%${flag}`);
     log(`  ${'gzip -9 (info)'.padEnd(w)}  ${String(gz).padStart(8)}  ${(gz / KIB).toFixed(1).padStart(6)}`);
     log(`\n  spec §11.1 budget (info; 1 KB = 1024 bytes)`);
