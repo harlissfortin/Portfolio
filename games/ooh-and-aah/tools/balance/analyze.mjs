@@ -294,7 +294,7 @@ function render(results, meta) {
   L.push('OOH × AAH — BALANCE REPORT (spec §12)');
   L.push(`date ${meta.date} · SIM ${meta.sim} (${meta.simKind}, sha1 ${meta.simHash}) · driver ${meta.driver}` + (meta.records ? ` · records ${meta.records}` : ''));
   if (meta.drift) L.push(`drift check: ${meta.drift}`);
-  L.push(`seeds 1..${meta.seeds} (sweeps 1..${meta.sweepSeeds}) · ${meta.runs} runs · ${meta.errors} errors · ${meta.seconds} s on ${meta.workers} workers`);
+  L.push(`seeds 1..${meta.seeds} (sweeps 1..${meta.sweepSeeds}) · ${meta.runs} runs · ${meta.errors} errors · ` + (meta.records ? `analysed in ${meta.seconds} s (no runs played)` : `${meta.seconds} s on ${meta.workers} workers`));
   L.push(`gates: ${counts.OK} OK · ${counts.FAIL} FAIL · ${counts.WARN} WARN · ${counts.INFO} INFO · ${counts['N/A']} N/A`);
   L.push('OK inside the gate · FAIL outside · WARN outside but within 95% sampling error at this seed count · INFO no gate · N/A not run');
   L.push('Reference = spec v1.1 values (1,000 seeds unless noted).');
