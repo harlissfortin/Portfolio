@@ -35,6 +35,10 @@ function configs() {
   add('first.human', 'human', { firstRun: true, unlocked: [] }, 'human', 'noise40');
   add('replay.human', 'human', {}, 'human', 'replay');
   add('replay.oracle', 'oracle', {}, 'oracle', 'replay');
+  for (const b of ['greedy', 'novice', 'human', 'oracle']) {
+    add('xcheck.' + b, b, {}, b, 'xcheck'); C['xcheck.' + b].driver = 'other';
+    add('native.' + b, b, {}, b, 'xcheck'); C['native.' + b].driver = 'native';
+  }
   return C;
 }
 
@@ -265,7 +269,8 @@ def('headcost', 'Headliner cost (oracle; best-arranged score ÷ best with no rul
     if (!ent.length) rows.push(na('Headliner cost p10', 'oracle', '≥ 0.4', 'lowest p10 0.51 (Power Cut)', 'no probe data'));
     for (const [k, v] of ent) {
       const b = v.map(x => x.best), kp = v.map(x => x.kept), m = v.map(x => x.match); const rf = HCREF[k];
-      rows.push(row('cost: ' + k, 'oracle', `p50 ${f2(q(b, 0.5))} · p10 ${f2(q(b, 0.1))} (n=${v.length})`, 'p10 ≥ 0.4', rf ? `p50 ${f2(rf[0])} · p10 ${f2(rf[1])}` : '-', valStatus(q(b, 0.1), 0.4, Infinity)));
+      let st = valStatus(q(b, 0.1), 0.4, Infinity); if (st === 'FAIL' && v.length < 30) st = 'WARN';
+      rows.push(row('cost: ' + k, 'oracle', `p50 ${f2(q(b, 0.5))} · p10 ${f2(q(b, 0.1))} (n=${v.length})`, 'p10 ≥ 0.4', rf ? `p50 ${f2(rf[0])} · p10 ${f2(rf[1])}` : '-', st));
       details.push(`${k.padEnd(12)} n=${String(v.length).padStart(4)} best p50 ${f2(q(b, 0.5))} p10 ${f2(q(b, 0.1))} | plain order kept p50 ${f2(q(kp, 0.5))} p10 ${f2(q(kp, 0.1))} | kept + Match p50 ${f2(q(m, 0.5))}${rf ? `   (v1.1 kept ${f2(rf[2])}/${f2(rf[3])}, Match ${f2(rf[4])})` : ''}`);
     }
     return { rows, details };
@@ -416,13 +421,14 @@ def('renown', 'Renown ladder (cumulative)', {
       if (lv.slice(1).every(x => !x)) { rows.push(na('Renown ladder', b, 'non-increasing ±5', '')); continue; }
       const seeds = lv.filter(Boolean).map(Rs => new Set(Rs.map(r => r.seed)));
       const inter = s => seeds.every(x => x.has(s));
-      const W = lv.map(Rs => (Rs ? winPct(Rs.filter(r => inter(r.seed))) : NaN));
-      const n = lv[1] ? lv[1].filter(r => inter(r.seed)).length : 0;
+      const sub = lv.map(Rs => (Rs ? Rs.filter(r => inter(r.seed)) : null));
+      const W = sub.map(Rs => (Rs ? winPct(Rs) : NaN));
+      const n = sub[1] ? sub[1].length : 0;
       for (let r = 1; r <= 8; r++) {
         const prev = W[r - 1], cur = W[r];
-        let st = !Number.isFinite(cur) ? 'N/A' : Number.isFinite(prev) && cur > prev + 5 ? 'FAIL' : 'OK';
+        let st = !Number.isFinite(cur) ? 'N/A' : !Number.isFinite(prev) ? 'OK' : diffStatus(cur - prev, seDiff(wins(sub[r]), sub[r].length, wins(sub[r - 1]), sub[r - 1].length), -Infinity, 5);
         let gate = `≤ R${r - 1} + 5`;
-        if (r === 8) { const lo = b === 'oracle' ? 10 : 3; gate += ` and ≥ ${lo}%`; if (Number.isFinite(cur) && cur < lo) st = 'FAIL'; }
+        if (r === 8) { const lo = b === 'oracle' ? 10 : 3; gate += ` and ≥ ${lo}%`; if (Number.isFinite(cur)) { const s8 = propStatus(wins(sub[8]), sub[8].length, lo, 100); if (s8 === 'FAIL' || (s8 === 'WARN' && st === 'OK')) st = s8; } }
         rows.push(row(`Renown ${r} win %`, b, Number.isFinite(cur) ? `${f1(cur)} (R${r - 1} ${f1(prev)})` : 'not run', gate, f1(RENREF[b][r]), st));
       }
       details.push(`${b.padEnd(6)} R0–R8 (n=${n} common seeds): ${W.map(f1).join(' · ')}   (v1.1: ${RENREF[b].map(f1).join(' · ')})`);
@@ -608,44 +614,48 @@ def('firstrun', 'First run (greedy-mood proxy) and the curated seed', {
   },
 });
 
-function parseShapley(res, occ, n) {
+function parseShapley(res) {
   if (!res || typeof res !== 'object') return null;
-  const tubes = {}; let crowd = 0;
-  if (Array.isArray(res)) { res.forEach((v, i) => { if (Number.isFinite(v)) tubes[i] = v; }); }
-  else if (Array.isArray(res.tubes)) { res.tubes.forEach((v, i) => { const x = typeof v === 'object' && v ? v.value ?? v.share ?? v.v : v; if (Number.isFinite(x)) tubes[i] = x; }); crowd = +(res.crowd ?? 0) || 0; }
-  else { for (const [k, v] of Object.entries(res)) { if (/^\d+$/.test(k) && Number.isFinite(+v)) tubes[+k] = +v; else if (k.toLowerCase() === 'crowd' && Number.isFinite(+v)) crowd = +v; } }
-  if (!Object.keys(tubes).length && !crowd) return null;
-  return { tubes, crowd };
+  const top = res.top || res; const values = res.values || null;
+  const grab = o => { const tubes = {}; let crowd = 0, any = false;
+    if (Array.isArray(o)) o.forEach((v, i) => { if (Number.isFinite(v)) { tubes[i] = v; any = true; } });
+    else if (o && Array.isArray(o.tubes)) { o.tubes.forEach((v, i) => { const x = typeof v === 'object' && v ? v.value ?? v.share ?? v.v : v; if (Number.isFinite(x)) { tubes[i] = x; any = true; } }); crowd = +(o.crowd ?? 0) || 0; }
+    else if (o) for (const [k, v] of Object.entries(o)) { if (/^\d+$/.test(k) && Number.isFinite(+v)) { tubes[+k] = +v; any = true; } else if (k.toLowerCase() === 'crowd' && Number.isFinite(+v)) { crowd = +v; any = true; } }
+    return any ? { tubes, crowd, sum: Object.values(tubes).reduce((a, b) => a + b, 0) + crowd } : null; };
+  return { top: grab(top), values: values ? grab(values) : null, applause: res.applause ?? null };
 }
 def('shapley', 'Shapley attribution (end-screen Pareto chart)', {
   needs: ['human'], probes: { human: ['shap'] },
   run(ctx) {
     const rows = [], details = [];
     const H = ctx.R.human; const shows = H ? H.flatMap(r => r.shap || []) : [];
-    if (!shows.length) return { rows: [na('shapley sums to Applause', 'human', '100% within 1e-6', 'exact', ctx.hasShapley ? 'no probe data' : 'SIM has no shapley()')], details };
-    let fmtKind = null, sumOk = 0, agree = 0, neg = 0, errs = 0, parsed = 0; const ms = [], top = [];
+    if (!shows.length) return { rows: [na('shapley values sum to the Applause', 'human', 'within 1e-6', 'exact', ctx.hasShapley ? 'no probe data' : 'SIM has no shapley()')], details };
+    let kind = null, sumOk = 0, sumN = 0, agree = 0, neg = 0, errs = 0, parsed = 0, shareOk = 0; const ms = [], top = [];
+    const close = (a, b, scale) => Math.abs(a - b) <= 1e-6 * Math.max(1, Math.abs(scale));
     for (const x of shows) {
       if (x.err) { errs++; continue; }
-      const P = parseShapley(x.sim); if (!P) continue; parsed++;
+      const P = parseShapley(x.sim); if (!P || !P.top) continue; parsed++;
       const own = x.own; const full = own.full;
-      const simSum = Object.values(P.tubes).reduce((a, b) => a + b, 0) + P.crowd;
-      const isVal = Math.abs(simSum - x.a) <= 1e-6 * Math.max(1, Math.abs(x.a)) + 1e-9;
-      const isShare = !isVal && Math.abs(simSum - 1) <= 1e-6;
-      if (!fmtKind) fmtKind = isVal ? 'values' : isShare ? 'shares' : 'unknown';
-      if (isVal || isShare) sumOk++;
-      // compare with the harness's exact Shapley (as values, or normalised to shares)
-      const ownVals = {}; own.occ.forEach((ti, k) => { ownVals[ti] = own.phi[k]; }); const ownCrowd = own.phi[own.phi.length - 1];
-      let maxRel = 0; const scale = isShare ? 1 : Math.max(1, Math.abs(full));
-      const conv = v => (isShare ? v / (full || 1) : v);
-      for (const ti of own.occ) maxRel = Math.max(maxRel, Math.abs(conv(ownVals[ti]) - (P.tubes[ti] || 0)) / scale);
-      maxRel = Math.max(maxRel, Math.abs(conv(ownCrowd) - P.crowd) / scale);
-      if (maxRel <= 1e-6) agree++;
+      const ov = {}; own.occ.forEach((ti, k) => { ov[ti] = own.phi[k]; }); ov.crowd = own.phi[own.phi.length - 1];
+      const pos = own.phi.reduce((a, v) => a + Math.max(0, v), 0) || 1;
+      const osh = {}; for (const k of Object.keys(ov)) osh[k] = Math.max(0, ov[k]) / pos;
+      // which form did the SIM return at top level: raw values (sum = Applause) or shares (sum = 1)?
+      const topIsVal = close(P.top.sum, x.a, x.a), topIsShare = !topIsVal && close(P.top.sum, 1, 1);
+      if (!kind) kind = topIsVal ? 'values' : topIsShare ? 'shares' + (P.values ? ' (+ .values)' : '') : 'unknown';
+      const V = topIsVal ? P.top : P.values;
+      if (V) { sumN++; if (close(V.sum, x.a, x.a)) sumOk++; }
+      if (topIsShare) shareOk++;
+      let ok = true;
+      if (V) { for (const ti of own.occ) if (!close(V.tubes[ti] || 0, ov[ti], full)) ok = false; if (!close(V.crowd, ov.crowd, full)) ok = false; }
+      if (topIsShare) { for (const ti of own.occ) if (!close(P.top.tubes[ti] || 0, osh[ti], 1)) ok = false; if (!close(P.top.crowd, osh.crowd, 1)) ok = false; }
+      if (!V && !topIsShare) ok = false;
+      if (ok) agree++;
       if (own.phi.some(v => v < -1e-9)) neg++;
-      ms.push(x.simMs);
-      const pos = own.phi.map(v => Math.max(0, v)); const tot = pos.reduce((a, b) => a + b, 0) || 1; top.push(Math.max(...pos) / tot);
+      ms.push(x.simMs); top.push(Math.max(...Object.values(osh)));
     }
     const runs = H.filter(r => r.shap && r.shap.length).length;
-    rows.push(row('shapley() result sums to the Applause', 'human', `${sumOk}/${parsed} shows (format: ${fmtKind || '?'})`, 'all, within 1e-6', 'exact', parsed ? (sumOk === parsed ? 'OK' : 'FAIL') : 'N/A'));
+    rows.push(row('shapley values sum to the Applause', 'human', sumN ? `${sumOk}/${sumN} shows (result: ${kind})` : `no raw values exposed (result: ${kind})`, 'all, within 1e-6', 'exact (§8.6)', sumN ? (sumOk === sumN ? 'OK' : 'FAIL') : 'N/A'));
+    if (kind && kind.startsWith('shares')) rows.push(row('shares sum to 100%', 'human', `${shareOk}/${parsed} shows`, 'all', '100%', shareOk === parsed ? 'OK' : 'FAIL'));
     rows.push(row('agrees with the harness\'s exact Shapley', 'human', `${agree}/${parsed} shows`, 'all, within 1e-6', '—', parsed ? (agree === parsed ? 'OK' : 'FAIL') : 'N/A'));
     rows.push(row('shows with a negative contributor', 'human', `${p1(pct(neg, parsed))}`, '—', '< 0.5% (§8.6)', 'INFO'));
     rows.push(row('shapley() cost per run', 'human', `${f1((U.sum(ms) / Math.max(1, runs)))} ms (${runs} runs, ${shows.length} shows)`, '—', '≈ 30 ms per run (node)', 'INFO'));
@@ -691,15 +701,42 @@ def('invariants', 'SIM invariants and consistency (§11.7)', {
   },
 });
 
+def('crosscheck', 'Driver cross-check (SIM bots vs the spec §12.1 port)', {
+  needs: ['xcheck.greedy', 'xcheck.novice', 'xcheck.human', 'xcheck.oracle', 'greedy', 'novice', 'human', 'oracle'],
+  optional: ['native.greedy', 'native.novice', 'native.human', 'native.oracle'],
+  run(ctx) {
+    const rows = [], details = ['Same seeds played by both drivers; the §12.1 bots are deterministic given the seed, so a faithful OOH.bots port should give identical traces.'];
+    for (const b of ['greedy', 'novice', 'human', 'oracle']) {
+      const X = ctx.R['xcheck.' + b]; if (!X || !ctx.R[b]) { rows.push(na('win % main vs other driver', b, 'identical', '—')); continue; }
+      const [M, Xc] = common(ctx.R[b], X);
+      const key = r => r.shows.map(x => x.a).join(',');
+      let same = 0; for (const r of M) { const o = Xc.find(x => x.seed === r.seed); if (o && key(o) === key(r)) same++; }
+      const d = winPct(M) - winPct(Xc);
+      const st = same === M.length ? 'OK' : diffStatus(d, seDiff(wins(M), M.length, wins(Xc), Xc.length), -5, 5);
+      rows.push(row('win % main vs other driver', b, `${f1(winPct(M))} vs ${f1(winPct(Xc))} (${ctx.driver} vs ${Xc[0] ? Xc[0].driver : '?'}) · identical traces ${same}/${M.length}`, 'identical (or ±5)', '—', st));
+      const Nt = ctx.R['native.' + b];
+      if (Nt) {
+        const [M2, N2] = common(ctx.R[b], Nt); let same2 = 0;
+        for (const r of M2) { const o = N2.find(x => x.seed === r.seed); if (o && key(o) === key(r)) same2++; }
+        rows.push(row('harness loop vs the SIM\'s own playRun', b, `identical traces ${same2}/${M2.length} · win ${f1(winPct(M2))} vs ${f1(winPct(N2))}`, 'identical', '—', same2 === M2.length ? 'OK' : 'FAIL'));
+      }
+      const firstDiff = M.find(r => { const o = Xc.find(x => x.seed === r.seed); return o && key(o) !== key(r); });
+      if (firstDiff) { const o = Xc.find(x => x.seed === firstDiff.seed); const i = firstDiff.shows.findIndex((x, k) => !o.shows[k] || o.shows[k].a !== x.a); details.push(`${b}: seed ${firstDiff.seed} first differs at show ${i + 1}: ${ctx.driver} ${firstDiff.shows[i] ? firstDiff.shows[i].rack + ' → ' + firstDiff.shows[i].a : '-'} | other ${o.shows[i] ? o.shows[i].rack + ' → ' + o.shows[i].a : '-'}`); }
+    }
+    return { rows, details };
+  },
+});
+
 // ---------------------------------------------------------------- planning
-function plan({ only, skip, bots, seeds, sweepSeeds, shapleyRuns, endlessRuns, replayRuns }) {
+function plan({ only, skip, bots, seeds, sweepSeeds, shapleyRuns, endlessRuns, replayRuns, xcheckRuns = 50, xcheck = false, native = false }) {
   const C = configs();
-  const sel = A.filter(a => (!only || only.includes(a.id)) && !(skip && skip.includes(a.id)));
+  const sel = A.filter(a => (!only || only.includes(a.id)) && !(skip && skip.includes(a.id)) && (a.id !== 'crosscheck' || xcheck));
   const fam = c => !bots || bots.includes(c.family) || bots.includes(c.bot);
   const want = new Map(); // cfgId → probes
   for (const a of sel) {
     for (const id of [...(a.needs || []), ...(a.optional || [])]) {
       const c = C[id]; if (!c || !fam(c)) continue;
+      if (c.driver === 'native' && !native) continue;
       if (!want.has(id)) want.set(id, new Set());
       for (const p of (a.probes && a.probes[id]) || []) want.get(id).add(p);
     }
@@ -710,6 +747,7 @@ function plan({ only, skip, bots, seeds, sweepSeeds, shapleyRuns, endlessRuns, r
     const c = C[id];
     let list;
     if (c.seeds === 'noise40') list = [...Array(40).keys()].map(v => ({ seed: 'first-show', rndSeed: v }));
+    else if (c.seeds === 'xcheck') list = [...Array(Math.min(xcheckRuns, seeds)).keys()].map(i => ({ seed: i + 1 }));
     else if (c.seeds === 'replay') list = [...Array(Math.min(replayRuns, seeds)).keys()].map(i => ({ seed: i + 1 }));
     else if (Array.isArray(c.seeds)) list = c.seeds.map(s => ({ seed: s }));
     else list = [...Array(c.sweep ? sweepSeeds : seeds).keys()].map(i => ({ seed: i + 1 }));
@@ -721,7 +759,7 @@ function plan({ only, skip, bots, seeds, sweepSeeds, shapleyRuns, endlessRuns, r
         else pr[p] = true;
       }
       const opts = { ...c.opts }; if (rndSeed !== undefined) opts.rndSeed = rndSeed;
-      jobs.push({ cfg: id, bot: c.bot, seed, opts, probes: pr, weight: c.bot === 'oracle' || (c.bot === 'mono' && c.opts.base === 'oracle') ? 3 : c.bot === 'human' || c.bot === 'mono' ? 2 : c.bot === 'novice' ? 1 : 0.1 });
+      jobs.push({ cfg: id, bot: c.bot, seed, opts, probes: pr, driver: c.driver || null, weight: c.bot === 'oracle' || (c.bot === 'mono' && c.opts.base === 'oracle') ? 3 : c.bot === 'human' || c.bot === 'mono' ? 2 : c.bot === 'novice' ? 1 : 0.1 });
     }
   }
   return { analyses: sel, jobs, configs: C };

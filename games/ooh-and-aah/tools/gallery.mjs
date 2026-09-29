@@ -315,7 +315,7 @@ async function captureScreens(browser, srv, opts, viewports, results, consoleLog
     process.stdout.write(`  ${vpKey}: `);
     for (const sc of SCREENS) {
       if (opts.only && !opts.only.has(sc.id)) continue;
-      const cell = { status: 'ok', notes: [], file: null, ui: null, show: null, method: null, setup: null, errors: 0 };
+      const cell = { status: 'ok', notes: [], file: null, ui: null, show: null, method: null, setup: null, errors: 0, capturedAt: opts.runAt };
       (results[sc.id] = results[sc.id] || {})[vpKey] = cell;
       const applies = !sc.viewports || sc.viewports === 'all' || (sc.viewports === 'desktop' ? vp.w >= 1200 : vp.w < 1200);
       if (!applies) { cell.status = 'n/a'; continue; }
@@ -357,7 +357,7 @@ async function captureStrip(browser, srv, opts, strip, consoleLog) {
   const dir = path.join(opts.out, 'strips', strip.id);
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
-  const out = { id: strip.id, title: strip.title, status: 'ok', frames: [], notes: [], mode: 'fake clock', intervalMs: opts.stripInterval };
+  const out = { id: strip.id, title: strip.title, status: 'ok', frames: [], notes: [], mode: 'fake clock', intervalMs: opts.stripInterval, capturedAt: opts.runAt };
   const prof = { width: strip.vp.w, height: strip.vp.h, dpr: opts.dpr, mobile: true };
   const ctx = await newContext(browser, prof, { fonts: opts.fonts, log: consoleLog });
   const page = await ctx.newPage();
@@ -464,7 +464,7 @@ function sheetHtml(rep) {
     if (!c) return '<td class="na">not captured</td>';
     if (c.status === 'n/a') return '<td class="na">n/a at this width</td>';
     if (c.status === 'skip') return `<td class="skip"><b>skipped</b><br>${esc(c.reason)}</td>`;
-    const cap = [c.ui && `ui=${c.ui}`, c.show && `show ${c.show}`, c.method, c.setup && `rack: ${c.setup}`, ...(c.notes || []), c.errors ? `<span class="bad">${c.errors} console error(s)</span>` : '', c.status === 'error' ? `<span class="bad">ERROR: ${esc(c.reason)}</span>` : ''].filter(Boolean);
+    const cap = [c.capturedAt && c.capturedAt !== rep.generatedAt ? `<span class="bad">earlier run ${esc(c.capturedAt)}</span>` : '', c.ui && `ui=${c.ui}`, c.show && `show ${c.show}`, c.method, c.setup && `rack: ${c.setup}`, ...(c.notes || []), c.errors ? `<span class="bad">${c.errors} console error(s)</span>` : '', c.status === 'error' ? `<span class="bad">ERROR: ${esc(c.reason)}</span>` : ''].filter(Boolean);
     return `<td class="${c.status}"><a href="${esc(c.file)}"><img src="${esc(c.file)}" loading="lazy" style="width:calc(${w}px * var(--s${w >= 1200 ? 'd' : 'm'}))" alt="${esc(sc.title)} at ${vpKey}"></a><div class="cap">${cap.map((x) => (x.startsWith('<span') ? x : esc(x))).join(' · ')}</div></td>`;
   };
   const rows = sections.map((sec) => {
@@ -473,7 +473,7 @@ function sheetHtml(rep) {
     return `<tr class="sec"><th colspan="${vps.length + 1}">${esc(sec)}</th></tr>` + list.map((sc) => `<tr><th class="rh" id="${sc.id}">${esc(sc.title)}<br><code>${sc.id}</code></th>${vps.map((v) => cellHtml(sc, v)).join('')}</tr>`).join('\n');
   }).join('\n');
   const strips = (rep.strips || []).map((s) => `<section class="strip"><h3>${esc(s.title)} <code>${s.id}</code></h3>${s.status === 'ok'
-    ? `<p class="cap">${esc(s.mode)}, every ${s.intervalMs} ms, ${s.frames.length} frames · rack: ${esc(s.setup || '?')} · ui: ${esc((s.uiSequence || []).join(' → '))} · <a href="${esc(s.html)}">frames page</a>${(s.notes || []).length ? ' · ' + esc(s.notes.join('; ')) : ''}</p><a href="${esc(s.image)}"><img class="stripimg" src="${esc(s.image)}" loading="lazy" alt="${esc(s.title)}"></a>`
+    ? `<p class="cap">${s.capturedAt && s.capturedAt !== rep.generatedAt ? `<span class="bad">earlier run ${esc(s.capturedAt)}</span> · ` : ''}${esc(s.mode)}, every ${s.intervalMs} ms, ${s.frames.length} frames · rack: ${esc(s.setup || '?')} · ui: ${esc((s.uiSequence || []).join(' → '))} · <a href="${esc(s.html)}">frames page</a>${(s.notes || []).length ? ' · ' + esc(s.notes.join('; ')) : ''}</p><a href="${esc(s.image)}"><img class="stripimg" src="${esc(s.image)}" loading="lazy" alt="${esc(s.title)}"></a>`
     : `<p class="skip"><b>${s.status}</b>: ${esc(s.reason)}</p>`}</section>`).join('\n');
   const counts = rep.counts;
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -539,12 +539,17 @@ function parseArgs(argv) {
 
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
+  opts.runAt = new Date().toISOString();
   fs.mkdirSync(opts.out, { recursive: true });
   let src;
   try { src = resolveHtml({ html: opts.html, build: opts.build, outDir: opts.out }); } catch (e) { console.error(`gallery: ${e.message}`); process.exit(2); }
   const reportPath = path.join(opts.out, 'gallery.report.json');
+  // Rows not re-captured this run (--only, --strips-only, --no-strips) are kept from the previous
+  // report; their captions carry their own capture time.
   let prev = null;
-  if (opts.only && fs.existsSync(reportPath)) { try { prev = JSON.parse(fs.readFileSync(reportPath, 'utf8')); } catch { prev = null; } }
+  if (fs.existsSync(reportPath)) { try { prev = JSON.parse(fs.readFileSync(reportPath, 'utf8')); } catch { prev = null; } }
+  const keepScreens = !!(prev && prev.screens && (opts.only || opts.stripsOnly));
+  const keepStrips = !!(prev && prev.strips && (opts.only || !opts.strips));
   if (!opts.only) {
     if (!opts.stripsOnly) fs.rmSync(path.join(opts.out, 'shots'), { recursive: true, force: true });
     if (opts.strips) fs.rmSync(path.join(opts.out, 'strips'), { recursive: true, force: true });
@@ -555,9 +560,9 @@ async function main() {
   const consoleLog = [];
   const viewports = opts.viewports.map((s) => { const [w, h] = s.split('x').map(Number); return { w, h }; });
   const rep = {
-    tool: 'tools/gallery.mjs', generatedAt: new Date().toISOString(), file: fileStats(src.file, src.html), buildNote: src.note || null,
+    tool: 'tools/gallery.mjs', generatedAt: opts.runAt, file: fileStats(src.file, src.html), buildNote: src.note || null,
     viewports: viewports.map((v) => `${v.w}x${v.h}`), dpr: opts.dpr, fonts: opts.fonts, api: null,
-    screens: prev && prev.screens ? prev.screens : {}, strips: prev && prev.strips ? prev.strips : [], console: consoleLog,
+    screens: keepScreens ? prev.screens : {}, strips: keepStrips ? prev.strips : [], console: consoleLog,
   };
   process.stdout.write(`gallery: ${rel(src.file)} (${rep.file.kb} KB) → ${rel(opts.out)}${src.note ? ` [${src.note}]` : ''}\n`);
   try {

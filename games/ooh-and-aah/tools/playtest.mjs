@@ -179,7 +179,16 @@ function pageInit() {
         if (out.offenders.length >= 8) break;
       }
     }
-    const f = document.getElementById('fire');
+    // Containers that pan sideways (overflow-x auto/scroll with wider content).
+    out.hScrollers = [];
+    const fireEl = document.getElementById('fire');
+    for (const el of document.querySelectorAll('body *')) {
+      const cs = getComputedStyle(el);
+      if (!(cs.overflowX === 'auto' || cs.overflowX === 'scroll') || el.scrollWidth <= el.clientWidth + 1 || !pt.visible(el)) continue;
+      out.hScrollers.push({ sel: pt.desc(el).replace(/ ".*$/, ''), main: el.id === 'app' || (!!fireEl && el.contains(fireEl)), scrollW: el.scrollWidth, clientW: el.clientWidth });
+      if (out.hScrollers.length >= 8) break;
+    }
+    const f = fireEl;
     if (f) {
       const r = f.getBoundingClientRect();
       out.fire = {
@@ -234,8 +243,18 @@ function pageInit() {
     return out;
   };
   // Focus visibility: compare the focused element's style with an unfocused shallow clone.
-  const FOCUS_PROPS = ['outlineStyle', 'outlineWidth', 'outlineColor', 'outlineOffset', 'boxShadow', 'borderTopColor', 'borderTopWidth', 'borderBottomColor', 'backgroundColor', 'color', 'textDecorationLine', 'opacity', 'transform'];
-  const snap = (e, pseudo) => { const cs = getComputedStyle(e, pseudo); return FOCUS_PROPS.map((p) => cs[p]).join('|') + (pseudo ? '|' + cs.content : ''); };
+  // A normalised "what you can see" signature: outline only counts when drawn, borders only when
+  // they have width, and a pseudo-element only when it exists.
+  const snap = (e, pseudo) => {
+    const cs = getComputedStyle(e, pseudo);
+    if (pseudo && (cs.content === 'none' || cs.content === 'normal')) return 'no-pseudo';
+    const clear = (c) => c === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(c);
+    const outline = cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0 && !clear(cs.outlineColor)
+      ? `${cs.outlineStyle} ${cs.outlineWidth} ${cs.outlineColor} ${cs.outlineOffset}` : 'none';
+    const border = ['Top', 'Right', 'Bottom', 'Left'].map((k) => (cs[`border${k}Style`] !== 'none' && parseFloat(cs[`border${k}Width`]) > 0 ? `${cs[`border${k}Width`]} ${cs[`border${k}Color`]}` : '0')).join(',');
+    return [outline, cs.boxShadow, border, cs.backgroundColor, cs.color, cs.textDecorationLine, cs.opacity, cs.transform, cs.filter]
+      .join('|') + (pseudo ? `|${cs.content}|${cs.width}|${cs.height}` : '');
+  };
   pt.focusInfo = () => {
     const el = document.activeElement;
     if (!el || el === document.body || el === document.documentElement) return { none: true };
@@ -426,7 +445,13 @@ async function layout(s, run, label, { fireStrict = false, scope = null } = {}) 
   const a = await s.page.evaluate((o) => window.__pt.audit(o), { scope });
   const tag = (n) => `${n} @${label}`;
   if (a.vw !== s.page.viewportSize().width) run.fail(tag('layout viewport keeps the device width'), `innerWidth ${a.vw} ≠ ${s.page.viewportSize().width}: content wider than the screen`);
-  run.check(!a.hscroll, tag('no horizontal page scroll'), a.hscroll ? `scrollWidth ${a.scrollW} > ${a.clientW}; ${a.offenders.join('; ') || 'offender not found'}` : '');
+  const mainPan = a.hScrollers.filter((x) => x.main);
+  const otherPan = a.hScrollers.filter((x) => !x.main);
+  const hs = [];
+  if (a.hscroll) hs.push(`page scrollWidth ${a.scrollW} > ${a.clientW}; ${a.offenders.join('; ') || 'offender not found'}`);
+  for (const x of mainPan) hs.push(`the play column ${x.sel} pans sideways (${x.scrollW} > ${x.clientW})`);
+  run.check(!hs.length, tag('no horizontal page scroll'), hs.join('; '));
+  if (otherPan.length) run.warn(tag('no sideways-scrolling containers'), otherPan.map((x) => `${x.sel} (${x.scrollW} > ${x.clientW})`).join('; '));
   if (!scope) {
     if (!a.fire) run.add(fireStrict ? 'FAIL' : 'WARN', tag('#fire present'), 'no #fire element');
     else {
@@ -694,7 +719,8 @@ async function flowKeys(browser, vp) {
     await sleep(35);
     const fi = await focusInfo();
     const u = await ui(page);
-    if (fi.none) { if (u === 'BUILD') { lostFocus++; lostAfter.add(key); } return fi; }
+    // Tabbing off the last stop parks focus on the document before it wraps: that is the browser, not the game.
+    if (fi.none) { if (u === 'BUILD' && key !== 'Tab' && key !== 'Shift+Tab') { lostFocus++; lostAfter.add(key); } return fi; }
     if (!fi.visible && !bad.has(fi.sel)) bad.set(fi.sel, `${!fi.shown ? 'element hidden' : !fi.inView ? 'off-screen' : 'no focus indicator'} (after ${key})`);
     return fi;
   };
@@ -830,7 +856,7 @@ async function flowKeys(browser, vp) {
     if (!failOnce.has('light') && !failOnce.has('advance')) run.check(stats.shows > 0, 'F lights the fuse and the show is recorded', '');
     if (!failOnce.has('buy')) run.check(stats.buys > 0, 'keyboard buy (card → tube with Enter, or 1–4 then Enter)', run.notes.keyBuy || '', 'WARN');
     run.notes.stats = stats;
-    run.check(bad.size === 0, 'focus is always visible (indicator, on-screen, not hidden)', [...bad].slice(0, 10).map(([k, v]) => `${k}: ${v}`).join('; '));
+    run.check(bad.size === 0, 'focus is always visible (indicator, on-screen, not hidden)', bad.size ? `${bad.size} elements: ` + [...bad].slice(0, 6).map(([k, v]) => `${k}: ${v}`).join('; ') + (bad.size > 6 ? ' …' : '') : '');
     run.check(lostFocus === 0, 'focus never drops to <body> during BUILD', lostFocus ? `${lostFocus} times, after: ${[...lostAfter].join(', ')}` : '', 'WARN');
     await shot(s, run, 'focus');
   } catch (e) {

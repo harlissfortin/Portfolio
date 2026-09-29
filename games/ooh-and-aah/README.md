@@ -83,10 +83,10 @@ flowchart TB
 ### What compounds
 
 - **The lingering sky.** A burst stays up for its Hang, counted in later bursts, and every burst ages the sky by 1. Later shells score by what is still up: a Chrysanthemum adds 20 Ooh per burst up, a Crossette adds 4 Aah per burst up, and a Salute clears the sky for 3 Aah per burst it clears. Order is free depth. In the first run's second show, a Red Palm placed in the empty last tube scores 189; placed right after the Red Peony, it scores 378. Every tube shows a "sees N" chip and a fire-order numeral, so the player can see this before lighting.
-- **Ooh × Aah.** Ooh is the additive bucket and Aah is the multiplier. Aah starts at 1. Some shells add to it, and the × shells, most of them rare and Blue, multiply it. A × shell multiplies only the Aah that has arrived before it, so order matters inside the multiplier too. Of the 34 shells, 18 are additive or conditionally additive, 9 are × shells (7 of them rare), and 25 read the sky, a colour, a position, the fire count or the Crowd. <!-- VERIFY: shell counts, if any Tier 2 content was cut -->
+- **Ooh × Aah.** Ooh is the additive bucket and Aah is the multiplier. Aah starts at 1. Some shells add to it, and the × shells, most of them rare and Blue, multiply it. A × shell multiplies only the Aah that has arrived before it, so order matters inside the multiplier too. Of the 34 shells, 18 are additive or conditionally additive, 9 are × shells (7 of them rare), and 25 read the sky, a colour, a position, the fire count or the Crowd.
 - **The Crowd.** The Crowd never goes home. It grows by 1 for every show you pass, by 2 more at each Headliner, and by 2 × the festival number on an Encore (Applause of at least twice the target). Some shells add Crowd directly. At the end of every show the Crowd adds its size to Ooh. Overkill therefore pays forward into every later show instead of being banked. In the reference simulation the Crowd supplies 18% of the Ooh at the Midnight Countdown for the human proxy (median). <!-- VERIFY -->
 - **Coins and interest.** A passed show pays $4 ($6 at a Headliner), plus $1 of interest for every $5 you hold, up to +$5. Every shop is a choice between spending now and holding for interest.
-- **Upgrades, fusions and rigs.** Dropping a shell on its twin makes it ★2, which doubles all its numbers (★3 quadruples them; a ×1.5 becomes ×2, then ×3). Twelve directional fusions <!-- VERIFY --> fire when shell A fires immediately before shell B: Palm then Palm makes a Palm Grove (+3 Aah); Salute then Comet makes a Thunderclap Comet (×1.3 Aah). Rigs belong to the tube, not the shell: a Tall Tube adds Hang, a Brass Tube adds Aah, a Spotlight doubles Ooh, and a Mortar fires its tube twice.
+- **Upgrades, fusions and rigs.** Dropping a shell on its twin makes it ★2, which doubles all its numbers (★3 quadruples them; a ×1.5 becomes ×2, then ×3). Twelve directional fusions fire when shell A fires immediately before shell B: Palm then Palm makes a Palm Grove (+3 Aah); Salute then Comet makes a Thunderclap Comet (×1.3 Aah). Rigs belong to the tube, not the shell: a Tall Tube adds Hang, a Brass Tube adds Aah, a Spotlight doubles Ooh, and a Mortar fires its tube twice.
 
 ### What pushes back
 
@@ -117,7 +117,7 @@ The game was designed before it was built, and every balance number in the spec 
 
 These are the reference results from DESIGN.md §12.2: v1.1 rules, 1,000 seeds (`1..1000`) unless noted. The ship gate sits on the `human` bot, a player who has learned the rules and uses the on-screen chips and the Crowd mood. The `oracle` bot has perfect information and searches every arrangement; it only checks that skilled play has headroom.
 
-<!-- VERIFY: re-run `node tools/test-sim.mjs` against the shipped src/sim.js and confirm every number in this section. -->
+<!-- VERIFY: re-run `node tools/test-sim.mjs --seeds=1000` and `node tools/balance/analyze.mjs --seeds=1000` against the shipped src/sim.js and confirm every number in this section, or replace it with the measured value. -->
 
 | Bot | What it models | Gate | Win rate |
 |---|---|---|---|
@@ -153,7 +153,7 @@ The spec's last gate is a cold stopwatch test with three people (DESIGN.md §12.
 
 ## Architecture
 
-The game is one HTML file, [`index.html`](index.html), assembled by `tools/build.mjs` from the sources in [`src/`](src/). The target is at most 150 KB of unminified, readable code, with a hard ceiling of 190 KB. <!-- VERIFY: size of the shipped index.html -->
+The game is one HTML file, [`index.html`](index.html), assembled by `tools/build.mjs` from the sources in [`src/`](src/). The code is not minified. The spec's original size target (150 KB) was lifted during the build so that no feature tier would be cut: the build now warns above 350 KB and fails above 600 KB ([src/CONTRACT.md](src/CONTRACT.md), "Size"). The shipped file is TODO KB, about TODO KB gzipped. <!-- VERIFY: fill in from the `node tools/build.mjs` size table -->
 
 The file has no `<!doctype>`, `<html>`, `<head>` or `<body>` tags, because the hosting page wraps it. Its first lines are the charset and viewport metas, so it is still correct when opened raw from the repo. The build concatenates, in this order:
 
@@ -192,16 +192,23 @@ With the page loaded, `window.__game` exposes `reset(seed, opts)`, `act(action)`
 
 ### Tools
 
-Run these from `games/ooh-and-aah/`. They need Node.js; the browser tools also need Playwright with Chromium.
+Run these from `games/ooh-and-aah/` with Node.js. Every tool except `build.mjs`, `test-sim.mjs` and `balance/analyze.mjs` also needs Playwright with Chromium. The browser tools test the built `index.html`, most of them inside a document wrapper like the one the hosting page adds, and they ignore Google Fonts failures so they can run offline. Each script prints its full options with `--help` or in its header comment.
 
-| Command | What it does |
+| Command | What it checks |
 |---|---|
-| `node tools/build.mjs` | Assembles `index.html` from `src/` |
-| `node tools/test-sim.mjs` | Runs the golden score tests, the Match property test and the seed traces against `src/sim.js`, then the bot suite and its invariants (no NaN, deterministic hashes, Shapley sums) |
-| `node tools/playtest.mjs` | Drives the built page in headless Chromium through the DOM ids and `window.__game` |
-| TODO | Audits TODO <!-- VERIFY: command --> |
-| TODO | Humanplay TODO <!-- VERIFY: command --> |
-| TODO | Fuzz TODO <!-- VERIFY: command --> |
+| `node tools/build.mjs` | Assembles `index.html` from `src/` in contract order, then checks the page contract: one global per module, `node --check` on every script, no external URLs except the fonts, no `Math.random` or `Date.now` in the SIM, and the size limits. `--allow-missing` stubs files that do not exist yet. |
+| `node tools/test-sim.mjs` | The SIM suite: the golden score tests and the Match property test, the seed-level traces, unit checks on rules, kits and prices, the §11.7 invariants and timings, then the bot suite (200 seeds by default; `--seeds=1000` for the spec's pass). It fails when a bot's win rate drifts more than 4 points from the §12.2 reference at 1,000 seeds. |
+| `node tools/balance/analyze.mjs` | Every §12.2 balance metric, printed next to its gate and its v1.1 reference value: win rates, where runs die, Countdown pass rates, Sponsors, Headliner miss rates and draw luck, pick/win outliers, decision regret and decision point, kits, Renown, Fair Weather, archetypes, milestones, mood buckets and Shapley sums. `--seeds=1000` for the full pass; `--list` for the analyses. |
+| `node tools/audit/spec-audit.mjs` | Audits the game against DESIGN.md itself: parses the spec's tables and compares the game's data field by field, replays the golden tests and seed traces, runs behavioural SIM checks and a legal-action fuzz, checks the built file's page contract, then drives the page for hooks, URL flags, layout, persistence and the end screen. `--no-browser` for the Node-only checks. |
+| `node tools/audit/a11y.mjs` | Accessibility and layout audit at 360 × 740, 360 × 640, 375 × 548 and 1440 × 900: contrast, accessible names, 44 px targets, 16 px text, visible focus and Tab order, keyboard reach, live-region announcements, reduced motion, high contrast, greyscale distinguishability, overflow and hover-only content. |
+| `node tools/playtest.mjs` | Browser playtest harness: page contract, layout, tap targets, focus, the play loop and the test hooks. `--flow=smoke\|ui\|keys\|bots\|full`. |
+| `node tools/humanplay.mjs --fast` | A human-proxy player that uses only the real UI (taps, drags, the chips and the mood pill; no test hooks for actions). It measures the §12.4 gates it can: first-run length, time to the first 1-of-3 choice, decisions per minute by third of the run, and Applause/target per show, and saves a filmstrip. Without `--fast` it plays at the spec's human pace. |
+| `node tools/fuzz.mjs --minutes 3 --seed 1` | A seeded chaos monkey: random taps, drags, cancelled touches, long-presses, keys, resizes, blur and tab hiding, reloads. After every burst it checks state invariants, errors, `NaN` in visible text and that the game never gets stuck. Failures are saved and re-run with `--replay`. |
+| `node tools/perf.mjs` | Performance against the §11.7 budgets on a throttled 360 × 740 phone profile and a desktop profile: render time, `step` and `resolveShow` time, particle count, dropped frames, and heap growth over 10 shows. |
+| `node tools/gallery.mjs` | A screenshot contact sheet of every screen at the four viewports, plus frame-by-frame filmstrips of show chains, in `tools/shots/gallery/`. |
+| `node tools/audio-check.mjs` | Audio self-test: silent no-ops without WebAudio, every event and UI sound, the voice limiter, and offline renders that are audible and never clip. |
+
+`tools/dev/` holds the stub harnesses each module owner used to build and test a module before the others existed. <!-- VERIFY: link tools/README.md here if the tooling owner adds it -->
 
 ---
 
@@ -217,7 +224,7 @@ Run these from `games/ooh-and-aah/`. They need Node.js; the browser tools also n
 - **No time pressure.** The game is turn-based. Nothing needs hovering or holding, confirmations stay armed until your next input, pause is always available, the show can play at 50%, 75% or 100% speed, and "Instant results" replaces the animation with a breakdown list.
 - **Sound.** Sound is never the only cue: the mood has its word and the heartbeat has the red rim. Audio starts only after your first input. Haptics sit behind a setting.
 - **Assist.** Fair Weather lowers every target by 25% and allows one relight of the Midnight Countdown. It is labelled on the HUD, the end screen and records, and it blocks Renown progress but not milestones.
-- **No dark patterns.** There are no streaks, timers, energy systems, notifications, accounts, ads, purchases or analytics. The Daily Show, unlocked by a first win, is an invitation with no streak attached. <!-- VERIFY: Daily Show shipped (Tier 3) -->
+- **No dark patterns.** There are no streaks, timers, energy systems, notifications, accounts, ads, purchases or analytics. The Daily Show, unlocked by a first win, is an invitation with no streak attached.
 
 ---
 

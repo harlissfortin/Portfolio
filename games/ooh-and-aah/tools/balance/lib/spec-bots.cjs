@@ -329,7 +329,7 @@ function makeSpecBots(api) {
     return { phi, occ, full: v[(1 << n) - 1] };
   }
 
-  return { BOTS, build, sponsorPick, scoreRack, hill, exhaustive, perms, withShells, refit, faceValue, regretProbe, shapleyExact, upCost, sellValue, tubeCost, arrange, ARCH };
+  return { BOTS, build, sponsorPick, arrangeOracle, arrangeHuman, scoreRack, hill, exhaustive, perms, withShells, refit, faceValue, regretProbe, shapleyExact, upCost, sellValue, tubeCost, arrange, ARCH };
 }
 
 module.exports = { makeSpecBots, ARCH };

@@ -90,13 +90,10 @@
 #board .bd-cell .bd-tw{width:16px;height:16px;margin-left:auto;color:var(--paper-dim)}
 #board .bd-cell.is-now .bd-tw{color:var(--ink)}
 
-#board .bd-hl{display:flex;gap:9px;align-items:flex-start;margin:5px 0 1px;padding:6px 9px 7px;border-radius:8px;
-  background:var(--pn-well);border:1px dashed color-mix(in srgb,var(--brass) 50%,transparent)}
-#board .bd-hl-ic{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
-  background:color-mix(in srgb,var(--brass) 20%,transparent);color:var(--brass)}
-#board .bd-hl-ic .pn-ic{width:18px;height:18px;vertical-align:0}
-#board .bd-hl-tx{margin:0;min-width:0;font-size:var(--t-xs);line-height:1.3;color:var(--paper-dim)}
-#board .bd-hl-tx b{color:var(--paper);font:600 var(--t-m)/1.2 var(--f-display);margin-right:2px}
+#board .bd-hl{margin:5px 0 1px;padding:6px 9px 7px;border-radius:8px;background:var(--pn-well);
+  border:1px dashed color-mix(in srgb,var(--brass) 50%,transparent);font-size:var(--t-xs);line-height:1.3;color:var(--paper-dim)}
+#board .bd-hl b{color:var(--paper);font:600 var(--t-m)/1.2 var(--f-display);margin-right:2px}
+#board .bd-hl .bd-hl-ic{width:20px;height:20px;margin-right:6px;vertical-align:-4px;color:var(--brass)}
 #board .is-now .bd-hl{border-style:solid;border-color:color-mix(in srgb,var(--brass) 70%,transparent)}
 
 /* target curve */
@@ -195,6 +192,7 @@
 #showlog .sl-encore{font:italic 700 var(--t-m)/1.2 var(--f-display);color:var(--aah)}
 #showlog .sl-verdict .sl-dim{margin-left:auto;font-size:var(--t-xs)}
 #showlog .sl-pay{margin:6px 0 0;color:var(--paper-dim);font-size:var(--t-xs)}
+#showlog .sl-after{display:block;margin-top:2px;color:var(--paper)}
 #showlog .sl-note{margin:0;padding:8px 10px;border-radius:8px;border:1px solid var(--danger);color:var(--paper);font-size:var(--t-s)}
 #showlog .sl-note.is-relight,#showlog .sl-note.is-won{border-color:var(--brass)}
 
@@ -209,13 +207,15 @@
 @media (max-width:1199.98px){
   #showlog.is-sheet{display:block;position:absolute;inset:0;z-index:45;overflow:hidden;padding:0}
   #showlog.is-sheet .sl-scrim{display:block;position:absolute;inset:0;background:var(--scrim);animation:pn-fade 200ms var(--ease-out) both}
-  #showlog.is-sheet .sl-panel.sheet{display:flex;flex-direction:column;max-height:calc(100% - 40px);overflow:hidden;
-    padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 12px);box-shadow:0 -12px 40px color-mix(in srgb,var(--ink) 70%,transparent);
+  /* the whole sheet scrolls (more room for the lines on a phone); the header stays pinned */
+  #showlog.is-sheet .sl-panel.sheet{display:flex;flex-direction:column;max-height:calc(100% - 40px);overflow:auto;overscroll-behavior:contain;
+    padding:0 16px calc(env(safe-area-inset-bottom,0px) + 12px);box-shadow:0 -12px 40px color-mix(in srgb,var(--ink) 70%,transparent);
     animation:pn-up 260ms var(--ease-out) both}
-  #showlog.is-sheet .sl-panel.sheet::before{content:"";align-self:center;flex:none;width:40px;height:4px;margin:-4px 0 2px;
-    border-radius:2px;background:var(--line)}
+  #showlog.is-sheet .sl-head{position:sticky;top:0;z-index:1;margin:0 -16px;padding:8px 16px 8px;background:var(--surface-2);
+    border-bottom:1px solid var(--line)}
+  #showlog.is-sheet .sl-head::before{content:"";display:block;width:40px;height:4px;margin:0 auto 6px;border-radius:2px;background:var(--line)}
   #showlog.is-sheet .sl-close{display:inline-flex}
-  #showlog.is-sheet .sl-lines{max-height:none}
+  #showlog.is-sheet .sl-lines{flex:none;overflow:visible;border-top:0;padding-bottom:4px;-webkit-mask-image:none;mask-image:none}
   #showlog.is-sheet .sl-app-n{font-size:var(--t-xl)}
   #showlog.is-sheet .sl-chips{margin-left:40px}
 }
@@ -225,6 +225,7 @@
 @media (max-width:380px){
   #showlog.is-sheet .sl-chips{margin-left:0}
   #showlog.is-sheet .sl-panel.sheet{padding-inline:12px}
+  #showlog.is-sheet .sl-head{margin-inline:-12px;padding-inline:12px}
 }
 
 /* ---------- high contrast: no glows, solid rims ---------- */

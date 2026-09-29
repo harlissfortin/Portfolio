@@ -25,10 +25,11 @@ module.exports = function makeRefAdapter(dir) {
   function createState(seed, opts = {}) {
     const st = S.createState(String(seed), {
       kit: opts.kit, renown: opts.renown || 0, firstRun: !!opts.firstRun, fair: !!opts.fairWeather,
-      unlocked: opts.unlocked ? opts.unlocked.slice() : ALL.slice(), keepsake: opts.keepsake,
+      unlocked: opts.unlocked ? opts.unlocked.slice() : ALL.slice(), keepsake: opts.keepsake, noSponsor: !!opts.noSponsor,
     });
     st.twilightTwists = st.twilight;
-    st.runStats = { history: st.history };
+    st.stats.history = st.history;   // runStats-like view: history + rerolls + pity (shared arrays survive structuredClone)
+    st.runStats = st.stats;
     return st;
   }
 

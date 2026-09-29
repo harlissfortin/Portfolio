@@ -81,41 +81,22 @@ const UI_MENUS = (() => {
     return t.content.firstChild;
   }
 
-  /* ---------- data access (shape-tolerant) ---------- */
+  /* ---------- data access: OOH.DATA tables (arrays or id-keyed objects) + sim helpers ---------- */
   const rows = (x) => !x ? [] : Array.isArray(x) ? x : Object.keys(x).map((k) => Object.assign({ id: k }, x[k]));
   const find = (x, id) => rows(x).find((r) => r && r.id === id) || null;
   const meta = () => (G && G.meta) || {};
   const codex = () => meta().codex || {};
-  const fmt = (n) => { const s = sim(); if (can(s, 'fmt')) { try { return s.fmt(n); } catch (e) { /* fall through */ } } return Number(n || 0).toLocaleString('en-US'); };
-  const COLS = { R: ['Red', 'circle'], A: ['Gold', 'triangle'], G: ['Green', 'square'], B: ['Blue', 'diamond'], W: ['White', 'cross'], X: ['Rainbow', 'star'], '*': ['Any colour', 'plate'] };
+  const simFn = (k, ...a) => call(sim(), k, ...a);
+  const fmt = (n) => { const v = simFn('fmt', n); return v != null ? v : Number(n || 0).toLocaleString('en-US'); };
   const RARITY = { C: 'Common', U: 'Uncommon', R: 'Rare' };
-  const SLOTS = ['Twilight', 'Evening', 'Headliner'];
-  const FEST_FALLBACK = ['Spring Lanterns', 'May Fair', 'Midsummer', 'Regatta', 'Harvest Moon', 'Bonfire Night', 'Winter Lights', "New Year's Eve"];
-  function festName(f) {
-    const r = rows(DATA().FESTIVALS)[f - 1];
-    return (r && (typeof r === 'string' ? r : r.name)) || FEST_FALLBACK[f - 1] || 'Afterparty';
-  }
-  const colName = (c) => { const r = find(DATA().COLOURS, c); return (r && r.name) || (COLS[c] || COLS['*'])[0]; };
+  const festName = (f) => rows(DATA().FESTIVALS)[f - 1] || 'Festival ' + f;
+  const slotName = (s) => (s === 23 ? 'Midnight Countdown' : (DATA().SHOW_NAMES || ['Twilight', 'Evening', 'Headliner'])[s % 3]);
+  const colName = (c) => (c === '*' ? 'Any colour' : simFn('colourName', c) || c);
   const nameOf = (table, id) => { const r = find(DATA()[table], id); return (r && r.name) || String(id || ''); };
+  // DATA card text is a ★-template ('+{20} Ooh', '×{x0.3} Aah'); this renders ★1 when no sim helper answers.
+  const untemplate = (t) => String(t || '').replace(/\{x([\d.]+)\}/g, (_, k) => String(1 + Number(k))).replace(/\{%\}/g, '100%').replace(/\{([^}]*)\}/g, '$1');
 
-  /* Fallback copy: used only if OOH.DATA lacks the table (spec §1, §4.11, §13). */
-  const RULES_FALLBACK = [
-    'The fuse fires your tubes left to right. Each burst stays up for the next few bursts (its Hang), and later shells score by what is still up.',
-    'Shells add Ooh, add Aah, or multiply Aah; your Crowd adds its size to Ooh. Applause = Ooh × Aah must beat the target (one rain check per run).',
-    'Between shows, spend coins on shells, tubes and rigs. Drop a shell on its twin to upgrade it; a shell fired right after its partner fuses with it.',
-  ];
-  const MS_FALLBACK = {
-    m_fusion: ['First Fusion', 1, '', 'Fire any fusion.', 'Strontium Star, Crackle'],
-    m_busy: ['Busy Sky', 8, 'bursts', '8+ bursts in one show.', 'Horsetail, Cake, Salvo Crew kit'],
-    m_mono: ['Monochrome Night', 5, 'bursts', 'A show with 5+ coloured bursts, all one colour (White ignored).', 'Fern, Brocade'],
-    m_spectrum: ['Full Spectrum', 3, 'colours', '3 colours up at once, or all 4 colours fired in one show.', 'Prism, Tourbillon, Chemist kit'],
-    m_crowd: ['Packed House', 40, 'Crowd', 'Crowd reaches 40.', 'Town Crest, Saturn, Showman kit'],
-    m_triple: ['Triple-break', 3, '★', 'Own a ★3 shell.', 'Nishiki Kamuro'],
-    m_headliner: ['Headliner Hunter', 1, '', "Pass Festival 4's Headliner.", 'Blue Moon'],
-    m_rigger: ['Rigger', 3, 'rigs', '3 rigs installed at once.', 'Night Market kit'],
-    m_win: ['Happy New Year', 1, '', 'Win a run.', 'Renown 1, the Afterparty, the Daily Show'],
-    m_logbook: ['Logbook Half', 6, 'fusions', 'Discover 6 of the 12 fusions.', 'Every fusion shows its left half'],
-  };
+  /* The key map (§13) lives here: it is UI copy no other module shows. */
   const KEYMAP = [
     ['Tab / Shift+Tab', 'Move focus: HUD, Sponsor, rack, Crate, tools, cards, workshop, Light'],
     ['← → or A D', 'Move the rack cursor across the tubes, then the Crate'],
@@ -132,20 +113,16 @@ const UI_MENUS = (() => {
     ['P', 'Pause'], ['L', 'Logbook'], ['?', 'Help'], ['R / Enter (end screen)', 'Run it back'],
   ];
 
-  function msInfo(id) {
-    const r = find(DATA().MILESTONES, id) || {};
-    const fb = MS_FALLBACK[id] || [id, 1, '', '', ''];
-    const un = r.unlocks;
-    return {
-      id, name: r.name || fb[0], goal: Number(r.goal || r.target || fb[1]) || 1, unit: r.unit != null ? r.unit : fb[2],
-      cond: r.text || r.cond || r.desc || fb[3],
-      unlocks: Array.isArray(un) ? un.map(unlockName).join(', ') : (un || fb[4]),
-    };
-  }
+  /* ---------- milestones and locks ---------- */
   function unlockName(id) {
-    const d = DATA();
-    for (const t of ['SHELLS', 'KITS', 'RIGS']) { const r = find(d[t], id); if (r) return r.name + (t === 'KITS' ? ' kit' : ''); }
+    for (const t of ['SHELLS', 'KITS']) { const r = find(DATA()[t], id); if (r) return r.name + (t === 'KITS' ? ' kit' : ''); }
     return String(id);
+  }
+  function msInfo(id) {
+    const r = find(DATA().MILESTONES, id) || {}, un = r.unlocks || {};
+    const list = Array.isArray(un) ? un.map(unlockName) : typeof un === 'string' ? [un]
+      : [...(un.shells || []).map(unlockName), ...(un.kits || []).map(unlockName), ...(un.other || [])];
+    return { id, name: r.name || id, goal: Number(r.goal) || 1, metric: r.metric || '', cond: r.text || '', unlocks: list.join(', ') };
   }
   const msIdFor = (lock) => { const m = rows(DATA().MILESTONES).find((r) => r.id === lock || r.name === lock); return m ? m.id : lock; };
   function isUnlocked(lock) {
@@ -160,8 +137,9 @@ const UI_MENUS = (() => {
   }
   const lockHint = (lock) => { const p = msProgress(msIdFor(lock)); return p.info.name + ' ' + p.v + '/' + p.info.goal; };
   const lockBadge = (lock) => { const p = msProgress(msIdFor(lock)); return p.v + '/' + p.info.goal; };
-  const fusionParts = (r) => [r.a || r.from || r.left || String(r.id || '').split('>')[0], r.b || r.to || r.right || String(r.id || '').split('>')[1]];
-  const fusionEntry = (r) => { const [a, b] = fusionParts(r), f = codex().fusions || {}; return f[a + '>' + b] || f[r.id] || f[r.key] || null; };
+  const lockLine = (lock) => { const p = msProgress(msIdFor(lock)); return 'Unlocks with the ' + p.info.name + ' milestone: ' + p.info.cond + '.'; };
+  const fusionParts = (r) => { const k = String(r.key || r.id || ''); return [r.a || k.split('>')[0], r.b || k.split('>')[1]]; };
+  const fusionEntry = (r) => { const [a, b] = fusionParts(r); return (codex().fusions || {})[a + '>' + b] || null; };
 
   /* ---------- pictograms (FX.pictogram → cached data URL <img>) ---------- */
   const pictoCache = new Map();
@@ -174,7 +152,7 @@ const UI_MENUS = (() => {
       url = null;
       const cv = call(fx(), 'pictogram', id, c, star || 1, size, { highContrast: hc });
       if (cv && cv.width) { try { url = cv.toDataURL(); } catch (e) { url = null; } }
-      pictoCache.set(key, url);
+      if (url) pictoCache.set(key, url);   // a miss is retried next render (FX may not be ready yet)
     }
     return url ? h('img', { src: url, alt: '', width: size, height: size, class: 'm-picto', draggable: 'false' })
       : h('span', { class: 'm-picto m-picto-fb', 'data-col': c, style: 'width:' + size + 'px;height:' + size + 'px' });
@@ -207,6 +185,7 @@ const UI_MENUS = (() => {
 
   /* ---------- small shared bits ---------- */
   const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+  const fill = (el, ...kids) => el.replaceChildren(...kids.flat().filter((k) => k != null && k !== false));
   /* Soft-hyphenate long words for 2-line tile captions (hyphens:auto needs a
      dictionary the browser may lack): VC|C nearest the middle, else V|C. */
   const DIGRAPH = /^(ch|sh|th|ph|wh|ck|gh)$/i, V = /[aeiouy]/i;
@@ -266,7 +245,7 @@ const UI_MENUS = (() => {
     const root = $('pause-menu');
     root.setAttribute('aria-labelledby', 'pause-menu-title');
     P.where = h('p', { class: 'm-sub' });
-    P.resume = h('button', { type: 'button', id: 'pause-resume', class: 'btn btn-primary m-wide', onclick: () => G.close('pause') }, icon('play'), 'Resume');
+    P.resume = h('button', { type: 'button', id: 'pause-resume', 'data-autofocus': true, class: 'btn btn-primary m-wide', onclick: () => G.close('pause') }, icon('play'), 'Resume');
     const tile = (id, ic, label, name) => h('button', { type: 'button', id, class: 'btn pm-tile', onclick: () => G.open(name) }, icon(ic), h('span', null, label));
     P.seed = h('input', { id: 'pause-seed', class: 'pm-seed-val', type: 'text', readOnly: true, 'aria-label': 'Seed', spellcheck: 'false', autocomplete: 'off' });
     P.copyNote = h('span', { class: 'pm-copied', role: 'status' });
@@ -294,7 +273,7 @@ const UI_MENUS = (() => {
     const s = Number(st.show) || 0, f = Math.floor(s / 3) + 1;
     const where = st.phase === 'won' ? ['Happy New Year!', 'Show ' + (s + 1)]
       : s >= 24 ? ['Afterparty', 'Show ' + (s + 1) + ' of 36']
-        : [festName(f) + ' · ' + (s === 23 ? 'Midnight Countdown' : SLOTS[s % 3]), 'Show ' + (s + 1) + ' of 24'];
+        : [festName(f) + ' · ' + slotName(s), 'Show ' + (s + 1) + ' of 24'];
     const run = st.seed != null;
     P.where.replaceChildren(...(run ? where.map((t) => h('span', null, t)) : []));
     P.seed.value = run ? String(st.seed) : '';
@@ -419,6 +398,12 @@ const UI_MENUS = (() => {
     if (ok) { S.importNote.dataset.kind = 'ok'; S.importNote.textContent = 'Save imported. Your progress and settings are restored.'; S.importText.value = ''; syncSettings(); }
     else { S.importNote.textContent = 'That string could not be read as an Ooh × Aah save. Paste the whole string from Export and try again.'; S.importText.focus(); }
   }
+  // Save-tool status lines belong to one visit (core's reset/import may close every overlay mid-handler).
+  function clearSaveNotes() {
+    if (!S.exportText) return;
+    S.exportText.hidden = true; S.exportText.value = '';
+    for (const n of [S.exportNote, S.importNote, S.resetNote]) n.textContent = '';
+  }
   function syncSettings() {
     if (!S.sound) return;
     for (const k of ['sound', 'music', 'highContrast', 'instant', 'mood', 'fairWeather', 'haptics']) if (S[k]) S[k].checked = !!setting(k);
@@ -463,6 +448,7 @@ const UI_MENUS = (() => {
       const on = t.dataset.tab === id;
       t.setAttribute('aria-selected', on ? 'true' : 'false');
       t.tabIndex = on ? 0 : -1;
+      t.toggleAttribute('data-autofocus', on);
       if (on) { if (focus) t.focus(); if (t.scrollIntoView) t.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
     }
     L.panel.setAttribute('aria-labelledby', 'lb-tab-' + id);
@@ -487,52 +473,45 @@ const UI_MENUS = (() => {
   /* --- per-tab entries: {key, state:'found'|'seen'|'unseen'|'locked', art, name, cap, label, detail()} --- */
   const shellSeen = (id) => { const c = (codex().shells || {})[id]; return !!(c && (c.seen || c.owned)); };
   const WILD = ['R', 'A', 'G', 'B'];
+  const shellCol = (id) => { const r = find(DATA().SHELLS, id); return r && r.col !== '*' ? r.col : 'A'; };
+  const rarityOf = (r) => RARITY[r.rar || r.rarity] || '';
   function shellArt(r, i, size, silhouette) {
-    const col = r.col === '*' ? WILD[i % 4] : r.col;
+    const col = r.col === '*' ? WILD[i % 4] : r.col;   // wild rows cycle colours so the grid reads as a festival
     return h('span', { class: 'lb-art' + (silhouette ? ' is-sil' : ''), style: '--art:' + size + 'px' },
       h('span', { class: 'lb-plate', 'data-col': r.col || 'W' }), picto(r.id, col, 1, Math.round(size * 0.78)),
       silhouette ? null : h('span', { class: 'lb-mono' }, r.mono || ''));
   }
   function shellEntries() {
     return rows(DATA().SHELLS).map((r, i) => {
-      const unlocked = isUnlocked(r.lock), seen = shellSeen(r.id);
+      const unlocked = isUnlocked(r.lock), seen = shellSeen(r.id), fest = r.fest || 1;
       const state = !unlocked ? 'locked' : seen ? 'found' : 'unseen';
-      const fest = r.fest || r.f || 1;
       const cap = state === 'found' ? r.name : state === 'locked' ? msInfo(msIdFor(r.lock)).name : 'Festival ' + fest + '+';
       return {
         key: r.id, state, cap, art: (sz) => shellArt(r, i, sz, state !== 'found'), badge: state === 'locked' ? lockBadge(r.lock) : null,
-        label: state === 'found' ? r.name + ', ' + colName(r.col) + ', ' + (RARITY[r.rarity] || '') : state === 'locked' ? 'Locked shell. ' + lockHint(r.lock) : 'Not seen yet. Offered from Festival ' + fest,
+        label: state === 'found' ? r.name + ', ' + colName(r.col) + ', ' + rarityOf(r) : state === 'locked' ? 'Locked shell. ' + lockHint(r.lock) : 'Not seen yet. Offered from Festival ' + fest,
         detail: () => shellDetail(r, i, state, fest),
       };
     });
   }
-  function shellText(r, star) {
-    const s = sim();
-    if (can(s, 'describeShell')) { try { const t = s.describeShell(r.id, r.col === '*' ? null : r.col, star); if (t) return t; } catch (e) { /* use card text */ } }
-    return star === 1 ? r.text || '' : '';
-  }
+  const shellText = (r, star) => simFn('describeShell', r.id, r.col === '*' ? null : r.col, star) || (star === 1 ? untemplate(r.text) : '');
   function shellDetail(r, i, state, fest) {
-    if (state === 'locked') {
-      const p = msProgress(msIdFor(r.lock));
-      return dPanel(shellArt(r, i, 80, true), 'Locked shell', [p.info.name + ': ' + p.v + '/' + p.info.goal + (p.info.unit ? ' ' + p.info.unit : '')],
-        ['Unlocks with the ' + p.info.name + ' milestone. ' + p.info.cond]);
-    }
+    if (state === 'locked') return dPanel(shellArt(r, i, 80, true), 'Locked shell', [lockHint(r.lock)], [lockLine(r.lock)]);
     if (state === 'unseen') return dPanel(shellArt(r, i, 80, true), 'Not seen yet', ['Festival ' + fest + '+'], ['Offered in shops from Festival ' + fest + ' (' + festName(fest) + ').']);
     const tags = Array.isArray(r.tags) ? r.tags.join(', ') : r.tags;
-    const partners = rows(DATA().FUSIONS).filter((f) => fusionParts(f).includes(r.id) && fusionEntry(f) && fusionEntry(f).found)
+    const partners = rows(DATA().FUSIONS).filter((f) => fusionParts(f).includes(r.id) && (fusionEntry(f) || {}).found)
       .map((f) => { const [a, b] = fusionParts(f); return nameOf('SHELLS', a) + ' → ' + nameOf('SHELLS', b) + ' (' + f.name + ')'; });
     const owned = ((codex().shells || {})[r.id] || {}).owned;
     const lines = [1, 2, 3].map((st) => { const t = shellText(r, st); return t ? h('span', { class: 'lb-star' }, h('b', null, '★' + st + ' '), t) : null; });
     return dPanel(shellArt(r, i, 80, false), r.name,
-      [RARITY[r.rarity] || r.rarity, '$' + r.cost, 'Hang ' + (r.shots > 1 ? r.hang + ' each' : r.hang), colName(r.col) + (r.col === '*' ? ' (rolled)' : ''), 'Festival ' + fest + '+'],
-      [h('span', { class: 'lb-rule' }, lines), tags ? 'Styles: ' + tags + '.' : null, partners.length ? 'Fuses: ' + partners.join('; ') + '.' : null,
-        owned ? 'Bought ' + owned + (owned === 1 ? ' time.' : ' times.') : null]);
+      [rarityOf(r), '$' + r.cost, 'Hang ' + r.hang + (r.shots > 1 ? ' each' : ''), colName(r.col), 'Festival ' + fest + '+'],
+      [h('span', { class: 'lb-rule' }, lines), r.shots > 1 ? r.shots + ' bursts per shell.' : null, tags ? 'Styles: ' + tags + '.' : null,
+        partners.length ? 'Fuses: ' + partners.join('; ') + '.' : null, owned ? 'Bought ' + plural(owned, 'time') + '.' : null]);
   }
 
   function fusionEntries() {
-    const half = (meta().unlocked || []).includes('m_logbook');
+    const half = (meta().unlocked || []).includes('m_logbook');   // Logbook Half: every left half shows
     return rows(DATA().FUSIONS).map((r) => {
-      const [a, b] = fusionParts(r), e = fusionEntry(r) || {};
+      const [a, b] = fusionParts(r), key = a + '>' + b, e = fusionEntry(r) || {};
       const own = e.leftSeen || half || (((codex().shells || {})[a] || {}).owned > 0);
       const state = e.found ? 'found' : own ? 'seen' : 'unseen';
       const an = nameOf('SHELLS', a), bn = nameOf('SHELLS', b);
@@ -541,84 +520,69 @@ const UI_MENUS = (() => {
         h('span', { class: state === 'unseen' ? 'is-sil' : '' }, picto(a, shellCol(a), 1, Math.round(sz * 0.44))),
         h('span', { class: 'lb-arrow', 'aria-hidden': 'true' }, '→'),
         h('span', { class: state === 'found' ? '' : 'is-sil' }, picto(b, shellCol(b), 1, Math.round(sz * 0.44))));
+      const later = r.lock && !isUnlocked(r.lock) ? ' Possible once ' + msInfo(msIdFor(r.lock)).name + ' is unlocked.' : '';
       return {
-        key: a + '>' + b, state, cap, art,
+        key, state, cap, art,
         label: state === 'found' ? r.name + ': ' + an + ' then ' + bn : state === 'seen' ? an + ' then an undiscovered partner' : 'Undiscovered fusion',
-        detail: () => {
-          if (state === 'found') {
-            return dPanel(art(80), r.name, [an + ' → ' + bn, 'Fired ' + (e.fired || 0) + '×'],
-              ['Fire ' + an + ' immediately before ' + bn + '. ' + bn + '’s first burst gains: ' + (r.text || paramText(r.params || r.bonus)) + '.']);
-          }
-          const lk = r.lock && !isUnlocked(r.lock) ? ' First possible after ' + lockHint(r.lock) + '.' : '';
-          return dPanel(art(80), cap, [state === 'seen' ? 'Partner unknown' : 'Unknown'],
-            [state === 'seen' ? 'Something fired right after a ' + an + ' fuses with it. Try a partner in the next tube.' + lk
-              : 'Own a shell that starts this fusion to see its first half.' + lk]);
-        },
+        detail: () => state === 'found'
+          ? dPanel(art(80), r.name, [an + ' → ' + bn, 'Fired ' + (e.fired || 0) + '×'],
+            ['Fire ' + an + ' immediately before ' + bn + '. ' + bn + '’s first burst gains: ' + (simFn('describeFusion', key) || untemplate(r.text)).replace(/\.$/, '') + '.'])
+          : dPanel(art(80), cap, [state === 'seen' ? 'Partner unknown' : 'Unknown'],
+            [(state === 'seen' ? 'A shell fired right after a ' + an + ' fuses with it. Try partners in the next tube.'
+              : 'Own the shell that starts this fusion to see its first half.') + later]),
       };
     });
-  }
-  const shellCol = (id) => { const r = find(DATA().SHELLS, id); return r && r.col !== '*' ? r.col : 'A'; };
-  const PARAM_TEXT = {
-    ooh: (v) => '+' + v + ' Ooh', aah: (v) => '+' + v + ' Aah', coin: (v) => '+$' + v, x: (v) => '×' + (1 + v) + ' Aah',
-    aahPerUp: (v) => '+' + v + ' Aah per burst up', xPerUp: (v) => '×(1+' + v + ' per burst up) Aah', aahPerFired: (v) => '+' + v + ' Aah per burst fired before it',
-    xLastPerUp: (v) => '×(1+' + v + ' per burst up) Aah if last', xPerDistinct: (v) => '×(1+' + v + ' per distinct colour up) Aah',
-    aahPerCrowd: (v) => '+1 Aah per ' + v + ' Crowd', aahPerColUp: (v) => '+' + v[1] + ' Aah per ' + colName(v[0]) + ' up',
-  };
-  function paramText(p) {
-    if (!p) return 'a bonus';
-    if (typeof p === 'string') return p;
-    return Object.keys(p).map((k) => (PARAM_TEXT[k] ? PARAM_TEXT[k](p[k]) : k + ' ' + p[k])).join(', ');
   }
 
   function glyphArt(name, sz, sil) { return h('span', { class: 'lb-art lb-glyph' + (sil ? ' is-sil' : ''), style: '--art:' + sz + 'px' }, icon(name)); }
   function headlinerEntries() {
+    const seenTab = codex().headliners || {};           // core: id → times faced (0 = posted, not yet faced)
     return rows(DATA().HEADLINERS).map((r) => {
-      const seen = !!(codex().headliners || {})[r.id] || r.id === 'countdown';
-      const win = r.window || (r.min ? 'Festivals ' + r.min + (r.max && r.max !== r.min ? '–' + r.max : '') : '');
+      const seen = seenTab[r.id] != null || r.id === 'countdown', faced = seenTab[r.id] || 0;
+      const win = r.min ? (r.max && r.max !== r.min ? 'Festivals ' + r.min + '–' + r.max : 'Festival ' + r.min) : '';
       return {
         key: r.id, state: seen ? 'found' : 'unseen', cap: seen ? r.name : 'Unseen',
         art: (sz) => glyphArt(r.id, sz, !seen),
         label: seen ? r.name + ' headliner' : 'Unseen headliner. ' + (win ? 'Posted in ' + win : ''),
         detail: () => seen
-          ? dPanel(glyphArt(r.id, 80), r.name, [win, typeof r.counters === 'string' ? 'Counters: ' + r.counters : null],
-            [r.rule || r.text || '', r.telegraph ? 'On the rack: ' + r.telegraph + '.' : null, ((codex().headliners || {})[r.id] > 0) ? 'Faced ' + codex().headliners[r.id] + '×.' : null])
-          : dPanel(glyphArt(r.id, 80, true), 'Unseen headliner', [win], ['It is posted a festival ahead, so you will see it coming.' + (win ? ' Look for it in ' + win + '.' : '')]),
+          ? dPanel(glyphArt(r.id, 80), r.name, [win, faced ? 'Faced ' + faced + '×' : null],
+            [r.text || r.rule || '', r.counters ? 'Counters: ' + r.counters + '.' : null, r.telegraph ? 'On the rack: ' + r.telegraph + '.' : null])
+          : dPanel(glyphArt(r.id, 80, true), 'Unseen headliner', [win], ['Headliners are posted a festival ahead, so you will see it coming.' + (win ? ' Look for it in ' + win + '.' : '')]),
       };
     });
   }
   function rigEntries() {
+    const seenTab = codex().rigs || {};                 // core: id → times installed (0 = offered)
     return rows(DATA().RIGS).map((r) => {
-      const n = (codex().rigs || {})[r.id] || 0, seen = n > 0;
+      const seen = seenTab[r.id] != null, n = seenTab[r.id] || 0;
       return {
         key: r.id, state: seen ? 'found' : 'unseen', cap: seen ? r.name : 'Festival 2+',
-        art: (sz) => glyphArt(r.id, sz, !seen), label: seen ? r.name + ' rig' : 'Rig not installed yet',
-        detail: () => dPanel(glyphArt(r.id, 80, !seen), seen ? r.name : 'Not installed yet', ['$' + r.cost, seen ? 'Installed ' + n + '×' : 'Festival 2+'],
-          [seen ? (r.text || r.effect || '') + ' Rigs stay with the tube, not the shell.' : 'Rig cards appear in the workshop from Festival 2. Install one to record it.']),
+        art: (sz) => glyphArt(r.id, sz, !seen), label: seen ? r.name + ' rig' : 'Rig not seen yet',
+        detail: () => seen
+          ? dPanel(glyphArt(r.id, 80), r.name, ['$' + r.cost, 'Installed ' + n + '×'], [r.text || '', 'Rigs stay with the tube, not the shell.'])
+          : dPanel(glyphArt(r.id, 80, true), 'Not seen yet', ['Festival 2+'], ['Rig cards appear in the workshop from Festival 2.']),
       };
     });
   }
-  function kitRack(r) {
-    const src = r.rack || r.tubes || r.start || [];
-    return rows(src).map((t) => (t && (t.shell || t)) || null).filter((t) => t && (t.id || typeof t === 'string')).map((t) => (typeof t === 'string' ? { id: t } : t));
-  }
+  // kit racks: [[id, col], …] in sim.js; objects {id, col} or {shell} are accepted too
+  const kitRack = (r) => (r.rack || []).map((t) => (Array.isArray(t) ? { id: t[0], col: t[1] } : t && (t.shell || t))).filter((t) => t && t.id);
   function kitArt(r, sz, sil) {
     const rack = kitRack(r).slice(0, 3);
     return h('span', { class: 'lb-art lb-kit' + (sil ? ' is-sil' : ''), style: '--art:' + sz + 'px' },
-      rack.length ? rack.map((t) => picto(t.id, t.col || shellCol(t.id), 1, Math.round(sz * 0.36))) : icon('book'));
+      rack.map((t) => picto(t.id, t.col || shellCol(t.id), 1, Math.round(sz * 0.36))));
   }
   function kitEntries() {
     const wins = (meta().records || {}).winsByKit || {};
     return rows(DATA().KITS).map((r) => {
       const open = isUnlocked(r.lock);
+      const rack = () => kitRack(r).map((t) => nameOf('SHELLS', t.id) + (t.col && find(DATA().SHELLS, t.id) && find(DATA().SHELLS, t.id).col === '*' ? ' (' + colName(t.col) + ')' : '')).join(', ');
       return {
         key: r.id, state: open ? 'found' : 'locked', cap: open ? r.name : msInfo(msIdFor(r.lock)).name, badge: open ? null : lockBadge(r.lock),
         art: (sz) => kitArt(r, sz, !open), label: open ? r.name + ' kit' : 'Locked kit. ' + lockHint(r.lock),
-        detail: () => {
-          const rack = kitRack(r).map((t) => nameOf('SHELLS', t.id) + (t.col && t.col !== 'W' ? ' (' + colName(t.col) + ')' : '')).join(', ');
-          if (!open) { const p = msProgress(msIdFor(r.lock)); return dPanel(kitArt(r, 80, true), 'Locked kit', [lockHint(r.lock)], ['Unlocks with the ' + p.info.name + ' milestone. ' + p.info.cond]); }
-          return dPanel(kitArt(r, 80), r.name, ['$' + (r.coins != null ? r.coins : r.$ || 0), 'Crowd ' + (r.crowd || 0), 'Wins ' + (wins[r.id] || 0)],
-            [rack ? 'Starts with ' + rack + '.' : null, r.text || r.rule || r.desc || null]);
-        },
+        detail: () => open
+          ? dPanel(kitArt(r, 80), r.name, ['$' + (r.coins || 0), 'Crowd ' + (r.crowd || 0), 'Wins ' + (wins[r.id] || 0)],
+            ['Starts with ' + rack() + '.', r.text && r.text !== 'Default' ? r.text + '.' : 'The default kit.'])
+          : dPanel(kitArt(r, 80, true), 'Locked kit', [lockHint(r.lock)], [lockLine(r.lock)]),
       };
     });
   }
@@ -631,14 +595,14 @@ const UI_MENUS = (() => {
       p.done ? icon('check', 'lb-ms-ico') : h('span', { class: 'lb-ms-v num' }, p.v + '/' + p.info.goal));
   }
   function milestoneEntries() {
-    const ids = rows(DATA().MILESTONES).map((r) => r.id);
-    return (ids.length ? ids : Object.keys(MS_FALLBACK)).map((id) => {
-      const p = msProgress(id);
+    return rows(DATA().MILESTONES).map((r) => {
+      const p = msProgress(r.id);
       return {
-        key: id, state: p.done ? 'found' : 'seen', cap: p.info.name, art: (sz) => ringArt(p, sz),
+        key: r.id, state: p.done ? 'found' : 'seen', cap: p.info.name, art: (sz) => ringArt(p, sz),
         label: p.info.name + (p.done ? ', done' : ', ' + p.v + ' of ' + p.info.goal),
-        detail: () => dPanel(ringArt(p, 80), p.info.name, [p.done ? 'Done' : 'Best ' + p.v + '/' + p.info.goal + (p.info.unit ? ' ' + p.info.unit : '')],
-          [p.info.cond, p.info.unlocks ? (p.done ? 'Unlocked: ' : 'Unlocks: ') + p.info.unlocks + '.' : null]),
+        detail: () => dPanel(ringArt(p, 80), p.info.name, [p.done ? 'Done' : 'Best ' + p.v + '/' + p.info.goal],
+          [p.info.cond + '.', p.info.metric && !p.done ? 'Progress: ' + p.info.metric + ' (best in any run).' : null,
+            p.info.unlocks ? (p.done ? 'Unlocked: ' : 'Unlocks: ') + p.info.unlocks + '.' : null]),
       };
     });
   }
@@ -675,9 +639,13 @@ const UI_MENUS = (() => {
         type: 'button', class: 'lb-tile', 'data-state': e.state, 'data-key': e.key, 'aria-label': e.label,
         'aria-expanded': 'false', 'aria-controls': 'lb-detail', onclick: (ev) => toggleDetail(e, ev.currentTarget),
       }, tileArt(e), h('span', { class: 'lb-cap', 'aria-hidden': 'true' }, soft(e.cap))))));
-    L.panel.replaceChildren(
+    const tech = tab === 'fusions' ? rows(DATA().TECHNIQUES) : [];
+    fill(L.panel,
       h('div', { class: 'lb-lede' }, h('p', { class: 'lb-count display' }, TAB_LABEL + ' ', h('span', { class: 'num' }, c[0] + '/' + c[1])), h('p', { class: 'lb-intro' }, INTRO[tab])),
-      es.length ? grid : h('p', { class: 'lb-empty' }, 'Nothing here yet.'));
+      es.length ? grid : h('p', { class: 'lb-empty' }, 'Nothing here yet.'),
+      tech.length ? h('section', { class: 'lb-tech', 'aria-labelledby': 'lb-tech-h' }, h('h3', { class: 'display', id: 'lb-tech-h' }, 'Techniques'),
+        h('p', { class: 'lb-intro' }, 'Not fusions, just good habits.'),
+        h('ul', null, tech.map((t) => { const m = String(t).match(/^([^:]+):\s*(.*)$/); return h('li', null, m ? [h('b', null, m[1] + ': '), m[2]] : t); }))) : null);
   }
   function renderRecords() {
     const m = meta(), r = m.records || {}, bs = r.bestShow, br = r.bestRun;
@@ -686,7 +654,7 @@ const UI_MENUS = (() => {
     const ms = r.fastestWinMs, mmss = ms ? Math.floor(ms / 60000) + ':' + String(Math.floor(ms / 1000) % 60).padStart(2, '0') : null;
     const rec = (k, v, sub) => h('div', { class: 'lb-rec' + (v == null ? ' is-empty' : '') }, h('dt', null, k), h('dd', { class: 'num' }, v == null ? 'Not yet' : v, sub ? h('span', { class: 'lb-rec-sub' }, sub) : null));
     L.panel.tabIndex = 0;
-    L.panel.replaceChildren(
+    fill(L.panel, 
       h('div', { class: 'lb-lede' }, h('p', { class: 'lb-count display' }, 'Records'), h('p', { class: 'lb-intro' }, plural(m.runs || 0, 'run') + ' · ' + plural(m.wins || 0, 'win'))),
       h('dl', { class: 'lb-records' },
         rec('Best show', bs && bs.score != null ? fmt(bs.score) : null, bs ? 'Show ' + ((bs.show != null ? bs.show : 0)) + (bs.seed ? ' · seed ' + bs.seed : '') : null),
@@ -696,27 +664,36 @@ const UI_MENUS = (() => {
         rec('Wins by kit', kitWins || null),
         rec('Highest Renown won', renownWon != null && m.wins > 0 ? 'Renown ' + renownWon : null)));
   }
-  function posterRack(p) {
-    const src = p.rack || p.tubes || (p.state && p.state.tubes) || [];
-    return rows(src).map((t) => (t && (t.shell || (t.id ? t : null))) || null);
-  }
+  const endUI = () => (typeof UI_END !== 'undefined' && UI_END) || null;
   function renderPosters() {
     const list = (meta().posters || []).slice(-5).reverse();
+    const paint = can(endUI(), 'paintPoster');       // share UI_END's painter so posters match the end screen
     L.panel.tabIndex = 0;
+    const jobs = [];
     const cards = list.map((p) => {
       const rack = posterRack(p), n = Math.max(rack.length, 1);
-      const f = p.festival != null && typeof p.festival === 'number' ? festName(p.festival) : (p.festival || (p.show != null ? festName(Math.floor((p.show - 1) / 3) + 1) : ''));
-      const score = p.score != null ? p.score : p.applause != null ? p.applause : p.best;
-      return h('figure', { class: 'lb-poster' + (p.won ? ' is-won' : '') },
-        h('div', { class: 'lb-poster-sky', 'aria-hidden': 'true' }, rack.map((t, i) => h('span', { class: 'lb-poster-col', style: '--x:' + ((i + 0.5) / n).toFixed(3) + ';--y:' + (0.18 + 0.22 * Math.abs(Math.sin(i * 1.7 + n))).toFixed(3) },
-          t ? picto(t.id, t.col || shellCol(t.id), t.star || 1, 52) : null))),
-        h('figcaption', null, h('strong', { class: 'display-italic' }, p.won ? 'Happy New Year!' : f || 'The show'),
-          h('span', null, [p.show != null ? 'Show ' + p.show : null, score != null ? fmt(score) : null, p.seed ? 'seed ' + p.seed : null].filter(Boolean).join(' · '))));
+      const f = typeof p.festival === 'number' ? festName(p.festival) : p.festival || '';
+      const score = p.score != null ? p.score : p.best;
+      let art;
+      if (paint) { art = h('canvas', { class: 'lb-poster-cv', 'aria-hidden': 'true' }); jobs.push([art, p]); }
+      else {
+        art = h('div', { class: 'lb-poster-sky', 'aria-hidden': 'true' }, rack.map((t, i) => h('span', { class: 'lb-poster-col', style: '--x:' + ((i + 0.5) / n).toFixed(3) + ';--y:' + (0.18 + 0.22 * Math.abs(Math.sin(i * 1.7 + n))).toFixed(3) },
+          t ? picto(t.id, t.col || shellCol(t.id), t.star || 1, 52) : null)));
+      }
+      const title = p.won ? (p.endless ? 'The Afterparty' : 'Happy New Year!') : f || 'The show';
+      const where = [p.show != null ? 'Show ' + p.show : null, p.seed ? 'seed ' + p.seed : null];   // painted on the canvas too
+      const facts = [score ? 'Best show ' + fmt(score) : null, p.kit ? nameOf('KITS', p.kit) : null, p.renown ? 'Renown ' + p.renown : null,
+        p.fair ? 'Fair Weather' : null, p.date || null];
+      return h('figure', { class: 'lb-poster' + (p.won ? ' is-won' : '') }, art,
+        h('figcaption', null, h('strong', { class: paint ? 'vh' : 'display-italic' }, title + (paint ? ', ' + where.filter(Boolean).join(', ') + '. ' : '')),
+          h('span', null, (paint ? facts : [...where, ...facts]).filter(Boolean).join(' · '))));
     });
-    L.panel.replaceChildren(
+    fill(L.panel, 
       h('div', { class: 'lb-lede' }, h('p', { class: 'lb-count display' }, 'Posters ', h('span', { class: 'num' }, list.length + '/5')), h('p', { class: 'lb-intro' }, 'Your last five racks, painted as festival posters.')),
       cards.length ? h('div', { class: 'lb-posters' }, cards) : h('p', { class: 'lb-empty' }, 'Finish a run to paint your first poster.'));
+    for (const [cv, p] of jobs) call(endUI(), 'paintPoster', cv, p, { width: cv.clientWidth || 300, height: 180 });
   }
+  const posterRack = (p) => (p.tubes || p.rack || []).map((t) => (t && (t.shell || (t.id ? t : null))) || null);
 
   /* --- detail card (tap a tile for its rule text) --- */
   function dPanel(art, title, chips, lines) {
@@ -729,7 +706,7 @@ const UI_MENUS = (() => {
     if (L.open === tile) return closeDetail(true);
     closeDetail(false);
     L.open = tile; tile.setAttribute('aria-expanded', 'true');
-    L.detail.replaceChildren(...entry.detail(), h('button', { type: 'button', class: 'btn m-x lb-d-x', 'aria-label': 'Close details', onclick: () => closeDetail(true) }, icon('close')));
+    fill(L.detail, ...entry.detail(), h('button', { type: 'button', class: 'btn m-x lb-d-x', 'aria-label': 'Close details', onclick: () => closeDetail(true) }, icon('close')));
     L.detail.hidden = false;
     call(snd(), 'ui', 'tick');
     if (tile.scrollIntoView) tile.scrollIntoView({ block: 'nearest' });
@@ -787,7 +764,7 @@ const UI_MENUS = (() => {
     const root = $('help');
     root.setAttribute('aria-labelledby', 'help-title');
     let rules = DATA().RULES_CARD;
-    rules = Array.isArray(rules) ? rules : typeof rules === 'string' ? rules.split(/\n+/).map((s) => s.replace(/^\s*\d+[.)]\s*/, '')).filter(Boolean) : RULES_FALLBACK;
+    rules = Array.isArray(rules) ? rules : typeof rules === 'string' ? rules.split(/\n+/).map((s) => s.replace(/^\s*\d+[.)]\s*/, '')).filter(Boolean) : [];
     const gl = rows(DATA().GLOSSARY).map((g) => Array.isArray(g) ? g : [g.term || g.id || g.name, g.meaning || g.text || g.def]).filter((g) => g[0]);
     const body = h('div', { class: 'm-body hp-body' },
       h('ol', { class: 'hp-card', 'aria-label': 'The rules' }, rules.slice(0, 3).map((t, i) => h('li', null, h('span', { class: 'hp-n display-italic', 'aria-hidden': 'true' }, String(i + 1)), h('span', null, t)))),
@@ -804,17 +781,22 @@ const UI_MENUS = (() => {
      TOASTS (render GAME 'toast'; max 3; auto-dismiss; aria-hidden)
      ====================================================================== */
   const T = { list: [] };
-  const TOAST_ICON = { milestone: 'star', logbook: 'book', discover: 'book', unlock: 'unlock', fusion: 'spark' };
-  function toast(text, kind) {
+  const TOAST_ICON = { milestone: 'star', logbook: 'book', discover: 'book', unlock: 'unlock', fusion: 'spark', tip: 'help' };
+  function toast(text, kind, id) {
     const box = $('toasts');
     if (!box || !text) return;
-    const now = performance.now();
+    const now = performance.now(), tip = kind === 'tip';
     if (T.list.some((t) => t.text === text && now - t.at < 600)) return;
-    const el = h('div', { class: 'toast', 'data-kind': kind || 'info' }, h('span', { class: 'toast-ico' }, icon(TOAST_ICON[kind] || 'spark')), h('span', { class: 'toast-text' }, text));
-    const item = { el, text, at: now, timer: 0 };
-    T.list.push(item); box.append(el);
-    while (T.list.length > 3) dropToast(T.list[0], true);
-    item.timer = setTimeout(() => dropToast(item, false), 3200 + Math.min(2000, text.length * 30));
+    const el = h('div', { class: 'toast', 'data-kind': kind || 'info' }, h('span', { class: 'toast-ico' }, icon(TOAST_ICON[kind] || 'spark')),
+      h('span', { class: 'toast-text' }, tip ? h('b', { class: 'toast-k' }, 'Tip ') : null, text));
+    const item = { el, text, at: now, timer: 0, tip, id };
+    if (tip) { for (const t of T.list.filter((x) => x.tip)) dropToast(t, true); box.prepend(el); }   // one tip at a time, pinned first
+    else box.append(el);
+    T.list.push(item);
+    const transient = () => T.list.filter((t) => !t.tip);
+    while (T.list.length > 3 && transient().length) dropToast(transient()[0], true);
+    // Tips stay until core's 'tipDone' (the next action); other toasts leave on their own.
+    if (!tip) item.timer = setTimeout(() => dropToast(item, false), 3200 + Math.min(2000, text.length * 30));
   }
   function dropToast(item, now) {
     clearTimeout(item.timer);
@@ -823,6 +805,7 @@ const UI_MENUS = (() => {
     item.el.classList.add('is-out');
     setTimeout(() => item.el.remove(), 260);
   }
+  const tipDone = (p) => { for (const t of T.list.filter((x) => x.tip && (!p || !p.id || !x.id || x.id === p.id))) dropToast(t, false); };
 
   /* ======================================================================
      TAP TO CONTINUE (after the tab was hidden; any tap or key resumes)
@@ -832,7 +815,7 @@ const UI_MENUS = (() => {
     root.setAttribute('role', 'dialog');
     root.setAttribute('aria-modal', 'true');
     root.setAttribute('aria-label', 'Paused while away');
-    T.tap = h('button', { type: 'button', id: 'tap-continue-btn', class: 'tc-btn' },
+    T.tap = h('button', { type: 'button', id: 'tap-continue-btn', 'data-autofocus': true, class: 'tc-btn' },
       h('span', { class: 'tc-moon', 'aria-hidden': 'true' }),
       h('span', { class: 'tc-title display-italic' }, 'Tap to continue'),
       h('span', { class: 'tc-sub' }, 'The crowd kept your spot on the riverbank.'));
@@ -840,9 +823,7 @@ const UI_MENUS = (() => {
     root.addEventListener('click', resumeFromAway);   // any tap on the overlay resumes
   }
   function resumeFromAway() {
-    if ($('tap-continue').hidden) return;
-    call(snd(), 'resume');
-    call(G, 'close', 'tapContinue');
+    if (!$('tap-continue').hidden) call(G, 'close', 'tapContinue');   // core resumes audio and the loop
   }
 
   /* ======================================================================
@@ -898,12 +879,15 @@ const UI_MENUS = (() => {
     if (open && OVERLAY_EL[name]) stackAbove($(OVERLAY_EL[name]));
     if (!open) {
       disarmAll();
+      // Back on the pause menu: return focus to the tile for the sheet that just closed.
+      const tile = { settings: 'pause-settings', logbook: 'pause-logbook', help: 'pause-help' }[name];
+      if (tile && topName() === 'pause' && $(tile)) $(tile).focus();
       if (name === 'logbook') closeDetail(false);
-      if (name === 'settings' && S.exportText) { S.exportText.hidden = true; S.exportText.value = ''; S.exportNote.textContent = ''; S.importNote.textContent = ''; S.resetNote.textContent = ''; }
+      if (name === 'settings') clearSaveNotes();
       return;
     }
     if (name === 'pause') { renderPause(); settleFocus($('pause-menu'), P.resume, true); }
-    else if (name === 'settings') { syncSettings(); settleFocus($('settings'), $('settings').querySelector('input,button')); }
+    else if (name === 'settings') { clearSaveNotes(); syncSettings(); settleFocus($('settings'), $('settings').querySelector('input,button')); }
     else if (name === 'logbook') {
       const o = p.opts || {};
       if (o.tab && TABS.some((t) => t[0] === o.tab)) L.tab = o.tab;
@@ -921,7 +905,13 @@ const UI_MENUS = (() => {
     for (const id of ['pause-menu', 'settings', 'logbook', 'help', 'toasts', 'tap-continue']) { const el = $(id); if (el && !el.closest('[lang]')) el.setAttribute('lang', 'en'); }
     buildPause(); buildSettings(); buildLogbook(); buildHelp(); buildTap();
     call(G, 'on', 'overlay', onOverlay);
-    call(G, 'on', 'toast', (p) => toast(p && (p.text || p), p && p.kind));
+    call(G, 'on', 'toast', (p) => {
+      if (!p) return;
+      const text = p.text || (typeof p === 'string' ? p : '');
+      toast(text, p.kind, p.id);
+      if (text && !p.announced) call(G, 'announce', text);   // #toasts is aria-hidden; core does not voice toasts
+    });
+    call(G, 'on', 'tipDone', tipDone);
     call(G, 'on', 'settings', (p) => {
       if (p && p.key === 'highContrast') pictoCache.clear();
       if (isOpen('settings')) syncSettings();

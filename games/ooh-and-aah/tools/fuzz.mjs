@@ -33,7 +33,8 @@
  * Usage:
  *   node tools/fuzz.mjs [--minutes 3] [--seed 1] [--viewports 360x740,1440x900]
  *        [--file index.html | --url http://…] [--segment 45] [--probe-every 5] [--out tools/shots/fuzz]
- *        [--replay tools/shots/fuzz/fail-….json] [--headed] [--raw] [--verbose]
+ *        [--replay tools/shots/fuzz/fail-….json] [--query debug=1] [--headed] [--raw] [--verbose]
+ *   --query  extra URL flags appended to every page load (e.g. fairWeather tests, debug=1).
  * Exit code: 0 clean · 1 a failure was found (or the page could not load).
  */
 import { createRequire } from 'module';
@@ -58,7 +59,7 @@ const OVERLAY_API = ['pause', 'settings', 'logbook', 'help'];
 // ---------------------------------------------------------------- args
 function parseArgs(argv) {
   const o = { minutes: 3, seed: 1, viewports: '360x740,1440x900', file: null, url: null, segment: 45, probeEvery: 5,
-    out: path.join(HERE, 'shots', 'fuzz'), replay: null, headed: false, raw: false, verbose: false };
+    out: path.join(HERE, 'shots', 'fuzz'), replay: null, headed: false, raw: false, verbose: false, query: '' };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i], eq = a.indexOf('='), key = (eq > 0 ? a.slice(0, eq) : a).replace(/^--/, '');
     const val = () => (eq > 0 ? a.slice(eq + 1) : argv[++i]);
@@ -72,6 +73,7 @@ function parseArgs(argv) {
       case 'probe-every': o.probeEvery = Math.max(1, parseInt(val(), 10) || 5); break;
       case 'out': o.out = path.resolve(String(val())); break;
       case 'replay': o.replay = path.resolve(String(val())); break;
+      case 'query': o.query = String(val()).replace(/^\?/, ''); break;
       case 'headed': o.headed = true; break;
       case 'raw': o.raw = true; break;
       case 'verbose': case 'v': o.verbose = true; break;
@@ -444,13 +446,14 @@ async function gotoAndWait(page, url) {
     await sleep(100);
   }
 }
-function segmentQuery(rng, seed, n) {
+function segmentQuery(rng, seed, n, extra) {
   const q = new URLSearchParams();
   q.set('seed', `fz${seed}-${n}`);
   if (rng() < 0.3) { q.set('unlock', 'all'); if (rng() < 0.7) q.set('kit', ['apprentice', 'salvo', 'chemist', 'market', 'showman'][Math.floor(rng() * 5)]); }
   if (rng() < 0.2) q.set('renown', String(Math.floor(rng() * 9)));
   if (rng() < 0.3) q.set('fresh', '1');
   if (n === 0 && rng() < 0.5) q.delete('seed'); // sometimes let the game pick (first-ever run on a fresh profile)
+  for (const [k, v] of new URLSearchParams(extra || '')) q.set(k, v);
   return q.toString();
 }
 
@@ -480,7 +483,7 @@ async function fuzzViewport(browser, baseUrl, vp, o, budgetMs) {
   let segment = 0, failure = null, log = [];
   try {
     while (Date.now() < deadline && !failure) {
-      const query = segmentQuery(rng, o.seed, segment);
+      const query = segmentQuery(rng, o.seed, segment, o.query);
       await page.setViewportSize({ width: vp[0], height: vp[1] });
       log = [{ k: 'goto', query, w: vp[0], h: vp[1] }];
       if (o.verbose) console.log(`  segment ${segment}: ?${query}`);

@@ -159,7 +159,7 @@ const UI_PLAY = (() => {
     return { id, name: r.name || f[0], cost: r.cost != null ? r.cost : f[1], text: r.text || r.effect || r.rule || f[2] };
   }
   function ruleInfo(id) {
-    const r = lookup(DATA().HEADLINERS, id) || lookup(DATA().TWISTS, id) || {}, f = RULES[id] || [cap(id), ''];
+    const r = lookup(DATA().RULE_INFO, id) || lookup(DATA().HEADLINERS, id) || {}, f = RULES[id] || [cap(id), ''];
     return { id, name: r.name || f[0], text: r.rule || r.text || r.effect || f[1] };
   }
   function tipText(id) {
@@ -230,8 +230,14 @@ const UI_PLAY = (() => {
   /* ---------- rack math: prices, fire order, the sky (§3.1) ---------- */
 
   const starMult = st => [1, 2, 4][(st || 1) - 1] || 1;
-  const upCost = sh => { const c = row(sh.id).cost || 3; return sh.star >= 2 ? 2 * c : Math.ceil(1.5 * c); };
+  function upCost(sh) {
+    const o = sim();
+    if (fnIn(o, 'upCost')) { const v = safe(() => o.upCost(sh.id, sh.star || 1), null); if (typeof v === 'number') return v; }
+    const c = row(sh.id).cost || 3;
+    return sh.star >= 2 ? 2 * c : Math.ceil(1.5 * c);
+  }
   const sellValue = sh => Math.max(1, Math.floor(0.75 * (sh.paid || 0)));
+  const rarityOf = r => RARITY[r.rar || r.rarity] || RARITY.C;
   function rerollCost() {
     const o = sim(), st = S();
     if (fnIn(o, 'rerollCost')) return o.rerollCost(st);
@@ -591,10 +597,8 @@ const UI_PLAY = (() => {
     const tonight = rulesFor(s), hs = headlinerShow(s);
     const auto = hs === s; // a Headliner's own build: tonight's rule is the preview (§8.4)
     const hRules = rulesFor(Math.min(hs, lastShow()));
-    const rehearsing = rehearse && !auto && hRules.length > 0;
+    const rehearsing = rehearseOn() && !auto && hRules.length > 0;
     const rules = rehearsing ? hRules : tonight;
-    if (G.preview && typeof G.preview === 'object') { G.preview.rules = rules; G.preview.rehearse = rehearsing || auto; }
-    else if (fnIn(G, 'setPreview')) G.setPreview({ rules, rehearse: rehearsing || auto });
     const order = fireOrder(st.tubes, rules);
     const chips = chipsOf(st, rules);
     const sky = skyRun(st.tubes, rules);
@@ -604,11 +608,24 @@ const UI_PLAY = (() => {
     const mood = moodOf(st), pmood = rehearsing ? moodOf(st, rules) : mood;
     view = { s, tonight, hs, hRules, rules, rehearsing, auto, order, chips, sky, sees, fav, mood, pmood, legal: legalList() };
   }
-  const moodVisible = () => !!view && !!view.mood && !(G.settings && G.settings.mood === false) && !(S().firstRun && view.s < 2);
+  // GAME.preview.rehearse is the source of truth (core); a local flag stands in without it.
+  function rehearseOn() { const p = G.preview; return p && typeof p === 'object' && 'rehearse' in p ? !!p.rehearse : rehearse; }
+  function setRehearse(v) {
+    const p = G.preview;
+    if (fnIn(G, 'setRehearse')) G.setRehearse(v);
+    else if (p && typeof p === 'object' && 'rehearse' in p) p.rehearse = v;
+    else { rehearse = v; if (fnIn(G, 'emit')) G.emit('preview', { rehearse: v }); render(); }
+  }
+  function moodVisible() {
+    if (!view || !view.mood) return false;
+    if (fnIn(G, 'moodVisible')) return !!G.moodVisible();
+    return !(G.settings && G.settings.mood === false) && !(S().firstRun && view.s < 2);
+  }
   const hasRule = r => !!view && view.rules.includes(r);
   function missedBefore() { const h = (S().runStats && S().runStats.history) || []; return h.some(e => e && !e.pass && !e.relit); }
   const critical = () => missedBefore() && S().phase !== 'lost';
   function lastChance() { // §5.4: first build after the miss, and every Headliner / Countdown build after it
+    if (G.critical && typeof G.critical === 'object') return !!G.critical.lastChance && building();
     if (!critical() || !building()) return false;
     const h = S().runStats.history, last = h[h.length - 1];
     return (last && !last.pass) || slotOf(view.s) === 2;
@@ -620,6 +637,7 @@ const UI_PLAY = (() => {
   function render() {
     if (!G || !G.state || !E.play) return;
     safe(() => {
+      syncShow();
       computeView();
       if (!frozen) { renderHud(); renderSponsor(); renderRack(); renderTools(); renderShop(); renderWorkshop(); }
       renderFire();
@@ -871,7 +889,7 @@ const UI_PLAY = (() => {
       else if (fuses) { badge = '<span class="c-badge b-fuse">✦ Fuses</span>'; badgeLong = 'Fuses with a shell you own'; }
       else if (c.tag === 'collector') { badge = '<span class="c-badge b-coll">Collector</span>'; badgeLong = 'Collector card'; }
       else if (c.tag === 'pity') { badge = '<span class="c-badge b-pity">Pity</span>'; badgeLong = 'Pity card'; }
-      const rar = RARITY[r.rarity] || RARITY.C;
+      const rar = rarityOf(r);
       const poor = c.cost > st.coins && !(twin && upCost(twin.sh) <= st.coins);
       let pips = '';
       for (let k = 0; k < 3; k++) pips += `<i${k < rar[1] ? ' class="on"' : ''}></i>`;
@@ -1103,57 +1121,24 @@ const UI_PLAY = (() => {
 
   /* ================= 11. Actions ================= */
 
+  // Everything goes through GAME.dispatch. Core announces the action (§13), AUDIO sounds the SIM build
+  // events (pluck / coin / shuffle) and core runs the haptics; this adds only what the SIM does not voice.
+  const SILENT_IN_AUDIO = { sponsor: ['chime'], restore: ['pluck', { col: 'G' }], setColour: ['pluck'] };
   function commit(act) {
     if (!G || !fnIn(G, 'dispatch')) return false;
-    const before = describeAction(act);
     clearHeld(true);
     disarmSell();
     flash = null;
     const ev = G.dispatch(act) || [];
-    if (Array.isArray(ev) && ev.some(e => e && e.type === 'illegal')) {
-      const why = (ev.find(e => e.type === 'illegal') || {}).reason;
-      deny(null, 'Not possible', why ? String(why) : 'That move is not allowed right now.');
-      return false;
-    }
-    dismissTip();
-    const col = before.col;
-    if (act.type === 'sell') sfx('coin');
-    else if (act.type === 'reroll') sfx('shuffle');
-    else if (act.type === 'sponsor') sfx('chime');
-    else sfx('pluck', { col: col || 'A' });
-    if (act.type !== 'sponsor') haptic(8);
+    const bad = Array.isArray(ev) && ev.find(e => e && e.type === 'illegal');
+    if (bad) { deny(null, 'Not possible', bad.reason ? cap(String(bad.reason)) + '.' : 'That move is not allowed right now.', true); return false; }
+    const extra = SILENT_IN_AUDIO[act.type];
+    if (extra) sfx(extra[0], act.type === 'setColour' ? { col: act.col } : extra[1]);
     if (act.type === 'reroll' && !reduced()) E.cards.forEach((b, i) => { b.style.animationDelay = i * 60 + 'ms'; b.classList.remove('flip'); void b.offsetWidth; b.classList.add('flip'); });
     if ((act.type === 'buy' || act.type === 'upgrade' || act.type === 'move') && act.to) popSlot(act.to, act.type === 'upgrade');
     if (act.type === 'buyTube') popSlot({ zone: 'tube', i: S().tubes.length - 1 });
-    if (act.type === 'move' && act.to && act.to.zone === 'crate') queueTip('t_crate', '[data-crate="' + act.to.i + '"]');
-    const m = view && moodVisible() ? ` Crowd mood: ${MOODS[view.mood] || view.mood}.` : '';
-    announce(before.text(S()) + m);
+    if (!fnIn(G, 'tip') && act.to && act.to.zone === 'crate') queueTip('t_crate');
     return true;
-  }
-  function describeAction(act) {
-    const st = S();
-    const coins = s => `${s.coins} coins left.`;
-    if (act.type === 'buy' || act.type === 'upgrade') {
-      const c = st.shop.cards[act.card], r = row(c.id), col = c.col || r.col;
-      if (act.type === 'upgrade') {
-        const sh = slotShell(act.to), star = (sh.star || 1) + 1;
-        return { col: shellCol(sh), text: s => `Upgraded ${r.name} in ${slotName(act.to)} to star ${star}. ${coins(s)}` };
-      }
-      return { col, text: s => `Bought ${r.name}, ${colName(col)}, into ${slotName(act.to)}. ${coins(s)}` };
-    }
-    if (act.type === 'move') {
-      const a = slotShell(act.from), b = slotShell(act.to);
-      return { col: shellCol(a), text: () => (b ? `Swapped ${shellName(a)} and ${shellName(b)}.` : `Moved ${shellName(a)} to ${slotName(act.to)}.`) };
-    }
-    if (act.type === 'sell') { const sh = slotShell(act.from); return { text: s => `Sold ${shellName(sh)} for ${sellValue(sh)} coins. ${coins(s)}` }; }
-    if (act.type === 'buyRig') { const ri = rigInfo(st.shop.rig.id); return { col: 'A', text: s => `Installed ${ri.name} on tube ${act.tube + 1}. ${coins(s)}` }; }
-    if (act.type === 'buyTube') return { col: 'A', text: s => `Added tube ${s.tubes.length}. ${coins(s)}` };
-    if (act.type === 'reroll') return { text: s => `Rerolled the shop. ${coins(s)}` };
-    if (act.type === 'sponsor') return { text: s => (act.accept ? `Sponsor accepted: target ${fmt(targetOf(s.show))}.` : `Sponsor declined: target ${fmt(targetOf(s.show))}.`) };
-    if (act.type === 'match') return { col: 'B', text: () => "Matched: tonight's fuse fires your shells in their usual order." };
-    if (act.type === 'restore') return { col: 'G', text: () => "Restored last show's order." };
-    if (act.type === 'setColour') return { col: act.col, text: () => `Colour set to ${colName(act.col)}.` };
-    return { text: () => '' };
   }
   function popSlot(slot, big) {
     if (reduced()) return;
@@ -1162,8 +1147,8 @@ const UI_PLAY = (() => {
       if (el) { el.classList.remove('pop', 'pop-up'); void el.offsetWidth; el.classList.add(big ? 'pop-up' : 'pop'); }
     });
   }
-  function deny(el, title, text) {
-    sfx('error');
+  function deny(el, title, text, voiced) {
+    if (!voiced) sfx('error'); // a refused dispatch is already voiced by AUDIO.onEvent('illegal')
     flash = { title: `<b>${esc(title)}</b>`, text };
     if (el && !reduced()) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
     render();
@@ -1188,19 +1173,13 @@ const UI_PLAY = (() => {
   function toggleRehearse() {
     if (!view.hRules.length) return;
     if (view.auto) { hint("Tonight's rule is live", 'Numerals, chips and the mood already use it.'); return; }
-    rehearse = !rehearse;
     sfx('chime');
-    render();
-    if (fnIn(G, 'emit')) G.emit('preview', G.preview);
-    const r = ruleInfo(view.hRules[0]).name;
-    announce(rehearse ? `Rehearsing ${r}.${moodVisible() && view.pmood ? ' Crowd mood: ' + (MOODS[view.pmood] || view.pmood) + '.' : ''}` : 'Rehearse off.');
+    setRehearse(!view.rehearsing);
   }
   function doUndo() {
     if (!fnIn(G, 'undo') || !(fnIn(G, 'canUndo') ? G.canUndo() : true)) { sfx('error'); return; }
     clearHeld(true); disarmSell(); flash = null;
     G.undo();
-    sfx('tick');
-    announce('Undone.');
   }
   function tryAct(type, extra) {
     const a = view.legal.find(x => x.type === type) || Object.assign({ type }, extra || {});
@@ -1247,10 +1226,7 @@ const UI_PLAY = (() => {
 
   function onDown(e) {
     if (!e.isPrimary || e.button > 0) return;
-    if (ui() === 'RESOLVING') { // tapping anywhere fast-forwards ×4 (§2.4); Skip lives on the fire button
-      if (!e.target.closest('#fire, [data-act="pause"], .hud-ic') && fnIn(G, 'fastForward')) G.fastForward();
-      return;
-    }
+    if (ui() === 'RESOLVING') return; // core fast-forwards ×4 on a tap anywhere in #play (§2.4)
     const el = itemEl(e.target);
     if (!el || el.disabled || !building()) return;
     drag = { el, item: itemOf(el), x0: e.clientX, y0: e.clientY, id: e.pointerId, moved: false, long: false, ghost: null };
@@ -1450,18 +1426,22 @@ const UI_PLAY = (() => {
 
   /* ================= 14. Resolving: live readout, result card (§8.1, §9) ================= */
 
+  // Core keeps GAME.state as the rack-as-lit during RESOLVING and swaps in the live state at the slam
+  // ('change' then 'result'); the rows below the rack stay collapsed until RESULT.
   function onUi(p) {
     const to = p && p.to;
     if (to === 'RESOLVING') {
       frozen = true; ffOnce = false;
-      clearHeld(true); disarmSell(); flash = null; dismissTip();
-      if (!litTarget) litTarget = targetOf(Math.max(0, (S().show | 0) - 1));
+      clearHeld(true); disarmSell(); flash = null;
+      litTarget = litTarget || targetOf(S().show | 0);
       readout.on = true; readout.ooh = 0; readout.aah = 1; readout.score = 0;
       result = null;
       E.tubes.forEach(t => t.btn.classList.remove('fired', 'recoil'));
     } else {
-      if (frozen) { frozen = false; E.tubes.forEach(t => t.btn.classList.remove('fired', 'recoil')); E.fuse.classList.remove('lit'); }
-      if (to === 'BUILD' || to === 'RESULT') { readout.on = false; litTarget = 0; }
+      frozen = false;
+      E.tubes.forEach(t => t.btn.classList.remove('fired', 'recoil'));
+      E.fuse.classList.remove('lit');
+      if (to !== 'RESULT') { readout.on = false; litTarget = 0; }
     }
     render();
   }
@@ -1469,68 +1449,57 @@ const UI_PLAY = (() => {
     if (!ev || !ev.type) return;
     const T = typeof ev.tube === 'number' ? E.tubes[ev.tube] : null;
     switch (ev.type) {
-      case 'fuseLit': E.fuse.classList.add('lit'); break;
+      case 'fuseLit': E.fuse.classList.add('lit'); if (typeof ev.target === 'number') litTarget = ev.target; break;
       case 'launch': if (T && !reduced()) { T.btn.classList.remove('recoil'); void T.btn.offsetWidth; T.btn.classList.add('recoil'); } break;
       case 'burst': if (T) T.btn.classList.add('fired'); break;
-      case 'gainOoh': readout.ooh += +ev.v || 0; punch(E.roO); break;
-      case 'crowdCheer': readout.ooh += +ev.v || 0; punch(E.roO); break;
+      case 'gainOoh': case 'crowdCheer': readout.ooh += +ev.v || 0; punch(E.roO); break;
       case 'gainAah': readout.aah += +ev.v || 0; punch(E.roA); break;
       case 'multAah': readout.aah *= +ev.factor || 1; punch(E.roA, true); break;
-      case 'applause':
-        if (typeof ev.ooh === 'number') readout.ooh = ev.ooh;
-        if (typeof ev.aah === 'number') readout.aah = ev.aah;
-        if (typeof ev.target === 'number') litTarget = ev.target;
-        break;
+      case 'applause': if (typeof ev.target === 'number') litTarget = ev.target; break;
       default: break;
     }
-    // prefer running totals when the event carries them
-    if (ev.type !== 'applause' && typeof ev.totalOoh === 'number') readout.ooh = ev.totalOoh;
-    if (ev.type !== 'applause' && typeof ev.totalAah === 'number') readout.aah = ev.totalAah;
-    readout.score = readout.ooh * readout.aah;
+    // The SIM stamps running totals on gain / × / cheer / applause events: prefer them over the sum.
+    if (typeof ev.ooh === 'number' && typeof ev.aah === 'number' && /^(gainOoh|gainAah|multAah|crowdCheer|applause)$/.test(ev.type)) {
+      readout.ooh = ev.ooh; readout.aah = ev.aah;
+    }
+    readout.score = Math.floor(readout.ooh * readout.aah);
     if (!E.readout.hidden) paintReadout();
-    E.cheer.style.setProperty('--fill', Math.min(1, litTarget ? Math.floor(readout.score) / litTarget / 2 : 0).toFixed(3));
+    E.cheer.style.setProperty('--fill', Math.min(1, litTarget ? readout.score / litTarget / 2 : 0).toFixed(3));
   }
   function onResult(p) {
-    const entry = (p && p.entry) || {}, evs = (p && p.events) || [];
+    const entry = (p && p.entry) || {}, evs = (p && p.events) || [], sm = (p && p.summary) || {};
     const ap = evs.find(e => e && e.type === 'applause') || {};
-    const pay = evs.find(e => e && e.type === 'payout') || (p && p.summary && p.summary.payout) || null;
-    const r = {
-      applause: num(entry.applause, ap.score, readout.score),
-      ooh: num(entry.ooh, ap.ooh, readout.ooh),
-      aah: num(entry.aah, ap.aah, readout.aah),
-      target: num(entry.target, ap.target, litTarget),
-      pass: entry.pass != null ? !!entry.pass : !!ap.pass,
-      encore: entry.encore != null ? !!entry.encore : !!ap.encore,
-      relit: !!entry.relit, show: entry.show, items: payoutItems(pay),
+    const pay = sm.payout || evs.find(e => e && e.type === 'payout') || null;
+    result = {
+      applause: num(sm.applause, entry.applause, ap.score, readout.score),
+      ooh: num(sm.ooh, entry.ooh, ap.ooh, readout.ooh),
+      aah: num(sm.aah, entry.aah, ap.aah, readout.aah),
+      target: num(sm.target, entry.target, ap.target, litTarget),
+      pass: sm.pass != null ? !!sm.pass : entry.pass != null ? !!entry.pass : !!ap.pass,
+      encore: sm.encore != null ? !!sm.encore : !!(entry.encore || ap.encore),
+      relit: !!(sm.relit || entry.relit), over: !!sm.over, items: payoutItems(pay),
     };
-    result = r;
     readout.on = false;
+    frozen = false; // the HUD takes the payout at the slam
     render();
-    // hints that trigger at the slam (§4.13)
-    if (r.aah > 1) queueTip('t_aah', '.result');
-    if (r.items.some(it => it.kind === 'c')) queueTip('t_crowd', '#hud-crowd');
-    if (r.items.some(it => /interest/.test(it.text))) queueTip('t_interest', '#hud-coins');
-    if (!r.pass) queueTip('t_rain', '.hud-rain');
-    const ratio = r.target ? Math.floor(r.applause / r.target * 10) / 10 : 0;
-    const crowd = r.items.filter(it => it.kind === 'c').reduce((s, it) => s + it.v, 0);
-    announce(`Applause ${fmt(r.applause)}: Ooh ${fmt(r.ooh)} times Aah ${fmtAah(r.aah)}. ` +
-      (r.pass ? `Passed, ${ratio} times the target.` : `Missed by ${fmt(r.target - r.applause)}.`) + (crowd ? ` Crowd plus ${crowd}.` : ''));
-    if (!r.pass && critical() && S().phase === 'build') announce('Rain check used. Last chance.', { assertive: true });
   }
   const num = (...xs) => { for (const x of xs) if (typeof x === 'number' && isFinite(x)) return x; return 0; };
+  // The itemised payout ticker (§5.2): coins first, then Crowd.
   function payoutItems(pay) {
     const out = [];
     if (!pay || typeof pay !== 'object') return out;
-    const used = new Set(['type', 'seq', 'total', 'coinsAfter', 'crowdAfter', 'pass']);
-    for (const [keys, label, kind] of PAYOUT_LABELS) {
-      for (const k of keys) {
-        if (typeof pay[k] === 'number' && pay[k] && !used.has(k)) {
-          out.push({ kind, v: pay[k], text: kind === '$' ? `+$${pay[k]} ${label}` : `${label} +${pay[k]}` });
-          keys.forEach(x => used.add(x));
-          break;
-        }
-      }
-    }
+    const n = v => (typeof v === 'number' && isFinite(v) ? v : 0);
+    const coin = (v, label) => { if (n(v)) out.push({ kind: '$', v, text: `+$${v} ${label}` }); };
+    const crowd = (v, label) => { if (n(v)) out.push({ kind: 'c', v, text: `${label} +${v}` }); };
+    const sp = pay.sponsor && typeof pay.sponsor === 'object' ? pay.sponsor : null;
+    coin(pay.base, 'show fee');
+    coin(pay.interest, 'interest');
+    coin(sp ? sp.coins : pay.sponsorCoins, 'sponsor');
+    coin(pay.shellCoins, 'from shells');
+    crowd(n(pay.crowdPass) + n(pay.crowdHeadliner) + n(pay.shellCrowd), 'Crowd');
+    crowd(pay.crowdEncore, 'Encore Crowd');
+    crowd(sp ? sp.crowd : 0, 'Sponsor Crowd');
+    if (sp && sp.collector) out.push({ kind: '$', v: 0, text: 'Collector card next shop' });
     return out;
   }
 
@@ -1567,7 +1536,7 @@ const UI_PLAY = (() => {
     const tipLine = id => (tipText(id) ? `<p class="insp-tip">${esc(tipText(id))}</p>` : '');
     const close = '<button type="button" class="btn btn-primary" data-insp="close">Close</button>';
     const shellSheet = (sh, where, extraBtns) => {
-      const r = row(sh.id), col = shellCol(sh), star = sh.star || 1, rar = RARITY[r.rarity] || RARITY.C;
+      const r = row(sh.id), col = shellCol(sh), star = sh.star || 1, rar = rarityOf(r);
       const hang = where && where.tb ? Math.max(0, hangOf(where.tb, view.rules)) : (r.hang || 0);
       let tiers = '';
       for (let k = 1; k <= 3; k++) tiers += `<li${k === star ? ' class="now"' : ''}><b>★${k}</b> ${esc(cardText(sh.id, col, k))}</li>`;
@@ -1634,85 +1603,79 @@ const UI_PLAY = (() => {
     return '';
   }
 
-  /* ================= 16. First-run hints (§6, §4.13): one at a time, never blocking ================= */
-
+  /* ================= 16. First-run hints (§6, §4.13) ================= */
+  // Core owns the tooltip queue (shown once, as 'tip' toasts, dismissed by the next action). This module
+  // adds the two triggers only the play screen can see (t_sky: first shell lifted; t_fusion: first
+  // fusion badge) and lights up the element each tip is about, one at a time. Without GAME.tip it
+  // shows the line itself in the sky.
+  const TIP_ANCHOR = {
+    t_fuse: '#fire', t_sky: '#rack', t_aah: '.readout, .result', t_head: '.hud-head', t_mood: '#fire .mood',
+    t_crowd: '.hud-crowd', t_interest: '.hud-coins', t_twin: '.card .b-twin', t_fusion: '.card .b-fuse',
+    t_crate: '.crate', t_rig: '[data-act="buyRig"]', t_tube: '[data-act="buyTube"]', t_sponsor: '[data-act="sponsor"]',
+    t_match: '[data-act="match"]', t_rain: '.hud-rain', t_count: '.hud-head',
+  };
   function seen(id) { const m = G.meta; return seenLocal.has(id) || !!(m && Array.isArray(m.seenTips) && m.seenTips.includes(id)); }
-  function queueTip(id, anchor) {
-    if (!G || seen(id) || (tip && tip.id === id) || tipQueue.some(q => q.id === id) || !tipText(id)) return;
-    tipQueue.push({ id, anchor });
+  function queueTip(id) {
+    if (!G || seen(id)) return;
+    if (fnIn(G, 'tip')) { seenLocal.add(id); G.tip(id); return; }
+    if ((tip && tip.id === id) || tipQueue.includes(id) || !tipText(id)) return;
+    tipQueue.push(id);
     if (!tip) nextTip();
   }
   function nextTip() {
-    tip = tipQueue.shift() || null;
+    const id = tipQueue.shift();
+    tip = id ? { id, own: true } : null;
     if (tip) {
-      seenLocal.add(tip.id);
+      seenLocal.add(id);
       const m = G.meta, list = m && Array.isArray(m.seenTips) ? m.seenTips : [];
-      if (!list.includes(tip.id) && fnIn(G, 'setMeta')) safe(() => G.setMeta({ seenTips: list.concat(tip.id) }));
+      if (!list.includes(id) && fnIn(G, 'setMeta')) safe(() => G.setMeta({ seenTips: list.concat(id) }));
     }
     renderTip();
   }
-  function dismissTip() { if (tip) { tip = null; nextTip(); } }
+  function dismissTip() { if (tip) { const own = tip.own; tip = null; if (own) nextTip(); else renderTip(); } }
   function renderTip() {
-    document.querySelectorAll('.tip-anchor').forEach(el => el.classList.remove('tip-anchor'));
+    document.querySelectorAll('#play .tip-anchor').forEach(el => el.classList.remove('tip-anchor'));
     const show = !!tip && ui() !== 'RESOLVING';
-    E.tip.hidden = !show;
+    E.tip.hidden = !(show && tip.own);
     if (!show) return;
-    E.tip.textContent = tipText(tip.id);
-    const a = tip.anchor && $(tip.anchor);
-    if (a && a.offsetParent !== null) a.classList.add('tip-anchor');
+    if (tip.own) E.tip.textContent = tipText(tip.id);
+    const sel = TIP_ANCHOR[tip.id], a = sel && $(sel.split(', ').map(x => '#play ' + x).join(', '));
+    const el = a && (a.closest('button, .hud-crowd, .hud-coins, .crate, #rack, .readout, .result') || a);
+    if (el && el.getClientRects().length) el.classList.add('tip-anchor');
   }
   function checkTips() {
-    if (ui() !== 'BUILD' || !view) return;
-    const st = S(), s = view.s, f = festOf(s);
-    if (s === 0) queueTip('t_fuse', '#fire');
-    if (view.tonight.includes('headwind')) queueTip('t_head', '.hud-head');
-    if (s >= 2 && st.firstRun && moodVisible()) queueTip('t_mood', '#fire .mood');
-    const cards = (st.shop && st.shop.cards) || [];
-    E.cards.forEach((b, i) => {
-      if (!cards[i] || cards[i].sold) return;
-      if (b.querySelector('.b-twin')) queueTip('t_twin', `[data-card="${i}"]`);
-      else if (b.querySelector('.b-fuse')) queueTip('t_fusion', `[data-card="${i}"]`);
-    });
-    if (f >= 2 && !E.workshop.hidden) {
-      if (st.shop && st.shop.rig) queueTip('t_rig', '[data-act="buyRig"]');
-      queueTip('t_tube', '[data-act="buyTube"]');
+    if (!building() || !view) return;
+    if (!fnIn(G, 'tip')) { // core queues the rest itself
+      const st = S(), s = view.s;
+      if (s === 0) queueTip('t_fuse');
+      if (view.tonight.includes('headwind')) queueTip('t_head');
+      if (st.sponsor) queueTip('t_sponsor');
+      if (view.tonight.includes('windshift') || view.tonight.includes('crossed')) queueTip('t_match');
+      if (E.shop.querySelector('.b-twin')) queueTip('t_twin');
     }
-    if (st.sponsor) queueTip('t_sponsor', '[data-act="sponsor"]');
-    if (view.tonight.includes('windshift') || view.tonight.includes('crossed')) queueTip('t_match', '[data-act="match"]');
-    if (f === 8 && !st.endless) queueTip('t_count', '.hud-head');
+    if (E.shop.querySelector('.b-fuse')) queueTip('t_fusion');
   }
 
   /* ================= 17. Build open, run start ================= */
 
-  function onChange() {
-    if (!G.state) return;
+  function syncShow() { // a new build opened (after the slam, a relight, a restore or a new run)
+    if (ui() === 'RESOLVING' || !G.state) return;
     const s = S().show | 0;
-    if (s !== shownShow && ui() !== 'RESOLVING') { shownShow = s; openBuild(); }
-    // a pinned result card stays until the first build action (handled in onSim)
-    render();
-  }
-  function openBuild() {
+    if (s === shownShow) return;
+    shownShow = s;
     rehearse = false;
     clearHeld(true); disarmSell(); flash = null;
-    computeView();
-    const st = S(), s = view.s, f = festOf(s);
-    const sp = st.sponsor, k = sp && SPONSORS[sp.kind];
-    let msg = `Show ${s + 1} of ${lastShow() + 1}, ${festName(f)} ${showName(s)}. Target ${fmt(targetOf(s))}.`;
-    if (moodVisible()) msg += ` Crowd mood: ${MOODS[view.mood] || view.mood}.`;
-    if (sp) msg += ` Sponsor offered: target ${fmt(Math.round(targetOf(s) * (sp.accepted ? 1 : 1.5)))}, ${k ? k[2] : 'pays a reward'}.`;
-    if (view.hRules[0]) msg += ` ${view.hs === s ? 'Tonight' : 'Next Headliner'}: ${ruleInfo(view.hRules[0]).name}.`;
-    if (lastChance()) msg += ' Last chance.';
-    announce(msg);
   }
   function onSim(p) {
     const a = p && p.action;
-    if (a && a.type !== 'light' && result) { result = null; render(); }
+    if (a && a.type !== 'light' && result) result = null; // the result card stays pinned until the first build action
+    dismissTip();
   }
   function onRunStart() {
-    shownShow = -1; result = null; readout.on = false; frozen = false; rehearse = false;
-    clearHeld(true); disarmSell(); flash = null;
+    shownShow = -1; result = null; readout.on = false; frozen = false; rehearse = false; litTarget = 0;
+    clearHeld(true); disarmSell(); flash = null; tip = null; tipQueue.length = 0;
     pictos.clear(); lastScene = '';
-    onChange();
+    render();
   }
 
   /* ================= 18. Init ================= */
@@ -1756,7 +1719,8 @@ const UI_PLAY = (() => {
     window.addEventListener('resize', measure);
     // GAME wiring
     const on = (n, f) => { if (fnIn(G, 'on')) G.on(n, x => safe(() => f(x))); };
-    on('change', onChange);
+    on('change', () => render());
+    on('preview', () => render());
     on('sim', onSim);
     on('ui', onUi);
     on('present', onPresent);
@@ -1769,9 +1733,11 @@ const UI_PLAY = (() => {
       if (p && ['highContrast', 'chips', 'mood', 'reducedMotion', 'fairWeather'].includes(p.key)) render();
     });
     on('overlay', p => { if (p && p.name === 'inspect' && !p.open) { sellArmed = null; if (building()) render(); } });
+    on('tip', p => { if (p && p.id) { tip = { id: p.id, own: false }; seenLocal.add(p.id); renderTip(); } });
+    on('tipDone', p => { if (tip && !tip.own && (!p || p.id === tip.id)) { tip = null; renderTip(); } });
     if (fnIn(G, 'onKey')) G.onKey('play', onPlayKey);
     measure();
-    if (G.state) onChange();
+    render();
   }
 
   return {

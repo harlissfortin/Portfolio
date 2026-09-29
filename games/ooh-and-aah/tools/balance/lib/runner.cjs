@@ -12,9 +12,9 @@ const { makeSimDriver } = require('./sim-driver.cjs');
 
 const PURCHASES = new Set(['buy', 'upgrade', 'buyRig', 'buyTube']);
 
-function makeRunner(api, { driver = 'spec' } = {}) {
+function makeRunner(api, { driver = 'spec', simSponsor = 'auto' } = {}) {
   const SB = makeSpecBots(api);
-  const SD = driver === 'sim' ? makeSimDriver(api, SB) : null;
+  const SD = driver === 'sim' ? makeSimDriver(api, { simSponsor, SB }) : null;
 
   function slotShells(state) {
     const out = new Map();
@@ -40,7 +40,7 @@ function makeRunner(api, { driver = 'spec' } = {}) {
     const rnd = U.botRng(seed, opts.rndSeed);
     const createOpts = {
       kit: opts.kit || 'apprentice', renown: opts.renown || 0, fairWeather: !!opts.fairWeather,
-      firstRun: !!opts.firstRun, daily: false,
+      firstRun: !!opts.firstRun, daily: false, noSponsor: !!opts.noSponsor, // noSponsor: src/sim.js + v1.1 extension; ignored elsewhere (the bots then decline)
       unlocked: opts.unlocked ? opts.unlocked.slice() : api.unlocks.slice(),
     };
     const state = api.createState(String(seed), createOpts);
@@ -142,7 +142,11 @@ function makeRunner(api, { driver = 'spec' } = {}) {
       }
       if (record && probes.shap && api.shapley) {
         const tt = performance.now(); let sim = null, err = null;
-        try { sim = api.shapley(tubes, rules, crowd, fav); } catch (e) { err = String(e && e.message); }
+        try {
+          const res = api.shapley(tubes, rules, crowd, fav);
+          // keep non-enumerable extras (src/sim.js: values, applause) — postMessage drops them
+          sim = res && typeof res === 'object' ? { top: { ...res }, values: res.values ? { ...res.values } : null, applause: Number.isFinite(res.applause) ? res.applause : null } : res;
+        } catch (e) { err = String(e && e.message); }
         const simMs = performance.now() - tt;
         const own = SB.shapleyExact(tubes, rules, crowd, fav);
         R.shap.push({ s, a, sim, err, simMs, own: { phi: own.phi, occ: own.occ, full: own.full }, ids: tubes.map(x => (x.shell ? x.shell.id : null)) });
@@ -164,7 +168,8 @@ function makeRunner(api, { driver = 'spec' } = {}) {
       if (record && probes.regret && driver === 'sim' && bot === 'oracle' && !relight && state.shop) R.regret.push(...SB.regretProbe(state));
       if (SD) SD.build(bot, ctx); else SB.build(bot, ctx);
       if (state.phase !== 'build' || state.show !== s) { R.abort = 'bot lit or ended the show itself at s=' + s; return null; }
-      if (!SD || !SD.handlesSponsor) { if (SB.sponsorPick(bot, ctx)) act({ type: 'sponsor', accept: true }); }
+      const simPick = SD ? SD.sponsor(bot, ctx) : null;
+      if (simPick === null ? SB.sponsorPick(bot, ctx) : simPick) act({ type: 'sponsor', accept: true });
       const rec = lightOne(s, before, record);
       if (!rec) return null;
       relight = rec.relit;
@@ -179,6 +184,10 @@ function makeRunner(api, { driver = 'spec' } = {}) {
     }
     R.won = state.phase === 'won';
     R.phase = state.phase;
+    const rs = state.runStats || {};
+    if (Number.isFinite(rs.rerolls)) st.rerolls = rs.rerolls;   // counts rerolls made inside SIM bots too
+    if (Number.isFinite(rs.pity)) st.pity = rs.pity;
+    if (api.hashState) { try { R.hash = api.hashState(state); } catch (e) { R.hash = null; } }
     // Afterparty probe: enter endless after a win and play on until it ends (or 20 shows).
     if (R.won && probes.endless) {
       R.after = { entered: false, shows: [], phase: null };
@@ -190,12 +199,23 @@ function makeRunner(api, { driver = 'spec' } = {}) {
         R.after.phase = state.phase; R.after.lastS = state.show;
       }
     }
-    if (api.hashState) { try { R.hash = api.hashState(state); } catch (e) { R.hash = null; } }
     R.ms = performance.now() - t0;
     return R;
   }
 
-  return { playRun, SB, SD };
+  // The SIM's own playRun (src/sim.js exports it) — used only to cross-check the harness loop.
+  function nativeRun(job) {
+    if (!api.playRun) throw new Error('the SIM exports no playRun');
+    const t0 = performance.now();
+    const o = { ...(job.opts || {}) };
+    const out = api.playRun(job.seed, job.bot, o);
+    const S = out && out.state ? out.state : out;
+    const h = api.history(S);
+    return { cfg: job.cfg, seed: job.seed, bot: job.bot, native: true, won: S.phase === 'won', phase: S.phase, lastS: h.length ? h[h.length - 1].show : -1,
+      shows: h.map(x => ({ s: x.show, a: x.applause, t: x.target, pass: x.pass, relit: !!x.relit })), st: { rerolls: 0, pity: 0, illegal: 0, illegalWhy: {}, sells: 0, sellBad: 0 }, ms: performance.now() - t0 };
+  }
+
+  return { playRun, nativeRun, SB, SD };
 }
 
 module.exports = { makeRunner, PURCHASES };

@@ -26,8 +26,8 @@ parentPort.on('message', m => {
   const out = [];
   for (const job of m.jobs) {
     try {
-      const d = job.driver === 'other' ? (workerData.driver === 'sim' ? 'spec' : 'sim') : workerData.driver;
-      const rec = runner(d).playRun(job);
+      const d = job.driver === 'other' ? (workerData.driver === 'sim' ? 'spec' : 'sim') : job.driver === 'native' ? 'native' : workerData.driver;
+      const rec = d === 'native' ? runner(workerData.driver).nativeRun(job) : runner(d).playRun(job);
       rec.driver = d;
       out.push({ ok: true, rec });
     } catch (e) {

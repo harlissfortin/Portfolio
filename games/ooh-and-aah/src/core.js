@@ -8,8 +8,9 @@
    - the overlay stack with focus trap, keyboard routing, lifecycle,
      aria-live messages, haptics and the §11.6 hooks (window.__game).
    Every call into OOH / FX / AUDIO / UI_* is guarded.
-   During RESOLVING, GAME.state is the rack as lit (a pre-light
-   clone); the live post-light state is swapped in at the slam.
+   GAME.state is always the live SIM state. After light() it is
+   already post-show; 'change' is held back until the slam, and the
+   rack as lit is in GAME.lastLit (and each lastRun history entry).
 ============================================================ */
 const GAME = (() => {
   'use strict';
@@ -38,7 +39,7 @@ const GAME = (() => {
   /* ---------- module state ---------- */
   const S = {
     booted: false, flags: {}, settings: null, meta: null, runOpts: null, bootOpts: null,
-    state: null, display: null, ui: 'BOOT', undo: [], lastRun: null, reducedMotion: false,
+    state: null, ui: 'BOOT', undo: [], lastRun: null, reducedMotion: false,
     rehearse: false, stack: [], listeners: {}, keys: {}, paused: new Set(),
     loopOn: false, raf: 0, last: 0, acc: 0, tick: 0, timers: [], gameSpeed: 1,
     res: null, evQueue: [], skipAnim: false, simMs: 0, frameMs: 16.7, dbgTick: 0,
@@ -46,7 +47,7 @@ const GAME = (() => {
     lit: [], lastPreLight: null, runBest: {}, startProgress: {}, runUnlocks: [], counted: false,
     buildMs: 0, missPending: false, recordAtStart: 0, recordHit: false, posterAdded: false,
     lastChance: false, pendingToasts: [], tipQueue: [], tipShown: null,
-    layout: 'regular', gestured: false, audioHeld: false, ann: {polite: [], assertive: [], queued: false}, cache: {},
+    layout: 'regular', gestured: false, unlocked: false, audioHeld: false, kickQueued: false, resizeQueued: false, ann: {polite: [], assertive: [], queued: false}, cache: {},
   };
 
   /* ---------- tiny utilities ---------- */
@@ -72,7 +73,8 @@ const GAME = (() => {
   const cloneJSON = v => (v == null ? v : JSON.parse(JSON.stringify(v)));
   const simClone = st => (can(sim(), 'clone') ? sim().clone(st) : cloneJSON(st));
   const hist = st => (st && st.runStats && Array.isArray(st.runStats.history) ? st.runStats.history : []);
-  const cur = () => S.display || S.state;
+  const cur = () => S.state;
+  const playUI = () => typeof UI_PLAY !== 'undefined' && !!UI_PLAY;   // UI_PLAY shows the §4.13 tips itself
   const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   const randomSeed = () => Math.random().toString(36).slice(2, 7);
   const fmt = n => { const r = safe(() => sim().fmt(n)); return r != null ? String(r) : Math.floor(Number(n) || 0).toLocaleString('en-US'); };
@@ -303,28 +305,25 @@ const GAME = (() => {
     const rs = st.runStats;
     return rs && isNum(rs.rainUsed) ? rs.rainUsed > 0 : hist(st).some(e => e && e.pass === false);
   }
-  function previewShow() {
+  const previewShow = () => { const st = cur(); return !st ? 0 : S.rehearse ? nextHeadliner(st.show) : st.show; };
+  // GAME.preview {rules, rehearse}: the rule set the chips use. A plain data object: UI_PLAY writes both
+  // fields from its own Rehearse toggle; core resets it at every build open (tonight's rules).
+  const preview = {rules: [], rehearse: false};
+  function refreshPreview() {
     const st = cur();
-    if (!st) return 0;
-    return S.rehearse ? nextHeadliner(st.show) : st.show;
+    if (!st) return;
+    preview.rules = rulesAt(st, previewShow());
+    preview.rehearse = S.rehearse || st.show % 3 === 2;
   }
-  // GAME.preview: the rule set the chips use. UI_PLAY sets .rehearse (or calls setRehearse).
-  const preview = {
-    get rehearse() { const st = cur(); return S.rehearse || (!!st && (st.show % 3 === 2)); },
-    set rehearse(v) { setRehearse(v); },
-    get show() { return previewShow(); },
-    get rules() { return rulesAt(cur(), previewShow()); },
-    get target() { return targetAt(cur(), previewShow()); },
-  };
   function setRehearse(v) {
     v = !!v;
     if (S.rehearse === v) return;
     S.rehearse = v;
-    const rules = preview.rules;
-    emit('preview', {rehearse: v, rules, show: preview.show});
+    refreshPreview();
+    emit('preview', preview);
     emit('change', {state: cur()});
     const st = cur();
-    if (v && st) announce('Rehearsing ' + (rules.map(ruleName).join(' and ') || 'the next show') + (moodVisible() ? ': ' + moodWord(st, rules, preview.show) + '.' : '.'));
+    if (v && st) announce('Rehearsing ' + (preview.rules.map(ruleName).join(' and ') || 'the next show') + (moodVisible() ? ': ' + moodWord(st, preview.rules, previewShow()) + '.' : '.'));
     else announce('Rehearse off.');
   }
 
@@ -347,7 +346,7 @@ const GAME = (() => {
      RUN LIFECYCLE
   ============================================================ */
   function resetRunFields() {
-    S.undo = []; S.display = null; S.rehearse = false; S.lit = []; S.lastPreLight = null; S.runBest = {};
+    S.undo = []; S.rehearse = false; S.lit = []; S.lastPreLight = null; S.runBest = {};
     S.startProgress = {...S.meta.progress}; S.runUnlocks = []; S.counted = false; S.buildMs = 0; S.missPending = false;
     S.recordAtStart = (S.meta.records.bestShow && S.meta.records.bestShow.score) || 0; S.recordHit = false;
     S.posterAdded = false; S.lastChance = false; S.pendingToasts = []; S.tipQueue = []; S.tipShown = null;
@@ -414,6 +413,7 @@ const GAME = (() => {
     callAudio('setCrowd', S.state ? S.state.crowd : 0);
     emit('runStart', {state: S.state, restored: !!restored});
     emit('change', {state: S.state});
+    kick();
     codexScan(S.state);
     onBuildOpen();
     if (!restored) saveNow();
@@ -473,6 +473,7 @@ const GAME = (() => {
     callFX('critical', crit);
     callAudio('onEvent', {type: 'critical', on: crit, lastChance: S.lastChance});
     emit('critical', {on: crit, lastChance: S.lastChance});
+    refreshPreview();
     announce(buildOpenText(st));
     buildTips(st);
     showNextTip();
@@ -533,6 +534,7 @@ const GAME = (() => {
     codexOnBuild(action, pre, events);
     emit('sim', {action, events});
     emit('change', {state: S.state});
+    kick();
     callAudio('setCrowd', S.state.crowd);
     announce(actionText(action, pre, S.state));
     actionTips(action, S.state);
@@ -608,7 +610,6 @@ const GAME = (() => {
     const r = {token: {}, events, pre, info, presented: new Set(), slam: false, done: false, slamTick: 0,
       handle: null, instant: isInstant(), ff: false, dimmed: false, watchdog: null};
     S.res = r;
-    S.display = pre;
     emit('sim', {action: {type: 'light'}, events});
     setUI('RESOLVING');
     const F = fx(), tok = r.token;
@@ -662,7 +663,6 @@ const GAME = (() => {
     if (r.slam) return;
     r.slam = true;
     r.slamTick = S.tick;
-    S.display = null;                                          // the live post-light state from here on
     emit('change', {state: S.state});
     callAudio('setCrowd', S.state.crowd);
     emit('result', {entry: r.info.entry, events: r.events, summary: r.info.summary});
@@ -703,7 +703,6 @@ const GAME = (() => {
     const r = S.res;
     if (r.handle && !r.done) { try { if (can(r.handle, 'skip')) r.handle.skip(); } catch (e) { /* ignore */ } }
     S.res = null;
-    S.display = null;
     S.timers = [];
   }
   function fastForward() {
@@ -722,6 +721,8 @@ const GAME = (() => {
   }
   function toResult() {
     setUI('RESULT');
+    emit('change', {state: S.state});
+    kick();
     flushToasts();
     onBuildOpen();
   }
@@ -738,7 +739,7 @@ const GAME = (() => {
   }
   function resultText(sm) {
     if (!sm) return '';
-    let t = 'Applause ' + fmt(sm.applause) + ': Ooh ' + fmt(Math.floor(sm.ooh || 0)) + ' times Aah ' + fmtAah(sm.aah || 0) + '. ';
+    let t = 'Applause ' + fmt(sm.applause) + ': Ooh ' + fmt(Math.floor(sm.ooh || 0)) + ' times Aah ' + fmtAah(sm.aah || 0).replace(/\.0$/, '') + '. ';
     t += sm.pass ? 'Passed, ' + (Math.round(sm.ratio * 10) / 10) + ' times the target.' + (sm.encore ? ' Encore!' : '')
       : 'Missed by ' + fmt(Math.max(0, sm.target - sm.applause)) + '.';
     if (sm.crowd > 0) t += ' Crowd plus ' + sm.crowd + '.';
@@ -991,12 +992,12 @@ const GAME = (() => {
     return typeof r === 'string' ? r : r && (r.text || r.value) || null;
   }
   function queueTip(id) {
-    if (S.meta.seenTips.includes(id) || S.tipQueue.includes(id) || S.tipShown === id || !tipText(id)) return;
+    if (playUI() || S.meta.seenTips.includes(id) || S.tipQueue.includes(id) || S.tipShown === id || !tipText(id)) return;
     S.tipQueue.push(id);
   }
   function tip(id) {
-    if (S.meta.seenTips.includes(id) || !tipText(id)) return false;
-    queueTip(id);
+    if (S.meta.seenTips.includes(id) || S.tipQueue.includes(id) || !tipText(id)) return false;
+    S.tipQueue.push(id);
     showNextTip();
     return true;
   }
@@ -1052,7 +1053,7 @@ const GAME = (() => {
     A.queued = false;
     for (const [q, id] of [[A.polite, 'live-polite'], [A.assertive, 'live-assertive']]) {
       if (!q.length) continue;
-      const text = q.join(' '), el = byId(id);
+      const text = [...new Set(q)].join(' '), el = byId(id);
       q.length = 0;
       if (el) el.textContent = el.textContent === text ? text + ' ' : text;
     }
@@ -1254,7 +1255,7 @@ const GAME = (() => {
     if (changed && layout === 'desktop' && isOpen('showlog')) close('showlog');
     callFX('resize');
     emit('resize', {w, h, layout});
-    if (!S.loopOn) callFX('render');
+    if (!S.loopOn || S.paused.size) callFX('render');
   }
   function queueLayout() {
     if (S.flags.test || typeof requestAnimationFrame !== 'function') return measureLayout();
@@ -1295,6 +1296,12 @@ const GAME = (() => {
     if (n >= MAX_STEPS) S.acc = 0;
     callFX('render');
     if (S.flags.debug) debugFrame();
+  }
+  // Without the rAF loop (?test=1) draw once after a change so the page is complete at rest.
+  function kick() {
+    if (S.loopOn || S.kickQueued) return;
+    S.kickQueued = true;
+    setTimeout(() => { S.kickQueued = false; callFX('render'); }, 0);
   }
   function startLoop() {
     if (S.loopOn || typeof requestAnimationFrame !== 'function') return;
@@ -1436,7 +1443,7 @@ const GAME = (() => {
           HEADLINERS: d.HEADLINERS, KITS: d.KITS, RENOWN: d.RENOWN, MILESTONES: d.MILESTONES};
       },
       resolve: (tubes, ctx) => safe(() => sim().resolveShow(tubes, ctx || {rules: [], crowd: 0}), null),
-      preview: () => (S.state ? safe(() => sim().previewChips(S.state, preview.rules), []) : []),
+      preview: () => (S.state ? safe(() => sim().previewChips(S.state, preview.rules && preview.rules.length ? preview.rules : rulesAt(S.state, S.state.show)), []) : []),
       mood: () => (S.state ? moodOf(S.state) : null),
       shapley(i) {
         const l = S.lit[i == null ? S.lit.length - 1 : i];
@@ -1535,6 +1542,7 @@ const GAME = (() => {
     get reducedMotion() { return S.reducedMotion; },
     get critical() { return {on: isCritical(), lastChance: S.lastChance}; },
     get layout() { return S.layout; },
+    get lastLit() { return S.lit.length ? S.lit[S.lit.length - 1] : null; },
     boot, dispatch, undo, canUndo, light, fastForward, skip,
     newRun, abandon, enterAfterparty, startDaily, setKeepsake, setRehearse, dismissResult,
     setSetting, setMeta, saveNow, exportSave, importSave, resetProgress,

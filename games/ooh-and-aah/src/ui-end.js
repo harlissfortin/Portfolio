@@ -149,15 +149,20 @@ const UI_END = (() => {
     const s0 = st.show || 0;
     const last = shows[shows.length - 1] || {s: s0, n: s0 + 1, f: Math.floor(s0 / 3) + 1, k: s0 % 3, applause: 0, target: 0, pass: false, rules: [], e: {}};
     const best = shows.reduce((b, x) => (!b || x.applause > b.applause ? x : b), null);
-    return {lr, st, shows, last, best, won: !!lr.won, endless: !!st.endless,
+    // kind: 'win' (the season) · 'party-win' (all 12 Afterparty shows) · 'party-loss' · 'loss' · 'abandoned'
+    const party = !!(lr.afterparty || st.endless), phase = st.phase || (lr.won ? 'won' : 'lost');
+    const kind = lr.abandoned ? 'abandoned' : party ? (phase === 'won' ? 'party-win' : 'party-loss') : (phase === 'won' || lr.won) ? 'win' : 'loss';
+    return {lr, st, shows, last, best, kind, won: kind === 'win' || kind === 'party-win', lost: kind === 'loss' || kind === 'party-loss', endless: party,
       seed: lr.seed != null ? lr.seed : (st.seed != null ? st.seed : ''),
       kit: lr.kit || st.kit || 'apprentice', renown: +(lr.renown != null ? lr.renown : st.renown) || 0,
-      fair: !!(st.fairWeather != null ? st.fairWeather : (G && G.settings || {}).fairWeather),
-      daily: !!st.daily, fp: lr.finalPreLight || rs.lastLostPreLight || null};
+      fair: !!(lr.fairWeather != null ? lr.fairWeather : st.fairWeather),
+      daily: !!(lr.daily || st.daily), fp: lr.finalPreLight || rs.lastLostPreLight || null};
   }
 
   function baseTarget(s) {
-    const S = sim();
+    const S = sim(), e0 = v.shows.find(x => x.s === s);
+    if (e0 && e0.e.baseTarget > 0) return e0.e.baseTarget;
+    if (has(S, 'baseTarget')) { try { const t = S.baseTarget(v.st, s); if (t > 0) return t; } catch (e) { /* fall back */ } }
     if (has(S, 'target')) {
       try { const t = S.target(Object.assign({}, v.st, {sponsor: null}), s); if (t > 0) return t; } catch (e) { /* fall back */ }
     }
@@ -325,7 +330,9 @@ const UI_END = (() => {
     if (!w) return null;
     return {v: 1, key: w.seed + '|' + w.last.n + '|' + (w.won ? 'w' : 'l') + '|' + w.shows.length,
       seed: w.seed, kit: w.kit, renown: w.renown, won: w.won, endless: w.endless, fair: w.fair,
-      show: w.last.n, festival: w.won && !w.endless ? 8 : w.last.f, best: w.best ? w.best.applause : 0,
+      show: w.kind === 'abandoned' ? (w.st.show || 0) + 1 : w.last.n,
+      festival: w.kind === 'win' ? 8 : w.kind === 'abandoned' ? Math.floor((w.st.show || 0) / 3) + 1 : w.last.f,
+      best: w.best ? w.best.applause : 0, score: w.best ? w.best.applause : 0,
       date: new Date().toISOString().slice(0, 10),
       tubes: (w.st.tubes || []).map(t => (t && t.shell ? {id: t.shell.id, col: t.shell.col, star: t.shell.star || 1, rig: t.rig || null} : null))};
   }
@@ -347,7 +354,7 @@ const UI_END = (() => {
     g.globalAlpha = 1;
     // measure the title block first so bursts can keep clear of it
     const title = festName(p.festival || p.fest || 1);
-    const sub = p.won && !p.endless ? 'Happy New Year!' : (p.won ? 'The Afterparty went till dawn' : 'Show ' + p.show) + (p.seed ? ' · seed ' + p.seed : '');
+    const sub = (p.won && !p.endless ? 'Happy New Year!' : p.won ? 'Afterparty till dawn' : 'Show ' + p.show) + (p.seed ? ' · seed ' + p.seed : '');
     const fTitle = '600 26px Fraunces, Georgia, "Times New Roman", serif', fSub = '700 16px "Atkinson Hyperlegible", system-ui, sans-serif';
     g.font = fTitle; const tw = g.measureText(title).width;
     g.font = fSub; const tBox = 14 + Math.max(tw, g.measureText(sub).width) + 10;
@@ -425,13 +432,22 @@ const UI_END = (() => {
     ch.port1.onmessage = () => { const f = q.shift(); if (f) f(); };
     return f => { q.push(f); ch.port2.postMessage(0); };
   })();
-  function sliced(gen, done) {
+  function sliced(gen, done, name) {
     const id = job, tm = out.timing = out.timing || {slices: 0, maxSlice: 0, start: now(), ms: 0};
+    let stepMax = 1;                     // the slowest single step so far predicts the next one
     const tick = () => {
       if (id !== job) return;
       const t0 = now();
-      let r;
-      try { do { r = gen.next(); } while (!r.done && now() - t0 < 7); } catch (e) { warn('slice', e); r = {done: true, value: null}; }
+      let r, t1 = t0;
+      try {
+        do {
+          r = gen.next();
+          const t2 = now();
+          if (t2 - t1 > (tm.worstStep || 0)) { tm.worstStep = t2 - t1; tm.worstIn = name; }
+          stepMax = Math.min(6, Math.max(stepMax * .98, t2 - t1));
+          t1 = t2;
+        } while (!r.done && t1 - t0 + stepMax < 7.5);
+      } catch (e) { warn('slice', e); r = {done: true, value: null}; }
       tm.slices++; tm.maxSlice = Math.max(tm.maxSlice, now() - t0); tm.ms = now() - tm.start;
       if (id !== job) return;
       if (r.done) done(r.value); else defer(tick);
@@ -482,6 +498,11 @@ const UI_END = (() => {
     if (has(S, 'legalActions') && has(S, 'step') && has(S, 'clone')) {
       let acts = [];
       try { acts = S.legalActions(fp) || []; } catch (e) { warn('legalActions', e); }
+      const lite = {};
+      for (const k in fp) if (k !== 'runStats') lite[k] = fp[k];
+      lite.runStats = Object.assign({}, fp.runStats, {history: [], buildStart: null, lastLostPreLight: null});
+      const liteJSON = JSON.stringify(lite);
+      yield;
       for (const a of acts) {
         if (now() > deadline) break;
         const t = a.type;
@@ -491,7 +512,7 @@ const UI_END = (() => {
         if (t === 'sell' && a.from && a.from.zone === 'crate') continue;
         if (t === 'move' && a.from && a.to && a.from.zone === 'tube' && a.to.zone === 'tube') continue;   // covered by A
         if (t === 'move' && a.from && a.to && a.from.zone === 'crate' && a.to.zone === 'crate') continue;
-        const s2 = S.clone(fp);
+        const s2 = JSON.parse(liteJSON);
         let ev = null;
         try { ev = S.step(s2, a); } catch (e) { continue; }
         if (Array.isArray(ev) && ev[0] && ev[0].type === 'illegal') continue;
@@ -530,21 +551,30 @@ const UI_END = (() => {
       default: return 'One more change';
     }
   }
-  /* Normalise a near-miss result (ours, or the SIM's own shape) into display lines. */
+  /* Map the SIM's nearMiss result ({applause, target, rules, ruleCost, bestArrangement, best}) onto ours. */
+  function normNear(r) {
+    if (!r || r.kind === 'local') return r;
+    const b = r.best, off = !!(b && b.action && b.action.type === 'sponsor');
+    const kept = b && b.kind === 'arrange' && Array.isArray(b.order) &&
+      ((v.fp && v.fp.tubes) || []).every((t, i) => ((t && t.shell && t.shell.uid) || 0) === (b.order[i] || 0));
+    return {kind: 'sim', actual: r.applause, target: r.target, rules: r.rules, cost: Math.max(0, r.ruleCost || 0),
+      pick: b && !kept ? {kind: b.kind, desc: b.desc, applause: b.applause, pass: b.pass, act: b.action, target: off ? baseTarget(v.last.s) : r.target} : null,
+      bestReorder: r.bestArrangement || null};
+  }
+  /* Display lines for a near-miss result, e.g. "412 short (95%) at Harvest Moon · Late Ferry." */
   function nearMissLines(r) {
     const last = v.last, target = (r && r.target) || last.target, got = r && r.actual != null ? r.actual : last.applause;
     const short = Math.max(0, target - got), p = target ? Math.floor(got / target * 100) : 0;
     const rules = (r && r.rules) || last.rules || [];
     const where = festName(last.f) + ' · ' + (rules.length ? rules.map(ruleName).join(' + ') : SLOT[last.k] || 'show ' + last.n);
     const lines = [`${fmt(short)} short (${p}%) at ${where}.`];
-    if (r && typeof r.text === 'string') return lines.concat(r.text);
     const cost = r && (r.cost != null ? r.cost : r.ruleCost);
     if (rules.length && cost > 0) lines.push(`${rules.map(ruleName).join(' + ')} cost you ${fmt(cost)}.`);
     const c = r && (r.pick || r.best || r.candidate);
     if (c) {
       const what = c.desc || c.text || describeCandidate(c);
       if (c.act && c.act.type === 'sponsor') lines.push(c.pass ? `${what} would have kept the target at ${fmt(c.target)}: you'd have passed.` : `${what} would have left you ${fmt(c.target - c.applause)} short.`);
-      else if (c.pass || c.applause >= target) lines.push(`${what} would have scored ${fmt(c.applause)}.`);
+      else if (c.pass || c.applause >= (c.target || target)) lines.push(`${what} would have scored ${fmt(c.applause)}.`);
       else if (c.applause > got) lines.push(`Your closest fix: ${what.charAt(0).toLowerCase() + what.slice(1)} would have scored ${fmt(c.applause)}, still ${fmt(c.target - c.applause)} short.`);
       else lines.push('No single swap or purchase would have beaten it: this rack was already at its best tonight.');
     } else if (r) lines.push('No single swap or purchase would have beaten it: this rack was already at its best tonight.');
@@ -621,12 +651,12 @@ const UI_END = (() => {
 
   /* ---------- lesson (§4.12) ---------- */
   function lessonOf(nm) {
-    const sum = Object.assign({}, v.lr, {nearMiss: nm, bestReorder: nm && nm.bestReorder, lastShow: v.last.e});
+    const sum = Object.assign({}, v.lr, {won: v.won, nearMiss: nm, bestReorder: nm && nm.bestReorder, lastShow: v.last.e});
     let r = call(sim(), 'lessonFor', sum);
     if (r && typeof r === 'object') r = r.text || r.line || '';
     if (typeof r === 'string' && r) return r;
     const L = v.last, reo = nm && nm.bestReorder;
-    if (v.won) return `Next: Renown ${v.renown + 1}: ${renownText(v.renown + 1)}.`;
+    if (v.won && v.renown < 8) return `Next: Renown ${v.renown + 1}: ${renownText(v.renown + 1).replace(/\.$/, '')}.`;
     if (L.rules.some(x => /^countdown/.test(x)) && reo && reo.pass) return `The Countdown fires your last tube first and last. Rearranging would have scored ${fmt(reo.applause)}.`;
     if (/restless/i.test(L.mood)) return `The crowd was Restless when you lit show ${L.n}. Keep building until it reads Hopeful or Eager.`;
     if (L.k === 2 && reo && reo.pass) return `Rearranging for ${ruleName(L.rules[0])} would have scored ${fmt(reo.applause)}. Try Rehearse (H) before Headliners.`;
@@ -638,15 +668,16 @@ const UI_END = (() => {
   const GOALS = {m_fusion: 1, m_busy: 8, m_mono: 5, m_spectrum: 3, m_crowd: 40, m_triple: 3, m_headliner: 1, m_rigger: 3, m_win: 1, m_logbook: 6};
   function milestones() {
     const meta = G.meta || {}, prog = meta.progress || {}, unl = meta.unlocked || [];
-    let list = rows(call(sim(), 'milestoneProgress', v.st.runStats || {}, meta));
+    let list = rows(v.lr.milestones);
+    if (!list.length) list = rows(call(sim(), 'milestoneProgress', v.st.runStats, meta));
     if (!list.length) list = rows(D().MILESTONES).map(m => ({id: m.id, value: prog[m.id] || 0}));
     if (!list.length) list = Object.keys(GOALS).map(id => ({id, value: prog[id] || 0}));
     const delta = {};
-    (v.lr.milestoneDeltas || []).forEach(d => { if (d && d.id) delta[d.id] = d; });
+    (v.lr.milestoneDeltas || []).forEach(d => { if (d && d.id) delta[d.id] = d.delta != null ? d.delta : Math.max(0, (+d.after || 0) - (+d.before || 0)); });
     return list.map(x => {
       const m = row(D().MILESTONES, x.id) || {};
       const goal = +x.goal || +m.goal || GOALS[x.id] || 1;
-      const value = Math.min(goal, Math.max(+(x.value != null ? x.value : (x.best != null ? x.best : x.progress)) || 0, +prog[x.id] || 0));
+      const value = Math.min(goal, Math.max(+(x.best != null ? x.best : (x.value != null ? x.value : x.progress)) || 0, +(x.run || 0), +prog[x.id] || 0));
       const done = x.done != null ? !!x.done : (unl.includes(x.id) || value >= goal);
       return {id: x.id, name: x.name || m.name || cap(String(x.id).replace(/^m_/, '')), goal, value, done, unit: m.unit || '', m, d: delta[x.id]};
     }).filter(x => !x.done).sort((a, b) => b.value / b.goal - a.value / a.goal);
@@ -654,6 +685,10 @@ const UI_END = (() => {
   function unlocksOf(ms) {
     const u = ms.m.unlocks;
     if (typeof u === 'string') return u;
+    if (u && typeof u === 'object' && !Array.isArray(u)) {
+      const nm = (u.shells || []).map(id => shellRow(id).name).concat((u.kits || []).map(id => 'the ' + kitRow(id).name + ' kit'), (u.other || []).map(String));
+      return andList(nm.map(x => ({Afterparty: 'the Afterparty', 'Daily Show': 'the Daily Show'})[x] || x));
+    }
     const names = Array.isArray(u) ? u.map(id => (row(D().SHELLS, id) || row(D().KITS, id) || {name: cap(id)}).name)
       : rows(D().SHELLS).filter(r => r.lock === ms.id).map(r => r.name).concat(rows(D().KITS).filter(k => (k.unlock || k.lock) === ms.id).map(k => 'the ' + k.name + ' kit'));
     if (ms.id === 'm_win') return 'Renown 1, the Afterparty and the Daily Show';
@@ -678,6 +713,14 @@ const UI_END = (() => {
     return null;
   }
   function keepOptions() {
+    if (keepOptions.cache && keepOptions.cache.v === v) return keepOptions.cache.list;
+    let list = Array.isArray(v.lr.keepsakeOptions) ? v.lr.keepsakeOptions : null;
+    if (!list) { const r = call(sim(), 'keepsakeOptions', v.st, v.st.unlocked); list = r && Array.isArray(r.options) ? r.options : null; }
+    list = (list || keepLocal()).filter(k => k && k.id).slice(0, 8);
+    keepOptions.cache = {v, list};
+    return list;
+  }
+  function keepLocal() {
     const opts = [], seen = new Set();
     for (const s of shellsOf(v.st)) {
       if (rarity(shellRow(s.id)) !== 'C') continue;
@@ -696,10 +739,12 @@ const UI_END = (() => {
   function kits() {
     const meta = G.meta || {}, list = rows(D().KITS);
     if (!list.length) return [{id: 'apprentice', name: 'Apprentice'}];
-    return list.filter(k => k.id === sel.kit || isUnlocked(k.unlock || k.lock) || (Array.isArray(meta.kits) && meta.kits.includes(k.id)));
+    return list.filter(k => k.id === sel.kit || (has(G, 'kitUnlocked') ? !!call(G, 'kitUnlocked', k.id) : isUnlocked(k.unlock || k.lock)) ||
+      (Array.isArray(meta.kits) && meta.kits.includes(k.id)));
   }
   function renownMax() {
     if (unlockedAll()) return 8;
+    if (has(G, 'renownMax')) { const m = +call(G, 'renownMax'); if (Number.isFinite(m)) return Math.max(m, sel.renown); }
     const r = (G.meta || {}).renown;
     return Math.max(typeof r === 'number' ? r : +((r && r.max) || 0), sel.renown);
   }
@@ -790,7 +835,6 @@ const UI_END = (() => {
     bars.forEach((b, i) => { path += (i ? 'L' : 'M') + (L + slot * (i + .5)).toFixed(1) + ',' + Y(cums[i]).toFixed(1); });
     s += `<path class="ep-cum" d="${path}"/>`;
     bars.forEach((b, i) => { s += `<circle class="ep-dot" cx="${L + slot * (i + .5)}" cy="${Y(cums[i])}" r="4"/>`; });
-    if (bars[0] && bars[0].share * ph > 30) s += `<text class="ep-in" x="${L + slot / 2}" y="${Y(bars[0].share) + 20}" text-anchor="middle">${pct(bars[0].share)}</text>`;
     return {svg: `<svg class="end-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-labelledby="end-h-pareto end-pareto-cap">${s}</svg>`, bars, vital};
   }
   function paretoCaption(items) {
@@ -807,9 +851,12 @@ const UI_END = (() => {
      Rendering
   ============================================================ */
   function headline() {
-    if (v.won) return {eyebrow: '', main: v.endless ? 'The Afterparty went till dawn!' : 'Happy New Year!'};
+    if (v.kind === 'win') return {eyebrow: '', main: 'Happy New Year!', sub: 'You fired the whole festival year, right through the Midnight Countdown.'};
+    if (v.kind === 'party-win') return {eyebrow: '', main: 'The Afterparty went till dawn!', sub: 'Every Afterparty show cleared. The river town will talk about this for years.'};
+    if (v.kind === 'abandoned') { const s = v.st.show || 0; return {eyebrow: 'You called it a night:', main: `${festName(Math.floor(s / 3) + 1)}, show ${s + 1}`}; }
     const where = `${festName(v.last.f)}, show ${v.last.n}`;
-    return {eyebrow: v.endless ? 'The Afterparty wound down:' : 'The crowd went home:', main: where};
+    if (v.kind === 'party-loss') { const n = v.lr.afterpartyShows != null ? v.lr.afterpartyShows : v.shows.filter(x => x.s >= 24 && x.pass).length; return {eyebrow: 'The Afterparty wound down:', main: where, sub: `${n} Afterparty show${n === 1 ? '' : 's'} cleared after your New Year win.`}; }
+    return {eyebrow: 'The crowd went home:', main: where};
   }
   function tokenHTML(sh, extra) {
     return `<span class="end-tok" data-tok="${esc(sh.id)}|${esc(sh.col || '')}|${sh.star || 1}${sh.sil ? '|s' : ''}">` +
@@ -838,10 +885,11 @@ const UI_END = (() => {
     const rec = meta.records && meta.records.bestShow;
     const isRecord = B && rec && rec.score === B.applause && String(rec.seed) === String(v.seed);
     const ms = milestones(), near = ms.slice(0, 2), sil = silhouette(ms);
-    const news = (v.lr.newUnlocks || []).map(u => (typeof u === 'string' ? {kind: row(D().SHELLS, u) ? 'shell' : 'other', id: u} : u)).filter(u => u && u.id != null);
+    const news = (v.lr.newUnlocks || []).map(u => (typeof u === 'string' ? {kind: row(D().SHELLS, u) ? 'shell' : 'other', id: u} : u))
+      .filter(u => u && u.id != null).sort((a, b) => (a.kind === 'milestone' ? 0 : 1) - (b.kind === 'milestone' ? 0 : 1));
     const keeps = keepOptions();
-    const canParty = v.won && !v.endless && has(G, 'enterAfterparty');
-    const lost = !v.won;
+    const canParty = v.kind === 'win' && has(G, 'enterAfterparty') && (!has(G, 'canAfterparty') || call(G, 'canAfterparty') !== false);
+    const lost = v.lost;
 
     root.setAttribute('aria-labelledby', 'end-title');
     root.setAttribute('data-won', v.won ? '1' : '0');
@@ -850,7 +898,7 @@ const UI_END = (() => {
   <header class="end-head">
     ${v.won ? '<p class="end-spark" aria-hidden="true"><span>✦</span><span>✦</span><span>✦</span><span>✦</span><span>✦</span></p>' : ''}
     <h2 id="end-title" class="end-title">${hd.eyebrow ? `<span class="end-eyebrow">${esc(hd.eyebrow)}</span> ` : ''}<span class="end-where">${esc(hd.main)}</span></h2>
-    ${v.won ? `<p class="end-sub">${v.endless ? 'The whole Afterparty, every show cleared.' : 'You fired the whole festival year, right through the Midnight Countdown.'}</p>` : ''}
+    ${hd.sub ? `<p class="end-sub">${esc(hd.sub)}</p>` : ''}
     <ul class="end-tags" aria-label="Run details">
       <li class="chip">Seed ${esc(v.seed)}</li><li class="chip">${esc(kit.name)}</li><li class="chip">Renown ${v.renown}</li>
       ${v.fair ? '<li class="chip chip-aah">☂ Fair Weather</li>' : ''}${v.daily ? '<li class="chip">Daily Show</li>' : ''}
@@ -884,9 +932,8 @@ const UI_END = (() => {
     <div class="end-col">
       <section class="end-sec" aria-labelledby="end-h-unl">
         <h3 id="end-h-unl">Next unlocks</h3>
-        ${news.length ? `<ul class="end-news">${news.slice(0, 4).map(u => { const nm = u.kind === 'shell' ? shellRow(u.id).name : u.kind === 'kit' ? kitRow(u.id).name + ' kit' : u.kind === 'renown' ? 'Renown ' + u.id : (row(D().MILESTONES, u.id) || row(D().FUSIONS, u.id) || {name: cap(u.id)}).name;
-          return `<li class="end-new">${u.kind === 'shell' ? tokenHTML({id: u.id, col: shellRow(u.id).col === '*' ? 'R' : shellRow(u.id).col}) : '<span class="end-new-ico" aria-hidden="true">✦</span>'}<span><b>Just unlocked</b> ${esc(nm)}</span></li>`; }).join('')}</ul>` : ''}
-        ${near.map(m => `<div class="end-ms"><div class="end-ms-top"><b>${esc(m.name)}</b><span class="num">${m.value}/${m.goal}${m.d && m.d.delta ? ` <span class="chip chip-aah">+${m.d.delta}</span>` : ''}</span></div>
+        ${newsHTML(news)}
+        ${near.map(m => `<div class="end-ms"><div class="end-ms-top"><b>${esc(m.name)}</b><span class="num">${m.value}/${m.goal}${m.d > 0 ? ` <span class="chip chip-aah">+${m.d}</span>` : ''}</span></div>
           <div class="end-bar" role="progressbar" aria-label="${esc(m.name)}" aria-valuemin="0" aria-valuemax="${m.goal}" aria-valuenow="${m.value}"><i style="width:${Math.round(m.value / m.goal * 100)}%"></i></div>
           ${unlocksOf(m) ? `<p class="end-dim">Unlocks ${esc(unlocksOf(m))}</p>` : ''}</div>`).join('') || '<p class="end-dim">Everything is unlocked. Try a higher Renown.</p>'}
         ${sil ? `<div class="end-sil">${tokenHTML({id: sil.id, col: sil.col, sil: !!sil.sil})}<div><b>${esc(sil.label)}</b><p class="end-dim">${esc(sil.hint)}</p></div></div>` : ''}
@@ -922,11 +969,27 @@ const UI_END = (() => {
     startJobs();
   }
 
+  /* One "Just unlocked" card per unlock (§7.2); they apply from the next run. */
+  function newsHTML(news) {
+    if (!news.length) return '';
+    const MODE = {afterparty: 'the Afterparty', daily: 'the Daily Show'};
+    return `<ul class="end-news" aria-label="Just unlocked">${news.slice(0, 8).map(u => {
+      let nm, art = '<span class="end-new-ico" aria-hidden="true">✦</span>', lead = 'Just unlocked';
+      if (u.kind === 'shell') { const r = shellRow(u.id); nm = r.name; art = tokenHTML({id: u.id, col: r.col === '*' ? 'R' : r.col}); }
+      else if (u.kind === 'kit') nm = 'the ' + kitRow(u.id).name + ' kit';
+      else if (u.kind === 'renown') nm = 'Renown ' + u.id;
+      else if (u.kind === 'fusion') nm = (row(D().FUSIONS, u.id) || {name: 'a new fusion'}).name + ' (a fusion)';
+      else if (u.kind === 'mode') nm = MODE[u.id] || cap(u.id);
+      else { nm = ((row(D().MILESTONES, u.id) || {}).name || cap(u.id)) + ' ✓'; lead = 'Milestone'; art = '<span class="end-new-ico" aria-hidden="true">★</span>'; }
+      return `<li class="end-new">${art}<span><b>${lead}</b> ${esc(nm)}</span></li>`;
+    }).join('')}</ul><p class="end-dim end-news-note">New unlocks join from your next run.</p>`;
+  }
+
   function renderMore() {
     const el = root && root.querySelector('#end-more');
     if (!el) return;
     const ks = kits(), rmax = renownMax(), meta = G.meta || {};
-    const daily = ((meta.unlocked || []).includes('m_win') || unlockedAll());
+    const daily = has(G, 'canDaily') ? !!call(G, 'canDaily') : ((meta.unlocked || []).includes('m_win') || unlockedAll());
     el.innerHTML = `
       <button type="button" class="btn" data-end="replay">Replay seed</button>
       <button type="button" class="btn" data-end="logbook">Logbook</button>
@@ -979,21 +1042,25 @@ const UI_END = (() => {
       out.nearMiss = r;
       const el = root.querySelector('#end-near');
       if (el) el.innerHTML = nearMissLines(r).map(t => `<p>${esc(t)}</p>`).join('');
+      const t0 = now();
       out.lesson = lessonOf(r);
+      if (out.timing) out.timing.lessonMs = now() - t0;
       const ls = root.querySelector('#end-lesson');
       if (ls) ls.textContent = out.lesson;
     };
-    const pareto = () => sliced(paretoGen(deadline), items => { out.pareto = items || []; paintPareto(); });
-    if (v.won) { out.lesson = lessonOf(null); pareto(); return; }
-    const fp = v.fp, L = v.last;
+    const pareto = () => sliced(paretoGen(deadline), items => { out.pareto = items || []; paintPareto(); }, 'pareto');
+    if (!v.lost) { out.lesson = lessonOf(null); pareto(); return; }
+    const fp = v.fp && v.fp.tubes ? v.fp : null, L = v.last;
     const rules = L.rules.length ? L.rules : (fp && has(S, 'rulesFor') ? call(S, 'rulesFor', fp, fp.show) || [] : []);
     const ctx = {fp, rules, target: L.target, baseTarget: baseTarget(L.s), applause: L.applause};
+    // Preferred: the SIM's own §8.6 search as a generator, sliced here. Otherwise the same search on SIM
+    // primitives (one resolve per step). Last resort: the SIM's synchronous nearMiss, deferred one slice.
     let gen = null;
-    if (fp && has(S, 'nearMiss') && S.nearMiss.constructor && S.nearMiss.constructor.name === 'GeneratorFunction') gen = S.nearMiss(fp, rules, ctx);
-    else if (fp && has(S, 'resolveShow') && fp.tubes) gen = nearMissGen(ctx, deadline);
-    else if (fp && has(S, 'nearMiss')) gen = (function* () { yield; return call(S, 'nearMiss', fp, rules); })();
-    if (!gen) { finishNear(null); pareto(); return; }
-    sliced(gen, r => { finishNear(r); pareto(); });
+    if (fp && has(S, 'nearMissGen')) { try { gen = S.nearMissGen(fp, rules, L.target); } catch (e) { warn('nearMissGen', e); } }
+    if (!gen && fp && has(S, 'resolveShow')) gen = nearMissGen(ctx, deadline);
+    if (!gen && fp && has(S, 'nearMiss')) gen = (function* () { yield; return call(S, 'nearMiss', fp, rules, L.target); })();
+    if (!gen || typeof gen.next !== 'function') { finishNear(null); pareto(); return; }
+    sliced(gen, r => { finishNear(normNear(r)); pareto(); }, 'nearMiss');
   }
 
   /* ---------- persistence through GAME ---------- */
@@ -1013,7 +1080,8 @@ const UI_END = (() => {
       const on = b.getAttribute('data-keep') === String(i);
       b.setAttribute('aria-checked', on); b.tabIndex = on ? 0 : -1;
     });
-    call(G, 'setMeta', {keepsake: sel.keep});
+    if (has(G, 'setKeepsake')) call(G, 'setKeepsake', sel.keep);
+    else call(G, 'setMeta', {keepsake: sel.keep});
     const A = typeof AUDIO === 'object' && AUDIO;
     call(A, 'ui', 'pluck', {col: sel.keep ? sel.keep.col : 'W'});
   }
@@ -1048,6 +1116,7 @@ const UI_END = (() => {
       case 'party': if (!busy) { busy = true; leave(); call(G, 'enterAfterparty'); } return;
       case 'logbook': return call(G, 'open', 'logbook');
       case 'daily': {
+        if (has(G, 'startDaily')) { if (!busy) { busy = true; leave(); call(G, 'startDaily'); } return; }
         const d = new Date(), ds = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
         return start({seed: call(sim(), 'dailySeed', ds) || 'daily-' + ds, kit: 'apprentice', renown: 0, daily: true});
       }
@@ -1102,7 +1171,7 @@ const UI_END = (() => {
   function isOpen() { return !!root && !root.hidden; }
   function show(lr) {
     render(lr);
-    try { if (!isOpen() || !has(G, 'top') || G.top() !== 'end') call(G, 'open', 'end'); } catch (e) { warn('open', e); }
+    try { if (!isOpen() || !has(G, 'top') || G.top() !== 'end') call(G, 'open', 'end', {focus: '#run-it-back'}); } catch (e) { warn('open', e); }
     if (root.hidden) root.hidden = false;           // no overlay stack available: show it ourselves
     const focusRIB = () => { const b = root.querySelector('#run-it-back'); if (b) b.focus({preventScroll: true}); root.scrollTop = 0; };
     focusRIB();

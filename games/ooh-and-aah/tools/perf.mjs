@@ -49,8 +49,9 @@
 // The report states which method each scenario used.
 //
 // Budgets (verdict FAIL): FX render ≤ 6 ms (p95, mobile), OOH.step ≤ 2 ms (p95 per action type, mobile),
-// resolveShow 6-tube Countdown ≤ 0.2 ms (mean, mobile), particles ≤ 400, file ≤ 190 KB.
-// Guides (verdict WARN; not in the spec): file ≤ 150 KB, dropped frames, long tasks, heap slope,
+// resolveShow 6-tube Countdown ≤ 0.2 ms (mean, mobile), particles ≤ 400, file ≤ the hard ceiling
+// (read from CONTRACT.md "Size", which overrides §11.1: warn > 350 KB, fail > 600 KB at the time of writing).
+// Guides (verdict WARN; not in the spec): file ≤ the warning line, dropped frames, long tasks, heap slope,
 // boot time, action round trip ≤ 1 frame, console errors, non-font network requests.
 // Timings under CPU throttling are wall-clock and so already scaled by the throttle.
 //
@@ -165,6 +166,22 @@ export function resolveHtml({ html, build, outDir }) {
   return { file, html: text, note };
 }
 
+// Size limits: CONTRACT.md "Size" overrides spec §11.1 (150 KB target / 190 KB ceiling). Read the
+// current numbers from CONTRACT.md, else from tools/build.mjs, else fall back to the spec.
+export function sizeLimits() {
+  try {
+    const c = fs.readFileSync(path.join(GAME_DIR, 'src', 'CONTRACT.md'), 'utf8');
+    const m = /warns above (\d+)\s*KB and fails only above (\d+)\s*KB/i.exec(c);
+    if (m) return { warnKb: +m[1], failKb: +m[2], source: 'CONTRACT.md "Size" (lead override of §11.1)' };
+  } catch { /* ignore */ }
+  try {
+    const b = fs.readFileSync(path.join(GAME_DIR, 'tools', 'build.mjs'), 'utf8');
+    const w = /WARN_KB\s*=\s*(\d+)/.exec(b); const f = /FAIL_KB\s*=\s*(\d+)/.exec(b);
+    if (w && f) return { warnKb: +w[1], failKb: +f[1], source: 'tools/build.mjs WARN_KB/FAIL_KB' };
+  } catch { /* ignore */ }
+  return { warnKb: 150, failKb: 190, source: 'spec §11.1' };
+}
+
 export function fileStats(file, text) {
   const buf = Buffer.from(text, 'utf8');
   return {
@@ -267,7 +284,7 @@ function pageLib() {
   };
   T.start = () => {
     frameMap = new Map(); lastTs = null;
-    R = { t0: now(), deltas: [], fx: { render: [], update: [] }, fxStatsMax: {}, fxStatsSeries: {}, heap: [], uiMark: T.uiLog.length };
+    R = { t0: now(), deltas: [], fx: { render: [], update: [] }, fxStatsMax: {}, fxStatsSeries: {}, heap: [], uiMark: T.uiLog.length, uiAtStart: T.ui() };
     T.rec = true;
   };
   T.stop = () => {
@@ -278,12 +295,12 @@ function pageLib() {
     for (const [k, v] of Object.entries(R.fxStatsSeries)) { const step = Math.max(1, Math.ceil(v.length / 120)); series[k] = v.filter((_, i) => i % step === 0); }
     const heapDeltas = []; for (let i = 1; i < R.heap.length; i++) heapDeltas.push(R.heap[i] - R.heap[i - 1]);
     const out = {
-      durationMs: t1 - R.t0, deltas: R.deltas,
+      t0: R.t0, durationMs: t1 - R.t0, deltas: R.deltas,
       rafCb: frames.map((f) => f.cb), fxRenderPerFrame: frames.filter((f) => f.nR).map((f) => f.fxR), fxUpdatePerFrame: frames.filter((f) => f.nU).map((f) => f.fxU),
       fxRender: R.fx.render, fxUpdate: R.fx.update, fxStatsMax: R.fxStatsMax, fxStatsSeries: series, fxStatsError: R.fxStatsError || null,
       longTasks: T.longTasks.filter((l) => l.start >= R.t0 && l.start <= t1),
       allocBytes: heapDeltas.filter((d) => d > 0).reduce((s, d) => s + d, 0), heapSamples: R.heap.length,
-      ui: T.uiLog.slice(R.uiMark),
+      ui: [{ ui: R.uiAtStart, t: R.t0 }].concat(T.uiLog.slice(R.uiMark)),
     };
     R = null; return out;
   };
@@ -310,7 +327,7 @@ function pageLib() {
   T.buildState = async (spec) => {
     const g = window.__game;
     if (!g || typeof g.reset !== 'function' || typeof g.state !== 'function') throw new Error('window.__game.reset/state missing');
-    await g.reset(spec.seed || 'review', Object.assign({ kit: 'apprentice', renown: 0 }, spec.opts || {}));
+    await g.reset(spec.seed || 'review', Object.assign({ kit: 'apprentice', renown: 0, firstRun: false }, spec.opts || {}));
     const st = await g.state();
     if (!st || typeof st !== 'object') throw new Error('__game.state() returned nothing');
     const cfg = g.config || {};
@@ -430,7 +447,7 @@ export async function newContext(browser, prof, { fonts = false, reducedMotion =
   const external = [];
   await ctx.route('**/*', (route) => {
     const u = route.request().url();
-    if (u.startsWith('http://127.0.0.1') || u.startsWith('data:') || u.startsWith('blob:')) return route.continue();
+    if (u.startsWith('http://127.0.0.1') || u.startsWith('data:') || u.startsWith('blob:') || u.startsWith('file:')) return route.continue();
     const isFont = /^https:\/\/fonts\.(googleapis|gstatic)\.com\//.test(u);
     if (!isFont) external.push(u);
     if (isFont && fonts) return route.continue();
@@ -536,37 +553,48 @@ export async function ensureAnimated(page) {
   });
 }
 
-// Lights the fuse and waits for the show to finish (#app[data-ui] back to BUILD, or END).
-// Returns {method, ok, endUi, phases:{RESOLVING,RESULT,...} (ms), log}.
+// Lights the fuse and waits for the show to finish. Light is legal from BUILD and from RESULT (the
+// real core keeps data-ui=RESULT, with the result card pinned, until the next build action).
+// "Finished" = the first RESULT, BUILD or END after RESOLVING. Returns {method, ok, endUi,
+// phases:{RESOLVING: ms, …}, log, tFinish (page ms)}.
+export const BUILDISH = ['BUILD', 'RESULT'];
 export async function lightShow(page, { timeoutMs = 30000, allowAct = true } = {}) {
   const mark = await page.evaluate(() => window.__oohTools.uiLog.length);
-  const started = () => page.evaluate((m) => window.__oohTools.uiLog.slice(m).some((e) => e.ui !== 'BUILD'), mark);
+  const started = () => page.evaluate((m) => window.__oohTools.uiLog.slice(m).some((e) => e.ui === 'RESOLVING' || e.ui === 'END'), mark);
   let method = null;
   const u0 = await ui(page);
-  if (u0 !== 'BUILD') return { ok: false, method: null, error: `not in BUILD (data-ui=${u0})` };
+  if (!BUILDISH.includes(u0)) return { ok: false, method: null, error: `not in BUILD/RESULT (data-ui=${u0})` };
   try { await page.locator('#fire').click({ force: true, timeout: 4000 }); method = 'click #fire'; } catch { /* next */ }
   let saw = method ? await waitFor(started, 2500, 50) : null;
+  const fireIgnored = method && !saw ? u0 : null; // #fire was clicked in this data-ui and nothing happened
   if (!saw) {
-    const r = await page.evaluate(() => { try { if (eval('typeof GAME') !== 'undefined' && typeof GAME.light === 'function') { GAME.light(); return 'GAME.light()'; } } catch (e) { /* ignore */ } return null; });
-    if (r) { method = r; saw = await waitFor(started, 2500, 50); }
+    const r = await page.evaluate(() => { try { if (typeof GAME !== 'undefined' && typeof GAME.light === 'function') { GAME.light(); return 'GAME.light()'; } } catch (e) { /* ignore */ } return null; });
+    if (r) { method = r + (fireIgnored ? ` (#fire click ignored in ${fireIgnored})` : ''); saw = await waitFor(started, 2500, 50); }
   }
   if (!saw && allowAct) {
     const r = await page.evaluate(async () => { const g = window.__game; if (g && typeof g.act === 'function') { await g.act({ type: 'light' }); return '__game.act(light)'; } return null; });
     if (r) { method = r + ' (no presentation)'; saw = await waitFor(started, 1500, 50); if (!saw) return { ok: true, method, endUi: await ui(page), phases: {}, log: [] }; }
   }
-  if (!saw) return { ok: false, method, error: 'the show did not start (no data-ui change after #fire, GAME.light, __game.act)' };
+  if (!saw) return { ok: false, method, error: 'the show did not start (no RESOLVING after #fire, GAME.light, __game.act)' };
   const fin = await waitFor(() => page.evaluate((m) => {
     const L = window.__oohTools.uiLog.slice(m);
-    const i = L.findIndex((e) => e.ui !== 'BUILD');
+    const i = L.findIndex((e) => e.ui === 'RESOLVING' || e.ui === 'END');
     if (i < 0) return null;
-    const j = L.findIndex((e, k) => k > i && (e.ui === 'BUILD' || e.ui === 'END'));
+    if (L[i].ui === 'END') return L;
+    const j = L.findIndex((e, k) => k > i && (e.ui === 'RESULT' || e.ui === 'BUILD' || e.ui === 'END'));
     return j < 0 ? null : L;
-  }, mark), timeoutMs, 100);
+  }, mark), timeoutMs, 60);
   const L = fin || await page.evaluate((m) => window.__oohTools.uiLog.slice(m), mark);
   const phases = {};
   for (let i = 0; i < L.length - 1; i++) phases[L[i].ui] = (phases[L[i].ui] || 0) + (L[i + 1].t - L[i].t);
   const last = L[L.length - 1];
-  return { ok: !!fin, method, endUi: last ? last.ui : null, phases: roundObj(phases, (x) => Math.round(x)), log: L.map((e) => e.ui), error: fin ? null : `show did not finish within ${timeoutMs} ms` };
+  return { ok: !!fin, method, fireIgnored, endUi: last ? last.ui : null, phases: roundObj(phases, (x) => Math.round(x)), log: L.map((e) => e.ui), tFinish: last ? last.t : null, error: fin ? null : `show did not finish within ${timeoutMs} ms` };
+}
+
+// Waits until the run ends up somewhere stable after a light: END, BUILD, or RESULT (which the real
+// core holds). Used after lightShow when the next step needs END specifically.
+export async function waitSettled(page, want = ['END'], timeoutMs = 8000) {
+  return waitFor(async () => { const u = await ui(page); return want.includes(u) ? u : null; }, timeoutMs, 60);
 }
 
 // ------------------------------------------------------------------ measurements
@@ -587,12 +615,20 @@ function frameStats(rec, refresh) {
   const frames = rec.deltas.length;
   const fxR = summarize(rec.fxRender); const fxRF = summarize(rec.fxRenderPerFrame); const fxU = summarize(rec.fxUpdate); const fxUF = summarize(rec.fxUpdatePerFrame);
   const cb = summarize(rec.rafCb);
-  const lt = rec.longTasks || [];
+  const lt = (rec.longTasks || []).map((l) => {
+    let phase = null; let next = null;
+    for (const e of rec.ui || []) { if (e.t <= l.start) phase = e.ui; else if (!next) next = e; }
+    // A task that starts in BUILD/RESULT and ends as RESOLVING begins is the Light-the-fuse handler.
+    if (next && next.ui === 'RESOLVING' && (phase === 'BUILD' || phase === 'RESULT') && next.t <= l.start + l.dur + 1) phase = `${phase}→RESOLVING: the light handler`;
+    else if (next && next.ui === 'END' && next.t <= l.start + l.dur + 1) phase = `${phase}→END: opening the end screen`;
+    return { ...l, phase: phase || '(before first ui change)', at: Math.round(l.start - rec.t0) };
+  });
   return {
     durationMs: Math.round(rec.durationMs), frames, refreshMs: r2(period),
     frameMs: roundObj(d), fps: d ? r2(1000 / d.mean) : null, droppedFrames: dropped, droppedPct: frames ? r2((100 * dropped) / (frames + dropped)) : null, framesOver2x: over,
     rafCallbackMs: roundObj(cb), fxRenderMs: roundObj(fxR), fxRenderPerFrameMs: roundObj(fxRF), fxUpdateMs: roundObj(fxU), fxUpdatePerFrameMs: roundObj(fxUF),
-    longTasks: { count: lt.length, maxMs: lt.length ? Math.round(Math.max(...lt.map((l) => l.dur))) : 0, totalMs: Math.round(lt.reduce((s, l) => s + l.dur, 0)) },
+    longTasks: { count: lt.length, maxMs: lt.length ? Math.round(Math.max(...lt.map((l) => l.dur))) : 0, totalMs: Math.round(lt.reduce((s, l) => s + l.dur, 0)),
+      top: lt.slice().sort((a, b) => b.dur - a.dur).slice(0, 5).map((l) => ({ ms: Math.round(l.dur), atMs: l.at, phase: l.phase })) },
     fxStatsMax: rec.fxStatsMax, fxStatsSeries: rec.fxStatsSeries, fxStatsError: rec.fxStatsError,
     allocKbPerFrame: rec.heapSamples > 1 ? r2(rec.allocBytes / 1024 / (rec.heapSamples - 1)) : null,
     uiSequence: (rec.ui || []).map((e) => e.ui),
@@ -625,10 +661,11 @@ async function simTimings(page, { iters }) {
     for (let i = 0; i < 200000 && minStep > 0.001; i++) { const b = performance.now(); if (b > a) { minStep = Math.min(minStep, b - a); a = b; } }
     out.timerResolutionMs = minStep;
     const stats = (arr, total, n) => { const s = Array.from(arr).sort((x, y) => x - y); const p = (q) => s[Math.min(s.length - 1, Math.max(0, Math.ceil(q * s.length) - 1))]; return { n, mean: total / n, p50: p(0.5), p95: p(0.95), max: s[s.length - 1] }; };
+    // Synchronous calls are timed without an await (a microtask per call would inflate them).
     const bench = async (fn, n, warm = 10) => {
-      for (let i = 0; i < warm; i++) await fn(i);
+      for (let i = 0; i < warm; i++) { const r = fn(i); if (r && typeof r.then === 'function') await r; }
       const samples = new Float64Array(n); const t0 = performance.now();
-      for (let i = 0; i < n; i++) { const t = performance.now(); await fn(i); samples[i] = performance.now() - t; }
+      for (let i = 0; i < n; i++) { const t = performance.now(); const r = fn(i); if (r && typeof r.then === 'function') await r; samples[i] = performance.now() - t; }
       return stats(samples, performance.now() - t0, n);
     };
     const st = await g.state();
@@ -703,7 +740,10 @@ async function measureShow(page, srv, key, cfg, notes, beforeLight = null) {
   await sleep(300);
   await page.evaluate(() => window.__oohTools.start());
   const lit = await lightShow(page, { timeoutMs: cfg.showTimeoutMs, allowAct: true });
-  await sleep(250);
+  // Keep recording through the slam / finale tail: the core holds RESULT (or opens END ~1.6 s after the
+  // slam on a win), so record until END appears or 1.8 s pass, whichever is first.
+  if (lit.ok && lit.endUi !== 'END') await waitSettled(page, ['END', 'BUILD'], 1800);
+  await sleep(200);
   const rec = await page.evaluate(() => window.__oohTools.stop());
   res.light = lit;
   res.frames = frameStats(rec, cfg.refreshMs);
@@ -734,6 +774,7 @@ async function measureLeak(page, srv, cdp, shows, cfg) {
     const r = await lightShow(page, { timeoutMs: cfg.showTimeoutMs });
     if (!r.ok) { out.notes.push(`show ${i}: ${r.error}`); break; }
     out.method = r.method;
+    if (r.fireIgnored) out.fireIgnored = (out.fireIgnored || 0) + 1;
     await point(i);
   }
   const P = out.points;
@@ -763,12 +804,28 @@ async function measureIdle(page, ms) {
 }
 
 // ------------------------------------------------------------------ budgets
+// Modules that tools/build.mjs --allow-missing replaced with a no-op stub (it logs a console warning).
+function stubbedModules(report) {
+  const out = new Set();
+  for (const e of report.console) { const m = /\[ooh build\] (\S+) is missing/.exec(e.text); if (m) out.add(m[1]); }
+  return [...out];
+}
+
 function evaluate(report) {
   const checks = [];
-  const add = (id, label, budget, measured, verdict, detail = '') => checks.push({ id, label, budget, measured, verdict, detail });
+  const stubs = report.stubbedModules || [];
+  const fxStub = stubs.includes('fx.js'); const simStub = stubs.includes('sim.js');
+  const add0 = (id, label, budget, measured, verdict, detail = '') => checks.push({ id, label, budget, measured, verdict, detail });
+  // A budget measured on a stubbed module is meaningless: report it as SKIP.
+  const add = (id, label, budget, measured, verdict, detail = '') => {
+    const stubbed = (fxStub && /^(render|particles)$/.test(id)) || (simStub && /^(step|resolve)$/.test(id));
+    if (stubbed && verdict !== 'SKIP') return add0(id, label, budget, measured, 'SKIP', `${id === 'render' || id === 'particles' ? 'fx.js' : 'sim.js'} is a build stub in this file; ${detail}`);
+    return add0(id, label, budget, measured, verdict, detail);
+  };
   const f = report.file;
-  add('size.ceiling', 'File size (hard ceiling, §11.1)', '≤ 190 KB', `${f.kb} KB (gzip ${f.gzipKb} KB)`, f.kb <= 190 ? 'PASS' : 'FAIL');
-  add('size.target', 'File size (target, §11.1)', '≤ 150 KB', `${f.kb} KB`, f.kb <= 150 ? 'PASS' : 'WARN');
+  const lim = report.sizeLimits || sizeLimits();
+  add('size.ceiling', 'File size (hard ceiling)', `≤ ${lim.failKb} KB`, `${f.kb} KB (gzip ${f.gzipKb} KB)`, f.kb <= lim.failKb ? 'PASS' : 'FAIL', lim.source);
+  add('size.target', 'File size (warning line)', `≤ ${lim.warnKb} KB`, `${f.kb} KB`, f.kb <= lim.warnKb ? 'PASS' : 'WARN', `${lim.source}; spec §11.1 alone says 150 / 190 KB`);
   const mob = report.profiles.mobile; const desk = report.profiles.desktop;
   const primary = mob || desk; const pname = mob ? 'mobile' : 'desktop';
   const chains = (p) => (p ? ['show7', 'cd14', 'cdwin'].map((k) => p.scenarios && p.scenarios[k]).filter((s) => s && s.frames) : []);
@@ -791,7 +848,7 @@ function evaluate(report) {
   } else add('step', 'OOH.step (§11.7)', '≤ 2 ms', 'n/a', 'SKIP', (sim && sim.notes || []).join('; ') || 'no SIM timings');
   if (sim && sim.resolveCountdown) {
     const v = sim.resolveCountdown;
-    add('resolve', `resolveShow, 6-tube Countdown (${pname}, §11.7)`, '≤ 0.2 ms', `${fmtMs(v.mean, 4)} mean (p95 ${fmtMs(v.p95, 3)}; ${sim.countdownBursts} bursts)`, v.mean <= 0.2 ? 'PASS' : 'FAIL', `via ${sim.resolveVia}`);
+    add('resolve', `resolveShow, 6-tube Countdown (${pname}, §11.7)`, '≤ 0.2 ms p95', `${fmtMs(v.p95, 3)} p95 (mean ${fmtMs(v.mean, 4)}, max ${fmtMs(v.max, 3)}; ${sim.countdownBursts} bursts)`, v.p95 <= 0.2 ? 'PASS' : 'FAIL', `via ${sim.resolveVia}; the spec's node reference averages 17 µs`);
   } else add('resolve', 'resolveShow, 6-tube Countdown (§11.7)', '≤ 0.2 ms', 'n/a', 'SKIP');
   // particles ≤ 400
   let pmax = null; let pkey = null; let pscen = null;
@@ -810,7 +867,8 @@ function evaluate(report) {
       const dropLimit = pn === 'desktop' ? 5 : 10;
       add(`frames.${pn}.${s.scenario}`, `Dropped frames during ${s.scenario} (${pn}; guide)`, `≤ ${dropLimit}%`, `${fr.droppedPct}% (${fr.droppedFrames} over ${fr.frames} frames; p95 interval ${fmtMs(fr.frameMs && fr.frameMs.p95, 1)})`, fr.droppedPct <= dropLimit ? 'PASS' : 'WARN');
       const ltLimit = pn === 'desktop' ? 50 : 100;
-      add(`longtask.${pn}.${s.scenario}`, `Longest task during ${s.scenario} (${pn}; guide)`, `< ${ltLimit} ms`, `${fr.longTasks.maxMs} ms (${fr.longTasks.count} long tasks)`, fr.longTasks.maxMs < ltLimit ? 'PASS' : 'WARN');
+      add(`longtask.${pn}.${s.scenario}`, `Longest task during ${s.scenario} (${pn}; guide)`, `< ${ltLimit} ms`, `${fr.longTasks.maxMs} ms (${fr.longTasks.count} long tasks)`, fr.longTasks.maxMs < ltLimit ? 'PASS' : 'WARN',
+        (fr.longTasks.top || []).slice(0, 3).map((l) => `${l.ms} ms at +${l.atMs} ms in ${l.phase}`).join('; '));
     }
     if (p.sim && p.sim.actRoundTrip) {
       const v = p.sim.actRoundTrip;
@@ -826,6 +884,10 @@ function evaluate(report) {
       add(`leak.${pn}`, `Heap after ${L.showsCompleted} shows, post-GC (${pn}; guide)`, '≤ 50 KB/show', `${L.heapSlopeKbPerShow} KB/show (Δ ${L.heapDeltaKb} KB; nodes Δ ${L.nodesDelta}; listeners Δ ${L.listenersDelta})`, bad || L.nodesDelta > 50 * L.showsCompleted || L.listenersDelta > 5 * L.showsCompleted ? 'WARN' : 'PASS');
     }
   }
+  let ign = 0; let ignUi = null;
+  for (const p of [mob, desk]) if (p) { if (p.leak && p.leak.fireIgnored) { ign += p.leak.fireIgnored; ignUi = 'RESULT'; } for (const s of Object.values(p.scenarios || {})) if (s.light && s.light.fireIgnored) { ign++; ignUi = s.light.fireIgnored; } }
+  add0('fire', 'Light the fuse (#fire click) starts the show (functional)', 'always', ign ? `ignored ${ign}× (data-ui=${ignUi}); the tool fell back to GAME.light()` : 'yes', ign ? 'WARN' : 'PASS',
+    ign ? 'core allows light from RESULT and #fire is enabled there, but the click does nothing until a build action' : '');
   const errs = report.console.filter((e) => e.kind === 'pageerror' || e.kind === 'error');
   add('console', 'Page errors and console errors (guide)', 'none', `${errs.length}`, errs.length ? 'WARN' : 'PASS', errs.slice(0, 3).map((e) => e.text).join(' | '));
   add('network', 'Requests other than Google Fonts (§11.2; guide)', 'none', `${report.externalRequests.length}`, report.externalRequests.length ? 'WARN' : 'PASS', report.externalRequests.slice(0, 3).join(' '));
@@ -868,6 +930,7 @@ function mdReport(rep) {
           + (s.rack && s.rack.tubes ? ` Rack at show ${s.rack.show}: \`${s.rack.tubes}\`, Crowd ${s.rack.crowd}` : '')
           + (pr && pr.bursts != null ? `; predicted ${pr.bursts} bursts, Applause ${pr.applause} under [${(pr.rules || []).join(',')}]` : '')
           + (s.outcome && s.outcome.last ? `; outcome: ${s.outcome.last.applause}/${s.outcome.last.target} ${s.outcome.last.pass ? 'pass' : 'MISS'}, phase ${s.outcome.phase}` : '')
+          + (s.frames && s.frames.longTasks && s.frames.longTasks.top && s.frames.longTasks.top.length ? `; long tasks: ${s.frames.longTasks.top.map((l) => `${l.ms} ms at +${l.atMs} ms (${l.phase})`).join(', ')}` : '')
           + (s.error ? `; ERROR ${s.error}` : '') + (s.light && s.light.error ? `; ${s.light.error}` : '')
           + (s.fxWrap && (s.fxWrap.render !== 'wrapped') ? `; FX.render not wrapped (${s.fxWrap.render || s.fxWrap.why})` : ''));
       }
@@ -948,13 +1011,13 @@ async function main() {
   const report = {
     tool: 'tools/perf.mjs', generatedAt: new Date().toISOString(), file: fileStats(src.file, src.html), buildNote: src.note || null,
     browserVersion: browser.version(), config: { throttle: opts.throttle, quick: opts.quick, leak: opts.leak, shows: opts.shows, fonts: opts.fonts, isolation: opts.isolation },
-    api: null, profiles: {}, console: consoleLog, externalRequests: [], notes: [],
+    api: null, profiles: {}, console: consoleLog, externalRequests: [], notes: [], sizeLimits: sizeLimits(),
   };
   const PROFILES = {
     mobile: { id: 'mobile', width: 360, height: 740, dpr: 2, mobile: true, throttle: opts.throttle },
     desktop: { id: 'desktop', width: 1440, height: 900, dpr: 1, mobile: false, throttle: 1 },
   };
-  const iters = opts.quick ? { resolve: 200, step: 30, light: 15, act: 10 } : { resolve: 1000, step: 100, light: 40, act: 30 };
+  const iters = opts.quick ? { resolve: 1000, step: 30, light: 15, act: 10 } : { resolve: 3000, step: 100, light: 40, act: 30 };
   const log = (s) => process.stdout.write(s + '\n');
   log(`perf: ${rel(src.file)} (${report.file.kb} KB) → ${rel(opts.out)}${src.note ? ` [${src.note}]` : ''}`);
   for (const pn of opts.profiles) {
@@ -1008,6 +1071,8 @@ async function main() {
     }
   }
   report.externalRequests = [...new Set(report.externalRequests)];
+  report.stubbedModules = stubbedModules(report);
+  if (report.stubbedModules.length) report.notes.push(`build stubs in this file (tools/build.mjs --allow-missing): ${report.stubbedModules.join(', ')}`);
   await browser.close();
   await srv.close();
   report.checks = evaluate(report);

@@ -7,10 +7,15 @@
 //   - planner:   fn(state, ctx) → Action[]          (the harness applies them, stopping at 'light')
 //   - policy:    fn(state, ctx) → Action            (called repeatedly until it returns 'light')
 //   - object:    {build|turn|play|act}(state, ctx)  (same three result shapes)
-// ctx given to the SIM bot: {rnd, opts, relight, last} plus opts spread at top level.
+// The SIM bot is called as fn(state, o) with o = {...opts, rnd, opts, relight, last}; this matches
+// src/sim.js, whose bots are fn(S, o, ctx) mutators reading o.rnd (and tolerate a missing ctx).
 // mono: OOH.bots.mono(arch[, base]) → bot of any shape above.
+// Sponsors: if the SIM exports sponsorPick(style, S, o) and the bot carries fn.sponsorStyle, the
+//   SIM's own rule decides (simSponsor 'auto'/'bot'); otherwise the runner applies §12.1.
+// Fair Weather relight builds (no shop): fn.relightStyle 'oracle' → exhaustive re-solve, else the
+//   human re-arrangement — both from the harness's §12.1 port (same algorithm as src/sim.js playRun).
 
-function makeSimDriver(api) {
+function makeSimDriver(api, { simSponsor = 'auto', SB = null } = {}) {
   const B = api.bots;
   if (!B || typeof B !== 'object') throw new Error('the SIM exposes no OOH.bots object');
   const names = { greedyMood: ['greedyMood', 'greedymood', 'greedy-mood', 'greedy_mood'], donothing: ['donothing', 'doNothing', 'do-nothing'] };
@@ -40,6 +45,12 @@ function makeSimDriver(api) {
   function build(name, ctx) {
     const fn = botFn(name, ctx.opts || {});
     if (!fn) throw new Error('OOH.bots has no bot "' + name + '"' + (name === 'mono' ? ' (mono(arch) did not return a bot)' : ''));
+    if (ctx.relight) {
+      if (!SB || name === 'donothing' || name === 'greedy') return;
+      const style = fn.relightStyle || (name === 'oracle' ? 'oracle' : 'human');
+      if (style === 'oracle') SB.arrangeOracle(ctx); else SB.arrangeHuman(ctx, { ...(ctx.opts || {}) }, null);
+      return;
+    }
     const r = call(fn, ctx.state, ctx);
     if (Array.isArray(r)) { for (const a of r) { if (!a || a.type === 'light') break; ctx.act(a); } return; }
     if (r && typeof r === 'object' && typeof r.type === 'string') {
@@ -47,8 +58,15 @@ function makeSimDriver(api) {
       while (a && a.type !== 'light' && g++ < 300) { if (!ctx.act(a)) break; a = call(fn, ctx.state, ctx); }
     }
   }
-  const handlesSponsor = !!api.__botsHandleSponsor;
-  return { build, handlesSponsor, available: n => !!botFn(n, { arch: 'canopy' }) };
+  // Returns true/false when the SIM's own Sponsor rule decided, or null to let the runner apply §12.1.
+  function sponsor(name, ctx) {
+    if (simSponsor === 'harness' || !api.sponsorPick) return null;
+    const fn = botFn(name, ctx.opts || {});
+    if (!fn || !('sponsorStyle' in fn)) return null;
+    if (!ctx.state.sponsor || ctx.relight) return false;
+    return !!api.sponsorPick(fn.sponsorStyle, ctx.state, { ...(ctx.opts || {}), rnd: ctx.rnd });
+  }
+  return { build, sponsor, available: n => !!botFn(n, { arch: 'canopy' }) };
 }
 
 module.exports = { makeSimDriver };

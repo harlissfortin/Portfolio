@@ -59,12 +59,8 @@ function loadSim(opts) {
     if (Array.isArray(S)) return S.map(x => x && (x.id || x[0])).filter(Boolean);
     return S ? Object.keys(S) : [];
   }
-  let unlocks = ALL_UNLOCKS.slice();
-  try {
-    const M = D.MILESTONES;
-    const ids = Array.isArray(M) ? M.map(m => m && (m.id || m[0])) : M ? Object.keys(M) : [];
-    for (const id of ids) if (typeof id === 'string' && !unlocks.includes(id)) unlocks.push(id);
-  } catch (e) { /* keep defaults */ }
+  // The full pool = every shell-unlocking milestone (spec §4.11), the default of the v1.1 bots.
+  const unlocks = ALL_UNLOCKS.slice();
 
   const matchPerm = typeof raw.matchPerm === 'function' ? (n, rules) => raw.matchPerm(n, rules) : (n, rules) => {
     let order = [...Array(n).keys()];
@@ -87,7 +83,8 @@ function loadSim(opts) {
     if (s === st.show && st.sponsor && st.sponsor.accepted) t = Math.round(t * 1.5);
     return t;
   };
-  const baseTarget = (st, s) => (st.sponsor && st.sponsor.accepted ? target({ ...st, sponsor: { ...st.sponsor, accepted: false } }, s) : target(st, s));
+  const baseTarget = typeof raw.baseTarget === 'function' ? (st, s) => raw.baseTarget(st, s)
+    : (st, s) => (st.sponsor && st.sponsor.accepted ? target({ ...st, sponsor: { ...st.sponsor, accepted: false } }, s) : target(st, s));
   const history = st => (st.runStats && Array.isArray(st.runStats.history) ? st.runStats.history : Array.isArray(st.history) ? st.history : []);
 
   return {
@@ -104,6 +101,8 @@ function loadSim(opts) {
     mood: typeof raw.mood === 'function' ? (...a) => raw.mood(...a) : null,
     bots: raw.bots || null,
     runBots: typeof raw.runBots === 'function' ? raw.runBots : null,
+    playRun: typeof raw.playRun === 'function' ? raw.playRun : null,
+    sponsorPick: typeof raw.sponsorPick === 'function' ? raw.sponsorPick : null,
   };
 }
 
