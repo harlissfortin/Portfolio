@@ -508,7 +508,7 @@ const UI_END = (() => {
       for (const a of acts) {
         if (now() > deadline) break;
         const t = a.type;
-        if (t === 'light' || t === 'reroll' || t === 'restore' || t === 'setColour' || t === 'endless' || t === 'buyTube') continue;
+        if (t === 'light' || t === 'reroll' || t === 'restore' || t === 'setColour' || t === 'endless') continue;
         if (t === 'sponsor' && a.accept) continue;
         if ((t === 'buy' || t === 'upgrade') && a.to && a.to.zone === 'crate') continue;
         if (t === 'sell' && a.from && a.from.zone === 'crate') continue;
@@ -550,6 +550,7 @@ const UI_END = (() => {
       case 'buyRig': return `Adding the ${rigName((fp.shop && fp.shop.rig && fp.shop.rig.id) || a.rig || 'rig')} to tube ${a.tube + 1}`;
       case 'move': return a.from.zone === 'crate' ? `Moving ${shellName(at(a.from))} from the Crate into tube ${a.to.i + 1}` : `Benching ${shellName(at(a.from))} in the Crate`;
       case 'sell': return `Selling ${shellName(at(a.from))}`;
+      case 'buyTube': return 'Buying another tube';
       case 'match': return 'Pressing Match';
       case 'sponsor': return 'Turning down the Sponsor';
       default: return 'One more change';

@@ -1038,7 +1038,13 @@ const UI_PLAY = (() => {
     // info card (docked at the sky's bottom edge); while it is up the pinned result card steps aside
     const info = u === 'RESOLVING' ? null : infoHTML();
     E.info.hidden = !info;
-    if (info) { E.info.innerHTML = info; const t = E.info.querySelector('.info-t'); fitLadder(E.info, 2, () => overflows(t)); }
+    if (info) {
+      E.info.innerHTML = info;
+      // the hover line (a drop's local chips) replaces the card text; a card with nowhere to go says why
+      E.info.classList.toggle('hovering', !flash && !!held && !!hover && targets.has(slotKey(hover)));
+      E.info.classList.toggle('blocked', !flash && !!held && held.kind !== 'shell' && !targets.size);
+      const t = E.info.querySelector('.info-t'); fitLadder(E.info, 2, () => overflows(t));
+    }
     E.skyWrap.classList.toggle('has-info', !!info);
     // result card (pinned until the first build action)
     const showRes = !!result && u !== 'RESOLVING' && !info;
