@@ -49,7 +49,7 @@ function makeRunner(api, { driver = 'spec', simSponsor = 'auto' } = {}) {
       heads: (state.headliners || []).slice(0, 7), shows: [], regret: [], after: null, shap: [], probes: {},
       st: { rerolls: 0, pity: 0, illegal: 0, illegalWhy: {}, sells: 0, sellBad: 0, nan: 0, huge: 0, legalEmpty: 0,
         tubesMax: state.tubes.length, rigsMax: 0, maxCrowd: state.crowd || 0, star3: false, steps: 0, stepMs: 0,
-        lightMs: 0, lightMsMax: 0, lights: 0, mismatch: 0, passMismatch: 0, moodMismatch: 0, moodSeen: 0, relights: 0 },
+        lightMs: 0, lightMsMax: 0, lights: 0, tLight: 0, tMax: 0, tMaxType: '', tOver2: 0, tSteps: 0, mismatch: 0, passMismatch: 0, moodMismatch: 0, moodSeen: 0, relights: 0 },
       ms: 0, hash: null,
     };
     const st = R.st;
@@ -61,11 +61,17 @@ function makeRunner(api, { driver = 'spec', simSponsor = 'auto' } = {}) {
         const sh = a.from.zone === 'crate' ? (state.crate || [])[a.from.i] : state.tubes[a.from.i] && state.tubes[a.from.i].shell;
         if (sh) sellCheck = { paid: sh.paid, coins: state.coins };
       }
+      // Robust step timing: also step two clones of the pre-step state and keep the fastest of the
+      // three, so a GC pause or a descheduled worker on a loaded machine does not read as a slow SIM.
+      let best = Infinity;
+      for (let k = 0; k < 2; k++) { try { const c = api.clone(state); const t1 = performance.now(); api.step(c, a); best = Math.min(best, performance.now() - t1); } catch (e) { /* the real step reports it */ } }
       const t = performance.now();
       let ev;
       try { ev = api.step(state, a); } catch (e) { st.illegal++; const k = a.type + ':threw ' + String(e && e.message).slice(0, 60); st.illegalWhy[k] = (st.illegalWhy[k] || 0) + 1; return null; }
       const dt = performance.now() - t;
       st.steps++; st.stepMs += dt;
+      best = Math.min(best, dt); st.tSteps++; if (best > 2) st.tOver2++; if (best > st.tMax) { st.tMax = best; st.tMaxType = a.type; }
+      if (a.type === 'light') st.tLight += best;
       if (a.type === 'light') { st.lights++; st.lightMs += dt; if (dt > st.lightMsMax) st.lightMsMax = dt; }
       const ill = Array.isArray(ev) ? ev.find(e => e && e.type === 'illegal') : null;
       if (ill) { st.illegal++; const k = a.type + ':' + (ill.reason || '?'); st.illegalWhy[k] = (st.illegalWhy[k] || 0) + 1; return null; }

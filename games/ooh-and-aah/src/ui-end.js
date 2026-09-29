@@ -32,6 +32,7 @@ const UI_END = (() => {
   let savedKey = '';
   let busy = false;
   let lastW = 0;
+  let backTo = null;       // the control that opened an overlay on top of the end screen
 
   const TAU = Math.PI * 2;
   const now = () => (typeof performance === 'object' ? performance.now() : Date.now());
@@ -364,9 +365,10 @@ const UI_END = (() => {
     const spots = [];
     tubes.forEach((t, i) => {
       if (!t || !t.id) return;
-      const R = Math.min(colW * .56, 56) * (.86 + .07 * (t.star || 1)), x = x0 + colW * (i + .5);
+      let R = Math.min(colW * .56, 56) * (.86 + .07 * (t.star || 1));
+      const x = x0 + colW * (i + .5);
       let y = Math.max(R + 8, 70 + (i % 2) * 18 + (rnd() - .5) * 10);
-      if (x - R * .7 < tBox && y - R * .7 < 62) y = Math.min(hz - R * .8, 62 + R * .7);
+      if (x - R * .8 < tBox && y - R < 64) { R = Math.min(R, (hz - 64) / 1.8); y = 64 + R; }   // whole burst below the title block
       spots.push({t, x, y, R});
     });
     for (const s of spots) {                                        // mortar trails, fading in as they rise
@@ -531,13 +533,15 @@ const UI_END = (() => {
     if (c.kind === 'arrange') {
       const orig = tubes.map(t => (t && t.shell) || null), diff = [];
       orig.forEach((s, j) => { if (shellKey(s) !== shellKey(c.shells[j])) diff.push(j); });
+      // Name the colour only where two of the same shell would otherwise read alike.
+      const nm = sh => (orig.some(o => o && o.id === sh.id && o.col !== sh.col) ? shellName(sh) : shellRow(sh.id).name);
       if (diff.length === 2) {
         const [i, j] = diff, a = orig[i], b = orig[j];
-        if (a && b) return `Swapping ${shellName(a)} and ${shellName(b)}`;
+        if (a && b) return `Swapping ${nm(a)} and ${nm(b)}`;
         const s = a || b, to = a ? j : i;
-        return `Moving ${shellName(s)} to tube ${to + 1}`;
+        return `Moving ${nm(s)} to tube ${to + 1}`;
       }
-      return 'Rearranging them as ' + andList(c.shells.filter(Boolean).map(shellName));
+      return 'Firing them as ' + c.shells.filter(Boolean).map(nm).join(' → ');
     }
     const a = c.act || {}, card = cards[a.card];
     switch (a.type) {
@@ -594,7 +598,7 @@ const UI_END = (() => {
       for (let j = 0; j < occ.length; j++) if (mask >> j & 1) tb[occ[j]].shell = tubes[occ[j]].shell;
       const r = S.resolveShow(tb, {rules, crowd: (mask >> (m - 1) & 1) ? crowd : 0, fav});
       val[mask] = (r && r.applause) || 0;
-      if (mask % 8 === 0) yield;
+      if (mask % 4 === 0) yield;
     }
     const phi = new Array(m).fill(0);
     for (let mask = 0; mask < full; mask++) {
@@ -607,7 +611,7 @@ const UI_END = (() => {
   }
   function* sharesFor(x) {       // → Map(groupKey → share), shares sum to 1
     const S = sim();
-    // The local copy yields every 8 coalitions, so no slice runs a whole show's 128 resolves at once.
+    // The local copy yields every 4 coalitions, so no slice runs a whole show's 128 resolves at once.
     let r = has(S, 'resolveShow') ? yield* localShapley(x.tubes, x.rules, x.crowd, x.fav) : (has(S, 'shapley') ? call(S, 'shapley', x.tubes, x.rules, x.crowd, x.fav) : null);
     if (!r) return null;
     if (r.shares) r = r.shares;
@@ -637,10 +641,15 @@ const UI_END = (() => {
       return {tubes: tubesOf(e), rules: x.rules, crowd: +crowd || 0, fav: e.fav != null ? e.fav : (lit.fav != null ? lit.fav : null), cols: {}};
     });
     if (!list.length && v.fp && v.fp.tubes) list = [{tubes: v.fp.tubes, rules: v.last.rules, crowd: +v.fp.crowd || 0, fav: null, cols: {}}];
+    // Visit the shows in a spread-out order (0, ½, ¼, ¾, …) so that if a slow device hits the deadline,
+    // the shows averaged so far still sample the whole run instead of only its early festivals.
+    const order = [], n = list.length, seen = new Set();
+    for (let step = 1 << Math.ceil(Math.log2(Math.max(1, n))); step >= 1; step >>= 1)
+      for (let i = 0; i < n; i += step) if (!seen.has(i)) { seen.add(i); order.push(i); }
     const acc = new Map(), cols = {};
     let count = 0;
-    for (const x of list) {
-      if (now() > deadline) break;
+    for (const x of order.map(i => list[i])) {
+      if (now() > deadline && count >= 3) break;
       const m = yield* sharesFor(x);
       yield;
       if (!m) continue;
@@ -648,6 +657,7 @@ const UI_END = (() => {
       m.forEach((y, k) => acc.set(k, (acc.get(k) || 0) + y));
       Object.assign(cols, x.cols, cols);
     }
+    if (out.timing) out.timing.paretoShows = count + '/' + n;
     if (!count) return null;
     return [...acc].map(([key, y]) => ({key, share: y / count, col: cols[key] || shellRow(key).col,
       name: key === 'crowd' ? 'the Crowd' : shellRow(key).name, mono: key === 'crowd' ? '' : mono(key)}))
@@ -664,7 +674,7 @@ const UI_END = (() => {
       return L1.text.split('{n}').join(fmt(reo0.applause));
     let r = call(sim(), 'lessonFor', sum);
     if (r && typeof r === 'object') r = r.text || r.line || '';
-    if (typeof r === 'string' && r) return r;
+    if (typeof r === 'string' && r) return r.replace(/\b1 bursts\b/g, '1 burst');
     const L = v.last, reo = nm && nm.bestReorder;
     if (v.won && v.renown < 8) return `Next: Renown ${v.renown + 1}: ${renownText(v.renown + 1).replace(/\.$/, '')}.`;
     if (L.rules.some(x => /^countdown/.test(x)) && reo && reo.pass) return `The Countdown fires your last tube first and last. Rearranging would have scored ${fmt(reo.applause)}.`;
@@ -798,20 +808,24 @@ const UI_END = (() => {
     s += `<path class="ec-target" d="${tp}"/>`;
     const dup = {}, pts = v.shows.map(x => { const k = dup[x.s] = (dup[x.s] || 0) + 1; return {x, px: X(x.n) + (k - 1) * Math.min(6, pw / N * .4), py: Y(x.applause)}; });
     if (pts.length > 1) s += `<path class="ec-line" d="M${pts.map(p => p.px.toFixed(1) + ',' + p.py.toFixed(1)).join('L')}"/>`;
+    const ringR = Math.max(7, Math.min(10, pw / N * .62)).toFixed(1);   // rings stay rings, not a chain, when shows are 10 px apart
     for (const p of pts) {                                           // markers
       const {x, px, py} = p, head = x.k === 2;
       const tip = `Show ${x.n}, ${festName(x.f)} ${SLOT[x.k]}: ${fmt(x.applause)} vs ${fmt(x.target)}${x.pass ? '' : ', missed'}${x.sponsored ? ', sponsored' : ''}${x.encore ? ', encore' : ''}`;
       s += `<g><title>${esc(tip)}</title>`;
-      if (x.sponsored) s += `<circle class="ec-ring" cx="${px}" cy="${py}" r="10"/>`;
+      if (x.sponsored) s += `<circle class="ec-ring" cx="${px}" cy="${py}" r="${ringR}"/>`;
       if (!x.pass) s += `<circle class="ec-halo" cx="${px}" cy="${py}" r="7"/>${cross(px, py, 5)}` + (head ? crown(px, py - 14, 'ec-crown miss') : '');
       else if (head) s += crown(px, py, 'ec-crown');
       else s += `<circle class="ec-dot" cx="${px}" cy="${py}" r="4.5"/>`;
       s += `<circle class="ec-hit" cx="${px}" cy="${py}" r="12"/></g>`;
     }
     if (v.best && v.best.applause > 0) {                             // direct label: the best show
-      const p = pts.find(q => q.x === v.best), anchor = p.px > W - 70 ? 'end' : p.px < L + 30 ? 'start' : 'middle';
-      const y = p.py - 16 < Tp + 4 ? p.py + 28 : p.py - 16;
-      s += `<text class="ec-val" x="${p.px}" y="${y}" text-anchor="${anchor}">${fmt(v.best.applause)}</text>`;
+      // Above the point when there is headroom, else beside it (on the side away from the plot edge):
+      // never below, where the earlier, lower shows sit.
+      const p = pts.find(q => q.x === v.best), up = p.py - 16 >= Tp + 12;
+      const anchor = up ? (p.px > W - 70 ? 'end' : p.px < L + 30 ? 'start' : 'middle') : (p.px > L + pw / 2 ? 'end' : 'start');
+      const x = up ? p.px : p.px + (anchor === 'end' ? -14 : 14), y = up ? p.py - 16 : p.py + 5;
+      s += `<text class="ec-val" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}">${fmt(v.best.applause)}</text>`;
     }
     return `<svg class="end-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-labelledby="end-h-chart end-chart-sum">${s}</svg>`;
   }
@@ -910,8 +924,8 @@ const UI_END = (() => {
     <h2 id="end-title" class="end-title">${hd.eyebrow ? `<span class="end-eyebrow">${esc(hd.eyebrow)}</span> ` : ''}<span class="end-where">${esc(hd.main)}</span></h2>
     ${hd.sub ? `<p class="end-sub">${esc(hd.sub)}</p>` : ''}
     <ul class="end-tags" aria-label="Run details">
-      <li class="chip">Seed ${esc(v.seed)}</li><li class="chip">${esc(kit.name)}</li><li class="chip">Renown ${v.renown}</li>
-      ${v.fair ? '<li class="chip chip-aah">☂ Fair Weather</li>' : ''}${v.daily ? '<li class="chip">Daily Show</li>' : ''}
+      <li>Seed <b>${esc(v.seed)}</b></li><li><b>${esc(kit.name)}</b> kit</li><li>Renown <b>${v.renown}</b></li>
+      ${v.fair ? '<li class="end-tag-fw"><b>☂ Fair Weather</b></li>' : ''}${v.daily ? '<li><b>Daily Show</b></li>' : ''}
     </ul>
   </header>
   <figure class="end-poster"><canvas id="end-poster" role="img" aria-label="Poster of your final rack: ${esc(andList(shellsOf({tubes: v.st.tubes}).map(shellName)) || 'an empty rack')}"></canvas></figure>
@@ -938,11 +952,11 @@ const UI_END = (() => {
       </section>
       ${lost ? '<section class="end-sec end-note end-near" aria-labelledby="end-h-near"><h3 id="end-h-near">How close</h3><div id="end-near" aria-live="polite"><p class="end-wait">Working out how close you came…</p></div></section>' : ''}
       <section class="end-sec end-note end-lesson" aria-labelledby="end-h-lesson"><h3 id="end-h-lesson">Lesson</h3><p id="end-lesson" aria-live="polite">${lost ? '<span class="end-wait">Thinking it over…</span>' : esc(lessonOf(null))}</p></section>
+      ${news.length ? `<section class="end-sec" aria-labelledby="end-h-new"><h3 id="end-h-new">Just unlocked</h3>${newsHTML(news)}</section>` : ''}
     </div>
     <div class="end-col">
       <section class="end-sec" aria-labelledby="end-h-unl">
         <h3 id="end-h-unl">Next unlocks</h3>
-        ${newsHTML(news)}
         ${near.map(m => `<div class="end-ms"><div class="end-ms-top"><b>${esc(m.name)}</b><span class="num">${m.value}/${m.goal}${m.d > 0 ? ` <span class="chip chip-aah">+${m.d}</span>` : ''}</span></div>
           <div class="end-bar" role="progressbar" aria-label="${esc(m.name)}" aria-valuemin="0" aria-valuemax="${m.goal}" aria-valuenow="${m.value}"><i style="width:${Math.round(m.value / m.goal * 100)}%"></i></div>
           ${unlocksOf(m) ? `<p class="end-dim">Unlocks ${esc(unlocksOf(m))}</p>` : ''}</div>`).join('') || '<p class="end-dim">Everything is unlocked. Try a higher Renown.</p>'}
@@ -979,20 +993,35 @@ const UI_END = (() => {
     startJobs();
   }
 
-  /* One "Just unlocked" card per unlock (§7.2); they apply from the next run. */
+  /* "Just unlocked" cards (§7.2): one per milestone reached, naming what it opens; they apply from the next run. */
   function newsHTML(news) {
     if (!news.length) return '';
     const MODE = {afterparty: 'the Afterparty', daily: 'the Daily Show'};
-    return `<ul class="end-news" aria-label="Just unlocked">${news.slice(0, 8).map(u => {
-      let nm, art = '<span class="end-new-ico" aria-hidden="true">✦</span>', lead = 'Just unlocked';
-      if (u.kind === 'shell') { const r = shellRow(u.id); nm = r.name; art = tokenHTML({id: u.id, col: r.col === '*' ? 'R' : r.col}); }
-      else if (u.kind === 'kit') nm = 'the ' + kitRow(u.id).name + ' kit';
-      else if (u.kind === 'renown') nm = 'Renown ' + u.id;
-      else if (u.kind === 'fusion') nm = (row(D().FUSIONS, u.id) || {name: 'a new fusion'}).name + ' (a fusion)';
-      else if (u.kind === 'mode') nm = MODE[u.id] || cap(u.id);
-      else { nm = ((row(D().MILESTONES, u.id) || {}).name || cap(u.id)) + ' ✓'; lead = 'Milestone'; art = '<span class="end-new-ico" aria-hidden="true">★</span>'; }
-      return `<li class="end-new">${art}<span><b>${lead}</b> ${esc(nm)}</span></li>`;
-    }).join('')}</ul><p class="end-dim end-news-note">New unlocks join from your next run.</p>`;
+    const groups = [], byMs = {};
+    for (const u of news) {
+      const key = u.kind === 'milestone' ? u.id : (u.milestone || '');
+      let gr = key ? byMs[key] : null;
+      if (!gr) { gr = {ms: key, items: []}; groups.push(gr); if (key) byMs[key] = gr; }
+      if (u.kind !== 'milestone') gr.items.push(u);
+    }
+    const card = gr => {
+      const shells = gr.items.filter(u => u.kind === 'shell'), fus = gr.items.filter(u => u.kind === 'fusion').length;
+      const names = gr.items.map(u => {
+        if (u.kind === 'shell') return shellRow(u.id).name;
+        if (u.kind === 'kit') return 'the ' + kitRow(u.id).name + ' kit';
+        if (u.kind === 'renown') return 'Renown ' + u.id;
+        if (u.kind === 'mode') return MODE[u.id] || cap(u.id);
+        if (u.kind === 'fusion') return null;
+        return (row(D().MILESTONES, u.id) || {}).name || cap(u.id);
+      }).filter(Boolean);
+      if (fus) names.push(fus > 1 ? fus + ' new fusions' : 'a new fusion');
+      if (gr.ms === 'm_win' && !names.length) names.push('Renown 1, the Afterparty and the Daily Show');
+      const sh = shells[0] && shellRow(shells[0].id);
+      const art = sh ? tokenHTML({id: shells[0].id, col: sh.col === '*' ? 'R' : sh.col}) : '<span class="end-new-ico" aria-hidden="true">★</span>';
+      const title = gr.ms ? ((row(D().MILESTONES, gr.ms) || {}).name || cap(String(gr.ms).replace(/^m_/, ''))) + ' ✓' : 'Just unlocked';
+      return `<li class="end-new">${art}<span><b>${esc(title)}</b>${names.length ? `<span class="end-new-what">${gr.ms ? 'Unlocks ' : ''}${esc(andList(names))}</span>` : ''}</span></li>`;
+    };
+    return `<ul class="end-news">${groups.slice(0, 10).map(card).join('')}</ul><p class="end-dim end-news-note">They join from your next run.</p>`;
   }
 
   function renderMore() {
@@ -1131,7 +1160,7 @@ const UI_END = (() => {
       case 'again': return runItBack();
       case 'replay': return start({seed: v.seed, replay: true});
       case 'party': if (!busy) { busy = true; leave(); call(G, 'enterAfterparty'); } return;
-      case 'logbook': return call(G, 'open', 'logbook');
+      case 'logbook': backTo = b; return call(G, 'open', 'logbook');
       case 'daily': {
         if (has(G, 'startDaily')) { if (!busy) { busy = true; leave(); call(G, 'startDaily'); } return; }
         const d = new Date(), ds = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -1206,7 +1235,12 @@ const UI_END = (() => {
     call(G, 'on', 'runEnd', p => show((p && p.lastRun) || G.lastRun));
     call(G, 'on', 'runStart', () => { job++; if (isOpen() && has(G, 'top') && G.top() === 'end') call(G, 'close', 'end'); });
     call(G, 'on', 'settings', p => { if (p && (p.key === 'highContrast' || p.key === 'reducedMotion') && isOpen()) { hydrateTokens(root); paintCharts(true); paintPareto(); } });
-    call(G, 'on', 'overlay', p => { if (p && p.name === 'end' && !p.open) job++; });
+    call(G, 'on', 'overlay', p => {
+      if (!p || p.open) return;
+      if (p.name === 'end') { job++; backTo = null; return; }
+      // Back from the Logbook: return focus to the button that opened it (the core would pick the first control).
+      if (backTo && backTo.isConnected && isOpen() && (!has(G, 'top') || G.top() === 'end')) { backTo.focus({preventScroll: true}); backTo = null; }
+    });
     const onResize = () => { if (isOpen()) requestAnimationFrame(() => { paintCharts(false); }); };
     call(G, 'on', 'resize', onResize);
     if (typeof ResizeObserver === 'function') new ResizeObserver(onResize).observe(root);

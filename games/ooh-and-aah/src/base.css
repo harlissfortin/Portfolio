@@ -75,7 +75,8 @@ button{cursor:pointer;touch-action:manipulation}
 #board,#showlog{display:none}
 #backdrop{display:none}
 @media (min-width:1200px){
-  #app{grid-template-columns:var(--board-w) var(--col-w) var(--log-w);justify-content:center;column-gap:24px}
+  /* 320 + 480 + 360 = 1160; the gaps shrink so 1200–1207 px never overflows */
+  #app{grid-template-columns:var(--board-w) var(--col-w) var(--log-w);justify-content:center;column-gap:clamp(0px,(100vw - 1160px)/2,24px)}
   #board,#showlog{display:block;position:relative;height:100%;min-height:0;overflow:auto;padding-block:24px}
   #backdrop{display:block;position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.35}
 }

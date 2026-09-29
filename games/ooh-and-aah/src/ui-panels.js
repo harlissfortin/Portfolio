@@ -44,6 +44,17 @@ const UI_PANELS = (() => {
   const reduced = () => !!(G && G.reducedMotion);
   const lastOf = a => a && a[a.length - 1];
   const clone = v => (v == null ? v : JSON.parse(JSON.stringify(v)));
+  // Scroll lists fade only at an edge that has more content beyond it.
+  function edges(el) {
+    if (!el) return;
+    el.classList.toggle('fade-t', el.scrollTop > 2);
+    el.classList.toggle('fade-b', el.scrollTop + el.clientHeight < el.scrollHeight - 2);
+  }
+  function watchEdges(el) {
+    if (!el || el._edges) return;
+    el._edges = true;
+    el.addEventListener('scroll', () => edges(el), {passive: true});
+  }
   function row(tab, id) {
     if (!tab || id == null) return null;
     if (Array.isArray(tab)) return tab.find(r => r && (r.id === id || r.key === id)) || null;
@@ -166,6 +177,7 @@ const UI_PANELS = (() => {
       }
     }
     histLen = played;
+    watchEdges(list); edges(list);
   }
 
   /* One festival. Once it is over it collapses to a stamped line (✓ ✓ ✗); otherwise it
@@ -176,7 +188,9 @@ const UI_PANELS = (() => {
     const past = f < curF || (!building && f === curF && !!hm[f * 3 - 1]);
     const now = f === curF && !past;
     const posted = f <= curF + 1 || !building;
-    const hlIds = f <= 8 ? [st.headliners && st.headliners[f - 1]] : ((st.endlessTwists && st.endlessTwists[f]) || []);
+    // The Headliner show's own rules: at Renown 7+ the Countdown also brings the Rival, and at 8 it counts in threes.
+    const hr = f <= 8 ? call(sim(), 'rulesFor', st, f * 3 - 1) : null;
+    const hlIds = Array.isArray(hr) && hr.length ? hr : f <= 8 ? [st.headliners && st.headliners[f - 1]] : ((st.endlessTwists && st.endlessTwists[f]) || []);
     const hls = hlIds.filter(Boolean).map(hl);
     const tw = f > 1 && f <= 8 && st.twilightTwists ? st.twilightTwists[f - 1] : null;   // Renown 2
     const say = [];
@@ -413,12 +427,16 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
       <button type="button" class="btn sl-close" data-sl="close" aria-label="Close the show log">✕</button></div>
     <div class="sl-meta"></div>
   </header>
-  <ol class="sl-lines" aria-label="Bursts, in firing order"></ol>
-  <div class="sl-sum"></div>
+  <div class="sl-body">
+    <ol class="sl-lines" aria-label="Bursts, in firing order"></ol>
+    <div class="sl-sum"></div>
+  </div>
   <div class="sl-foot"><button type="button" class="btn sl-book" data-sl="logbook">${icon('book')}Logbook<kbd>L</kbd></button></div>
 </div>`;
     panel = logEl.querySelector('.sl-panel');
-    P = {meta: logEl.querySelector('.sl-meta'), lines: logEl.querySelector('.sl-lines'), sum: logEl.querySelector('.sl-sum'), live: logEl.querySelector('.sl-live')};
+    P = {meta: logEl.querySelector('.sl-meta'), body: logEl.querySelector('.sl-body'), lines: logEl.querySelector('.sl-lines'),
+      sum: logEl.querySelector('.sl-sum'), live: logEl.querySelector('.sl-live')};
+    watchEdges(P.body);
     logEl.addEventListener('click', e => {
       if (e.target.classList.contains('sl-scrim')) { closeSheet(); return; }
       const b = e.target.closest('[data-sl]');
@@ -473,7 +491,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
         }
         case 'x': h += `<span class="chip chip-x sl-c${fu}">${fmtX(it.v)} Aah</span>`; break;
         case 'clear': h += `<span class="sl-t">clears ${it.v}</span>`; break;
-        case 'extend': h += `<span class="sl-t">${it.n ? it.n + ' up' : 'sky'} hang +${it.by}</span>`; break;
+        case 'extend': h += `<span class="sl-t">+${it.by} Hang${it.n ? ` (${it.n} up)` : ''}</span>`; break;
         case 'repeat':
           if (repDone) break;
           repDone = true;
@@ -492,19 +510,32 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     const isFav = L.fav != null && ln.tube === L.fav;
     const cn = ln.washed ? 'washed out' : ln.wild || col === 'X' ? 'Rainbow' : col !== 'W' ? CNAME[col] || '' : '';
     const star = ln.star > 1 ? `<span class="sl-star" title="star ${ln.star}">${'•'.repeat(Math.min(3, ln.star))}</span>` : '';
-    const shot = ln.shot > 0 ? ` <span class="sl-dim">· burst ${ln.shot + 1}</span>` : '';
-    const flags = (ln.dud ? '<span class="sl-flag is-dud">dud</span>' : '') + (ln.half ? '<span class="sl-flag">½ strength</span>' : '') + (ln.last ? '<span class="sl-flag">last</span>' : '');
+    const flags = (ln.shot > 0 ? `<span class="sl-flag is-shot">burst ${ln.shot + 1}</span>` : '') + (ln.dud ? '<span class="sl-flag is-dud">dud</span>' : '') + (ln.half ? '<span class="sl-flag">½ strength</span>' : '') + (ln.last ? '<span class="sl-flag">last</span>' : '');
     const sees = seesText(ln, L), full = seesFull(ln, L);
     const chips = flags + (sees ? `<span class="sl-sees"${full && sees.indexOf(full) < 0 ? ` title="${esc(full)}"` : ''}>${esc(sees)}</span>` : '') + chipsHTML(ln);
     const tot = `<span class="sl-run num" title="Running Ooh × Aah">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
-    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛</span>' : ''}${shot}</span></div>
+    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛</span>' : ''}</span></div>
 <div class="sl-chips">${chips}${tot}</div>`;
   }
   function lineLabel(ln, L) {
     if (ln.sep) return ln.text;
     const full = seesFull(ln, L);
-    return `Tube ${ln.tube + 1}: ${shellName(ln.id)}${ln.col && ln.col !== 'W' ? ', ' + (CNAME[ln.col] || '') : ''}${ln.dud ? ', dud' : ''}${ln.half ? ', half strength' : ''}` +
-      `${L.fav === ln.tube ? ', crowd favourite' : ''}. ${ln.sees ? 'Sees ' + ln.sees + (full ? ': ' + full : '') : 'Empty sky'}.`;
+    const gains = [];
+    for (const it of ln.items) {
+      if (it.k === 'fusion') gains.push('fusion ' + it.name);
+      else if (it.k === 'ooh') gains.push(it.critic ? 'no Ooh, the Critic' : `plus ${fmt(it.v)} Ooh`);
+      else if (it.k === 'aah') gains.push(`plus ${fmtA(it.v)} Aah${it.rig ? ' from ' + rigName(it.rig) : ''}`);
+      else if (it.k === 'x') gains.push(`times ${String(Math.round(it.v * 100) / 100)} Aah`);
+      else if (it.k === 'clear') gains.push(`clears ${it.v}`);
+      else if (it.k === 'extend') gains.push(`Hang plus ${it.by}`);
+      else if (it.k === 'repeat') gains.push(`repeats ${shellName(it.id)}`);
+      else if (it.k === 'crowd') gains.push(`Crowd plus ${fmt(it.v)}`);
+      else if (it.k === 'coin') gains.push(`plus ${it.v} dollars`);
+    }
+    return `Tube ${ln.tube + 1}${ln.shot > 0 ? ', burst ' + (ln.shot + 1) : ''}: ${shellName(ln.id)}${ln.col && ln.col !== 'W' ? ', ' + (CNAME[ln.col] || '') : ''}` +
+      `${ln.dud ? ', dud' : ''}${ln.half ? ', half strength' : ''}${ln.last ? ', last' : ''}${L.fav === ln.tube ? ', crowd favourite' : ''}. ` +
+      `${ln.dud ? '' : ln.sees ? 'Sees ' + ln.sees + (full ? ': ' + full : '') + '. ' : 'Empty sky. '}` +
+      `${gains.length ? gains.join(', ') + '. ' : ''}Running total Ooh ${fmt(Math.floor(ln.ooh))} times Aah ${fmtA(ln.aah)}.`;
   }
 
   function sumHTML(L) {
@@ -520,11 +551,12 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
         ? `<span class="sl-ok">✓ Pass ×${(Math.floor(ratio * 10) / 10).toFixed(1)}</span>${a.encore ? '<span class="sl-encore">Encore!</span>' : ''}`
         : `<span class="sl-bad">✗ ${fmt(a.short != null ? a.short : Math.max(0, t - a.score))} short</span>`;
       h += `<div class="sl-app ${a.pass ? 'is-pass' : 'is-miss'}">
-<div class="sl-app-row"><span class="sl-app-lbl">Applause</span><span class="sl-app-n num">${fmt(a.score)}</span></div>
+<div class="sl-app-row"><span class="sl-app-lbl">Applause<span class="sl-app-tg num">target ${fmt(t)}</span></span><span class="sl-app-n num"${a.score >= 1e4 ? ` title="${Math.floor(a.score).toLocaleString('en-US')}"` : ''}>${fmt(a.score)}</span></div>
 <div class="sl-app-eq num">= <span class="chip">Ooh ${fmt(Math.floor(a.ooh != null ? a.ooh : L.ooh))}</span> × <span class="chip chip-aah">Aah ${fmtA(a.aah != null ? a.aah : L.aah)}</span></div>
-<div class="sl-verdict">${verdict}<span class="sl-dim num">target ${fmt(t)}</span></div>${payHTML(L.pay, a)}</div>`;
+<div class="sl-verdict">${verdict}</div>${payHTML(L.pay, a)}</div>`;
     } else if (L.live) {
-      h += `<div class="sl-app is-pending"><div class="sl-app-row"><span class="sl-app-lbl">Applause</span><span class="sl-app-n num" aria-hidden="true">…</span></div>
+      const t = L.snap && L.snap.target;
+      h += `<div class="sl-app is-pending"><div class="sl-app-row"><span class="sl-app-lbl">Applause${t ? `<span class="sl-app-tg num">target ${fmt(t)}</span>` : ''}</span><span class="sl-app-n num" aria-hidden="true">…</span></div>
 <div class="sl-app-eq num">Ooh ${fmt(Math.floor(L.ooh))} × Aah ${fmtA(L.aah)}</div></div>`;
     }
     for (const n of L.notes) h += `<p class="sl-note is-${n.k}">${esc(n.text)}</p>`;
@@ -533,19 +565,20 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
   // §5.2 payout, itemised: base, interest, Sponsor reward, Crowd (+Encore), shell coins.
   function payHTML(p, a) {
     if (!p) return '';
-    const bits = [];
-    if (p.base) bits.push(`+$${p.base} show`);
-    if (p.interest) bits.push(`+$${p.interest} interest`);
+    const bits = [];                                   // [text, kind]: coin | crowd | card | none
+    if (p.base) bits.push([`+$${p.base} show`, 'coin']);
+    if (p.interest) bits.push([`+$${p.interest} interest`, 'coin']);
     const sp = p.sponsor && typeof p.sponsor === 'object' ? p.sponsor : null;
-    if (sp && sp.coins) bits.push(`+$${sp.coins} sponsor`);
-    if (sp && sp.crowd) bits.push(`Crowd +${sp.crowd} sponsor`);
-    if (sp && sp.collector) bits.push('Collector card next shop');
+    if (sp && sp.coins) bits.push([`+$${sp.coins} sponsor`, 'coin']);
+    if (p.shellCoins) bits.push([`+$${p.shellCoins} from shells`, 'coin']);
     const cr = (p.crowdPass || 0) + (p.crowdHeadliner || 0) + (p.crowdEncore || 0);
-    if (cr) bits.push(`Crowd +${cr}${p.crowdEncore ? ` (Encore +${p.crowdEncore})` : ''}`);
-    if (p.shellCoins) bits.push(`+$${p.shellCoins} from shells`);
-    if (!a.pass) bits.unshift('No payout on a miss');
+    if (cr) bits.push([`Crowd +${cr}${p.crowdEncore ? ` (Encore +${p.crowdEncore})` : ''}`, 'crowd']);
+    if (sp && sp.crowd) bits.push([`Crowd +${sp.crowd} sponsor`, 'crowd']);
+    if (sp && sp.collector) bits.push(['Collector card next shop', 'card']);
+    if (!a.pass) bits.unshift(['No payout on a miss', 'none']);
     const after = num(p.coins) != null ? `<span class="sl-after">Now $${p.coins}${num(p.crowd) != null ? ` · Crowd ${fmt(p.crowd)}` : ''}</span>` : '';
-    return bits.length || after ? `<p class="sl-pay num">${esc(bits.join(' · '))}${after}</p>` : '';
+    // one pill per item, so a wrap never splits an item
+    return bits.length || after ? `<p class="sl-pay num">${bits.map(([t, k]) => `<span class="sl-pb is-${k}">${esc(t)}</span>`).join('')}${after}</p>` : '';
   }
 
   function paintLog(force) {
@@ -557,8 +590,11 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     if (!L || (!L.lines.length && !L.app)) {
       P.lines.innerHTML = `<li class="sl-empty">${emptyHTML()}</li>`;
       P.sum.innerHTML = L ? sumHTML(L) : '';
+      edges(P.body);
       return;
     }
+    // While live, follow the stream unless the reader has scrolled up to look at an earlier line.
+    const B = P.body, follow = B.scrollTop + B.clientHeight >= B.scrollHeight - 48;
     if (force || P.lines.querySelector('.sl-empty')) P.lines.innerHTML = '';
     const kids = P.lines.children;
     let added = false;
@@ -582,12 +618,24 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     });
     while (kids.length > L.lines.length) P.lines.lastChild.remove();
     P.sum.innerHTML = sumHTML(L);
-    if (L.live && added) P.lines.scrollTo({top: P.lines.scrollHeight, behavior: reduced() ? 'auto' : 'smooth'});
+    if (L.live && (added || follow) && B.clientHeight) B.scrollTo({top: B.scrollHeight, behavior: reduced() || !added ? 'auto' : 'smooth'});
+    edges(B);
   }
   function emptyHTML() {
     const again = hist(G && G.state).length > 0;
     return `<p class="sl-empty-h">${again ? 'Light the fuse to fill the log.' : 'The fuse hasn’t been lit yet.'}</p>` +
-      '<p>Every burst of your next show is itemised here: what it saw in the sky, the Ooh and Aah it added, fusions, multipliers, and the crowd’s cheer.</p>';
+      '<p>Every burst of your next show is itemised here: what it saw in the sky, the Ooh and Aah it added, fusions, multipliers, and the crowd’s cheer.</p>' +
+      exampleHTML();
+  }
+  // A worked example line (the spec's own), drawn with the real line markup and labelled part by part.
+  function exampleHTML() {
+    const L = {fav: null, byN: {0: {id: 'peony', col: 'R'}}};
+    const ln = {tube: 2, id: 'palm', col: 'R', star: 1, shot: 0, sees: 1, up: [0], items: [{k: 'ooh', v: 12}, {k: 'aah', v: 3}], ooh: 12, aah: 4};
+    return `<figure class="sl-ex" aria-label="Example line: tube 3 fires a Red Palm; it sees a Peony, adds 12 Ooh and 3 Aah; the show now stands at 12 Ooh times 4 Aah.">
+<figcaption>How to read a line</figcaption>
+<div class="sl-line sl-ex-line" aria-hidden="true">${lineHTML(ln, L)}</div>
+<ol class="sl-ex-key" aria-hidden="true"><li><b>T3</b> the tube it fired from</li><li><b>sees</b> the bursts still up</li><li><b>+ Ooh, + Aah</b> what it added</li><li><b>12 × 4.0</b> the show so far</li></ol>
+</figure>`;
   }
 
   /* ---------- sheet presentation (< 1200 px) ----------
@@ -673,7 +721,9 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     inFlight = false;
     if (lit) lit.fresh = true;
     paintLog(!streamed);
-    if (streamed) P.lines.scrollTop = P.lines.scrollHeight;
+    // settle on the verdict: the Applause sits at the end of the log
+    P.body.scrollTop = P.body.scrollHeight;
+    edges(P.body);
     renderBoard();
     if (lit) lit.fresh = false;
     snap = capture(G.state);

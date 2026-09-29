@@ -22,6 +22,8 @@
 //   --no-strips        skip the filmstrips      --strips-only   only the filmstrips
 //   --strip-interval=MS  frame spacing (default 100)   --strip-max=MS  cap per chain (default 9000)
 //   --fonts            let Google Fonts load (default blocked: offline, repeatable fallbacks)
+//   --max-minutes=N    deadline for the whole run (default 30): cells not reached by then are marked
+//                      skipped, and a hard stop 3 min later writes the sheet from what exists (exit 2)
 //   --list             print the screen and strip ids and exit
 //   --headed           show the browser
 //   -h, --help
@@ -45,7 +47,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
-  GAME_DIR, RACKS, sleep, rel, waitFor, loadPlaywright, resolveHtml, fileStats, startServer, newContext,
+  GAME_DIR, RACKS, sleep, rel, waitFor, withTimeout, loadPlaywright, resolveHtml, fileStats, startServer, newContext,
   gotoGame, injectScenario, ensureAnimated, lightShow, ui, dismissTapContinue,
 } from './perf.mjs';
 
@@ -142,7 +144,7 @@ function helpers(page, srv, vp, cell) {
     },
     async state() { return page.evaluate(async () => { const s = await window.__game.state(); return { show: s.show, phase: s.phase, rain: s.rain, coins: s.coins }; }).catch(() => null); },
     async startLight() {
-      await ensureAnimated(page);
+      await ensureAnimated(page, { reducedMotion: h.rm ? 'on' : 'off' });
       const mark = await page.evaluate(() => window.__oohTools.uiLog.length);
       await page.locator('#fire').click({ force: true, timeout: 4000 }).catch(() => {});
       const ok = await waitFor(() => page.evaluate((m) => window.__oohTools.uiLog.slice(m).some((e) => e.ui === 'RESOLVING'), mark), 3000, 30);
@@ -216,14 +218,21 @@ const SCREENS = [
   { id: 'critical', title: 'Rain check spent: critical state (first build after a miss)', section: 'Play', run: async (h) => {
     await h.inject(S.weak);
     await h.lightInstant();
+    // The core holds RESULT (result card pinned) until the next build action; GAME.dismissResult()
+    // is what that action calls, so use it to reach the plain critical build.
+    if ((await ui(h.page)) === 'RESULT') {
+      const d = await h.page.evaluate(() => { try { if (typeof GAME !== 'undefined' && typeof GAME.dismissResult === 'function') { GAME.dismissResult(); return true; } } catch (e) { /* ignore */ } return false; });
+      h.note(d ? 'RESULT dismissed with GAME.dismissResult()' : 'no GAME.dismissResult: captured RESULT');
+      await sleep(300);
+    }
     const s = await h.state();
-    if ((await ui(h.page)) !== 'BUILD') throw new Skip(`expected BUILD after the first miss, got ${await ui(h.page)}`);
+    if (!['BUILD', 'RESULT'].includes(await ui(h.page))) throw new Skip(`expected BUILD after the first miss, got ${await ui(h.page)}`);
     h.note(`show ${s.show + 1}, rain=${s.rain}`);
   } },
   { id: 'end-loss', title: 'END: loss (second miss)', section: 'End', run: async (h) => {
     await h.inject(S.weak);
     await h.lightInstant();
-    if ((await ui(h.page)) === 'BUILD') await h.lightInstant();
+    if (['BUILD', 'RESULT'].includes(await ui(h.page))) await h.lightInstant();
     if ((await ui(h.page)) !== 'END') throw new Skip(`expected END after two misses, got ${await ui(h.page)}`);
     await h.waitVisible('#end', 3000);
     await sleep(1400); // near-miss search finishes within 1 s (§8.6)
@@ -289,7 +298,6 @@ const SCREENS = [
     await h.inject(S.mid, { reducedMotion: 'on' });
     const rm = await h.page.evaluate(() => { try { return typeof GAME !== 'undefined' ? GAME.reducedMotion : null; } catch (e) { return null; } });
     if (rm === false) { await h.setting('reducedMotion', 'on'); }
-    h.note(`GAME.reducedMotion=${await h.page.evaluate(() => { try { return typeof GAME !== 'undefined' ? String(GAME.reducedMotion) : 'n/a'; } catch (e) { return 'n/a'; } })}`);
     await holdCard(h);
   } },
   { id: 'rm-resolving', title: 'Reduced motion: RESOLVING mid-chain', section: 'Accessibility', reducedMotion: true, run: async (h) => {
@@ -319,17 +327,22 @@ async function captureScreens(browser, srv, opts, viewports, results, consoleLog
       (results[sc.id] = results[sc.id] || {})[vpKey] = cell;
       const applies = !sc.viewports || sc.viewports === 'all' || (sc.viewports === 'desktop' ? vp.w >= 1200 : vp.w < 1200);
       if (!applies) { cell.status = 'n/a'; continue; }
+      if (Date.now() > opts.deadline) { cell.status = 'skip'; cell.reason = `not captured: --max-minutes ${opts.maxMinutes} deadline reached`; continue; }
       const errBefore = consoleLog.length;
       const t0 = Date.now();
       try {
         if (page.isClosed()) page = await ctx.newPage();
         await page.emulateMedia({ reducedMotion: sc.reducedMotion ? 'reduce' : 'no-preference' });
         const h = helpers(page, srv, vp, cell);
-        await Promise.race([sc.run(h), sleep(90000).then(() => { throw new Error('scene timed out after 90 s'); })]);
+        h.rm = !!sc.reducedMotion;
+        await withTimeout(sc.run(h), 90000, 'scene');
+        if (h.rm) h.note(`GAME.reducedMotion=${await page.evaluate(() => { try { return String(GAME.reducedMotion); } catch (e) { return 'n/a'; } })} at capture`);
         await dismissTapContinue(page);
         await settle(page);
       } catch (e) {
         if (e instanceof Skip) { cell.status = 'skip'; cell.reason = e.message; } else { cell.status = 'error'; cell.reason = String(e.message || e).split('\n')[0].slice(0, 300); }
+        // A timed-out scene may still be driving the page: capture what it shows, then use a fresh page.
+        if (/timed out/.test(cell.reason || '')) cell.recycle = true;
       }
       if (cell.status !== 'skip') {
         const file = `shots/${sc.id}__${vpKey}.png`;
@@ -341,10 +354,11 @@ async function captureScreens(browser, srv, opts, viewports, results, consoleLog
       }
       cell.errors = consoleLog.slice(errBefore).filter((e) => e.kind !== 'warning').length;
       cell.ms = Date.now() - t0;
+      if (cell.recycle) { delete cell.recycle; await withTimeout(page.close(), 5000).catch(() => {}); page = await ctx.newPage(); }
       process.stdout.write(cell.status === 'ok' ? '.' : cell.status === 'skip' ? 's' : 'E');
     }
     process.stdout.write('\n');
-    await ctx.close().catch(() => {});
+    await withTimeout(ctx.close(), 10000).catch(() => {});
   }
 }
 
@@ -392,8 +406,9 @@ async function captureStrip(browser, srv, opts, strip, consoleLog) {
       for (let i = 0; i < maxFrames; i++) {
         await snap(i, (i + 1) * opts.stripInterval);
         const u = out.frames[out.frames.length - 1].ui;
-        if (u === 'END' || (u === 'BUILD' && i > 3)) { if (endAt === null) endAt = i; if (i - endAt >= Math.ceil(1000 / opts.stripInterval)) break; }
-        await page.clock.runFor(opts.stripInterval);
+        // The core holds RESULT until the next build action, so RESULT ends a strip too (+1 s tail).
+        if (u === 'END' || u === 'RESULT' || (u === 'BUILD' && i > 3)) { if (endAt === null) endAt = i; if (i - endAt >= Math.ceil(1000 / opts.stripInterval)) break; }
+        await withTimeout(page.clock.runFor(opts.stripInterval), 20000, 'clock.runFor');
       }
       const moving = new Set(out.frames.map((f) => fs.statSync(path.join(dir, f.file)).size)).size;
       if (!out.frames.some((f) => f.ui === 'RESOLVING') || moving < 3) {
@@ -415,7 +430,7 @@ async function captureStrip(browser, srv, opts, strip, consoleLog) {
         if (Date.now() < target) await sleep(target - Date.now());
         await snap(i, Date.now() - t0);
         const u = out.frames[out.frames.length - 1].ui;
-        if (u === 'END' || (u === 'BUILD' && i > 3)) { if (endAt === null) endAt = Date.now(); if (Date.now() - endAt > 1000) break; }
+        if (u === 'END' || u === 'RESULT' || (u === 'BUILD' && i > 3)) { if (endAt === null) endAt = Date.now(); if (Date.now() - endAt > 1000) break; }
         if (Date.now() - t0 > opts.stripMax) break;
       }
       out.notes.push('real-time capture: frame times are measured, spacing is approximate');
@@ -447,7 +462,7 @@ async function captureStrip(browser, srv, opts, strip, consoleLog) {
   } catch (e) {
     out.status = e instanceof Skip ? 'skip' : 'error'; out.reason = String(e.message || e).split('\n')[0];
   } finally {
-    await ctx.close().catch(() => {});
+    await withTimeout(ctx.close(), 10000).catch(() => {});
   }
   return out;
 }
@@ -493,7 +508,7 @@ td.na{color:#666;font-size:12px}
 </style></head><body>
 <h1>Ooh × Aah: screen gallery</h1>
 <p class="meta">${esc(rep.generatedAt)} · <code>${esc(rep.file.file)}</code> ${rep.file.kb} KB (sha1 ${esc(rep.file.sha1)})${rep.buildNote ? ' · ' + esc(rep.buildNote) : ''} · game version ${esc(rep.api && rep.api.version || 'n/a')} · hooks: ${esc(rep.api ? rep.api.hooks.join(', ') : 'n/a')}<br>
-cells: ${counts.ok} ok, ${counts.skip} skipped, ${counts.error} errors · DPR ${rep.dpr} · fonts ${rep.fonts ? 'loaded' : 'blocked (fallback faces)'} · <a href="gallery.report.json">gallery.report.json</a></p>
+${rep.incomplete ? `<span class="bad">INCOMPLETE: ${esc(rep.incomplete)}</span> · ` : ''}cells: ${counts.ok} ok, ${counts.skip} skipped, ${counts.error} errors · DPR ${rep.dpr} · fonts ${rep.fonts ? 'loaded' : 'blocked (fallback faces)'} · <a href="gallery.report.json">gallery.report.json</a></p>
 <div class="ctl">Mobile size: <button onclick="document.documentElement.style.setProperty('--sm',1)">100%</button><button onclick="document.documentElement.style.setProperty('--sm',.5)">50%</button>
 Desktop size: <button onclick="document.documentElement.style.setProperty('--sd',.5)">50%</button><button onclick="document.documentElement.style.setProperty('--sd',1)">100%</button> · <a href="#strips">filmstrips</a></div>
 <table><thead><tr><th></th>${vps.map((v) => `<th>${v.replace('x', ' × ')}</th>`).join('')}</tr></thead><tbody>
@@ -508,7 +523,7 @@ ${strips || '<p class="na">not captured (--no-strips)</p>'}
 const USAGE = (() => { const lines = []; for (const l of fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1)) { if (!l.startsWith('//') || l.startsWith('// How states')) break; lines.push(l.slice(3)); } return lines.join('\n'); })();
 
 function parseArgs(argv) {
-  const o = { html: null, build: false, out: path.join(GAME_DIR, 'tools', 'shots', 'gallery'), only: null, viewports: ['360x740', '360x640', '375x548', '1440x900'], dpr: 1, strips: true, stripsOnly: false, stripInterval: 100, stripMax: 9000, fonts: false, headed: false };
+  const o = { html: null, build: false, out: path.join(GAME_DIR, 'tools', 'shots', 'gallery'), only: null, viewports: ['360x740', '360x640', '375x548', '1440x900'], dpr: 1, strips: true, stripsOnly: false, stripInterval: 100, stripMax: 9000, fonts: false, headed: false, maxMinutes: 30 };
   for (const a of argv) {
     const m = /^--([a-z-]+)(?:=(.*))?$/.exec(a);
     if (a === '-h' || a === '--help') { console.log(USAGE); process.exit(0); }
@@ -527,6 +542,7 @@ function parseArgs(argv) {
       case 'strip-max': o.stripMax = Math.max(1000, parseInt(v, 10) || 9000); break;
       case 'fonts': o.fonts = true; break;
       case 'headed': o.headed = true; break;
+      case 'max-minutes': o.maxMinutes = Math.max(1, Number(v) || 30); break;
       case 'list':
         console.log('screens:'); for (const s of SCREENS) console.log(`  ${s.id.padEnd(20)} ${s.title}${s.viewports ? ` (${s.viewports} only)` : ''}`);
         console.log('strips:'); for (const s of STRIPS) console.log(`  ${s.id.padEnd(20)} ${s.title}`);
@@ -540,6 +556,7 @@ function parseArgs(argv) {
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
   opts.runAt = new Date().toISOString();
+  opts.deadline = Date.now() + opts.maxMinutes * 60000;
   fs.mkdirSync(opts.out, { recursive: true });
   let src;
   try { src = resolveHtml({ html: opts.html, build: opts.build, outDir: opts.out }); } catch (e) { console.error(`gallery: ${e.message}`); process.exit(2); }
@@ -565,6 +582,7 @@ async function main() {
     screens: keepScreens ? prev.screens : {}, strips: keepStrips ? prev.strips : [], console: consoleLog,
   };
   process.stdout.write(`gallery: ${rel(src.file)} (${rep.file.kb} KB) → ${rel(opts.out)}${src.note ? ` [${src.note}]` : ''}\n`);
+  const hard = setTimeout(() => { process.stdout.write('\ngallery: hard stop; writing the sheet from what was captured\n'); writeOut(rep, opts, reportPath, `hard stop ${opts.maxMinutes + 3} min after start`); }, (opts.maxMinutes + 3) * 60000);
   try {
     // API probe (also a smoke test that the page boots at all)
     {
@@ -583,15 +601,23 @@ async function main() {
       const want = STRIPS.filter((s) => !opts.only || opts.only.has(s.id) || opts.stripsOnly);
       for (const s of want) {
         process.stdout.write(`  ${s.id}… `);
-        const r = await captureStrip(browser, srv, opts, s, consoleLog);
+        const r = Date.now() > opts.deadline ? { id: s.id, title: s.title, status: 'skip', reason: `not captured: --max-minutes ${opts.maxMinutes} deadline reached` }
+          : await withTimeout(captureStrip(browser, srv, opts, s, consoleLog), 240000, 'filmstrip').catch((e) => ({ id: s.id, title: s.title, status: 'error', reason: e.message }));
         rep.strips = rep.strips.filter((x) => x.id !== s.id).concat([r]).sort((a, b) => STRIPS.findIndex((x) => x.id === a.id) - STRIPS.findIndex((x) => x.id === b.id));
         process.stdout.write(`${r.status}${r.frames ? ` (${r.frames.length} frames, ${r.mode})` : ''}${r.reason ? ': ' + r.reason : ''}\n`);
       }
     }
   } finally {
-    await browser.close().catch(() => {});
-    await srv.close();
+    clearTimeout(hard);
+    await withTimeout(browser.close(), 10000).catch(() => {});
+    await withTimeout(srv.close(), 3000).catch(() => {});
   }
+  writeOut(rep, opts, reportPath, null);
+}
+
+// Writes gallery.report.json + index.html and exits. reason = null (normal end) or why the run stopped.
+function writeOut(rep, opts, reportPath, reason) {
+  if (reason) rep.incomplete = reason;
   const counts = { ok: 0, skip: 0, error: 0, na: 0 };
   for (const row of Object.values(rep.screens)) for (const c of Object.values(row)) counts[c.status === 'n/a' ? 'na' : c.status] = (counts[c.status === 'n/a' ? 'na' : c.status] || 0) + 1;
   rep.counts = counts;
@@ -602,7 +628,7 @@ async function main() {
   for (const sc of SCREENS) for (const [vp, c] of Object.entries(rep.screens[sc.id] || {})) if (c.status === 'skip' || c.status === 'error') skipped.push(`  ${c.status.toUpperCase().padEnd(5)} ${sc.id} @${vp}: ${c.reason}`);
   if (skipped.length) process.stdout.write(`${skipped.join('\n')}\n`);
   process.stdout.write(`gallery: ${counts.ok} ok, ${counts.skip} skipped, ${counts.error} errors; strips: ${rep.strips.map((s) => `${s.id} ${s.status}`).join(', ') || 'none'}\n  → ${rel(path.join(opts.out, 'index.html'))}\n`);
-  process.exit(counts.error || rep.strips.some((s) => s.status === 'error') ? 1 : 0);
+  process.exit(reason ? 2 : counts.error || rep.strips.some((s) => s.status === 'error') ? 1 : 0);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

@@ -80,7 +80,8 @@ button{cursor:pointer;touch-action:manipulation}
 #board,#showlog{display:none}
 #backdrop{display:none}
 @media (min-width:1200px){
-  #app{grid-template-columns:var(--board-w) var(--col-w) var(--log-w);justify-content:center;column-gap:24px}
+  /* 320 + 480 + 360 = 1160; the gaps shrink so 1200–1207 px never overflows */
+  #app{grid-template-columns:var(--board-w) var(--col-w) var(--log-w);justify-content:center;column-gap:clamp(0px,(100vw - 1160px)/2,24px)}
   #board,#showlog{display:block;position:relative;height:100%;min-height:0;overflow:auto;padding-block:24px}
   #backdrop{display:block;position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.35}
 }
@@ -160,21 +161,41 @@ button{cursor:pointer;touch-action:manipulation}
 #app[data-ui="END"] #play > :is(#shop,#workshop){opacity:.5}
 
 /* ---------- 2. HUD: Regular two rows / Compact one row ---------- */
+/* Nothing clips at 360 px: UI_PLAY.fitHud raises #hud[data-fit] until "Festival · Show" fits —
+   1 the show name folds into pips · 2 Crowd drops to Row B (full name) · 3 Row B + pips · 4 festival name only.
+   The umbrella and pause sit in 34 px columns; their ::before makes each hit area 44 × 44 without overlapping. */
 #hud{display:grid;align-items:center;column-gap:10px;min-width:0;
-  grid-template-columns:minmax(0,1fr) auto auto 44px 44px;grid-template-rows:32px 28px;
+  grid-template-columns:minmax(0,1fr) auto auto 34px 34px;grid-template-rows:32px 28px;
   grid-template-areas:"title coins crowd rain pause" "tgt tgt tgt rain pause"}
+#hud:is([data-fit="2"],[data-fit="3"],[data-fit="4"]){grid-template-columns:minmax(0,1fr) auto 34px 34px;
+  grid-template-areas:"title coins rain pause" "tgt crowd rain pause"}
+#hud:is([data-fit="2"],[data-fit="3"],[data-fit="4"]) :is(.hud-coins,.hud-crowd){justify-self:end}
 #hud .hud-title{grid-area:title;min-width:0}
-#hud-show{display:block;font:600 18px/1.2 var(--f-display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+#hud-show{display:block;position:relative;font:600 18px/1.2 var(--f-display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   font-variation-settings:"opsz" 36}
+#hud-show .hs-pips{display:none;align-items:center;gap:4px;margin-left:8px;vertical-align:1px}
+#hud:is([data-fit="1"],[data-fit="3"]) #hud-show .hs-pips{display:inline-flex}
+#hud:is([data-fit="1"],[data-fit="3"],[data-fit="4"]) #hud-show .hs-slot{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#hud-show .hs-pips i{display:block;width:7px;height:7px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--paper-dim)}
+#hud-show .hs-pips i.done{background:var(--paper-dim);box-shadow:none}
+#hud-show .hs-pips i.now{background:var(--aah);box-shadow:0 0 0 3px rgba(242,193,78,.22)}
+#hud-show .hs-pips i.hl{width:14px;height:14px;border-radius:0;background:none;box-shadow:none;color:var(--paper-dim)}
+#hud-show .hs-pips i.hl.now{color:var(--aah);filter:drop-shadow(0 0 4px rgba(242,193,78,.55))}
+#hud-show .hs-pips .ic{display:block;width:14px;height:14px}
 #hud .hud-tgt{grid-area:tgt;display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;overflow:hidden}
+#hud .hud-tgt > *{flex:none}
+#hud .hud-tgt:is([data-fit="1"],[data-fit="2"],[data-fit="3"]) .hh-name{display:none}
+#hud .hud-tgt:is([data-fit="1"],[data-fit="2"],[data-fit="3"]) .hud-head{padding:0 7px}
+#hud .hud-tgt:is([data-fit="2"],[data-fit="3"]) .nx2{display:none}
+#hud .hud-tgt[data-fit="3"] .hud-next{display:none}
 #hud-target{font:400 16px/1 var(--f-ui);color:var(--paper-dim)}
 #hud-target b{font:600 20px/1 var(--f-display);color:var(--paper);margin-left:2px}
-#hud .hud-next{font:400 16px/1 var(--f-ui);color:var(--paper-dim);min-width:0;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+#hud .hud-next{font:400 16px/1 var(--f-ui);color:var(--paper-dim);font-variant-numeric:tabular-nums}
 #hud .hud-next .crown{width:14px;height:14px;vertical-align:-1px;margin-left:1px;fill:var(--aah)}
-#hud .hud-head{position:relative;display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 10px 0 6px;flex:none;
+#hud .hud-head{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:36px;height:26px;padding:0 10px 0 6px;
   border-radius:999px;border:1px solid rgba(201,162,39,.55);background:rgba(201,162,39,.12);color:var(--paper);
   font:700 16px/1 var(--f-ui)}
-#hud .hud-head::before{content:"";position:absolute;inset:-9px -2px}
+#hud .hud-head::before{content:"";position:absolute;inset:-9px -4px}
 #hud .hud-head .ic{width:16px;height:16px}
 #hud .hud-head.now{background:var(--brass);color:var(--ink);border-color:var(--brass)}
 #hud .hud-coins{grid-area:coins}
@@ -183,19 +204,21 @@ button{cursor:pointer;touch-action:manipulation}
 #hud-coins{color:var(--aah)}
 #hud .hud-crowd > .ic{width:20px;height:20px;color:var(--paper-dim)}
 #hud .hud-half{font:700 16px/1 var(--f-ui);color:var(--danger);margin-left:2px}
-#hud .hud-ic{position:relative;width:44px;height:44px;padding:0;border:0;border-radius:10px;background:transparent;
+#hud .hud-ic{position:relative;width:34px;height:44px;padding:0;border:0;border-radius:10px;background:transparent;
   color:var(--paper);display:grid;place-items:center}
+#hud .hud-ic::before{content:"";position:absolute;inset:0 -5px}
 #hud .hud-rain{grid-area:rain}
 #hud .hud-pause{grid-area:pause}
 #hud .hud-ic:hover{background:rgba(255,255,255,.06)}
 #hud .hud-ic .ic{width:24px;height:24px}
 #hud .hud-rain[data-state="used"]{color:var(--danger)}
 #hud .hud-rain[data-state="none"]{color:var(--paper-dim);opacity:.55}
-#hud .hud-rain .fw{position:absolute;right:0;bottom:2px;font:700 16px/1 var(--f-ui);color:var(--ok);letter-spacing:-.04em;transform:scale(.72);transform-origin:right bottom}
-#play[data-mode="compact"] #hud,#play[data-mode="scroll"] #hud{grid-template-columns:44px minmax(0,1fr) auto auto 44px;
-  grid-template-rows:44px;grid-template-areas:"pause tgt coins crowd rain";column-gap:8px}
+#hud .hud-rain .fw{position:absolute;right:-4px;bottom:2px;font:700 16px/1 var(--f-ui);color:var(--ok);letter-spacing:-.04em;transform:scale(.72);transform-origin:right bottom}
+#play[data-mode="compact"] #hud,#play[data-mode="scroll"] #hud{grid-template-columns:34px minmax(0,1fr) auto auto 34px;
+  grid-template-rows:44px;grid-template-areas:"pause tgt coins crowd rain";column-gap:10px}
 #play[data-mode="compact"] #hud .hud-title,#play[data-mode="scroll"] #hud .hud-title{display:none}
 #play[data-mode="compact"] #hud .hud-head,#play[data-mode="scroll"] #hud .hud-head{padding:0 5px;height:24px}
+#play[data-mode="compact"] #hud .hud-head::before,#play[data-mode="scroll"] #hud .hud-head::before{inset:-10px -4px}
 #play[data-mode="compact"] #hud .hh-name,#play[data-mode="scroll"] #hud .hh-name,
 #play[data-mode="compact"] #hud .nx2,#play[data-mode="scroll"] #hud .nx2{display:none}
 
@@ -206,6 +229,8 @@ button{cursor:pointer;touch-action:manipulation}
 #sponsor .sp-toggle::before{content:"";position:absolute;inset:-2px 0}
 #sponsor .sp-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #sponsor .sp-text b{font-weight:700}
+#sponsor:not([data-fit="0"]) .sp-x,#sponsor:is([data-fit="2"],[data-fit="3"],[data-fit="4"]) .sp-p,
+#sponsor:is([data-fit="3"],[data-fit="4"]) .sp-a,#sponsor[data-fit="4"] .sp-w{display:none}
 #sponsor .sp-switch{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px 0 4px;border-radius:999px;
   background:rgba(5,7,15,.6);border:1px solid var(--line);font:700 16px/1 var(--f-ui);flex:none}
 #sponsor .sp-knob{width:22px;height:22px;border-radius:50%;background:var(--paper-dim);transition:transform .18s var(--ease-out)}
@@ -222,7 +247,8 @@ button{cursor:pointer;touch-action:manipulation}
 #sky-overlay .sky-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;max-width:calc(100% - 24px)}
 #sky-overlay .sky-label{min-width:0;max-width:100%}
 #sky-overlay .sky-label:empty{display:none}
-#sky-overlay .sky-label #hud-show{font-size:18px;text-shadow:0 1px 2px #000,0 0 10px rgba(0,0,0,.7)}
+#sky-overlay .sky-label #hud-show{font-size:18px;line-height:28px;padding:0 10px;border-radius:14px;background:rgba(5,7,15,.55);
+  text-shadow:0 1px 2px #000}
 #play[data-sponsor][data-mode="compact"] #sky-overlay,#play[data-sponsor][data-mode="scroll"] #sky-overlay{padding-top:48px}
 #sky-overlay .rh-pill{position:relative;display:inline-flex;align-items:center;gap:6px;min-height:30px;max-width:100%;padding:3px 12px 3px 8px;
   border-radius:999px;background:rgba(5,7,15,.66);border:1px solid rgba(201,162,39,.55);color:var(--paper);font:700 16px/1.2 var(--f-ui);text-align:left}
@@ -270,7 +296,8 @@ button{cursor:pointer;touch-action:manipulation}
 @keyframes ui-rise{from{opacity:0;transform:translateY(10px) scale(.96)}}
 @container sky (max-height: 230px){
   #sky-overlay .result{top:6px;transform:translateX(-50%)}
-  #sky-overlay .res-app{font-size:34px;min-height:40px}
+  #sky-overlay .res-app{font-size:34px;min-height:44px}
+  #sky-wrap.has-result .sky-top{visibility:hidden}
   #sky-overlay .res-pay{max-height:26px;overflow:hidden}
 }
 @container sky (max-height: 170px){
@@ -310,6 +337,9 @@ button{cursor:pointer;touch-action:manipulation}
 #sky-overlay .cheer{position:absolute;right:6px;top:48px;bottom:14px;width:8px;border-radius:4px;background:rgba(255,255,255,.08);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 #sky-wrap.has-info .cheer{bottom:84px}
+#sky-overlay .info{transition:bottom .16s var(--ease-out)}
+#sky-wrap.has-arc #sky-overlay .info{bottom:28px}
+#sky-overlay .info[data-fit="1"] .t-o1,#sky-overlay .info[data-fit="2"] :is(.t-o1,.t-o2){display:none}
 #play[data-mode="compact"] #sky-wrap.has-info .cheer,#play[data-mode="scroll"] #sky-wrap.has-info .cheer{bottom:60px}
 #sky-overlay .cheer i{position:absolute;left:0;right:0;display:block}
 #sky-overlay .cheer .fill{bottom:0;height:calc(var(--fill,0) * 100%);border-radius:4px;background:linear-gradient(0deg,var(--aah),#FFF1C2);transition:height .18s var(--ease-out)}
@@ -389,7 +419,7 @@ button{cursor:pointer;touch-action:manipulation}
 @keyframes ui-rim{50%{box-shadow:0 -1px 0 rgba(224,83,61,.7),0 -6px 30px rgba(224,83,61,.35)}}
 #rack.fog::after{content:"";position:absolute;left:0;right:0;top:0;height:46px;pointer-events:none;
   background:linear-gradient(180deg,rgba(185,178,199,.34),rgba(185,178,199,0));mix-blend-mode:screen}
-#rack .tubes{position:relative;display:flex;justify-content:center;gap:8px}
+#rack .tubes{position:relative;display:flex;justify-content:center;gap:var(--tgap,8px)}
 #rack .tube{position:relative;width:48px;padding:0;margin:0;border:0;background:none;color:var(--paper);
   display:flex;flex-direction:column;align-items:center;gap:2px;touch-action:none;border-radius:8px;
   height:calc(var(--h-rack) - 12px + (var(--rows) - 1) * 18px)}
@@ -398,10 +428,18 @@ button{cursor:pointer;touch-action:manipulation}
 #rack .t-num .n{height:16px;font:600 16px/16px var(--f-display);font-variant-numeric:tabular-nums;color:var(--paper);white-space:nowrap}
 #rack .t-num .n.last{color:var(--aah);font-family:var(--f-ui);font-weight:700;letter-spacing:.02em}
 #rack .t-num .n.none{color:transparent}
+#rack .t-num .n.ghost{color:var(--aah);opacity:.75}
 #rack[data-rows="2"] .t-num .n:first-child,#rack[data-rows="3"] .t-num .n:nth-child(2){color:var(--paper-dim)}
-#rack .t-sees{height:18px;min-width:0;padding:0 4px;margin-inline:-4px;border-radius:9px;background:rgba(5,7,15,.5);
-  font:700 16px/18px var(--f-ui);letter-spacing:-.02em;color:var(--paper-dim);white-space:nowrap}
-#rack .t-sees:empty{background:transparent}
+#rack .t-sees{display:inline-flex;align-items:center;justify-content:center;height:18px;min-width:0;padding:0 5px;border-radius:9px;
+  background:rgba(5,7,15,.55);font:700 16px/18px var(--f-ui);letter-spacing:-.01em;color:var(--paper-dim);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+#rack .t-sees:empty{background:transparent;padding:0}
+#rack .t-sees .eye{display:none;width:16px;height:16px;margin-right:2px;stroke-width:2.2}
+#rack .t-sees.local{background:rgba(242,193,78,.2);color:var(--paper);box-shadow:inset 0 0 0 1px rgba(242,193,78,.55)}
+#rack[data-fit="1"] .t-sees{padding:0 3px;letter-spacing:-.04em}
+#rack[data-fit="2"] .t-sees{padding:0 5px 0 4px;letter-spacing:0}
+#rack[data-fit="2"] .t-sees .sw{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#rack[data-fit="2"] .t-sees .eye{display:block}
 #rack .t-sees.fogged{color:var(--paper);box-shadow:inset 0 0 0 1px rgba(185,178,199,.6)}
 #rack .t-body{position:relative;width:48px;height:var(--tok-h);border-radius:7px 7px 5px 5px;
   background:radial-gradient(ellipse 60% 9px at 50% 3px,#000 0 70%,transparent 100%),linear-gradient(90deg,#120d09,#2c2118 42%,#150f0a);
@@ -449,7 +487,7 @@ button{cursor:pointer;touch-action:manipulation}
 #rack .tube.shake,#tools .slot.shake{animation:ui-shake .28s ease-out}
 @keyframes ui-shake{25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
 /* the canopy arc (who will see this burst) */
-#rack .arc{position:absolute;left:0;top:-12px;height:28px;overflow:visible;pointer-events:none;z-index:3;
+#rack .arc{position:absolute;left:0;top:-23px;height:26px;overflow:visible;pointer-events:none;z-index:3;
   fill:none;stroke-width:2.5;stroke-linecap:round;color:var(--aah)}
 #rack .arc[data-col="R"]{color:var(--c-R)} #rack .arc[data-col="A"]{color:var(--c-A)} #rack .arc[data-col="G"]{color:var(--c-G)}
 #rack .arc[data-col="B"]{color:var(--c-B)} #rack .arc[data-col="W"]{color:var(--c-W)} #rack .arc[data-col="X"]{color:var(--c-fusion)}
@@ -489,6 +527,7 @@ button{cursor:pointer;touch-action:manipulation}
 #tools .tool:disabled{opacity:.38;cursor:default}
 #tools .tool.lit:not(:disabled){border-color:var(--brass);box-shadow:0 0 0 1px var(--brass),0 0 14px rgba(201,162,39,.45);color:var(--aah)}
 #tools .tool[aria-pressed="true"]{background:var(--brass);border-color:var(--brass);color:var(--ink);opacity:1}
+#tools .tools-hint{flex:1 1 0;min-width:0;overflow:hidden;white-space:nowrap;font:italic 700 16px/1 var(--f-display);color:var(--aah)}
 
 /* ---------- 8. Shop: 3 vertical cards, or a 2 × 2 grid of tiles ---------- */
 #shop{position:relative}
@@ -515,6 +554,9 @@ button{cursor:pointer;touch-action:manipulation}
 #shop .card.badged .c-name{-webkit-line-clamp:1;white-space:nowrap;text-overflow:ellipsis;display:block}
 #shop .c-badge{grid-column:1 / -1;grid-row:3;font:700 16px/20px var(--f-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #shop .b-twin{color:var(--aah)}
+#shop .b-twin .twin{display:none;width:18px;height:18px;margin-right:2px;vertical-align:-3px;stroke-width:2.2}
+#shop .card[data-fit="1"] .b-twin .bw{display:none}
+#shop .card[data-fit="1"] .b-twin .twin,#shop[data-n="4"] .b-twin .twin{display:inline-block}
 #shop .b-fuse{color:var(--c-fusion)}
 #shop .b-coll{color:var(--c-B)}
 #shop .b-pity{color:var(--paper-dim);font-style:italic}
@@ -525,20 +567,28 @@ button{cursor:pointer;touch-action:manipulation}
 @keyframes ui-flip{from{transform:perspective(400px) rotateY(80deg);opacity:0}}
 #shop .shop-empty{position:absolute;inset:0;margin:0;display:grid;place-items:center;text-align:center;padding:0 24px;
   border:1px dashed rgba(185,178,199,.3);border-radius:10px;font:italic 400 18px/1.3 var(--f-display);color:var(--paper-dim)}
-/* 4 cards: a 2 × 2 grid of 160 × 58 tiles */
+#shop .card[data-fit="1"] .bw:not(.b-twin .bw){display:none}
+#shop .card[data-fit="1"] .c-badge:is(.b-coll,.b-pity),#shop .card[data-fit="2"] .c-badge{display:none}
+/* 4 cards: a 2 × 2 grid of 160 × 58 tiles — token | name over (price · badge) */
 #shop[data-n="4"] .cards{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
-#shop[data-n="4"] .card{grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto;row-gap:2px;padding:4px 6px;align-content:center}
-#shop[data-n="4"] .card .tok{grid-row:1 / 3}
-#shop[data-n="4"] .c-name{grid-column:2;grid-row:1;-webkit-line-clamp:1;white-space:nowrap;text-overflow:ellipsis;display:block}
-#shop[data-n="4"] .c-side{grid-column:3;grid-row:1 / 3;justify-content:center;align-self:center}
-#shop[data-n="4"] .c-badge{grid-column:2;grid-row:2}
-/* Compact: 104 × 96 cards (token 40 × 48) and 160 × 44 tiles (token 32 × 40) */
+#shop[data-n="4"] .card{grid-template-columns:auto auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:6px;row-gap:4px;
+  padding:4px 8px 4px 6px;align-content:center}
+#shop[data-n="4"] .card .tok{grid-column:1;grid-row:1 / 3;align-self:center;margin-right:2px}
+#shop[data-n="4"] .c-name{grid-column:2 / 4;grid-row:1;align-self:end;-webkit-line-clamp:1;white-space:nowrap;text-overflow:ellipsis;display:block}
+#shop[data-n="4"] .c-side{grid-column:2;grid-row:2;flex-direction:row;align-items:center;align-self:start}
+#shop[data-n="4"] .c-price{height:22px;font-size:17px}
+#shop[data-n="4"] .c-rar{display:none}
+#shop[data-n="4"] .c-badge{grid-column:3;grid-row:2;align-self:center;min-width:0}
+/* Compact: 104 × 96 cards (token 40 × 48) and 160 × 44 tiles (token 32 × 40: token | name | price) */
 #play[data-mode="compact"] #shop .c-name,#play[data-mode="scroll"] #shop .c-name{-webkit-line-clamp:1;white-space:nowrap;text-overflow:ellipsis;display:block}
 #play[data-mode="compact"] #shop .card,#play[data-mode="scroll"] #shop .card{padding:4px 6px;row-gap:2px}
-#play[data-mode="compact"] #shop[data-n="4"] .card,#play[data-mode="scroll"] #shop[data-n="4"] .card{padding:2px 6px}
-#play[data-mode="compact"] #shop[data-n="4"] .c-badge,#play[data-mode="scroll"] #shop[data-n="4"] .c-badge,
-#play[data-mode="compact"] #shop[data-n="4"] .c-rar,#play[data-mode="scroll"] #shop[data-n="4"] .c-rar{display:none}
-#play[data-mode="compact"] #shop[data-n="4"] .c-name,#play[data-mode="scroll"] #shop[data-n="4"] .c-name{grid-row:1 / 3;align-self:center}
+#play[data-mode="compact"] #shop[data-n="4"] .card,#play[data-mode="scroll"] #shop[data-n="4"] .card{padding:2px 5px 2px 4px;column-gap:5px;
+  grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:1fr}
+#play[data-mode="compact"] #shop[data-n="4"] .c-price,#play[data-mode="scroll"] #shop[data-n="4"] .c-price{padding:0 6px}
+#play[data-mode="compact"] #shop[data-n="4"] .card .tok,#play[data-mode="scroll"] #shop[data-n="4"] .card .tok{grid-row:1}
+#play[data-mode="compact"] #shop[data-n="4"] .c-badge,#play[data-mode="scroll"] #shop[data-n="4"] .c-badge{display:none}
+#play[data-mode="compact"] #shop[data-n="4"] .c-name,#play[data-mode="scroll"] #shop[data-n="4"] .c-name{grid-column:2;grid-row:1;align-self:center}
+#play[data-mode="compact"] #shop[data-n="4"] .c-side,#play[data-mode="scroll"] #shop[data-n="4"] .c-side{grid-column:3;grid-row:1;align-self:center}
 
 /* ---------- 9. Workshop: rig card · add tube · reroll (hidden in Festival 1) ---------- */
 #workshop{display:flex;gap:8px;align-items:center}
@@ -546,7 +596,12 @@ button{cursor:pointer;touch-action:manipulation}
   border:1px solid var(--line);background:var(--surface-2);color:var(--paper);font:700 16px/1 var(--f-ui);white-space:nowrap}
 #workshop .ws-rig{flex:1.5 1 0;min-width:0;touch-action:none;border-color:rgba(201,162,39,.55);
   background:linear-gradient(90deg,rgba(201,162,39,.18),rgba(27,20,64,.92) 60%)}
-#workshop .ws-tube,#workshop .ws-reroll{flex:1 1 0;justify-content:center;min-width:0}
+#workshop .ws-tube,#workshop .ws-reroll{flex:0 0 auto;justify-content:center}
+/* 360 px (UI_PLAY fits the row): 1 tighter · 2 Tube / Reroll show icon + price · 3 the rig shows glyph + price */
+#workshop:is([data-fit="1"],[data-fit="2"],[data-fit="3"]) .ws{padding:0 8px;gap:5px}
+#workshop:is([data-fit="2"],[data-fit="3"]) .ws-word{display:none}
+#workshop[data-fit="3"] .ws-rigname{display:none}
+#workshop[data-fit="3"] .ws-rig{justify-content:space-between}
 #workshop .ws-name{min-width:0;overflow:hidden;text-overflow:ellipsis}
 #workshop .ws-rig .ws-name{flex:1}
 #workshop .ws-price{font:700 18px/1 var(--f-display);color:var(--aah);font-variant-numeric:tabular-nums}
@@ -579,7 +634,8 @@ button{cursor:pointer;touch-action:manipulation}
 
 /* ---------- 11. Hints, drag ghost, focus ---------- */
 #play .tip-anchor{box-shadow:0 0 0 3px var(--focus),0 0 22px rgba(255,209,102,.55)!important;animation:ui-tip 1.6s ease-in-out infinite}
-#rack.tip-anchor{box-shadow:inset 0 0 0 3px var(--focus),0 -8px 24px rgba(0,0,0,.35)!important}
+#rack.tip-anchor{border-top-color:var(--focus);box-shadow:0 -1px 0 rgba(255,209,102,.8),0 -10px 26px rgba(255,209,102,.3)!important;animation:ui-tip-rim 1.6s ease-in-out infinite}
+@keyframes ui-tip-rim{50%{box-shadow:0 -1px 0 rgba(255,209,102,.5),0 -6px 14px rgba(255,209,102,.12)}}
 @keyframes ui-tip{50%{box-shadow:0 0 0 3px var(--focus),0 0 8px rgba(255,209,102,.2)}}
 #play .ghost{position:fixed;left:0;top:0;z-index:60;pointer-events:none;will-change:transform;filter:drop-shadow(0 10px 12px rgba(0,0,0,.65))}
 #play .ghost-rig{display:grid;place-items:center;width:44px;height:44px;border-radius:10px;background:var(--brass);color:var(--ink)}
@@ -670,8 +726,12 @@ button{cursor:pointer;touch-action:manipulation}
   color:var(--paper-dim);font-size:var(--t-xs);line-height:1.2}
 #board .bd-cols span{padding-left:7px;white-space:nowrap}
 
-#board .bd-list,#showlog .sl-lines{-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 28px),transparent);
-  mask-image:linear-gradient(180deg,#000 calc(100% - 28px),transparent)}
+/* scroll lists fade only at an edge with more beyond it (.fade-t / .fade-b from ui-panels.js) */
+#board .bd-list,#showlog .sl-body{--fade-t:#000;--fade-b:#000;
+  -webkit-mask-image:linear-gradient(180deg,var(--fade-t),#000 22px,#000 calc(100% - 28px),var(--fade-b));
+  mask-image:linear-gradient(180deg,var(--fade-t),#000 22px,#000 calc(100% - 28px),var(--fade-b))}
+#board .bd-list.fade-t,#showlog .sl-body.fade-t{--fade-t:transparent}
+#board .bd-list.fade-b,#showlog .sl-body.fade-b{--fade-b:transparent}
 #board .bd-list{list-style:none;margin:0 -6px 0 0;padding:0 6px 26px 0;flex:1 1 auto;min-height:0;overflow:auto;
   display:flex;flex-direction:column;gap:3px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 #board .bd-row{position:relative;padding:5px 8px 6px;border-radius:9px;border:1px solid transparent}
@@ -682,7 +742,7 @@ button{cursor:pointer;touch-action:manipulation}
   border:1.5px solid color-mix(in srgb,var(--brass) 70%,transparent);color:var(--brass);font:700 var(--t-xs)/1 var(--f-ui)}
 #board .is-past .bd-num{background:color-mix(in srgb,var(--brass) 22%,transparent);border-color:transparent}
 #board .is-now .bd-num{background:var(--brass);color:var(--ink);border-color:var(--brass)}
-#board .bd-fest{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+#board .bd-fest{flex:0 0 auto;max-width:72%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   font:600 var(--t-m)/1.2 var(--f-display);color:var(--paper)}
 #board .is-past .bd-fest{color:var(--paper-dim)}
 #board .bd-hlmini{margin-left:auto;flex:0 1 auto;min-width:0;display:inline-flex;align-items:center;gap:5px;
@@ -714,6 +774,11 @@ button{cursor:pointer;touch-action:manipulation}
 #board .bd-cell .bd-tw{width:16px;height:16px;margin-left:auto;color:var(--paper-dim)}
 #board .bd-cell.is-now .bd-tw{color:var(--ink)}
 
+#board .bd-row.is-far{padding-block:3px 4px}
+#board .is-far .bd-cells{margin-top:1px}
+#board .is-far .bd-cell{height:21px;background:transparent;box-shadow:none;color:var(--paper-dim);font-weight:400}
+#board .is-far .bd-cell.is-sp{box-shadow:inset 0 0 0 2px var(--x-ring)}
+
 #board .bd-hl{margin:5px 0 1px;padding:6px 9px 7px;border-radius:8px;background:var(--pn-well);
   border:1px dashed color-mix(in srgb,var(--brass) 50%,transparent);font-size:var(--t-xs);line-height:1.3;color:var(--paper-dim)}
 #board .bd-hl b{color:var(--paper);font:600 var(--t-m)/1.2 var(--f-display);margin-right:2px}
@@ -738,9 +803,10 @@ button{cursor:pointer;touch-action:manipulation}
 #board .sp-sp{fill:none;stroke:var(--x-ring);stroke-width:1.75}
 #board .sp-dot{transform-box:fill-box;transform-origin:center}
 #board .sp-dot.is-new{animation:pn-pop 480ms var(--ease-back) both}
-#board .sp-legend{margin:2px 0 0;display:flex;flex-wrap:wrap;gap:0 12px;color:var(--paper-dim);font-size:var(--t-xs);line-height:1.3}
+#board .sp-legend{margin:2px 0 0;display:flex;flex-wrap:wrap;gap:0 10px;color:var(--paper-dim);font-size:var(--t-xs);line-height:1.3}
 #board .sp-lg{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 #board .sp-lg svg{height:14px;width:auto;overflow:visible}
+#board .sp-lg svg[viewBox="0 0 22 10"]{height:10px}
 #board .sp-lg .sp-miss{stroke-width:2.2}
 
 /* =================== SHOW LOG =================== */
@@ -762,9 +828,10 @@ button{cursor:pointer;touch-action:manipulation}
 #showlog .sl-rule .pn-ic{color:var(--brass);width:16px;height:16px;vertical-align:0}
 #showlog .sl-sp{box-shadow:inset 0 0 0 2px var(--x-ring)}
 
-#showlog .sl-lines{list-style:none;margin:0 -6px 0 0;padding:0 6px 0 0;flex:1 1 auto;min-height:0;overflow:auto;
-  display:flex;flex-direction:column;gap:2px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent;
-  border-top:1px solid var(--line);padding-top:6px;padding-bottom:22px}
+/* lines, cheer and Applause scroll as one log; the header and the Logbook button stay put */
+#showlog .sl-body{flex:1 1 auto;min-height:0;overflow:auto;margin:0 -6px 0 0;padding:6px 6px 12px 0;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:var(--line) transparent;border-top:1px solid var(--line)}
+#showlog .sl-lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
 #showlog .sl-line{padding:7px 6px 8px;border-radius:8px;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
 #showlog .sl-line:last-child{border-bottom-color:transparent}
 #showlog .sl-line.is-in{animation:pn-in 260ms var(--ease-out) both}
@@ -782,6 +849,8 @@ button{cursor:pointer;touch-action:manipulation}
 #showlog .sl-flag{display:inline-block;margin-left:6px;padding:0 7px;border-radius:999px;border:1px solid var(--paper-dim);
   font-weight:400;font-size:var(--t-xs);line-height:1.3;color:var(--paper-dim)}
 #showlog .sl-flag.is-dud{border-style:dashed}
+#showlog .sl-chips .sl-flag{margin-left:0}
+#showlog .sl-flag.is-shot{border-color:transparent;background:var(--pn-soft);color:var(--paper)}
 #showlog .sl-run{flex:none;margin-left:auto;padding-left:6px;color:var(--paper-dim);font:400 var(--t-xs)/1.3 var(--f-ui);white-space:nowrap}
 #showlog .sl-run i{font-style:normal;margin:0 3px;opacity:.7}
 #showlog .sl-chips{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:5px 0 0 40px}
@@ -793,9 +862,14 @@ button{cursor:pointer;touch-action:manipulation}
 #showlog .is-dud .sl-name{color:var(--paper-dim)}
 #showlog .sl-empty{padding:14px 6px;color:var(--paper-dim);line-height:1.45}
 #showlog .sl-empty p{margin:0 0 8px}
+#showlog .sl-ex{margin:16px 0 0;padding:10px 10px 8px;border-radius:10px;border:1px dashed color-mix(in srgb,var(--brass) 45%,transparent)}
+#showlog .sl-ex figcaption{font:600 var(--t-m)/1.2 var(--f-display);color:var(--paper);margin-bottom:6px}
+#showlog .sl-ex-line{padding:6px 4px;border-bottom:0;background:var(--pn-soft)}
+#showlog .sl-ex-key{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:2px;font-size:var(--t-xs);line-height:1.35}
+#showlog .sl-ex-key b{color:var(--paper)}
 #showlog .sl-empty-h{font:600 var(--t-m)/1.25 var(--f-display);color:var(--paper)}
 
-#showlog .sl-sum{flex:none;display:flex;flex-direction:column;gap:8px}
+#showlog .sl-sum{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 #showlog .sl-sum:empty{display:none}
 #showlog .sl-cheer{display:flex;align-items:center;gap:8px;padding:6px 6px 8px;border-bottom:1px solid var(--line);color:var(--paper);font-weight:700}
 #showlog .sl-cheer .chip{margin-left:auto}
@@ -804,8 +878,9 @@ button{cursor:pointer;touch-action:manipulation}
 #showlog .sl-app{padding:12px 14px 12px;border-radius:12px;background:var(--pn-well);border:1px solid var(--line)}
 #showlog .sl-app.is-pass{border-color:color-mix(in srgb,var(--ok) 55%,transparent)}
 #showlog .sl-app.is-miss{border-color:color-mix(in srgb,var(--danger) 65%,transparent)}
-#showlog .sl-app-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-#showlog .sl-app-lbl{font:600 var(--t-m)/1.2 var(--f-display);color:var(--paper-dim)}
+#showlog .sl-app-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#showlog .sl-app-lbl{display:flex;flex-direction:column;gap:2px;font:600 var(--t-m)/1.2 var(--f-display);color:var(--paper-dim)}
+#showlog .sl-app-tg{font:400 var(--t-xs)/1.2 var(--f-ui);color:var(--paper-dim)}
 #showlog .sl-app-n{font:italic 700 var(--t-xxl)/1 var(--f-display);color:var(--paper);letter-spacing:-.01em}
 #showlog .is-pending .sl-app-n{color:var(--paper-dim)}
 #showlog .sl-app-eq{margin-top:8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:var(--paper-dim)}
@@ -814,9 +889,13 @@ button{cursor:pointer;touch-action:manipulation}
 #showlog .sl-ok{color:var(--ok)}
 #showlog .sl-bad{color:var(--danger)}
 #showlog .sl-encore{font:italic 700 var(--t-m)/1.2 var(--f-display);color:var(--aah)}
-#showlog .sl-verdict .sl-dim{margin-left:auto;font-size:var(--t-xs)}
-#showlog .sl-pay{margin:6px 0 0;color:var(--paper-dim);font-size:var(--t-xs)}
-#showlog .sl-after{display:block;margin-top:2px;color:var(--paper)}
+#showlog .sl-pay{margin:10px 0 0;display:flex;flex-wrap:wrap;gap:4px;color:var(--paper-dim);font-size:var(--t-xs);line-height:1.25}
+#showlog .sl-pb{white-space:nowrap;padding:1px 8px;border-radius:999px;border:1px solid var(--line)}
+#showlog .sl-pb.is-coin{color:var(--aah);border-color:color-mix(in srgb,var(--aah) 35%,transparent)}
+#showlog .sl-pb.is-crowd{color:var(--paper)}
+#showlog .sl-pb.is-card{color:var(--x-ring);border-color:color-mix(in srgb,var(--x-ring) 45%,transparent)}
+#showlog .sl-pb.is-none{border-style:dashed}
+#showlog .sl-after{flex:0 0 100%;margin-top:4px;color:var(--paper)}
 #showlog .sl-note{margin:0;padding:8px 10px;border-radius:8px;border:1px solid var(--danger);color:var(--paper);font-size:var(--t-s)}
 #showlog .sl-note.is-relight,#showlog .sl-note.is-won{border-color:var(--brass)}
 
@@ -832,14 +911,14 @@ button{cursor:pointer;touch-action:manipulation}
   #showlog.is-sheet{display:block;position:absolute;inset:0;z-index:45;overflow:hidden;padding:0}
   #showlog.is-sheet .sl-scrim{display:block;position:absolute;inset:0;background:var(--scrim);animation:pn-fade 200ms var(--ease-out) both}
   /* the whole sheet scrolls (more room for the lines on a phone); the header stays pinned */
-  #showlog.is-sheet .sl-panel.sheet{display:flex;flex-direction:column;max-height:calc(100% - 40px);overflow:auto;overscroll-behavior:contain;
+  #showlog.is-sheet .sl-panel.sheet{background:linear-gradient(var(--surface-2),var(--surface-2)),var(--bg);display:flex;flex-direction:column;max-height:calc(100% - 40px);overflow:auto;overscroll-behavior:contain;
     padding:0 16px calc(env(safe-area-inset-bottom,0px) + 12px);box-shadow:0 -12px 40px color-mix(in srgb,var(--ink) 70%,transparent);
     animation:pn-up 260ms var(--ease-out) both}
-  #showlog.is-sheet .sl-head{position:sticky;top:0;z-index:1;margin:0 -16px;padding:8px 16px 8px;background:var(--surface-2);
+  #showlog.is-sheet .sl-head{position:sticky;top:0;z-index:1;margin:0 -16px;padding:8px 16px 8px;background:linear-gradient(var(--surface-2),var(--surface-2)),var(--bg);
     border-bottom:1px solid var(--line)}
   #showlog.is-sheet .sl-head::before{content:"";display:block;width:40px;height:4px;margin:0 auto 6px;border-radius:2px;background:var(--line)}
   #showlog.is-sheet .sl-close{display:inline-flex}
-  #showlog.is-sheet .sl-lines{flex:none;overflow:visible;border-top:0;padding-bottom:4px;-webkit-mask-image:none;mask-image:none}
+  #showlog.is-sheet .sl-body{flex:none;overflow:visible;margin:0;border-top:0;padding:4px 0 4px;-webkit-mask-image:none;mask-image:none}
   #showlog.is-sheet .sl-app-n{font-size:var(--t-xl)}
   #showlog.is-sheet .sl-chips{margin-left:40px}
 }
@@ -861,7 +940,7 @@ button{cursor:pointer;touch-action:manipulation}
 :root[data-contrast="high"] #board .sp-grid{stroke:var(--paper-dim);stroke-opacity:.5}
 :root[data-contrast="high"] #showlog .sl-line{border-bottom-color:var(--paper-dim)}
 :root[data-contrast="high"] #showlog .sl-tube{background:var(--ink);box-shadow:inset 0 0 0 1px var(--paper)}
-:root[data-contrast="high"] #board .bd-list,:root[data-contrast="high"] #showlog .sl-lines{-webkit-mask-image:none;mask-image:none}
+:root[data-contrast="high"] #board .bd-list,:root[data-contrast="high"] #showlog .sl-body{-webkit-mask-image:none;mask-image:none}
 
 @keyframes pn-pulse{50%{opacity:.3}}
 @keyframes pn-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -884,6 +963,7 @@ button{cursor:pointer;touch-action:manipulation}
 /* ---------- the overlay: a scrolling card ---------- */
 #end{display:block;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   padding:calc(env(safe-area-inset-top,0px) + 12px) 8px 0;user-select:text;-webkit-user-select:text}
+#end[data-won="0"]{background:rgba(3,5,12,.84)}
 #end[data-won="1"]{background:linear-gradient(180deg,rgba(3,5,12,.18) 0,rgba(3,5,12,.55) 260px,var(--scrim) 520px)}
 :root[data-contrast="high"] #end{background:var(--scrim)}
 #end .end-card{position:relative;width:min(100%,600px);margin:0 auto;padding:20px 16px 0;
@@ -904,12 +984,15 @@ button{cursor:pointer;touch-action:manipulation}
 #end .end-spark span:nth-child(2n){animation-delay:.35s;color:var(--c-fusion)}
 #end .end-spark span:nth-child(3){animation-delay:.7s;color:var(--paper)}
 @keyframes end-twinkle{from{opacity:.35;transform:scale(.8)}to{opacity:1;transform:scale(1.15)}}
-#end .end-tags{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
-#end .end-tags .chip{min-height:28px;padding:4px 10px;font-weight:700}
+#end .end-tags{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;row-gap:2px;color:var(--paper-dim)}
+#end .end-tags li{white-space:nowrap}
+#end .end-tags li + li::before{content:"·";margin:0 8px;color:var(--paper-dim)}
+#end .end-tags b{color:var(--paper)}
+#end .end-tags .end-tag-fw b{color:var(--aah)}
 
 /* ---------- 2. poster ---------- */
 #end .end-poster{margin:4px 0 0}
-#end .end-poster canvas{display:block;width:100%;height:180px;border-radius:var(--radius);border:1px solid var(--line);background:var(--sky-top)}
+#end .end-poster canvas{display:block;box-sizing:border-box;width:100%;height:182px;border-radius:var(--radius);border:1px solid var(--line);background:var(--sky-top)}
 
 /* ---------- sections ---------- */
 #end .end-sec{padding:16px 0;border-top:1px solid var(--line)}
@@ -925,7 +1008,7 @@ button{cursor:pointer;touch-action:manipulation}
 #end .end-svg{display:block;max-width:100%}
 #end .end-svg text{font:700 16px/1 var(--f-ui);font-variant-numeric:tabular-nums}
 #end .ec-lbl{fill:var(--paper-dim);font-weight:400}
-#end .ec-val{fill:var(--paper)}
+#end .ec-val{fill:var(--paper);paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round}
 #end .ec-band{fill:var(--paper);opacity:.05}
 #end .ec-grid{stroke:var(--line);stroke-width:1}
 #end .ec-target{fill:none;stroke:var(--paper-dim);stroke-width:2;stroke-dasharray:5 4}
@@ -973,10 +1056,11 @@ button{cursor:pointer;touch-action:manipulation}
 #end .end-bar i{display:block;height:100%;min-width:4px;border-radius:999px;background:var(--aah)}
 :root[data-contrast="high"] #end .end-bar{background:var(--bg);box-shadow:inset 0 0 0 1px var(--line)}
 #end .end-sil,#end .end-new{display:flex;align-items:center;gap:12px;margin-top:14px}
-#end .end-news{list-style:none;margin:0 0 12px;padding:0}
-#end .end-new{margin-top:6px;padding:4px 10px;min-height:44px;border-radius:var(--radius);background:rgba(242,193,78,.1);border:1px solid var(--brass)}
-#end .end-news-note{margin:6px 0 16px}
-#end .end-new b{color:var(--aah);margin-right:4px}
+#end .end-news{list-style:none;margin:0;padding:0}
+#end .end-new{margin-top:6px;padding:6px 12px 6px 6px;min-height:44px;border-radius:var(--radius);background:rgba(242,193,78,.1);border:1px solid var(--brass)}
+#end .end-news-note{margin:8px 0 0}
+#end .end-new b{display:block;color:var(--aah)}
+#end .end-new-what{display:block;color:var(--paper);line-height:1.3}
 #end .end-new-ico{width:48px;text-align:center;color:var(--aah);font-size:var(--t-l)}
 
 /* ---------- shell tokens (canvas plate + DOM monogram) ---------- */
@@ -984,6 +1068,7 @@ button{cursor:pointer;touch-action:manipulation}
 #end .end-tok canvas{display:block}
 #end .end-mono{position:absolute;right:1px;bottom:0;font:700 var(--t-xs)/1 var(--f-ui);color:var(--paper);
   text-shadow:0 0 3px var(--bg),0 0 2px var(--bg)}
+#end .end-kopt .end-mono,#end .end-new .end-mono,#end .end-sil .end-tok:not([data-tok$="|s"]) .end-mono{display:none}   /* the name sits right beside it */
 #end .end-tok-none{display:grid;place-items:center;border:2px dashed var(--line);border-radius:var(--radius);color:var(--paper-dim);font-size:var(--t-l)}
 
 /* ---------- 9. keepsake picker ---------- */
@@ -995,9 +1080,10 @@ button{cursor:pointer;touch-action:manipulation}
 #end .end-kname{font-size:var(--t-s);font-weight:700;text-align:center;line-height:1.15;white-space:nowrap}
 
 /* ---------- 10. buttons ---------- */
-#end .end-more{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-#end .end-more .btn{width:100%}
-#end .end-more [data-end="kit"]{grid-column:span 2}
+#end .end-more{display:flex;flex-wrap:wrap;gap:8px}
+#end .end-more .btn{flex:1 1 136px;min-width:0}
+#end .end-more [data-end="kit"],#end .end-more [data-end="renown"]{flex:1 1 auto;white-space:nowrap}   /* side by side when both fit, else stacked */
+#end .end-more [data-end="daily"]{flex-basis:100%}
 #end .end-pick{margin-top:10px;display:grid;gap:6px;padding:8px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
 #end .end-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:var(--tap);padding:8px 12px;text-align:left;
   border:2px solid transparent;border-radius:var(--radius-s);background:transparent;color:var(--paper)}
@@ -1019,7 +1105,6 @@ button{cursor:pointer;touch-action:manipulation}
   #end .end-card{width:min(100%,960px);padding:24px 28px 0}
   #end .end-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:32px}
   #end .end-grid > .end-col > .end-sec:first-child{border-top:0}
-  #end .end-more{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
   #end .end-actions{margin-inline:-28px;padding-inline:28px;justify-content:center}
   #end #run-it-back{flex:0 1 360px}
   #end .end-party{flex:0 1 240px}
@@ -1082,7 +1167,8 @@ button{cursor:pointer;touch-action:manipulation}
 #pause-menu .pm-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0}
 #pause-menu .pm-tags:empty{display:none}
 #pause-menu .pm-chip{min-height:28px;padding:4px 10px;color:var(--paper);background:rgba(201,162,39,.16)}
-#pause-menu .pm-abandon{margin-top:4px}
+#pause-menu .pm-abandon{margin-top:4px;white-space:nowrap}
+#pause-menu .pm-abandon[data-armed="true"] .m-ico{display:none}
 
 /* ---------- SETTINGS ---------- */
 #settings > .st-panel{width:min(100%,560px)}
@@ -1148,6 +1234,9 @@ button{cursor:pointer;touch-action:manipulation}
 #logbook .lb-total{margin:0;font:700 var(--t-s)/1 var(--f-ui);color:var(--aah);white-space:nowrap}
 #logbook .lb-tabs{flex:none;display:flex;gap:0;overflow-x:auto;padding:6px 12px 0;border-bottom:1px solid var(--line);scrollbar-width:none}
 #logbook .lb-tabs::-webkit-scrollbar{display:none}
+#logbook .lb-tabs[data-edge="r"]{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent)}
+#logbook .lb-tabs[data-edge="l"]{-webkit-mask-image:linear-gradient(90deg,transparent,#000 48px);mask-image:linear-gradient(90deg,transparent,#000 48px)}
+#logbook .lb-tabs[data-edge="lr"]{-webkit-mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent)}
 #logbook .lb-tab{flex:none;display:inline-flex;align-items:baseline;gap:6px;min-height:48px;padding:12px 12px 8px;border:0;
   border-bottom:3px solid transparent;border-radius:10px 10px 0 0;background:transparent;color:var(--paper-dim);font:700 var(--t-s)/1 var(--f-ui)}
 #logbook .lb-tab:hover{color:var(--paper)}
@@ -1156,7 +1245,7 @@ button{cursor:pointer;touch-action:manipulation}
 #logbook .lb-tab-n{font-weight:400;color:var(--paper-dim)}
 #logbook .lb-tab-n:empty{display:none}
 #logbook .lb-body{padding:16px 12px 28px}
-#logbook .lb-body:focus-visible{outline-offset:-3px}
+#logbook .lb-body:focus-visible,#help .hp-body:focus-visible{outline-offset:-3px}
 #logbook .lb-lede{margin:0 4px 14px}
 #logbook .lb-lede p{margin:0}
 #logbook .lb-count{font:600 var(--t-l)/1.2 var(--f-display)}
@@ -1242,6 +1331,10 @@ button{cursor:pointer;touch-action:manipulation}
 #logbook .lb-rec dt{font:700 var(--t-xs)/1.2 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--brass)}
 #logbook .lb-rec dd{margin:6px 0 0;font:italic 700 var(--t-xl)/1.1 var(--f-display);color:var(--paper)}
 #logbook .lb-rec.is-empty dd{font-size:var(--t-m);color:var(--paper-dim)}
+#logbook .lb-rec-list{list-style:none;margin:2px 0 0;padding:0;display:grid;gap:2px;font:400 var(--t-s)/1.35 var(--f-ui);color:var(--paper)}
+#logbook .lb-rec-list li{display:flex;justify-content:space-between;gap:12px;padding:2px 0;border-bottom:1px dashed var(--line)}
+#logbook .lb-rec-list li:last-child{border-bottom:0}
+#logbook .lb-rec-list b{font:italic 700 var(--t-m)/1.2 var(--f-display);color:var(--aah)}
 #logbook .lb-rec-sub{display:block;margin-top:4px;font:400 var(--t-s)/1.3 var(--f-ui);color:var(--paper-dim)}
 /* posters */
 #logbook .lb-posters{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
@@ -1307,9 +1400,21 @@ button{cursor:pointer;touch-action:manipulation}
 :root[data-motion="reduced"] #toasts .toast{animation-name:m-toast-fade}
 @media (prefers-reduced-motion:reduce){#toasts .toast{animation-name:m-toast-fade}}
 @keyframes m-toast-fade{from{opacity:0}}
+/* an overlay covers the sky band: toasts rise from the bottom, above its sticky footer; tips wait */
+#toasts[data-at="bottom"]{top:auto;bottom:max(var(--toast-floor,0px),calc(env(safe-area-inset-bottom,0px) + 16px))}
+#toasts[data-at="bottom"] .toast{animation-name:m-toast-up;box-shadow:0 10px 30px rgba(0,0,0,.55)}
+#toasts[data-at="bottom"] .toast.is-out{animation-name:m-toast-down}
+#toasts[data-at="bottom"] .toast[data-kind="tip"],#toasts[data-at="held"]{display:none}
+@keyframes m-toast-up{from{opacity:0;transform:translateY(12px) scale(.96)}}
+@keyframes m-toast-down{to{opacity:0;transform:translateY(8px)}}
+:root[data-motion="reduced"] #toasts[data-at="bottom"] .toast{animation-name:m-toast-fade}
+@media (prefers-reduced-motion:reduce){#toasts[data-at="bottom"] .toast{animation-name:m-toast-fade}}
+:root[data-motion="reduced"] #toasts[data-at] .toast.is-out{animation-name:m-toast-fade-out}
+@media (prefers-reduced-motion:reduce){#toasts[data-at] .toast.is-out{animation-name:m-toast-fade-out}}
+@keyframes m-toast-fade-out{to{opacity:0}}
 
 /* ---------- TAP TO CONTINUE ---------- */
-#tap-continue{z-index:90;padding:0;background:radial-gradient(ellipse at 50% 34%,rgba(27,20,64,.55),var(--scrim) 72%);cursor:pointer}
+#tap-continue{z-index:90;padding:0;background:radial-gradient(ellipse at 50% 40%,rgba(46,34,110,.5),transparent 70%),rgba(3,5,12,.88);cursor:pointer}
 #tap-continue .tc-btn{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
   padding:24px;border:0;background:transparent;color:var(--paper);text-align:center}
 #tap-continue .tc-btn:focus-visible{outline-offset:-10px;border-radius:16px}
@@ -1368,7 +1473,7 @@ button{cursor:pointer;touch-action:manipulation}
 //
 // `OohSim` is fully self-contained: it references no outer names, so the page can build a Blob Worker
 // from `OohSim.toString()` (spec §11.5 in-page bots). State is plain JSON, advanced only by `step`.
-// The SIM never calls Math.random or Date.now; its only randomness is `state.rng` (sfc32, spec §11.3).
+// The SIM never reads Math.random or any clock (no Date at all); its only randomness is `state.rng` (sfc32, spec §11.3).
 // Bots use their own xorshift32 (spec §12.1). Ported from the design-time v11 reference sim + bots.
 function OohSim() {
   'use strict';
@@ -1992,10 +2097,11 @@ function OohSim() {
   }
   function makeCard(S, id, tag) { const d = SH[id]; const col = d.col === '*' ? rollCol(S) : d.col;
     return { kind: 'shell', id, col, cost: d.cost + (S.renown >= 5 ? 1 : 0), tag: tag || null, sold: false }; }
-  function synergyId(S, id) { const own = ownedShells(S); if (own.some(x => x.id === id && x.star < 3)) return true;
+  // `own` (ownedShells(S)) may be passed in by callers that test many ids against the same rack.
+  function synergyId(S, id, own) { own = own || ownedShells(S); for (const x of own) if (x.id === id && x.star < 3) return true;
     for (const x of own) if (FU[x.id + '>' + id] || FU[id + '>' + x.id]) return true; return false; }
   function genCards(S, f) {
-    const N = kitOf(S).cards || 3, w = RARITY[Math.min(8, f) - 1], cards = [], used = {}, P = pool(S);
+    const N = kitOf(S).cards || 3, w = RARITY[Math.min(8, f) - 1], cards = [], used = {}, P = pool(S), own = ownedShells(S);
     for (let c = 0; c < N; c++) {
       let id = null;
       for (let tr = 0; tr < 20 && !id; tr++) {
@@ -2006,10 +2112,10 @@ function OohSim() {
       if (id) { used[id] = true; cards.push(makeCard(S, id)); }
     }
     // §5.7 pity: after 2 dry generations, the last card becomes a synergy card (C or U).
-    if (!cards.some(c => synergyId(S, c.id))) {
+    if (!cards.some(c => synergyId(S, c.id, own))) {
       S.dry++;
       if (S.dry > 2) {
-        const ids = P.filter(x => SH[x].fest <= f && SH[x].rar !== 'R' && synergyId(S, x) && !used[x]);
+        const ids = P.filter(x => SH[x].fest <= f && SH[x].rar !== 'R' && !used[x] && synergyId(S, x, own));
         if (ids.length) { const id = ids[Math.floor(rngNext(S) * ids.length)]; cards[cards.length - 1] = makeCard(S, id, 'pity'); S.dry = 0; S.runStats.pity++; }
       }
     } else S.dry = 0;
@@ -2031,9 +2137,16 @@ function OohSim() {
       const seen = {}; S.shop.cards = S.shop.cards.filter(c => { if (seen[c.id]) return false; seen[c.id] = true; return true; });
     }
   }
+  // Deep copy with exactly the JSON round-trip semantics for plain data (undefined/function keys dropped, in arrays → null;
+  // non-finite numbers → null), at a fraction of the cost of JSON.parse(JSON.stringify(v)) (§11.7 step budget).
+  function jcopy(v) {
+    if (v === null || typeof v !== 'object') return typeof v === 'number' && !Number.isFinite(v) ? null : v;
+    if (Array.isArray(v)) { const n = v.length, out = new Array(n); for (let i = 0; i < n; i++) { const x = v[i]; out[i] = x === undefined || typeof x === 'function' ? null : jcopy(x); } return out; }
+    const out = {}; for (const k in v) { const x = v[k]; if (x !== undefined && typeof x !== 'function') out[k] = jcopy(x); } return out;
+  }
   function liteSnapshot(S) {
-    const o = {}; for (const k in S) if (k !== 'runStats') o[k] = S[k];
-    return JSON.parse(JSON.stringify(o));
+    const o = {}; for (const k in S) { const x = S[k]; if (k !== 'runStats' && x !== undefined && typeof x !== 'function') o[k] = jcopy(x); }
+    return o;
   }
   // §2.3 opening a build phase: shell cards → pity → Collector → rig → Sponsor → first-run overrides.
   function openBuild(S) {
@@ -2305,7 +2418,7 @@ function OohSim() {
     const known = {}; for (const key of S.discovered) known[key] = true; for (const key in rs.fusions) known[key] = true;
     for (const e of r.trace) {
       if (e.type === 'fusion') { e.first = !known[e.key]; known[e.key] = true; }
-      const { type } = e; const f2 = Object.assign({}, e); delete f2.type; emit(type, f2);
+      const out = emit(e.type, null); for (const key in e) if (key !== 'type' && e[key] !== undefined) out[key] = e[key];
     }
     emit('crowdCheer', { v: r.cheer, crowd: r.crowd, half: rules.includes('ferry') || undefined, ooh: r.ooh, aah: r.aah });
     const pass = r.applause >= tgt, encore = r.applause >= 2 * tgt, sponsored = !!(S.sponsor && S.sponsor.accepted);
@@ -2402,9 +2515,24 @@ function OohSim() {
       const same = rules.length === tonight.length && rules.every((x, i) => x === tonight[i]);
       if (!same || (previewShow != null && previewShow !== s)) T = baseTarget(S, previewShow != null ? previewShow : nextHeadlinerShow(s));
     }
-    const fav = rules.includes('rival') ? favourite(S.tubes, S.crowd) : null;
-    const A = resolveShow(S.tubes, { rules, crowd: S.crowd, fav }).applause;
-    return bucketOf(A / T);
+    return bucketOf(applauseUnder(S.tubes, rules, S.crowd) / T);
+  }
+  // The Applause of a rack under a rule list and Crowd, with the ♛ applied under Rival: the costly part of mood(), which
+  // step() re-reads after every build action (§11.7: step ≤ 2 ms including the mood). A small memo keyed by everything
+  // resolveShow reads (per tube: shell id, colour, ★ and rig; the rules; the Crowd) skips the resolves (up to n + 2 under
+  // Rival) when an action leaves the rack as it was (a Crate buy or sell, a reroll, a Sponsor toggle). Results are unchanged.
+  const APPLAUSE_MEMO = new Map();
+  function applauseUnder(tubes, rules, crowd) {
+    let key = rules.join('+') + '|' + crowd + '|';
+    for (const t of tubes) key += (t.shell ? t.shell.id + ':' + t.shell.col + ':' + t.shell.star : '-') + '/' + (t.rig || '') + ',';
+    let A = APPLAUSE_MEMO.get(key);
+    if (A === undefined) {
+      const fav = rules.includes('rival') ? favourite(tubes, crowd) : null;
+      A = resolveShow(tubes, { rules, crowd, fav }).applause;
+      if (APPLAUSE_MEMO.size >= 512) APPLAUSE_MEMO.clear();
+      APPLAUSE_MEMO.set(key, A);
+    }
+    return A;
   }
   function moodVisible(S) { return !(S.firstRun && S.show < 2); }
 
@@ -2564,7 +2692,7 @@ function OohSim() {
     for (const a of legalActions(pre)) {
       if (!kinds[a.type]) continue;
       if (a.type === 'sponsor' && a.accept) continue;
-      const S2 = JSON.parse(JSON.stringify(base)); S2.runStats = newRunStats();
+      const S2 = jcopy(base); S2.runStats = newRunStats();
       applyBuildAction(S2, a, null);
       const t2 = target(S2, s); const v = score(S2.tubes, S2.crowd);
       const cand = { kind: 'action', action: a, applause: v, target: t2, pass: v >= t2, changes: 1 };
@@ -2764,12 +2892,14 @@ function OohSim() {
       fest: row.fest, lock: row.lock, tags: row.tags, pattern: row.pattern, star, text: describeShell(id, col, star), lines: L, fusions: fus, upCost: star < 3 ? upCost(id, star) : null };
   }
 
-  // §7.4 Daily Show seed: 'daily-YYYY-MM-DD' (local date). Accepts 'YYYY-MM-DD', any Date-parsable string, or a Date.
-  function dailySeed(d) {
-    const pad = x => String(x).padStart(2, '0');
-    if (typeof d === 'string') { const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(d.trim()); if (m) return 'daily-' + m[1] + '-' + pad(m[2]) + '-' + pad(m[3]); d = new Date(d); }
-    if (!(d instanceof Date) || Number.isNaN(d.getTime())) d = new Date();   // UI convenience only; never used by step()
-    return 'daily-' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  // §7.4 Daily Show seed: 'daily-YYYY-MM-DD'. Pure: the caller supplies the local date as 'YYYY-MM-DD' (or 'YYYY-M-D';
+  // anything after the day, such as a time, is ignored). The SIM never reads the clock, so there is no "today" default:
+  // an unparseable argument returns null and the caller falls back (core.js and ui-end.js both do).
+  function dailySeed(ymd) {
+    const m = typeof ymd === 'string' ? /^\s*(\d{4})-(\d{1,2})-(\d{1,2})(?!\d)/.exec(ymd) : null;
+    if (!m || +m[2] < 1 || +m[2] > 12 || +m[3] < 1 || +m[3] > 31) return null;
+    const pad = x => String(+x).padStart(2, '0');
+    return 'daily-' + m[1] + '-' + pad(m[2]) + '-' + pad(m[3]);
   }
   // §7.3 keepsake: the Commons in the final tubes and Crate; if none, 3 random unlocked Commons (private stream).
   function keepsakeOptions(S, unlocked) {
@@ -3110,6 +3240,7 @@ function OohSim() {
     // extra helpers
     isLegal, illegalReason, describeBuild, moodVisible, keepsakeOptions, kitUnlocked, shellPool, scoreFull, applyMatch, bestArrangement, paretoRun,
     tubeCost, upCost, sellValue, rerollCost, interestCap, festivalOf: fest, nextHeadlinerShow, fxRng,
+    clearCaches() { APPLAUSE_MEMO.clear(); },   // benchmarks: time step() without the mood memo (results never depend on it)
     rng: { cyrb128, rngNext, seedRng, xorshift32 },
     // bots (§12)
     bots, runBots, playRun, botTurn, runRecord, summarizeRuns, runMinutes, sponsorPick,
@@ -3435,7 +3566,8 @@ const AUDIO = (() => {
  *  pictogram(shellId, col, star, sizePx, opts?) → HTMLCanvasElement (CSS sizePx, backing × DPR). The burst pattern frozen at
  *        45% of its life. opts {token (plate + pictogram + monogram + star pips; height = 1.25 × size), plate, mono, pips,
  *        hang (n Hang pips under the token), washed, highContrast, dpr}
- *  finale() · dim(on = true) · critical(on | {on, pulse}) · clearSky() · stats() · attachBackdrop(canvas)
+ *  finale() · dim(on = true) · critical(on | {on, pulse}) · clearSky({all}?) (all: also popups, banners, Applause) · stats()
+ *  attachBackdrop(canvas)
  *  Helpers: fmt(n) (§8.5), tier(v), xTier(f), sootLevel(timesFired) → 0..5 (for the DOM tube rims)
  * ==========================================================================*/
 const FX = (() => {
@@ -3772,6 +3904,14 @@ const FX = (() => {
     return true;
   }
   function clearSky(fadeSec) {
+    if (fadeSec && typeof fadeSec === 'object') { // clearSky({all: true}): also drop every overlay (popups, banners, rings, Applause)
+      const all = !!fadeSec.all; fadeSec = fadeSec.fade != null ? +fadeSec.fade : 0.6;
+      if (all) {
+        for (const L of [POPS, BAN, RINGS, THR, BRAIDS, WAVES, SPARK, GLOWS]) for (const q of L) q.on = false;
+        AP.on = false; flashA = 0; trauma = 0; hitStop = 0; LATER.length = 0;
+        for (let i = 0; i < M.n; i++) if (M.on[i] && !(M.fl[i] & EMB)) kill(M, i);
+      }
+    }
     for (const b of BUR) if (b.on) { b.linger = false; if (b.exp < 0) b.exp = T; }
     for (let i = 0; i < M.n; i++) if (M.on[i] && (M.fl[i] & EMB) && !(M.fl[i] & FADE)) { M.fl[i] |= FADE; M.fs[i] = M.age[i] + (fadeSec ? fadeSec - 0.3 : 0); }
   }
@@ -4045,9 +4185,10 @@ const FX = (() => {
     c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
   }
 
-  /* ---------- trails: a half-resolution persistence layer ---------- */
+  /* ---------- trails: a persistence layer at ≤ half the backing resolution (soft by nature; its fade + composite
+     is the largest raster cost in render, so it stays small) ---------- */
   let TR = null, trc = null, trS = 1, trIdle = 0, trDirty = false;
-  function buildTrail() { trS = Math.min(1, dpr * 0.6); TR = mkCanvas(W * trS, H * trS); trc = TR.getContext('2d'); trDirty = false; }
+  function buildTrail() { trS = Math.min(0.8, dpr * 0.5); TR = mkCanvas(W * trS, H * trS); trc = TR.getContext('2d'); trDirty = false; }
   function depositTrails() {
     if (!trc) return;
     const P = M;
@@ -4069,7 +4210,7 @@ const FX = (() => {
 
   /* ---------- overlay entities: popups, rings, threads, braids, banners ---------- */
   const POPN = 16, POPS = [];
-  for (let i = 0; i < POPN; i++) POPS.push({on: false, cv: null, g: null, w: 0, h: 0, x: 0, y: 0, t0: 0, life: 1, kind: '', key: '', n: 1, text: '', tag: '', slam: false, tier: 0, cdpr: 0});
+  for (let i = 0; i < POPN; i++) POPS.push({on: false, cv: null, g: null, w: 0, h: 0, x: 0, y: 0, t0: 0, life: 1, kind: '', key: '', n: 1, text: '', tag: '', slam: false, tier: 0, cdpr: 0, die: -1});
   const RINGS = [];
   for (let i = 0; i < 14; i++) RINGS.push({on: false, x: 0, y: 0, r0: 0, r1: 0, t0: 0, dur: 0, col: '#FFF', lw: 2, a: 1, disc: false, line: false});
   const THR = [];
@@ -4116,17 +4257,49 @@ const FX = (() => {
   function popup(kind, text, x, y, tr, tag, slam) {
     // merge identical consecutive popups (150 ms, 40 px): "+15 Ooh ×3"
     for (const p of POPS) {
-      if (p.on && p.kind === kind && p.text === text && p.tag === (tag || '') && T - p.t0 < 0.15 && Math.abs(p.x - x) < 40 && Math.abs(p.y - y) < 40) {
-        p.n++; p.t0 = T; popupArt(p); return p;
+      if (p.on && p.die < 0 && p.kind === kind && p.text === text && p.tag === (tag || '') && T - p.t0 < 0.15 && Math.abs(p.x - x) < 40 && Math.abs(p.y - y) < 40) {
+        p.n++; p.t0 = T; popupArt(p); p.x = clamp(p.x, p.w / 2 + 2, W - p.w / 2 - 20); return p;
       }
     }
     let p = null, act = 0, old = null;
     for (const q of POPS) { if (q.on) { act++; if (!old || q.t0 < old.t0) old = q; } else if (!p) p = q; }
     if (act >= 12 || !p) { if (old) old.on = false; p = p || old; }   // at most 12 on screen
-    p.on = true; p.kind = kind; p.text = text; p.tag = tag || ''; p.n = 1; p.tier = tr; p.t0 = T; p.life = 1.05 + 0.08 * tr; p.slam = !!slam;
+    p.on = true; p.kind = kind; p.text = text; p.tag = tag || ''; p.n = 1; p.tier = tr; p.t0 = T; p.life = 1.05 + 0.08 * tr; p.slam = !!slam; p.die = -1;
     popupArt(p);
     p.x = clamp(x, p.w / 2 + 2, W - p.w / 2 - 20); p.y = clamp(y, p.h / 2 + 2, rTop - p.h / 2);
+    placeFree(p);
     return p;
+  }
+  // A popup's on-screen box now (its rise included).
+  const popDy = q => (opt.reducedMotion ? 0 : -18 * easeOut(Math.min(1, Math.max(0, (T - q.t0) / q.life) * 1.4)));
+  // Legibility: a new popup never lands on a live one. It moves above the one it hits (both then rise at the same
+  // rate, and the newer one never falls behind), or below it when there is no room above. At most 8 nudges.
+  function placeFree(p) {
+    const pad = 3, top = p.h / 2 + 2, bot = rTop - p.h / 2;
+    for (let it = 0; it < 8; it++) {
+      let hit = null;
+      for (const q of POPS) {
+        if (!q.on || q === p || q.die >= 0) continue;
+        const qy = q.y + popDy(q);
+        if (Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(p.y - qy) < (p.h + q.h) / 2 + pad) { hit = q; break; }
+      }
+      if (!hit) return;
+      const hy = hit.y + popDy(hit), up = hy - (hit.h + p.h) / 2 - pad;
+      if (up >= top) p.y = up;
+      else {
+        const dn = hy + (hit.h + p.h) / 2 + pad;
+        if (dn > bot) return;
+        p.y = dn;
+      }
+    }
+  }
+  // Clear popups out of a box (the Applause) with a quick fade, so L1 keeps the highest contrast.
+  function clearPopups(x0, y0, x1, y1) {
+    for (const q of POPS) {
+      if (!q.on || q.die >= 0) continue;
+      const qy = q.y + popDy(q);
+      if (q.x + q.w / 2 > x0 && q.x - q.w / 2 < x1 && qy + q.h / 2 > y0 && qy - q.h / 2 < y1) q.die = T;
+    }
   }
   function drawPopups(c) {
     const rm = opt.reducedMotion;
@@ -4136,6 +4309,7 @@ const FX = (() => {
       if (u >= 1) { p.on = false; continue; }
       if (u < 0) continue;
       let a = u < 0.08 ? u / 0.08 : u > 0.72 ? 1 - (u - 0.72) / 0.28 : 1, sc = 1, dy = 0;
+      if (p.die >= 0) { const k = 1 - (T - p.die) / 0.22; if (k <= 0) { p.on = false; continue; } a *= k; }
       if (!rm) {
         const e = (T - p.t0);
         sc = p.slam ? (e < 0.16 ? lerp(2.1, 1, easeBack(e / 0.16)) : 1) : (e < 0.14 ? lerp(0.6, 1, easeBack(e / 0.14)) : 1);
@@ -4184,8 +4358,27 @@ const FX = (() => {
   /* ---------- live readout mirror: cheer meter, anchors ---------- */
   const live = {ooh: 0, aah: 1, target: 0};
   const meter = {v: 0, goal: 0, pulse: 0, crossed: false, band: -1};
+  // Where the DOM readout sits. setScene({anchors}) wins; otherwise FX measures the page once per show: an element
+  // with data-fx-anchor="ooh|aah|coins", else UI_PLAY's live readout (.readout .ro-o/.ro-a) and #hud-coins.
+  let anchorDom = null, meterDom = null;
+  const ANCHOR_SEL = {ooh: ['[data-fx-anchor="ooh"]', '.readout .ro-o b', '.readout .ro-o'], aah: ['[data-fx-anchor="aah"]', '.readout .ro-a b', '.readout .ro-a'], coins: ['[data-fx-anchor="coins"]', '#hud-coins']};
+  function domAnchors() {
+    if (anchorDom !== null) return anchorDom;
+    anchorDom = {};
+    if (!hasDoc || !cv || !cv.getBoundingClientRect) return anchorDom;
+    try {
+      const cr = cv.getBoundingClientRect(), root = cv.parentElement || document;
+      for (const k in ANCHOR_SEL) for (const q of ANCHOR_SEL[k]) {
+        const el = root.querySelector(q) || document.querySelector(q);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (r.width || r.height) { anchorDom[k] = {x: r.left + r.width / 2 - cr.left, y: r.top + r.height / 2 - cr.top}; break; }
+      }
+    } catch (e) { /* ignore */ }
+    return anchorDom;
+  }
   function anchor(k) {
-    const a = scene.anchors && scene.anchors[k];
+    const a = (scene.anchors && scene.anchors[k]) || domAnchors()[k];
     if (a) return Array.isArray(a) ? {x: a[0], y: a[1]} : a;
     return k === 'ooh' ? {x: W / 2 - 52, y: 20} : k === 'aah' ? {x: W / 2 + 56, y: 20} : k === 'coins' ? {x: W * 0.74, y: -24} : {x: W / 2, y: 20};
   }
@@ -4201,6 +4394,9 @@ const FX = (() => {
   function drawMeter(c) {
     const t = tok(), x = W - 13, w = 8, top = Math.max(44, H * 0.14), bot = rTop - 12, h = bot - top;
     if (h < 28 || !opt.drawMeter) return;
+    // UI_PLAY draws the cheer meter in the DOM (#sky-overlay .cheer): never draw a second one on top of it.
+    if (meterDom === null) meterDom = !!(hasDoc && cv && cv.parentElement && cv.parentElement.querySelector('.cheer, [data-fx-meter]'));
+    if (meterDom) return;
     c.globalAlpha = 1; c.beginPath(); rr(c, x - w / 2 - 1.5, top - 1.5, w + 3, h + 3, 5.5);
     c.fillStyle = opt.highContrast ? '#000' : 'rgba(5,7,15,0.6)'; c.fill();
     c.strokeStyle = opt.highContrast ? '#FFF' : t.line; c.lineWidth = opt.highContrast ? 2 : 1; c.stroke();
@@ -4227,7 +4423,7 @@ const FX = (() => {
     const t = tok(), e = T - AP.t0;
     if (e < 0) return;
     let a = Math.min(1, e / 0.15);
-    if (AP.fade >= 0) { a *= 1 - (T - AP.fade) / 0.45; if (a <= 0) { AP.on = false; return; } }
+    if (AP.fade >= 0) { a *= 1 - (T - AP.fade) / 0.3; if (a <= 0) { AP.on = false; return; } }
     const tr = tier(AP.score), fs = Math.min(W * 0.155, 36 + 7 * tr), cx = W / 2 - 6, cy = clamp(rTop * 0.4, 70, rTop - fs);
     let v, sc = 1;
     if (!AP.slammed) { const k = Math.max(0, e - 0.2); v = AP.score * (1 - Math.exp(-k * 11.5)); sc = 0.82; }
@@ -4352,7 +4548,7 @@ const FX = (() => {
     for (const b of BUR) if (b.on && b.linger) expire(b, false);
     live.ooh = 0; live.aah = 1; live.target = scene.target || 0;
     meter.goal = 0; meter.crossed = false; meter.pulse = 0;
-    AP.on = false; showHaze = 0; deflate = 0; hitStop = 0;
+    AP.on = false; showHaze = 0; deflate = 0; hitStop = 0; anchorDom = null; meterDom = null;
     rng = mkRng(hash(seedStr + '|fx|' + scene.show));
   }
   function present(p, i, silent) {
@@ -4623,6 +4819,10 @@ const FX = (() => {
       AP.encore = !!e.encore;
       live.target = AP.target; live.ooh = AP.ooh; live.aah = AP.aah;
       AP.on = !silent; AP.t0 = T; AP.slammed = false; AP.fade = -1; AP.hold = 0;
+      if (!silent && opt.drawApplause) { // the roll-up gets a clear stage
+        const fs = Math.min(W * 0.155, 36 + 7 * tier(AP.score)), cx = W / 2 - 6, cy = clamp(rTop * 0.4, 70, rTop - fs);
+        clearPopups(cx - fs * 2.6, cy - fs * 0.9, cx + fs * 2.6, cy + fs * 0.62 + (AP.encore ? 100 : 40));
+      }
       if (!silent && !opt.reducedMotion) { // the × spark between the OOH and AAH chips as they slide together
         const a = anchor('ooh'), b = anchor('aah'), x = (a.x + b.x) / 2, y = (a.y + b.y) / 2;
         for (let k = 0; k < 14; k++) { const th = k * TAU / 14; spawn(M, x, y, Math.cos(th) * 90, Math.sin(th) * 90, 20, 0.93, 0.5, 0.3, 0.3, 1.4, 1, 7, 0, 0, -1, 0); }
@@ -5076,7 +5276,7 @@ const FX = (() => {
       for (let x = BD.ox - tw * 2; x < w + tw; x += tw) { q.globalAlpha = 0.9; q.drawImage(TOWN.cv, x, h - th, tw, th); }
       q.globalAlpha = 1; q.fillStyle = mix(t.hor, t.ink, 0.6); q.fillRect(0, h - 2, w, 2);
     }
-    BD.bg = g;
+    BD.bg = g; BD.bare = false;
   }
   function measureBackdrop() {
     if (!BD || !cv) return;
@@ -5085,12 +5285,17 @@ const FX = (() => {
   function renderBackdrop() {
     if (!BD.bg || !BD.w) return;
     if (++BD.n % 60 === 0) measureBackdrop();
-    const c = BD.c, ox = BD.ox, oy = BD.oy;
+    const c = BD.c, ox = BD.ox, oy = BD.oy, P = M;
+    // Idle sky (the build): the backdrop is static, so skip the full-bleed repaint once it shows the bare scene.
+    let any = false;
+    for (const g of GLOWS) if (g.on) { any = true; break; }
+    if (!any) for (let i = 0; i < P.n; i++) if (P.on[i] && P.age[i] >= 0 && !(P.fl[i] & (EMB | GLOW | HOME))) { any = true; break; }
+    if (!any && BD.bare) return;
+    BD.bare = !any;
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     c.drawImage(BD.bg, 0, 0);
     c.globalCompositeOperation = 'lighter';
     for (const g of GLOWS) if (g.on) { c.globalAlpha = 0.35 * g.a; c.drawImage(BIG[g.ci], ox + g.x - g.r * 1.6, oy + g.y - g.r * 1.6, g.r * 3.2, g.r * 3.2); }
-    const P = M;
     for (let i = 0; i < P.n; i++) {
       if (!P.on[i] || P.age[i] < 0 || (P.fl[i] & (EMB | GLOW | HOME))) continue;
       const lf = P.age[i] / P.life[i], A = 0.9 * P.al[i] * (lf < 0.6 ? 1 : 1 - (lf - 0.6) / 0.4);
@@ -5244,7 +5449,15 @@ const FX = (() => {
     } catch (e) { /* ignore */ }
   }
   function onDpr() { resize(); watchDpr(); }
-  function resize() { if (layout() && BD) layoutBackdrop(); }
+  function resize() {
+    const w0 = cv ? cv.width : 0, h0 = cv ? cv.height : 0;
+    if (!layout()) return;
+    if (BD) layoutBackdrop();
+    meterDom = null; anchorDom = null;
+    // Setting canvas.width clears it; the ResizeObserver runs after this frame's render, and with no rAF loop
+    // (?test=1, paused) nothing would repaint: draw now so the sky never shows black.
+    if (cv.width !== w0 || cv.height !== h0) render();
+  }
   function init(canvas, o) {
     if (!canvas || !hasDoc) return;
     o = o || {};
@@ -5305,7 +5518,7 @@ const FX = (() => {
       resetMax() { rMax = 0; M.peak = M.count; }};
   }
 
-  return {init, resize, setOptions, setSeed, setScene, play, event, update, render, pictogram, finale, dim, critical, clearSky: () => clearSky(0.6), stats, attachBackdrop,
+  return {init, resize, setOptions, setSeed, setScene, play, event, update, render, pictogram, finale, dim, critical, clearSky: o => clearSky(o && typeof o === 'object' ? o : 0.6), stats, attachBackdrop,
     fmt, tier, xTier, sootLevel};
 })();
 // ==== core.js ====
@@ -6040,6 +6253,9 @@ const GAME = (() => {
   function goEnd() {
     closeAll();
     setUI('END');
+    // The end screen shows milestone progress and one "Just unlocked" card each (§7.2), so milestone
+    // toasts from the final show would only cover its header.
+    S.pendingToasts = S.pendingToasts.filter(t => t[1] !== 'milestone');
     flushToasts();
     callAudio('onEvent', {type: 'critical', on: false});
     const lr = S.lastRun;
@@ -6364,7 +6580,8 @@ const GAME = (() => {
     A.queued = false;
     for (const [q, id] of [[A.polite, 'live-polite'], [A.assertive, 'live-assertive']]) {
       if (!q.length) continue;
-      const text = [...new Set(q)].join(' '), el = byId(id);
+      // Separate queued messages as sentences ("Full Spectrum 2/3. Show 2 of 24, …").
+      const text = [...new Set(q)].map(s => s.trim()).filter(Boolean).map((s, i, a) => (i < a.length - 1 && !/[.!?:…]$/.test(s) ? s + '.' : s)).join(' '), el = byId(id);
       q.length = 0;
       if (el) el.textContent = el.textContent === text ? text + ' ' : text;
     }
@@ -6960,11 +7177,14 @@ const UI_PLAY = (() => {
     match: svg(S_('M3 7h14M13.5 3.5 17 7l-3.5 3.5M21 17H7M10.5 13.5 7 17l3.5 3.5')),
     restore: svg(S_('M3.5 12a8.5 8.5 0 1 0 2.6-6.1M3.5 4v5h5M12 7.5V12l3 2')),
     rehearse: svg(S_('M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z') + '<circle cx="12" cy="12" r="3"/>'),
+    eye: svg(S_('M2.5 12s3.4-5.8 9.5-5.8 9.5 5.8 9.5 5.8-3.4 5.8-9.5 5.8S2.5 12 2.5 12z') + '<circle class="f" cx="12" cy="12" r="3.2"/>', 'ic eye'),
     info: svg('<circle cx="12" cy="12" r="9.2"/>' + S_('M12 11v6M12 7.6v.2')),
     crown: svg(F_('M3 8.5l4.6 3.8L12 5l4.4 7.3L21 8.5 19.2 19H4.8z'), 'ic crown'),
     crate: svg(S_('M3.5 9h17v11h-17zM3.5 9l2-4.5h13l2 4.5M9.5 13h5')),
     reroll: svg(S_('M19.5 11A7.8 7.8 0 0 0 5.6 6.4L4 8.2M4 3.5v4.8h4.8M4.5 13a7.8 7.8 0 0 0 13.9 4.6l1.6-1.8M20 20.5v-4.8h-4.8')),
     plus: svg(S_('M12 5v14M5 12h14')),
+    addTube: svg(S_('M5 21V9.5h7.5V21M4 21h9.5M5 12.5h7.5M18 3.5v7M14.5 7h7')),
+    twin: svg('<circle cx="9" cy="12" r="5.6"/><circle cx="15" cy="12" r="5.6"/>', 'ic twin'),
     gust: svg(S_('M3 8.5h10.5a2.8 2.8 0 1 0-2.8-2.8M3 12.5h14.5a2.8 2.8 0 1 1-2.8 2.8M3 16.5h6')),
     monocle: svg('<circle cx="10" cy="10" r="5.5"/>' + S_('M14 14l6 6.5')),
     lamp: svg(S_('M12 21V10M8 10h8l-1.8-5h-4.4zM9 21h6')),
@@ -7003,6 +7223,25 @@ const UI_PLAY = (() => {
   const building = () => ui() === 'BUILD' || ui() === 'RESULT';
   const reduced = () => !!(G && G.reducedMotion);
   const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+  const overflows = el => !!el && el.getClientRects().length > 0 && el.scrollWidth > el.clientWidth + 0.5;
+  // Progressive fitting: raise host[data-fit] one level at a time (CSS sheds detail per level) until over() is false.
+  function fitLadder(host, levels, over) {
+    if (!host) return 0;
+    let lv = 0;
+    host.dataset.fit = '0';
+    while (lv < levels && safe(over, false)) host.dataset.fit = String(++lv);
+    return lv;
+  }
+  // A soft hyphen in long words (a VC|CV or V|CV break nearest the middle), for engines without hyphenation dictionaries.
+  const shy = str => String(str).replace(/[A-Za-z]{11,}/g, w => {
+    const V = c => /[aeiouy]/i.test(c);
+    let best = -1;
+    for (let p = 3; p <= w.length - 4; p++) {
+      const ok = (V(w[p - 2]) && !V(w[p - 1]) && !V(w[p])) || (V(w[p - 1]) && !V(w[p]) && V(w[p + 1]));
+      if (ok && (best < 0 || Math.abs(p - w.length / 2) < Math.abs(best - w.length / 2))) best = p;
+    }
+    return best < 0 ? w : w.slice(0, best) + '\u00ad' + w.slice(best);
+  });
   const sfx = (name, opts) => { const a = audioApi(); if (fnIn(a, 'ui')) { try { a.ui(name, opts); } catch (e) { /* audio never blocks play */ } } };
   const announce = (text, o) => { if (G && fnIn(G, 'announce') && text) G.announce(text, o); };
   const haptic = p => { if (G && fnIn(G, 'haptic')) G.haptic(p); };
@@ -7331,6 +7570,7 @@ const UI_PLAY = (() => {
       `<div class="hud-crowd"><span class="vh">Crowd</span>${ICON.crowd}<span id="hud-crowd" class="num"></span><span class="hud-half" hidden>½</span></div>` +
       '<button type="button" class="hud-ic hud-rain" data-hud="rain"></button>';
     E.hudTitle = $('.hud-title', E.hud);
+    E.hudTgt = $('.hud-tgt', E.hud);
     E.show = $('#hud-show');
     E.target = $('#hud-target');
     E.next = $('.hud-next', E.hud);
@@ -7374,6 +7614,7 @@ const UI_PLAY = (() => {
     E.rack.innerHTML = '<svg class="arc" aria-hidden="true" focusable="false"></svg>' +
       `<div class="tubes">${tubes}</div><div class="fuse" aria-hidden="true"><i class="ember"></i></div>`;
     E.arc = $('.arc', E.rack);
+    E.tubesWrap = $('.tubes', E.rack);
     E.fuse = $('.fuse', E.rack);
     E.tubes = [...E.rack.querySelectorAll('.tube')].map(b => ({
       btn: b, num: $('.t-num', b), sees: $('.t-sees', b), body: $('.t-body', b), tok: $('.t-tok', b), chips: $('.t-chips', b), rig: $('.t-rig', b),
@@ -7516,7 +7757,12 @@ const UI_PLAY = (() => {
   /* ---------- HUD (Regular: 2 rows; Compact: 1 row) ---------- */
   function renderHud() {
     const st = S(), s = view.s;
-    E.show.textContent = festName(festOf(s)) + ' · ' + showName(s);
+    // "Festival · Show"; when that would truncate, the show name folds into 3 pips (Twilight · Evening · ♛ Headliner)
+    const k = slotOf(s);
+    let pips = '';
+    for (let j = 0; j < 3; j++) pips += j === 2 ? `<i class="hl${k === 2 ? ' now' : ''}">${ICON.crown}</i>` : `<i class="${j < k ? 'done' : j === k ? 'now' : ''}"></i>`;
+    E.show.innerHTML = `<span class="hs-fest">${esc(festName(festOf(s)))}</span><span class="hs-slot"> · ${esc(showName(s))}</span>` +
+      `<span class="hs-pips" aria-hidden="true" title="${esc(showName(s))}">${pips}</span>`;
     E.target.innerHTML = `Target <b class="display num">${fmt(targetOf(s))}</b>`;
     const nx = [];
     for (let j = s + 1; j <= Math.min(lastShow(), s + 2); j++) nx.push(`<span class="nx${j - s}">${fmt(targetOf(j))}${slotOf(j) === 2 ? ICON.crown : ''}</span>`);
@@ -7538,6 +7784,14 @@ const UI_PLAY = (() => {
     E.rain.innerHTML = ICON.umbrella.replace('</svg>', (used ? ICON.crack : '') + '</svg>') + (fw ? '<span class="fw">FW</span>' : '');
     E.rain.dataset.state = used ? 'used' : noRain ? 'none' : 'ok';
     E.rain.setAttribute('aria-label', (used ? 'Rain check used: last chance' : noRain ? 'No rain check tonight' : 'Rain check: unused') + (fw ? '. Fair Weather on' : ''));
+    fitHud();
+  }
+  // Nothing in the HUD clips at 360 px: each row sheds detail in a fixed order until it fits (fonts vary by device).
+  function fitHud() {
+    // Row A (Regular only; Compact shows the name in the sky): 1 pips · 2 Crowd to Row B · 3 both · 4 festival name only
+    if (mode === 'regular') fitLadder(E.hud, 4, () => overflows(E.show)); else E.hud.dataset.fit = '0';
+    // Row B: 1 Headliner chip icon only · 2 one next target · 3 no next targets
+    fitLadder(E.hudTgt, 3, () => E.hudTgt.scrollWidth > E.hudTgt.clientWidth + 0.5);
   }
   function ruleIcon(id) {
     const m = { headwind: ICON.gust, critic: ICON.monocle, streetlights: ICON.lamp, fog: ICON.fog, powercut: ICON.bolt };
@@ -7553,7 +7807,11 @@ const UI_PLAY = (() => {
     const s = view.s, t = sp.accepted ? targetOf(s) : Math.round(targetOf(s) * 1.5);
     const k = SPONSORS[sp.kind] || [cap(sp.kind), 'pays a reward', 'pays a reward'];
     E.spBtn.setAttribute('aria-pressed', sp.accepted ? 'true' : 'false');
-    E.spBtn.querySelector('.sp-text').innerHTML = `<b>Sponsor</b> ×1.5 → <b class="num">${fmt(t)}</b> · ${esc(k[1])}`;
+    const pay = String(k[1]).replace(/^pays /, '');
+    E.spBtn.querySelector('.sp-text').innerHTML = `<b class="sp-w">Sponsor </b><span class="sp-x">×1.5 </span><span class="sp-a">→ </span><b class="num">${fmt(t)}</b> · <span class="sp-p">pays </span>${esc(pay)}`;
+    // 360 px: drop "×1.5", then "pays", then the arrow, then the word "Sponsor" (all stay in the aria-label and Inspect)
+    const tx = E.spBtn.querySelector('.sp-text');
+    fitLadder(E.sponsor, 4, () => overflows(tx));
     E.spBtn.querySelector('.sp-word').textContent = sp.accepted ? 'Accepted' : 'Accept';
     E.spBtn.setAttribute('aria-label', `Sponsor, ${k[0]}: target times 1.5, to ${fmt(t)}; ${k[2]} if you pass. ${sp.accepted ? 'Accepted' : 'Not accepted'}.`);
   }
@@ -7571,25 +7829,34 @@ const UI_PLAY = (() => {
     const tf = (st.runStats && st.runStats.timesFired) || {};
     const firstT = v.order.seq[0];
     const critic = criticMarks(st.tubes, rules);
+    // Spread the tubes when there are fewer than 6 (8–16 px gaps), so each "sees" chip has room.
+    const W = E.tubesWrap.clientWidth, gap = n > 1 && W ? Math.max(8, Math.min(16, Math.floor((W - n * 48) / (n - 1)))) : 8;
+    E.rack.style.setProperty('--tgap', gap + 'px');
+    // Numerals and sees chips describe ONE rack: the hovered drop's rack while hovering, else tonight's rack.
+    // Each other legal drop shows its own local "sees" (and, on an empty tube, a ghost numeral).
+    const hovKey = held && hover && hover.zone === 'tube' && targets.has(slotKey(hover)) ? slotKey(hover) : null;
+    const hv = hovKey ? hypoFor(hovKey) : null;
     for (let i = 0; i < 6; i++) {
       const T = E.tubes[i], tb = st.tubes[i];
       T.btn.hidden = !tb;
       if (!tb) continue;
       const key = 'tube:' + i, can = !!held && targets.has(key), hy = can ? hypoFor(key) : null;
-      const sh = tb.shell, ord = hy ? hy.order : v.order;
+      const sh = tb.shell, ghost = !hv && !!hy && !sh, ord = hv ? hv.order : ghost ? hy.order : v.order;
       // fire-order numerals (one row per fuse pass)
       let num = '';
       for (let p = 0; p < passes; p++) {
         const e = ord.per[i].find(x => x.pass === p);
-        const last = e && e.to === ord.total;
+        const last = e && e.to === ord.total && !ghost;
         const lbl = !e ? '' : last && e.from === e.to ? 'LAST' : e.from === e.to ? String(e.from) : e.from + '–' + e.to;
-        num += `<span class="n${last ? ' last' : ''}${!e ? ' none' : ''}">${lbl}</span>`;
+        num += `<span class="n${last ? ' last' : ''}${ghost && e ? ' ghost' : ''}${!e ? ' none' : ''}">${lbl}</span>`;
       }
       if (rules.includes('shortfuse') && i >= 5) num = '<span class="n none">no fuse</span>';
       T.num.innerHTML = num;
       // sees chip (hypothetical while this tube is a legal drop)
-      const sees = hy ? hy.sees[i] : v.sees[i];
-      T.sees.textContent = sh || hy ? (sees == null ? '' : 'sees ' + sees) : '';
+      const sees = hv ? hv.sees[i] : hy ? hy.sees[i] : v.sees[i];
+      const showSees = (sh || hy || (hv && hovKey === key)) && sees != null;
+      T.sees.innerHTML = showSees ? `${ICON.eye}<span class="sw">sees\u00a0</span>${sees}` : '';
+      T.sees.classList.toggle('local', !!(hy || hv) && showSees);
       T.sees.classList.toggle('fogged', rules.includes('fog') && sees != null);
       // token + telegraph badges
       const washed = rules.includes('streetlights') && i % 2 === 1;
@@ -7639,7 +7906,9 @@ const UI_PLAY = (() => {
     // fuse: ember at the first tube; direction from tonight's (or rehearsed) rule
     const dir = rules.includes('countdown') || rules.includes('countdown3') ? 'back' : rules.includes('windshift') ? 'rtl' : rules.includes('crossed') ? 'cross' : 'ltr';
     E.fuse.dataset.dir = dir;
-    E.fuse.style.width = Math.max(0, (n - 1) * 56) + 'px';
+    E.fuse.style.width = Math.max(0, (n - 1) * (48 + gap)) + 'px';
+    // "sees N" must never touch its neighbour: snug, then an eye glyph for the word (fonts vary by device)
+    fitLadder(E.rack, 2, () => E.tubes.some(t => !t.btn.hidden && t.sees.firstChild && t.sees.offsetWidth > 48 + gap - 3));
     renderArc();
   }
   function tubeLabel(i, ord, sees, o) {
@@ -7682,17 +7951,18 @@ const UI_PLAY = (() => {
     let src = null, tubes = null;
     if (held && hover && hover.zone === 'tube' && targets.has(slotKey(hover))) { const hy = hypoFor(slotKey(hover)); if (hy) { src = hover.i; tubes = hy.state.tubes; } }
     else if (held && held.kind === 'shell' && held.slot.zone === 'tube') { src = held.slot.i; tubes = S().tubes; }
-    if (src == null || !tubes || !tubes[src] || !tubes[src].shell) { E.arc.innerHTML = ''; E.arc.removeAttribute('data-on'); return; }
+    E.skyWrap.classList.toggle('has-arc', src != null);
+    if (src == null || !tubes || !tubes[src] || !tubes[src].shell) { E.arc.innerHTML = ''; E.arc.removeAttribute('data-on'); E.skyWrap.classList.remove('has-arc'); return; }
     const seen = [...skyRun(tubes, view.rules).seenBy[src]];
     const rr = E.rack.getBoundingClientRect(), x = j => { const r = E.tubes[j].btn.getBoundingClientRect(); return r.left + r.width / 2 - rr.left; };
-    const col = shellCol(tubes[src].shell), H = 22;
+    const col = shellCol(tubes[src].shell), H = 20; // the arc rises from the brass rim into the sky
     E.arc.setAttribute('viewBox', `0 0 ${Math.round(rr.width)} ${H + 6}`);
     E.arc.style.width = Math.round(rr.width) + 'px';
     E.arc.dataset.col = col;
     E.arc.dataset.on = '1';
     if (!seen.length) { E.arc.innerHTML = `<circle class="src" cx="${x(src)}" cy="${H}" r="4"/>`; return; }
     const xs = [src, ...seen].map(x), lo = Math.min(...xs), hi = Math.max(...xs);
-    let d = `<path class="span" d="M${lo} ${H} C${lo} 2 ${hi} 2 ${hi} ${H}"/>`;
+    let d = `<path class="span" d="M${lo} ${H} C${lo + 4} 1 ${hi - 4} 1 ${hi} ${H}"/>`;
     seen.forEach(j => { d += `<circle class="dot" cx="${x(j)}" cy="${H}" r="3.5"/>`; });
     E.arc.innerHTML = d + `<circle class="src" cx="${x(src)}" cy="${H}" r="5"/>`;
   }
@@ -7722,6 +7992,7 @@ const UI_PLAY = (() => {
     E.rehearse.classList.toggle('on', view.rehearsing);
     E.rehearse.disabled = !hName || view.auto;
     E.toolsHint.textContent = view.rehearsing ? 'Rehearsing' : '';
+    E.toolsHint.style.visibility = overflows(E.toolsHint) ? 'hidden' : ''; // a word, or nothing: never a clipped half-word
   }
 
   /* ---------- Shop: 3-card row or 2×2 grid ---------- */
@@ -7751,10 +8022,10 @@ const UI_PLAY = (() => {
       const twin = mine.find(o => o.sh.id === c.id && (o.sh.star || 1) < 3);
       const fuses = pairs.some(([a, bb]) => (a === c.id && mine.some(o => o.sh.id === bb)) || (bb === c.id && mine.some(o => o.sh.id === a)));
       let badge = '', badgeLong = '';
-      if (twin) { badge = `<span class="c-badge b-twin">${four ? '' : 'Twin '}★${(twin.sh.star || 1) + 1} $${upCost(twin.sh)}</span>`; badgeLong = `Twin star ${(twin.sh.star || 1) + 1} for $${upCost(twin.sh)}`; }
-      else if (fuses) { badge = '<span class="c-badge b-fuse">✦ Fuses</span>'; badgeLong = 'Fuses with a shell you own'; }
-      else if (c.tag === 'collector') { badge = '<span class="c-badge b-coll">Collector</span>'; badgeLong = 'Collector card'; }
-      else if (c.tag === 'pity') { badge = '<span class="c-badge b-pity">Pity</span>'; badgeLong = 'Pity card'; }
+      if (twin) { badge = `<span class="c-badge b-twin">${four ? '' : '<span class="bw">Twin </span>'}${ICON.twin}★${(twin.sh.star || 1) + 1} $${upCost(twin.sh)}</span>`; badgeLong = `Twin star ${(twin.sh.star || 1) + 1} for $${upCost(twin.sh)}`; }
+      else if (fuses) { badge = '<span class="c-badge b-fuse">✦<span class="bw"> Fuses</span></span>'; badgeLong = 'Fuses with a shell you own'; }
+      else if (c.tag === 'collector') { badge = '<span class="c-badge b-coll"><span class="bw">Collector</span></span>'; badgeLong = 'Collector card'; }
+      else if (c.tag === 'pity') { badge = '<span class="c-badge b-pity"><span class="bw">Pity</span></span>'; badgeLong = 'Pity card'; }
       const rar = rarityOf(r);
       const poor = c.cost > st.coins && !(twin && upCost(twin.sh) <= st.coins);
       let pips = '';
@@ -7763,8 +8034,12 @@ const UI_PLAY = (() => {
       b.classList.toggle('poor', poor);
       b.innerHTML = tokenHTML(sh, { size, hang: r.hang || 0 }) +
         `<span class="c-side"><span class="c-price num">$${c.cost}</span><span class="c-rar" aria-hidden="true">${pips}</span></span>` +
-        `<span class="c-name" lang="en">${esc(r.name || cap(c.id))}</span>` + badge;
+        `<span class="c-name" lang="en">${shy(esc(r.name || cap(c.id)))}</span>` + badge;
       b.setAttribute('aria-label', `Card ${i + 1}: ${r.name}, ${colName(sh.col)} ${colShape(sh.col)}, ${rar[0]}, new $${c.cost}${badgeLong ? '. ' + badgeLong : ''}. ${cardText(c.id, sh.col, 1)}`);
+      b.classList.toggle('badged', !!badge);
+      b.dataset.rar = rar[1];
+      const bd = b.querySelector('.c-badge');
+      fitLadder(b, 2, () => overflows(bd)); // 1: badges shed their word ("Twin ★2 $5" → "⧉★2 $5", "✦ Fuses" → "✦") · 2: no badge
     });
   }
 
@@ -7781,19 +8056,22 @@ const UI_PLAY = (() => {
     } else {
       const ri = rigInfo(rc.id);
       E.rigBtn.disabled = !!rc.sold;
-      E.rigBtn.innerHTML = `<span class="ws-glyph">${ICON.rig[rc.id] || ''}</span><span class="ws-name">${esc(ri.name)}</span>` +
+      E.rigBtn.innerHTML = `<span class="ws-glyph">${ICON.rig[rc.id] || ''}</span><span class="ws-name ws-rigname">${esc(ri.name)}</span>` +
         (rc.sold ? '<span class="ws-price">Sold</span>' : `<span class="ws-price num">$${rc.cost != null ? rc.cost : ri.cost}</span>`);
       E.rigBtn.setAttribute('aria-label', rc.sold ? `Rig ${ri.name}: sold` : `Rig card: ${ri.name}, $${rc.cost != null ? rc.cost : ri.cost}. ${ri.text} Pick it, then choose a tube (G).`);
       E.rigBtn.classList.toggle('sel', !!held && held.kind === 'rig');
       E.rigBtn.classList.toggle('poor', !rc.sold && (rc.cost || ri.cost) > st.coins);
     }
     const n = st.tubes.length, tc = tubeCost();
-    E.tubeBtn.innerHTML = n >= 6 ? '<span class="ws-name">6 tubes</span>' : `${ICON.plus}<span class="ws-name">Tube</span><span class="ws-price num">$${tc}</span>`;
+    E.tubeBtn.hidden = n >= 6; // a full rack frees the room for the rig's name
+    E.tubeBtn.innerHTML = n >= 6 ? '<span class="ws-name">6 tubes</span>' : `${ICON.addTube}<span class="ws-name ws-word">Tube</span><span class="ws-price num">$${tc}</span>`;
     E.tubeBtn.disabled = n >= 6;
     E.tubeBtn.classList.toggle('poor', n < 6 && tc > st.coins);
     E.tubeBtn.setAttribute('aria-label', n >= 6 ? 'The rack is full: 6 tubes' : `Add tube ${n + 1} for $${tc} (T)`);
     const rc$ = rerollCost();
-    E.rerollBtn.innerHTML = `${ICON.reroll}<span class="ws-name">Reroll</span><span class="ws-price num">$${rc$}</span>`;
+    E.rerollBtn.innerHTML = `${ICON.reroll}<span class="ws-name ws-word">Reroll</span><span class="ws-price num">$${rc$}</span>`;
+    // 360 px: tighten, then Tube / Reroll keep only their icons, then the rig keeps only its glyph (names stay in aria-labels)
+    fitLadder(E.workshop, 3, () => [...E.workshop.querySelectorAll('.ws-name')].some(overflows));
     E.rerollBtn.disabled = !(st.shop && st.shop.cards && st.shop.cards.length);
     E.rerollBtn.classList.toggle('poor', rc$ > st.coins);
     E.rerollBtn.setAttribute('aria-label', `Reroll the shop for $${rc$} (X)`);
@@ -7837,14 +8115,17 @@ const UI_PLAY = (() => {
     E.readout.hidden = !readout.on;
     E.roCap.hidden = !(readout.on && view.tonight.includes('powercut'));
     paintReadout();
-    // result card (pinned until the first build action)
-    E.result.hidden = !result || u === 'RESOLVING';
-    if (result && u !== 'RESOLVING') E.result.innerHTML = resultHTML(result);
-    // info card (docked at the sky's bottom edge)
+    // info card (docked at the sky's bottom edge); while it is up the pinned result card steps aside
     const info = u === 'RESOLVING' ? null : infoHTML();
     E.info.hidden = !info;
-    if (info) E.info.innerHTML = info;
+    if (info) { E.info.innerHTML = info; const t = E.info.querySelector('.info-t'); fitLadder(E.info, 2, () => overflows(t)); }
     E.skyWrap.classList.toggle('has-info', !!info);
+    // result card (pinned until the first build action)
+    const showRes = !!result && u !== 'RESOLVING' && !info;
+    E.result.hidden = !showRes;
+    if (showRes) { const h = resultHTML(result); if (h !== E.result.dataset.html) { E.result.innerHTML = h; E.result.dataset.html = h; } } // no replayed rise on every render
+    else delete E.result.dataset.html;
+    E.skyWrap.classList.toggle('has-result', showRes);
     // cheer meter: mood band while building, live fill while resolving
     const target = readout.on || result ? (result ? result.target : litTarget) : targetOf(view.s);
     const score = result ? result.applause : readout.on ? readout.ooh * readout.aah : 0;
@@ -7884,7 +8165,7 @@ const UI_PLAY = (() => {
     if (held.kind === 'card') {
       const c = st.shop.cards[held.i], r = row(c.id), col = c.col || r.col;
       const twin = owned().find(o => o.sh.id === c.id && (o.sh.star || 1) < 3);
-      title = `<b>${esc(r.name)}</b> · ${colName(col)} · $${c.cost}${twin ? ` · twin ★${twin.sh.star + 1} $${upCost(twin.sh)}` : ''}`;
+      title = `<b>${esc(r.name)}</b><span class="t-o1"> · ${colName(col)}</span> · $${c.cost}${twin ? `<span class="t-o2"> · twin ★${twin.sh.star + 1} $${upCost(twin.sh)}</span>` : ''}`;
       text = cardText(c.id, col, 1);
       line3 = targets.size ? 'Tap a lit tube. Chips: white +Ooh · gold +Aah · ringed ×' : `Need $${Math.min(c.cost, twin ? upCost(twin.sh) : c.cost) - st.coins} more, or a free tube.`;
       if (!targets.size && c.cost <= st.coins) line3 = 'No free tube: move a shell to the Crate, sell one, or add a tube.';
@@ -7893,14 +8174,14 @@ const UI_PLAY = (() => {
       const sh = slotShell(held.slot);
       if (!sh) return '';
       const tb = held.slot.zone === 'tube' ? st.tubes[held.slot.i] : null;
-      title = `<b>${esc(shellName(sh))}</b> · ${colName(shellCol(sh))} · ★${sh.star || 1} · Hang ${Math.max(0, tb ? hangOf(tb, view.rules) : (row(sh.id).hang || 0))}`;
+      title = `<b>${esc(shellName(sh))}</b><span class="t-o1"> · ${colName(shellCol(sh))}</span> · ★${sh.star || 1}<span class="t-o2"> · Hang ${Math.max(0, tb ? hangOf(tb, view.rules) : (row(sh.id).hang || 0))}</span>`;
       text = cardText(sh.id, shellCol(sh), sh.star || 1);
       line3 = held.slot.zone === 'crate' ? 'In the Crate: it does not fire. Tap a tube to swap it in.' : 'Tap another tube to move or swap. The arc shows who sees it.';
       const k = slotKey(held.slot), armed = sellArmed === k;
       btns += `<button type="button" class="ib sell${armed ? ' armed' : ''}" data-info="sell" aria-label="${armed ? 'Confirm: sell' : 'Sell'} ${esc(shellName(sh))} for ${sellValue(sh)} coins">${armed ? 'Tap again: sell' : 'Sell'} $${sellValue(sh)}</button>`;
     } else if (held.kind === 'rig') {
       const rc = st.shop.rig, ri = rigInfo(rc.id);
-      title = `<b>${esc(ri.name)}</b> · rig · $${rc.cost != null ? rc.cost : ri.cost}`;
+      title = `<b>${esc(ri.name)}</b><span class="t-o1"> · rig</span> · $${rc.cost != null ? rc.cost : ri.cost}`;
       text = ri.text;
       line3 = targets.size ? 'Tap a tube to install it. Rigs stay with the tube.' : `Need $${(rc.cost || ri.cost) - st.coins} more.`;
     }
@@ -8022,7 +8303,7 @@ const UI_PLAY = (() => {
   function hint(title, text) { flash = { title: `<b>${esc(title)}</b>`, text }; render(); }
 
   function light() {
-    if (ui() !== 'BUILD' || !fnIn(G, 'light')) return;
+    if (!building() || !fnIn(G, 'light')) return; // RESULT is a build too: the card stays pinned until the next action
     clearHeld(true); disarmSell(); flash = null; dismissTip();
     litTarget = targetOf(S().show | 0);
     G.light();
@@ -8103,7 +8384,14 @@ const UI_PLAY = (() => {
     }, 450);
   }
   function onMove(e) {
-    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag) { // a mouse hovering a legal drop previews it (numerals, sees, arc); taps and keys show the same by other means
+      if (held && e.pointerType === 'mouse' && building() && E.play.contains(e.target)) {
+        const t = slotAt(e.clientX, e.clientY);
+        setHover(t && targets.has(slotKey(t)) ? t : null);
+      }
+      return;
+    }
+    if (e.pointerId !== drag.id) return;
     if (!drag.moved) {
       const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
       if (dx * dx + dy * dy < 100 || drag.long) return;
@@ -8310,6 +8598,13 @@ const UI_PLAY = (() => {
       if (to !== 'RESULT') { readout.on = false; litTarget = 0; }
     }
     render();
+    if (to !== 'RESOLVING') renderSoon(); // core refreshes GAME.preview after the switch (build open); read it once settled
+  }
+  let renderQueued = false;
+  function renderSoon() {
+    if (renderQueued) return;
+    renderQueued = true;
+    Promise.resolve().then(() => { renderQueued = false; render(); });
   }
   function onPresent(ev) {
     if (!ev || !ev.type) return;
@@ -8589,6 +8884,7 @@ const UI_PLAY = (() => {
     const on = (n, f) => { if (fnIn(G, 'on')) G.on(n, x => safe(() => f(x))); };
     on('change', () => render());
     on('preview', () => render());
+    on('critical', () => renderSoon());
     on('sim', onSim);
     on('ui', onUi);
     on('present', onPresent);
@@ -8666,6 +8962,17 @@ const UI_PANELS = (() => {
   const reduced = () => !!(G && G.reducedMotion);
   const lastOf = a => a && a[a.length - 1];
   const clone = v => (v == null ? v : JSON.parse(JSON.stringify(v)));
+  // Scroll lists fade only at an edge that has more content beyond it.
+  function edges(el) {
+    if (!el) return;
+    el.classList.toggle('fade-t', el.scrollTop > 2);
+    el.classList.toggle('fade-b', el.scrollTop + el.clientHeight < el.scrollHeight - 2);
+  }
+  function watchEdges(el) {
+    if (!el || el._edges) return;
+    el._edges = true;
+    el.addEventListener('scroll', () => edges(el), {passive: true});
+  }
   function row(tab, id) {
     if (!tab || id == null) return null;
     if (Array.isArray(tab)) return tab.find(r => r && (r.id === id || r.key === id)) || null;
@@ -8788,6 +9095,7 @@ const UI_PANELS = (() => {
       }
     }
     histLen = played;
+    watchEdges(list); edges(list);
   }
 
   /* One festival. Once it is over it collapses to a stamped line (✓ ✓ ✗); otherwise it
@@ -8798,7 +9106,9 @@ const UI_PANELS = (() => {
     const past = f < curF || (!building && f === curF && !!hm[f * 3 - 1]);
     const now = f === curF && !past;
     const posted = f <= curF + 1 || !building;
-    const hlIds = f <= 8 ? [st.headliners && st.headliners[f - 1]] : ((st.endlessTwists && st.endlessTwists[f]) || []);
+    // The Headliner show's own rules: at Renown 7+ the Countdown also brings the Rival, and at 8 it counts in threes.
+    const hr = f <= 8 ? call(sim(), 'rulesFor', st, f * 3 - 1) : null;
+    const hlIds = Array.isArray(hr) && hr.length ? hr : f <= 8 ? [st.headliners && st.headliners[f - 1]] : ((st.endlessTwists && st.endlessTwists[f]) || []);
     const hls = hlIds.filter(Boolean).map(hl);
     const tw = f > 1 && f <= 8 && st.twilightTwists ? st.twilightTwists[f - 1] : null;   // Renown 2
     const say = [];
@@ -8828,7 +9138,8 @@ const UI_PANELS = (() => {
     else if (f > curF + 1) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}<span>${esc(names)}</span></span>`;
     else card = hls.map(h => `<p class="bd-hl">${icon(h.id, 'pn-ic bd-hl-ic')}<b>${esc(h.name)}</b>${h.rule ? ' ' + esc(h.rule) : ''}</p>`).join('');
     const aria = `Festival ${f}, ${festName(f)}${now ? ', tonight' : ''}. ${say.join('. ')}. Headliner: ${posted && hls.length ? names : 'not posted yet'}.`;
-    return `<li class="bd-row ${past ? 'is-past' : now ? 'is-now' : 'is-future'}" aria-label="${esc(aria)}"${now ? ' aria-current="step"' : ''}>
+    const far = !past && !now && (f > curF + 1 || !building);    // a festival further ahead: a light two-line row
+    return `<li class="bd-row ${past ? 'is-past' : now ? 'is-now' : 'is-future'}${far ? ' is-far' : ''}" aria-label="${esc(aria)}"${now ? ' aria-current="step"' : ''}>
 <div class="bd-name" aria-hidden="true"><span class="bd-num num">${f}</span><span class="bd-fest">${esc(festName(f))}</span>${mini}${stamps ? `<span class="bd-stamps">${stamps}</span>` : ''}</div>
 ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card ? `<div aria-hidden="true">${card}</div>` : ''}</li>`;
   }
@@ -9034,12 +9345,16 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
       <button type="button" class="btn sl-close" data-sl="close" aria-label="Close the show log">✕</button></div>
     <div class="sl-meta"></div>
   </header>
-  <ol class="sl-lines" aria-label="Bursts, in firing order"></ol>
-  <div class="sl-sum"></div>
+  <div class="sl-body">
+    <ol class="sl-lines" aria-label="Bursts, in firing order"></ol>
+    <div class="sl-sum"></div>
+  </div>
   <div class="sl-foot"><button type="button" class="btn sl-book" data-sl="logbook">${icon('book')}Logbook<kbd>L</kbd></button></div>
 </div>`;
     panel = logEl.querySelector('.sl-panel');
-    P = {meta: logEl.querySelector('.sl-meta'), lines: logEl.querySelector('.sl-lines'), sum: logEl.querySelector('.sl-sum'), live: logEl.querySelector('.sl-live')};
+    P = {meta: logEl.querySelector('.sl-meta'), body: logEl.querySelector('.sl-body'), lines: logEl.querySelector('.sl-lines'),
+      sum: logEl.querySelector('.sl-sum'), live: logEl.querySelector('.sl-live')};
+    watchEdges(P.body);
     logEl.addEventListener('click', e => {
       if (e.target.classList.contains('sl-scrim')) { closeSheet(); return; }
       const b = e.target.closest('[data-sl]');
@@ -9094,7 +9409,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
         }
         case 'x': h += `<span class="chip chip-x sl-c${fu}">${fmtX(it.v)} Aah</span>`; break;
         case 'clear': h += `<span class="sl-t">clears ${it.v}</span>`; break;
-        case 'extend': h += `<span class="sl-t">${it.n ? it.n + ' up' : 'sky'} hang +${it.by}</span>`; break;
+        case 'extend': h += `<span class="sl-t">+${it.by} Hang${it.n ? ` (${it.n} up)` : ''}</span>`; break;
         case 'repeat':
           if (repDone) break;
           repDone = true;
@@ -9113,19 +9428,32 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     const isFav = L.fav != null && ln.tube === L.fav;
     const cn = ln.washed ? 'washed out' : ln.wild || col === 'X' ? 'Rainbow' : col !== 'W' ? CNAME[col] || '' : '';
     const star = ln.star > 1 ? `<span class="sl-star" title="star ${ln.star}">${'•'.repeat(Math.min(3, ln.star))}</span>` : '';
-    const shot = ln.shot > 0 ? ` <span class="sl-dim">· burst ${ln.shot + 1}</span>` : '';
-    const flags = (ln.dud ? '<span class="sl-flag is-dud">dud</span>' : '') + (ln.half ? '<span class="sl-flag">½</span>' : '') + (ln.last ? '<span class="sl-flag">last</span>' : '');
+    const flags = (ln.shot > 0 ? `<span class="sl-flag is-shot">burst ${ln.shot + 1}</span>` : '') + (ln.dud ? '<span class="sl-flag is-dud">dud</span>' : '') + (ln.half ? '<span class="sl-flag">½ strength</span>' : '') + (ln.last ? '<span class="sl-flag">last</span>' : '');
     const sees = seesText(ln, L), full = seesFull(ln, L);
-    const chips = (sees ? `<span class="sl-sees"${full && sees.indexOf(full) < 0 ? ` title="${esc(full)}"` : ''}>${esc(sees)}</span>` : '') + chipsHTML(ln);
+    const chips = flags + (sees ? `<span class="sl-sees"${full && sees.indexOf(full) < 0 ? ` title="${esc(full)}"` : ''}>${esc(sees)}</span>` : '') + chipsHTML(ln);
     const tot = `<span class="sl-run num" title="Running Ooh × Aah">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
-    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛</span>' : ''}${shot}</span>${flags}</div>
+    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛</span>' : ''}</span></div>
 <div class="sl-chips">${chips}${tot}</div>`;
   }
   function lineLabel(ln, L) {
     if (ln.sep) return ln.text;
     const full = seesFull(ln, L);
-    return `Tube ${ln.tube + 1}: ${shellName(ln.id)}${ln.col && ln.col !== 'W' ? ', ' + (CNAME[ln.col] || '') : ''}${ln.dud ? ', dud' : ''}${ln.half ? ', half strength' : ''}` +
-      `${L.fav === ln.tube ? ', crowd favourite' : ''}. ${ln.sees ? 'Sees ' + ln.sees + (full ? ': ' + full : '') : 'Empty sky'}.`;
+    const gains = [];
+    for (const it of ln.items) {
+      if (it.k === 'fusion') gains.push('fusion ' + it.name);
+      else if (it.k === 'ooh') gains.push(it.critic ? 'no Ooh, the Critic' : `plus ${fmt(it.v)} Ooh`);
+      else if (it.k === 'aah') gains.push(`plus ${fmtA(it.v)} Aah${it.rig ? ' from ' + rigName(it.rig) : ''}`);
+      else if (it.k === 'x') gains.push(`times ${String(Math.round(it.v * 100) / 100)} Aah`);
+      else if (it.k === 'clear') gains.push(`clears ${it.v}`);
+      else if (it.k === 'extend') gains.push(`Hang plus ${it.by}`);
+      else if (it.k === 'repeat') gains.push(`repeats ${shellName(it.id)}`);
+      else if (it.k === 'crowd') gains.push(`Crowd plus ${fmt(it.v)}`);
+      else if (it.k === 'coin') gains.push(`plus ${it.v} dollars`);
+    }
+    return `Tube ${ln.tube + 1}${ln.shot > 0 ? ', burst ' + (ln.shot + 1) : ''}: ${shellName(ln.id)}${ln.col && ln.col !== 'W' ? ', ' + (CNAME[ln.col] || '') : ''}` +
+      `${ln.dud ? ', dud' : ''}${ln.half ? ', half strength' : ''}${ln.last ? ', last' : ''}${L.fav === ln.tube ? ', crowd favourite' : ''}. ` +
+      `${ln.dud ? '' : ln.sees ? 'Sees ' + ln.sees + (full ? ': ' + full : '') + '. ' : 'Empty sky. '}` +
+      `${gains.length ? gains.join(', ') + '. ' : ''}Running total Ooh ${fmt(Math.floor(ln.ooh))} times Aah ${fmtA(ln.aah)}.`;
   }
 
   function sumHTML(L) {
@@ -9141,11 +9469,12 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
         ? `<span class="sl-ok">✓ Pass ×${(Math.floor(ratio * 10) / 10).toFixed(1)}</span>${a.encore ? '<span class="sl-encore">Encore!</span>' : ''}`
         : `<span class="sl-bad">✗ ${fmt(a.short != null ? a.short : Math.max(0, t - a.score))} short</span>`;
       h += `<div class="sl-app ${a.pass ? 'is-pass' : 'is-miss'}">
-<div class="sl-app-row"><span class="sl-app-lbl">Applause</span><span class="sl-app-n num">${fmt(a.score)}</span></div>
+<div class="sl-app-row"><span class="sl-app-lbl">Applause<span class="sl-app-tg num">target ${fmt(t)}</span></span><span class="sl-app-n num"${a.score >= 1e4 ? ` title="${Math.floor(a.score).toLocaleString('en-US')}"` : ''}>${fmt(a.score)}</span></div>
 <div class="sl-app-eq num">= <span class="chip">Ooh ${fmt(Math.floor(a.ooh != null ? a.ooh : L.ooh))}</span> × <span class="chip chip-aah">Aah ${fmtA(a.aah != null ? a.aah : L.aah)}</span></div>
-<div class="sl-verdict">${verdict}<span class="sl-dim num">target ${fmt(t)}</span></div>${payHTML(L.pay, a)}</div>`;
+<div class="sl-verdict">${verdict}</div>${payHTML(L.pay, a)}</div>`;
     } else if (L.live) {
-      h += `<div class="sl-app is-pending"><div class="sl-app-row"><span class="sl-app-lbl">Applause</span><span class="sl-app-n num" aria-hidden="true">…</span></div>
+      const t = L.snap && L.snap.target;
+      h += `<div class="sl-app is-pending"><div class="sl-app-row"><span class="sl-app-lbl">Applause${t ? `<span class="sl-app-tg num">target ${fmt(t)}</span>` : ''}</span><span class="sl-app-n num" aria-hidden="true">…</span></div>
 <div class="sl-app-eq num">Ooh ${fmt(Math.floor(L.ooh))} × Aah ${fmtA(L.aah)}</div></div>`;
     }
     for (const n of L.notes) h += `<p class="sl-note is-${n.k}">${esc(n.text)}</p>`;
@@ -9154,19 +9483,20 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
   // §5.2 payout, itemised: base, interest, Sponsor reward, Crowd (+Encore), shell coins.
   function payHTML(p, a) {
     if (!p) return '';
-    const bits = [];
-    if (p.base) bits.push(`+$${p.base} show`);
-    if (p.interest) bits.push(`+$${p.interest} interest`);
+    const bits = [];                                   // [text, kind]: coin | crowd | card | none
+    if (p.base) bits.push([`+$${p.base} show`, 'coin']);
+    if (p.interest) bits.push([`+$${p.interest} interest`, 'coin']);
     const sp = p.sponsor && typeof p.sponsor === 'object' ? p.sponsor : null;
-    if (sp && sp.coins) bits.push(`+$${sp.coins} sponsor`);
-    if (sp && sp.crowd) bits.push(`Crowd +${sp.crowd} sponsor`);
-    if (sp && sp.collector) bits.push('Collector card next shop');
+    if (sp && sp.coins) bits.push([`+$${sp.coins} sponsor`, 'coin']);
+    if (p.shellCoins) bits.push([`+$${p.shellCoins} from shells`, 'coin']);
     const cr = (p.crowdPass || 0) + (p.crowdHeadliner || 0) + (p.crowdEncore || 0);
-    if (cr) bits.push(`Crowd +${cr}${p.crowdEncore ? ` (Encore +${p.crowdEncore})` : ''}`);
-    if (p.shellCoins) bits.push(`+$${p.shellCoins} from shells`);
-    if (!a.pass) bits.unshift('No payout on a miss');
+    if (cr) bits.push([`Crowd +${cr}${p.crowdEncore ? ` (Encore +${p.crowdEncore})` : ''}`, 'crowd']);
+    if (sp && sp.crowd) bits.push([`Crowd +${sp.crowd} sponsor`, 'crowd']);
+    if (sp && sp.collector) bits.push(['Collector card next shop', 'card']);
+    if (!a.pass) bits.unshift(['No payout on a miss', 'none']);
     const after = num(p.coins) != null ? `<span class="sl-after">Now $${p.coins}${num(p.crowd) != null ? ` · Crowd ${fmt(p.crowd)}` : ''}</span>` : '';
-    return bits.length || after ? `<p class="sl-pay num">${esc(bits.join(' · '))}${after}</p>` : '';
+    // one pill per item, so a wrap never splits an item
+    return bits.length || after ? `<p class="sl-pay num">${bits.map(([t, k]) => `<span class="sl-pb is-${k}">${esc(t)}</span>`).join('')}${after}</p>` : '';
   }
 
   function paintLog(force) {
@@ -9178,8 +9508,11 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     if (!L || (!L.lines.length && !L.app)) {
       P.lines.innerHTML = `<li class="sl-empty">${emptyHTML()}</li>`;
       P.sum.innerHTML = L ? sumHTML(L) : '';
+      edges(P.body);
       return;
     }
+    // While live, follow the stream unless the reader has scrolled up to look at an earlier line.
+    const B = P.body, follow = B.scrollTop + B.clientHeight >= B.scrollHeight - 48;
     if (force || P.lines.querySelector('.sl-empty')) P.lines.innerHTML = '';
     const kids = P.lines.children;
     let added = false;
@@ -9203,12 +9536,24 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     });
     while (kids.length > L.lines.length) P.lines.lastChild.remove();
     P.sum.innerHTML = sumHTML(L);
-    if (L.live && added) P.lines.scrollTo({top: P.lines.scrollHeight, behavior: reduced() ? 'auto' : 'smooth'});
+    if (L.live && (added || follow) && B.clientHeight) B.scrollTo({top: B.scrollHeight, behavior: reduced() || !added ? 'auto' : 'smooth'});
+    edges(B);
   }
   function emptyHTML() {
     const again = hist(G && G.state).length > 0;
     return `<p class="sl-empty-h">${again ? 'Light the fuse to fill the log.' : 'The fuse hasn’t been lit yet.'}</p>` +
-      '<p>Every burst of your next show is itemised here: what it saw in the sky, the Ooh and Aah it added, fusions, multipliers, and the crowd’s cheer.</p>';
+      '<p>Every burst of your next show is itemised here: what it saw in the sky, the Ooh and Aah it added, fusions, multipliers, and the crowd’s cheer.</p>' +
+      exampleHTML();
+  }
+  // A worked example line (the spec's own), drawn with the real line markup and labelled part by part.
+  function exampleHTML() {
+    const L = {fav: null, byN: {0: {id: 'peony', col: 'R'}}};
+    const ln = {tube: 2, id: 'palm', col: 'R', star: 1, shot: 0, sees: 1, up: [0], items: [{k: 'ooh', v: 12}, {k: 'aah', v: 3}], ooh: 12, aah: 4};
+    return `<figure class="sl-ex" aria-label="Example line: tube 3 fires a Red Palm; it sees a Peony, adds 12 Ooh and 3 Aah; the show now stands at 12 Ooh times 4 Aah.">
+<figcaption>How to read a line</figcaption>
+<div class="sl-line sl-ex-line" aria-hidden="true">${lineHTML(ln, L)}</div>
+<ol class="sl-ex-key" aria-hidden="true"><li><b>T3</b> the tube it fired from</li><li><b>sees</b> the bursts still up</li><li><b>+ Ooh, + Aah</b> what it added</li><li><b>12 × 4.0</b> the show so far</li></ol>
+</figure>`;
   }
 
   /* ---------- sheet presentation (< 1200 px) ----------
@@ -9294,7 +9639,9 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     inFlight = false;
     if (lit) lit.fresh = true;
     paintLog(!streamed);
-    if (streamed) P.lines.scrollTop = P.lines.scrollHeight;
+    // settle on the verdict: the Applause sits at the end of the log
+    P.body.scrollTop = P.body.scrollHeight;
+    edges(P.body);
     renderBoard();
     if (lit) lit.fresh = false;
     snap = capture(G.state);
@@ -9403,6 +9750,7 @@ const UI_END = (() => {
   let savedKey = '';
   let busy = false;
   let lastW = 0;
+  let backTo = null;       // the control that opened an overlay on top of the end screen
 
   const TAU = Math.PI * 2;
   const now = () => (typeof performance === 'object' ? performance.now() : Date.now());
@@ -9735,9 +10083,10 @@ const UI_END = (() => {
     const spots = [];
     tubes.forEach((t, i) => {
       if (!t || !t.id) return;
-      const R = Math.min(colW * .56, 56) * (.86 + .07 * (t.star || 1)), x = x0 + colW * (i + .5);
+      let R = Math.min(colW * .56, 56) * (.86 + .07 * (t.star || 1));
+      const x = x0 + colW * (i + .5);
       let y = Math.max(R + 8, 70 + (i % 2) * 18 + (rnd() - .5) * 10);
-      if (x - R * .7 < tBox && y - R * .7 < 62) y = Math.min(hz - R * .8, 62 + R * .7);
+      if (x - R * .8 < tBox && y - R < 64) { R = Math.min(R, (hz - 64) / 1.8); y = 64 + R; }   // whole burst below the title block
       spots.push({t, x, y, R});
     });
     for (const s of spots) {                                        // mortar trails, fading in as they rise
@@ -9902,13 +10251,15 @@ const UI_END = (() => {
     if (c.kind === 'arrange') {
       const orig = tubes.map(t => (t && t.shell) || null), diff = [];
       orig.forEach((s, j) => { if (shellKey(s) !== shellKey(c.shells[j])) diff.push(j); });
+      // Name the colour only where two of the same shell would otherwise read alike.
+      const nm = sh => (orig.some(o => o && o.id === sh.id && o.col !== sh.col) ? shellName(sh) : shellRow(sh.id).name);
       if (diff.length === 2) {
         const [i, j] = diff, a = orig[i], b = orig[j];
-        if (a && b) return `Swapping ${shellName(a)} and ${shellName(b)}`;
+        if (a && b) return `Swapping ${nm(a)} and ${nm(b)}`;
         const s = a || b, to = a ? j : i;
-        return `Moving ${shellName(s)} to tube ${to + 1}`;
+        return `Moving ${nm(s)} to tube ${to + 1}`;
       }
-      return 'Rearranging them as ' + andList(c.shells.filter(Boolean).map(shellName));
+      return 'Firing them as ' + c.shells.filter(Boolean).map(nm).join(' → ');
     }
     const a = c.act || {}, card = cards[a.card];
     switch (a.type) {
@@ -9965,7 +10316,7 @@ const UI_END = (() => {
       for (let j = 0; j < occ.length; j++) if (mask >> j & 1) tb[occ[j]].shell = tubes[occ[j]].shell;
       const r = S.resolveShow(tb, {rules, crowd: (mask >> (m - 1) & 1) ? crowd : 0, fav});
       val[mask] = (r && r.applause) || 0;
-      if (mask % 8 === 0) yield;
+      if (mask % 4 === 0) yield;
     }
     const phi = new Array(m).fill(0);
     for (let mask = 0; mask < full; mask++) {
@@ -9978,7 +10329,7 @@ const UI_END = (() => {
   }
   function* sharesFor(x) {       // → Map(groupKey → share), shares sum to 1
     const S = sim();
-    // The local copy yields every 8 coalitions, so no slice runs a whole show's 128 resolves at once.
+    // The local copy yields every 4 coalitions, so no slice runs a whole show's 128 resolves at once.
     let r = has(S, 'resolveShow') ? yield* localShapley(x.tubes, x.rules, x.crowd, x.fav) : (has(S, 'shapley') ? call(S, 'shapley', x.tubes, x.rules, x.crowd, x.fav) : null);
     if (!r) return null;
     if (r.shares) r = r.shares;
@@ -10008,10 +10359,15 @@ const UI_END = (() => {
       return {tubes: tubesOf(e), rules: x.rules, crowd: +crowd || 0, fav: e.fav != null ? e.fav : (lit.fav != null ? lit.fav : null), cols: {}};
     });
     if (!list.length && v.fp && v.fp.tubes) list = [{tubes: v.fp.tubes, rules: v.last.rules, crowd: +v.fp.crowd || 0, fav: null, cols: {}}];
+    // Visit the shows in a spread-out order (0, ½, ¼, ¾, …) so that if a slow device hits the deadline,
+    // the shows averaged so far still sample the whole run instead of only its early festivals.
+    const order = [], n = list.length, seen = new Set();
+    for (let step = 1 << Math.ceil(Math.log2(Math.max(1, n))); step >= 1; step >>= 1)
+      for (let i = 0; i < n; i += step) if (!seen.has(i)) { seen.add(i); order.push(i); }
     const acc = new Map(), cols = {};
     let count = 0;
-    for (const x of list) {
-      if (now() > deadline) break;
+    for (const x of order.map(i => list[i])) {
+      if (now() > deadline && count >= 3) break;
       const m = yield* sharesFor(x);
       yield;
       if (!m) continue;
@@ -10019,6 +10375,7 @@ const UI_END = (() => {
       m.forEach((y, k) => acc.set(k, (acc.get(k) || 0) + y));
       Object.assign(cols, x.cols, cols);
     }
+    if (out.timing) out.timing.paretoShows = count + '/' + n;
     if (!count) return null;
     return [...acc].map(([key, y]) => ({key, share: y / count, col: cols[key] || shellRow(key).col,
       name: key === 'crowd' ? 'the Crowd' : shellRow(key).name, mono: key === 'crowd' ? '' : mono(key)}))
@@ -10035,7 +10392,7 @@ const UI_END = (() => {
       return L1.text.split('{n}').join(fmt(reo0.applause));
     let r = call(sim(), 'lessonFor', sum);
     if (r && typeof r === 'object') r = r.text || r.line || '';
-    if (typeof r === 'string' && r) return r;
+    if (typeof r === 'string' && r) return r.replace(/\b1 bursts\b/g, '1 burst');
     const L = v.last, reo = nm && nm.bestReorder;
     if (v.won && v.renown < 8) return `Next: Renown ${v.renown + 1}: ${renownText(v.renown + 1).replace(/\.$/, '')}.`;
     if (L.rules.some(x => /^countdown/.test(x)) && reo && reo.pass) return `The Countdown fires your last tube first and last. Rearranging would have scored ${fmt(reo.applause)}.`;
@@ -10169,20 +10526,24 @@ const UI_END = (() => {
     s += `<path class="ec-target" d="${tp}"/>`;
     const dup = {}, pts = v.shows.map(x => { const k = dup[x.s] = (dup[x.s] || 0) + 1; return {x, px: X(x.n) + (k - 1) * Math.min(6, pw / N * .4), py: Y(x.applause)}; });
     if (pts.length > 1) s += `<path class="ec-line" d="M${pts.map(p => p.px.toFixed(1) + ',' + p.py.toFixed(1)).join('L')}"/>`;
+    const ringR = Math.max(7, Math.min(10, pw / N * .62)).toFixed(1);   // rings stay rings, not a chain, when shows are 10 px apart
     for (const p of pts) {                                           // markers
       const {x, px, py} = p, head = x.k === 2;
       const tip = `Show ${x.n}, ${festName(x.f)} ${SLOT[x.k]}: ${fmt(x.applause)} vs ${fmt(x.target)}${x.pass ? '' : ', missed'}${x.sponsored ? ', sponsored' : ''}${x.encore ? ', encore' : ''}`;
       s += `<g><title>${esc(tip)}</title>`;
-      if (x.sponsored) s += `<circle class="ec-ring" cx="${px}" cy="${py}" r="10"/>`;
+      if (x.sponsored) s += `<circle class="ec-ring" cx="${px}" cy="${py}" r="${ringR}"/>`;
       if (!x.pass) s += `<circle class="ec-halo" cx="${px}" cy="${py}" r="7"/>${cross(px, py, 5)}` + (head ? crown(px, py - 14, 'ec-crown miss') : '');
       else if (head) s += crown(px, py, 'ec-crown');
       else s += `<circle class="ec-dot" cx="${px}" cy="${py}" r="4.5"/>`;
       s += `<circle class="ec-hit" cx="${px}" cy="${py}" r="12"/></g>`;
     }
     if (v.best && v.best.applause > 0) {                             // direct label: the best show
-      const p = pts.find(q => q.x === v.best), anchor = p.px > W - 70 ? 'end' : p.px < L + 30 ? 'start' : 'middle';
-      const y = p.py - 16 < Tp + 4 ? p.py + 28 : p.py - 16;
-      s += `<text class="ec-val" x="${p.px}" y="${y}" text-anchor="${anchor}">${fmt(v.best.applause)}</text>`;
+      // Above the point when there is headroom, else beside it (on the side away from the plot edge):
+      // never below, where the earlier, lower shows sit.
+      const p = pts.find(q => q.x === v.best), up = p.py - 16 >= Tp + 12;
+      const anchor = up ? (p.px > W - 70 ? 'end' : p.px < L + 30 ? 'start' : 'middle') : (p.px > L + pw / 2 ? 'end' : 'start');
+      const x = up ? p.px : p.px + (anchor === 'end' ? -14 : 14), y = up ? p.py - 16 : p.py + 5;
+      s += `<text class="ec-val" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}">${fmt(v.best.applause)}</text>`;
     }
     return `<svg class="end-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-labelledby="end-h-chart end-chart-sum">${s}</svg>`;
   }
@@ -10281,8 +10642,8 @@ const UI_END = (() => {
     <h2 id="end-title" class="end-title">${hd.eyebrow ? `<span class="end-eyebrow">${esc(hd.eyebrow)}</span> ` : ''}<span class="end-where">${esc(hd.main)}</span></h2>
     ${hd.sub ? `<p class="end-sub">${esc(hd.sub)}</p>` : ''}
     <ul class="end-tags" aria-label="Run details">
-      <li class="chip">Seed ${esc(v.seed)}</li><li class="chip">${esc(kit.name)}</li><li class="chip">Renown ${v.renown}</li>
-      ${v.fair ? '<li class="chip chip-aah">☂ Fair Weather</li>' : ''}${v.daily ? '<li class="chip">Daily Show</li>' : ''}
+      <li>Seed <b>${esc(v.seed)}</b></li><li><b>${esc(kit.name)}</b> kit</li><li>Renown <b>${v.renown}</b></li>
+      ${v.fair ? '<li class="end-tag-fw"><b>☂ Fair Weather</b></li>' : ''}${v.daily ? '<li><b>Daily Show</b></li>' : ''}
     </ul>
   </header>
   <figure class="end-poster"><canvas id="end-poster" role="img" aria-label="Poster of your final rack: ${esc(andList(shellsOf({tubes: v.st.tubes}).map(shellName)) || 'an empty rack')}"></canvas></figure>
@@ -10309,11 +10670,11 @@ const UI_END = (() => {
       </section>
       ${lost ? '<section class="end-sec end-note end-near" aria-labelledby="end-h-near"><h3 id="end-h-near">How close</h3><div id="end-near" aria-live="polite"><p class="end-wait">Working out how close you came…</p></div></section>' : ''}
       <section class="end-sec end-note end-lesson" aria-labelledby="end-h-lesson"><h3 id="end-h-lesson">Lesson</h3><p id="end-lesson" aria-live="polite">${lost ? '<span class="end-wait">Thinking it over…</span>' : esc(lessonOf(null))}</p></section>
+      ${news.length ? `<section class="end-sec" aria-labelledby="end-h-new"><h3 id="end-h-new">Just unlocked</h3>${newsHTML(news)}</section>` : ''}
     </div>
     <div class="end-col">
       <section class="end-sec" aria-labelledby="end-h-unl">
         <h3 id="end-h-unl">Next unlocks</h3>
-        ${newsHTML(news)}
         ${near.map(m => `<div class="end-ms"><div class="end-ms-top"><b>${esc(m.name)}</b><span class="num">${m.value}/${m.goal}${m.d > 0 ? ` <span class="chip chip-aah">+${m.d}</span>` : ''}</span></div>
           <div class="end-bar" role="progressbar" aria-label="${esc(m.name)}" aria-valuemin="0" aria-valuemax="${m.goal}" aria-valuenow="${m.value}"><i style="width:${Math.round(m.value / m.goal * 100)}%"></i></div>
           ${unlocksOf(m) ? `<p class="end-dim">Unlocks ${esc(unlocksOf(m))}</p>` : ''}</div>`).join('') || '<p class="end-dim">Everything is unlocked. Try a higher Renown.</p>'}
@@ -10350,20 +10711,35 @@ const UI_END = (() => {
     startJobs();
   }
 
-  /* One "Just unlocked" card per unlock (§7.2); they apply from the next run. */
+  /* "Just unlocked" cards (§7.2): one per milestone reached, naming what it opens; they apply from the next run. */
   function newsHTML(news) {
     if (!news.length) return '';
     const MODE = {afterparty: 'the Afterparty', daily: 'the Daily Show'};
-    return `<ul class="end-news" aria-label="Just unlocked">${news.slice(0, 8).map(u => {
-      let nm, art = '<span class="end-new-ico" aria-hidden="true">✦</span>', lead = 'Just unlocked';
-      if (u.kind === 'shell') { const r = shellRow(u.id); nm = r.name; art = tokenHTML({id: u.id, col: r.col === '*' ? 'R' : r.col}); }
-      else if (u.kind === 'kit') nm = 'the ' + kitRow(u.id).name + ' kit';
-      else if (u.kind === 'renown') nm = 'Renown ' + u.id;
-      else if (u.kind === 'fusion') nm = (row(D().FUSIONS, u.id) || {name: 'a new fusion'}).name + ' (a fusion)';
-      else if (u.kind === 'mode') nm = MODE[u.id] || cap(u.id);
-      else { nm = ((row(D().MILESTONES, u.id) || {}).name || cap(u.id)) + ' ✓'; lead = 'Milestone'; art = '<span class="end-new-ico" aria-hidden="true">★</span>'; }
-      return `<li class="end-new">${art}<span><b>${lead}</b> ${esc(nm)}</span></li>`;
-    }).join('')}</ul><p class="end-dim end-news-note">New unlocks join from your next run.</p>`;
+    const groups = [], byMs = {};
+    for (const u of news) {
+      const key = u.kind === 'milestone' ? u.id : (u.milestone || '');
+      let gr = key ? byMs[key] : null;
+      if (!gr) { gr = {ms: key, items: []}; groups.push(gr); if (key) byMs[key] = gr; }
+      if (u.kind !== 'milestone') gr.items.push(u);
+    }
+    const card = gr => {
+      const shells = gr.items.filter(u => u.kind === 'shell'), fus = gr.items.filter(u => u.kind === 'fusion').length;
+      const names = gr.items.map(u => {
+        if (u.kind === 'shell') return shellRow(u.id).name;
+        if (u.kind === 'kit') return 'the ' + kitRow(u.id).name + ' kit';
+        if (u.kind === 'renown') return 'Renown ' + u.id;
+        if (u.kind === 'mode') return MODE[u.id] || cap(u.id);
+        if (u.kind === 'fusion') return null;
+        return (row(D().MILESTONES, u.id) || {}).name || cap(u.id);
+      }).filter(Boolean);
+      if (fus) names.push(fus > 1 ? fus + ' new fusions' : 'a new fusion');
+      if (gr.ms === 'm_win' && !names.length) names.push('Renown 1, the Afterparty and the Daily Show');
+      const sh = shells[0] && shellRow(shells[0].id);
+      const art = sh ? tokenHTML({id: shells[0].id, col: sh.col === '*' ? 'R' : sh.col}) : '<span class="end-new-ico" aria-hidden="true">★</span>';
+      const title = gr.ms ? ((row(D().MILESTONES, gr.ms) || {}).name || cap(String(gr.ms).replace(/^m_/, ''))) + ' ✓' : 'Just unlocked';
+      return `<li class="end-new">${art}<span><b>${esc(title)}</b>${names.length ? `<span class="end-new-what">${gr.ms ? 'Unlocks ' : ''}${esc(andList(names))}</span>` : ''}</span></li>`;
+    };
+    return `<ul class="end-news">${groups.slice(0, 10).map(card).join('')}</ul><p class="end-dim end-news-note">They join from your next run.</p>`;
   }
 
   function renderMore() {
@@ -10502,7 +10878,7 @@ const UI_END = (() => {
       case 'again': return runItBack();
       case 'replay': return start({seed: v.seed, replay: true});
       case 'party': if (!busy) { busy = true; leave(); call(G, 'enterAfterparty'); } return;
-      case 'logbook': return call(G, 'open', 'logbook');
+      case 'logbook': backTo = b; return call(G, 'open', 'logbook');
       case 'daily': {
         if (has(G, 'startDaily')) { if (!busy) { busy = true; leave(); call(G, 'startDaily'); } return; }
         const d = new Date(), ds = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -10577,7 +10953,12 @@ const UI_END = (() => {
     call(G, 'on', 'runEnd', p => show((p && p.lastRun) || G.lastRun));
     call(G, 'on', 'runStart', () => { job++; if (isOpen() && has(G, 'top') && G.top() === 'end') call(G, 'close', 'end'); });
     call(G, 'on', 'settings', p => { if (p && (p.key === 'highContrast' || p.key === 'reducedMotion') && isOpen()) { hydrateTokens(root); paintCharts(true); paintPareto(); } });
-    call(G, 'on', 'overlay', p => { if (p && p.name === 'end' && !p.open) job++; });
+    call(G, 'on', 'overlay', p => {
+      if (!p || p.open) return;
+      if (p.name === 'end') { job++; backTo = null; return; }
+      // Back from the Logbook: return focus to the button that opened it (the core would pick the first control).
+      if (backTo && backTo.isConnected && isOpen() && (!has(G, 'top') || G.top() === 'end')) { backTo.focus({preventScroll: true}); backTo = null; }
+    });
     const onResize = () => { if (isOpen()) requestAnimationFrame(() => { paintCharts(false); }); };
     call(G, 'on', 'resize', onResize);
     if (typeof ResizeObserver === 'function') new ResizeObserver(onResize).observe(root);
@@ -10859,7 +11240,9 @@ const UI_MENUS = (() => {
   }
   function renderPause(keepArmed) {
     const st = (G && G.state) || {};
-    const s = Number(st.show) || 0, f = Math.floor(s / 3) + 1;
+    // While a show plays (and on its result card) the SIM has already moved on: name the show being played.
+    const playing = (G.ui === 'RESOLVING' || G.ui === 'RESULT') && P.lastBuild != null && P.lastBuild <= (Number(st.show) || 0);
+    const s = playing ? P.lastBuild : Number(st.show) || 0, f = Math.floor(s / 3) + 1;
     const where = st.phase === 'won' ? ['Happy New Year!', 'Show ' + (s + 1)]
       : s >= 24 ? ['Afterparty', 'Show ' + (s + 1) + ' of 36']
         : [festName(f) + ' · ' + slotName(s), 'Show ' + (s + 1) + ' of 24'];
@@ -10947,7 +11330,7 @@ const UI_MENUS = (() => {
         switchRow('set-mood', 'mood', 'Crowd mood', 'The Restless / Hopeful / Eager read before you light. No effect on records.'),
         vibe ? switchRow('set-haptics', 'haptics', 'Haptics', 'Short buzzes on drops, multipliers and misses.') : null),
       section('Assist',
-        h('div', { class: 'st-assist' }, h('p', { class: 'st-badge' }, icon('umbrella'), 'Assist'),
+        h('div', { class: 'st-assist' }, h('p', { class: 'st-badge' }, icon('umbrella'), 'Labelled assist'),
           switchRow('set-fair', 'fairWeather', 'Fair Weather', 'Every target ×0.75, and the Midnight Countdown may be relit once. Runs are labelled Fair Weather, milestones still count, Renown does not advance.'),
           S.fairNote)),
       section('Your save',
@@ -11026,10 +11409,18 @@ const UI_MENUS = (() => {
       onclick: () => selectTab(id, false),
     }, h('span', { class: 'lb-tab-name' }, label), h('span', { class: 'lb-tab-n num' })));
     L.tablist = h('div', { role: 'tablist', class: 'lb-tabs', 'aria-label': 'Logbook sections' }, L.tabs);
+    L.tablist.addEventListener('scroll', tabEdges, { passive: true });
     L.panel = h('div', { role: 'tabpanel', id: 'lb-panel', class: 'm-body lb-body' });
     L.detail = h('section', { id: 'lb-detail', class: 'lb-detail', 'aria-live': 'polite', 'aria-label': 'Entry details', hidden: true });
     L.total = h('p', { class: 'lb-total num' });
     root.replaceChildren(h('div', { class: 'panel m-panel lb-sheet' }, head('logbook', 'Field notes', 'Logbook', L.total), L.tablist, L.panel, L.detail));
+  }
+  // Fade the tab strip's edges while more tabs sit off-screen (phones), so it reads as scrollable.
+  function tabEdges() {
+    const t = L.tablist;
+    if (!t) return;
+    const l = t.scrollLeft > 2, r = t.scrollLeft + t.clientWidth < t.scrollWidth - 2;
+    t.dataset.edge = (l ? 'l' : '') + (r ? 'r' : '');
   }
   function selectTab(id, focus) {
     L.tab = id;
@@ -11038,9 +11429,14 @@ const UI_MENUS = (() => {
       t.setAttribute('aria-selected', on ? 'true' : 'false');
       t.tabIndex = on ? 0 : -1;
       t.toggleAttribute('data-autofocus', on);
-      if (on) { if (focus) t.focus(); if (t.scrollIntoView) t.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+      if (on) {
+        if (focus) t.focus({ preventScroll: true });
+        const tr = t.getBoundingClientRect(), lr = L.tablist.getBoundingClientRect();   // centre the tab, clear of the edge fades
+        if (lr.width) L.tablist.scrollLeft += (tr.left + tr.width / 2) - (lr.left + lr.width / 2);
+      }
     }
     L.panel.setAttribute('aria-labelledby', 'lb-tab-' + id);
+    tabEdges();
     closeDetail(false);
     renderTab();
     L.panel.scrollTop = 0;
@@ -11169,7 +11565,7 @@ const UI_MENUS = (() => {
         key: r.id, state: open ? 'found' : 'locked', cap: open ? r.name : msInfo(msIdFor(r.lock)).name, badge: open ? null : lockBadge(r.lock),
         art: (sz) => kitArt(r, sz, !open), label: open ? r.name + ' kit' : 'Locked kit. ' + lockHint(r.lock),
         detail: () => open
-          ? dPanel(kitArt(r, 80), r.name, ['$' + (r.coins || 0), 'Crowd ' + (r.crowd || 0), 'Wins ' + (wins[r.id] || 0)],
+          ? dPanel(kitArt(r, 80), r.name, ['Starts with $' + (r.coins || 0), r.crowd ? 'Crowd +' + r.crowd : null, plural(wins[r.id] || 0, 'win')],
             ['Starts with ' + rack() + '.', r.text && r.text !== 'Default' ? r.text + '.' : 'The default kit.'])
           : dPanel(kitArt(r, 80, true), 'Locked kit', [lockHint(r.lock)], [lockLine(r.lock)]),
       };
@@ -11238,7 +11634,8 @@ const UI_MENUS = (() => {
   }
   function renderRecords() {
     const m = meta(), r = m.records || {}, bs = r.bestShow, br = r.bestRun;
-    const wins = r.winsByKit || {}, kitWins = Object.keys(wins).filter((k) => wins[k] > 0).map((k) => nameOf('KITS', k) + ' ' + wins[k]).join(' · ');
+    const wins = r.winsByKit || {}, kitIds = Object.keys(wins).filter((k) => wins[k] > 0).sort((a, b) => wins[b] - wins[a]);
+    const kitWins = kitIds.length ? h('ul', { class: 'lb-rec-list' }, kitIds.map((k) => h('li', null, h('span', null, nameOf('KITS', k)), h('b', { class: 'num' }, String(wins[k]))))) : null;
     const renownWon = r.highestRenown != null ? r.highestRenown : (m.wins > 0 && m.renown ? Math.max(0, (m.renown.max || 1) - 1) : null);
     const ms = r.fastestWinMs, mmss = ms ? Math.floor(ms / 60000) + ':' + String(Math.floor(ms / 1000) % 60).padStart(2, '0') : null;
     const rec = (k, v, sub) => h('div', { class: 'lb-rec' + (v == null ? ' is-empty' : '') }, h('dt', null, k), h('dd', { class: 'num' }, v == null ? 'Not yet' : v, sub ? h('span', { class: 'lb-rec-sub' }, sub) : null));
@@ -11247,10 +11644,10 @@ const UI_MENUS = (() => {
       h('div', { class: 'lb-lede' }, h('p', { class: 'lb-count display' }, 'Records'), h('p', { class: 'lb-intro' }, plural(m.runs || 0, 'run') + ' · ' + plural(m.wins || 0, 'win'))),
       h('dl', { class: 'lb-records' },
         rec('Best show', bs && bs.score != null ? fmt(bs.score) : null, bs ? 'Show ' + ((bs.show != null ? bs.show : 0)) + (bs.seed ? ' · seed ' + bs.seed : '') : null),
-        rec('Best run', br && br.shows ? 'Show ' + br.shows : null, br && br.total != null ? fmt(br.total) + ' total Applause' : null),
+        rec('Best run', br && br.shows ? 'Show ' + br.shows : null, br && br.shows && br.total != null ? fmt(br.total) + ' total Applause' : null),
         rec('Fastest win', mmss, mmss ? 'build time' : null),
         rec('Best Afterparty', r.bestAfterparty ? r.bestAfterparty + ' shows' : null),
-        rec('Wins by kit', kitWins || null),
+        rec('Wins by kit', kitWins),
         rec('Highest Renown won', renownWon != null && m.wins > 0 ? 'Renown ' + renownWon : null)));
   }
   const endUI = () => (typeof UI_END !== 'undefined' && UI_END) || null;
@@ -11355,7 +11752,7 @@ const UI_MENUS = (() => {
     let rules = DATA().RULES_CARD;
     rules = Array.isArray(rules) ? rules : typeof rules === 'string' ? rules.split(/\n+/).map((s) => s.replace(/^\s*\d+[.)]\s*/, '')).filter(Boolean) : [];
     const gl = rows(DATA().GLOSSARY).map((g) => Array.isArray(g) ? g : [g.term || g.id || g.name, g.meaning || g.text || g.def]).filter((g) => g[0]);
-    const body = h('div', { class: 'm-body hp-body' },
+    const body = h('div', { class: 'm-body hp-body', tabindex: '0', role: 'region', 'aria-label': 'Rules, glossary and keys' },
       h('ol', { class: 'hp-card', 'aria-label': 'The rules' }, rules.slice(0, 3).map((t, i) => h('li', null, h('span', { class: 'hp-n display-italic', 'aria-hidden': 'true' }, String(i + 1)), h('span', null, t)))),
       gl.length ? h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-gl' }, h('h3', { class: 'display', id: 'hp-gl' }, 'Glossary'),
         h('dl', { class: 'hp-gloss' }, gl.map(([t, d]) => h('div', null, h('dt', null, t), h('dd', null, d))))) : null,
@@ -11369,12 +11766,18 @@ const UI_MENUS = (() => {
   /* ======================================================================
      TOASTS (render GAME 'toast'; max 3; auto-dismiss; aria-hidden)
      ====================================================================== */
-  const T = { list: [] };
+  const T = { list: [], held: [] };
   const TOAST_ICON = { milestone: 'star', logbook: 'book', discover: 'book', unlock: 'unlock', fusion: 'spark', tip: 'help' };
   function toast(text, kind, id) {
     const box = $('toasts');
     if (!box || !text) return;
     const now = performance.now(), tip = kind === 'tip';
+    placeToasts();
+    if (!tip && box.dataset.at === 'held') {   // a menu is up: show it when the player is back at the show
+      if (!T.held.some((t) => t[0] === text)) T.held.push([text, kind, id]);
+      if (T.held.length > 3) T.held.shift();
+      return;
+    }
     if (T.list.some((t) => t.text === text && now - t.at < 600)) return;
     const el = h('div', { class: 'toast', 'data-kind': kind || 'info' }, h('span', { class: 'toast-ico' }, icon(TOAST_ICON[kind] || 'spark')),
       h('span', { class: 'toast-text' }, tip ? h('b', { class: 'toast-k' }, 'Tip ') : null, text));
@@ -11393,6 +11796,36 @@ const UI_MENUS = (() => {
     if (now) { item.el.remove(); return; }
     item.el.classList.add('is-out');
     setTimeout(() => item.el.remove(), 260);
+  }
+  // Toasts sit under the HUD over the sky. While a menu is up they wait (held) and play when the
+  // player is back at the show, so nothing covers a menu. When another overlay reaches the sky band
+  // (the end screen), they rise from the bottom above its sticky footer. Tips (which point at the
+  // play screen) stay hidden until every overlay above the play screen has closed.
+  const OVERLAY_ID = { pause: 'pause-menu', settings: 'settings', logbook: 'logbook', help: 'help', end: 'end', inspect: 'inspect', showlog: 'showlog', tapContinue: 'tap-continue' };
+  const MENUS = new Set(['pause', 'settings', 'logbook', 'help', 'tapContinue']);
+  function placeToasts() {
+    const box = $('toasts'), app = $('app');
+    if (!box || !app) return;
+    const t = topName(), el = t && $(OVERLAY_ID[t] || t);
+    let at = 'top', floor = 0;
+    if (MENUS.has(t) && el && !el.hidden) at = 'held';
+    else if (el && !el.hidden) {
+      const ar = app.getBoundingClientRect();
+      const panel = el.matches('.sheet') ? el : el.querySelector('.panel, .end-card, .sheet') || el.firstElementChild || el;
+      const pr = panel.getBoundingClientRect();
+      if (pr.height && pr.top - ar.top < 140) {
+        at = 'bottom';
+        let top = ar.bottom;
+        for (const f of el.querySelectorAll('footer, .m-foot, .end-actions')) {
+          const r = f.getBoundingClientRect();
+          if (r.height && r.bottom > ar.bottom - 40 && r.top > ar.top + ar.height * 0.5) top = Math.min(top, r.top);
+        }
+        floor = Math.round(ar.bottom - top) + 10;
+      }
+    }
+    box.dataset.at = at;
+    box.style.setProperty('--toast-floor', floor + 'px');
+    if (at !== 'held' && T.held.length) for (const a of T.held.splice(0)) toast(...a);
   }
   const tipDone = (p) => { for (const t of T.list.filter((x) => x.tip && (!p || !p.id || !x.id || x.id === p.id))) dropToast(t, false); };
 
@@ -11465,6 +11898,7 @@ const UI_MENUS = (() => {
   }
   function onOverlay(p) {
     const name = p && p.name, open = !!(p && p.open);
+    placeToasts();
     if (open && OVERLAY_EL[name]) stackAbove($(OVERLAY_EL[name]));
     if (!open) {
       disarmAll();
@@ -11501,6 +11935,7 @@ const UI_MENUS = (() => {
       if (text && !p.announced) call(G, 'announce', text);   // #toasts is aria-hidden; core does not voice toasts
     });
     call(G, 'on', 'tipDone', tipDone);
+    call(G, 'on', 'resize', () => { placeToasts(); if (isOpen('logbook')) tabEdges(); });
     call(G, 'on', 'settings', (p) => {
       if (p && p.key === 'highContrast') pictoCache.clear();
       if (isOpen('settings')) syncSettings();
@@ -11508,6 +11943,10 @@ const UI_MENUS = (() => {
     });
     call(G, 'on', 'meta', () => { if (isOpen('logbook') && !L.open) renderLogbook(); });
     call(G, 'on', 'change', () => { if (isOpen('pause-menu')) renderPause(true); });
+    const noteBuild = () => { if (G.ui === 'BUILD' && G.state) P.lastBuild = Number(G.state.show) || 0; };
+    noteBuild();
+    call(G, 'on', 'ui', (p) => { if (p && p.to === 'BUILD') noteBuild(); if (isOpen('pause-menu')) renderPause(true); });
+    call(G, 'on', 'runStart', () => { P.lastBuild = null; noteBuild(); });
     call(G, 'onKey', 'global', globalKey);
     call(G, 'onKey', 'pause', scoped());
     call(G, 'onKey', 'settings', scoped());

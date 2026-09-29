@@ -270,7 +270,9 @@ const UI_MENUS = (() => {
   }
   function renderPause(keepArmed) {
     const st = (G && G.state) || {};
-    const s = Number(st.show) || 0, f = Math.floor(s / 3) + 1;
+    // While a show plays (and on its result card) the SIM has already moved on: name the show being played.
+    const playing = (G.ui === 'RESOLVING' || G.ui === 'RESULT') && P.lastBuild != null && P.lastBuild <= (Number(st.show) || 0);
+    const s = playing ? P.lastBuild : Number(st.show) || 0, f = Math.floor(s / 3) + 1;
     const where = st.phase === 'won' ? ['Happy New Year!', 'Show ' + (s + 1)]
       : s >= 24 ? ['Afterparty', 'Show ' + (s + 1) + ' of 36']
         : [festName(f) + ' · ' + slotName(s), 'Show ' + (s + 1) + ' of 24'];
@@ -358,7 +360,7 @@ const UI_MENUS = (() => {
         switchRow('set-mood', 'mood', 'Crowd mood', 'The Restless / Hopeful / Eager read before you light. No effect on records.'),
         vibe ? switchRow('set-haptics', 'haptics', 'Haptics', 'Short buzzes on drops, multipliers and misses.') : null),
       section('Assist',
-        h('div', { class: 'st-assist' }, h('p', { class: 'st-badge' }, icon('umbrella'), 'Assist'),
+        h('div', { class: 'st-assist' }, h('p', { class: 'st-badge' }, icon('umbrella'), 'Labelled assist'),
           switchRow('set-fair', 'fairWeather', 'Fair Weather', 'Every target ×0.75, and the Midnight Countdown may be relit once. Runs are labelled Fair Weather, milestones still count, Renown does not advance.'),
           S.fairNote)),
       section('Your save',
@@ -437,10 +439,18 @@ const UI_MENUS = (() => {
       onclick: () => selectTab(id, false),
     }, h('span', { class: 'lb-tab-name' }, label), h('span', { class: 'lb-tab-n num' })));
     L.tablist = h('div', { role: 'tablist', class: 'lb-tabs', 'aria-label': 'Logbook sections' }, L.tabs);
+    L.tablist.addEventListener('scroll', tabEdges, { passive: true });
     L.panel = h('div', { role: 'tabpanel', id: 'lb-panel', class: 'm-body lb-body' });
     L.detail = h('section', { id: 'lb-detail', class: 'lb-detail', 'aria-live': 'polite', 'aria-label': 'Entry details', hidden: true });
     L.total = h('p', { class: 'lb-total num' });
     root.replaceChildren(h('div', { class: 'panel m-panel lb-sheet' }, head('logbook', 'Field notes', 'Logbook', L.total), L.tablist, L.panel, L.detail));
+  }
+  // Fade the tab strip's edges while more tabs sit off-screen (phones), so it reads as scrollable.
+  function tabEdges() {
+    const t = L.tablist;
+    if (!t) return;
+    const l = t.scrollLeft > 2, r = t.scrollLeft + t.clientWidth < t.scrollWidth - 2;
+    t.dataset.edge = (l ? 'l' : '') + (r ? 'r' : '');
   }
   function selectTab(id, focus) {
     L.tab = id;
@@ -449,9 +459,14 @@ const UI_MENUS = (() => {
       t.setAttribute('aria-selected', on ? 'true' : 'false');
       t.tabIndex = on ? 0 : -1;
       t.toggleAttribute('data-autofocus', on);
-      if (on) { if (focus) t.focus(); if (t.scrollIntoView) t.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+      if (on) {
+        if (focus) t.focus({ preventScroll: true });
+        const tr = t.getBoundingClientRect(), lr = L.tablist.getBoundingClientRect();   // centre the tab, clear of the edge fades
+        if (lr.width) L.tablist.scrollLeft += (tr.left + tr.width / 2) - (lr.left + lr.width / 2);
+      }
     }
     L.panel.setAttribute('aria-labelledby', 'lb-tab-' + id);
+    tabEdges();
     closeDetail(false);
     renderTab();
     L.panel.scrollTop = 0;
@@ -580,7 +595,7 @@ const UI_MENUS = (() => {
         key: r.id, state: open ? 'found' : 'locked', cap: open ? r.name : msInfo(msIdFor(r.lock)).name, badge: open ? null : lockBadge(r.lock),
         art: (sz) => kitArt(r, sz, !open), label: open ? r.name + ' kit' : 'Locked kit. ' + lockHint(r.lock),
         detail: () => open
-          ? dPanel(kitArt(r, 80), r.name, ['$' + (r.coins || 0), 'Crowd ' + (r.crowd || 0), 'Wins ' + (wins[r.id] || 0)],
+          ? dPanel(kitArt(r, 80), r.name, ['Starts with $' + (r.coins || 0), r.crowd ? 'Crowd +' + r.crowd : null, plural(wins[r.id] || 0, 'win')],
             ['Starts with ' + rack() + '.', r.text && r.text !== 'Default' ? r.text + '.' : 'The default kit.'])
           : dPanel(kitArt(r, 80, true), 'Locked kit', [lockHint(r.lock)], [lockLine(r.lock)]),
       };
@@ -649,7 +664,8 @@ const UI_MENUS = (() => {
   }
   function renderRecords() {
     const m = meta(), r = m.records || {}, bs = r.bestShow, br = r.bestRun;
-    const wins = r.winsByKit || {}, kitWins = Object.keys(wins).filter((k) => wins[k] > 0).map((k) => nameOf('KITS', k) + ' ' + wins[k]).join(' · ');
+    const wins = r.winsByKit || {}, kitIds = Object.keys(wins).filter((k) => wins[k] > 0).sort((a, b) => wins[b] - wins[a]);
+    const kitWins = kitIds.length ? h('ul', { class: 'lb-rec-list' }, kitIds.map((k) => h('li', null, h('span', null, nameOf('KITS', k)), h('b', { class: 'num' }, String(wins[k]))))) : null;
     const renownWon = r.highestRenown != null ? r.highestRenown : (m.wins > 0 && m.renown ? Math.max(0, (m.renown.max || 1) - 1) : null);
     const ms = r.fastestWinMs, mmss = ms ? Math.floor(ms / 60000) + ':' + String(Math.floor(ms / 1000) % 60).padStart(2, '0') : null;
     const rec = (k, v, sub) => h('div', { class: 'lb-rec' + (v == null ? ' is-empty' : '') }, h('dt', null, k), h('dd', { class: 'num' }, v == null ? 'Not yet' : v, sub ? h('span', { class: 'lb-rec-sub' }, sub) : null));
@@ -658,10 +674,10 @@ const UI_MENUS = (() => {
       h('div', { class: 'lb-lede' }, h('p', { class: 'lb-count display' }, 'Records'), h('p', { class: 'lb-intro' }, plural(m.runs || 0, 'run') + ' · ' + plural(m.wins || 0, 'win'))),
       h('dl', { class: 'lb-records' },
         rec('Best show', bs && bs.score != null ? fmt(bs.score) : null, bs ? 'Show ' + ((bs.show != null ? bs.show : 0)) + (bs.seed ? ' · seed ' + bs.seed : '') : null),
-        rec('Best run', br && br.shows ? 'Show ' + br.shows : null, br && br.total != null ? fmt(br.total) + ' total Applause' : null),
+        rec('Best run', br && br.shows ? 'Show ' + br.shows : null, br && br.shows && br.total != null ? fmt(br.total) + ' total Applause' : null),
         rec('Fastest win', mmss, mmss ? 'build time' : null),
         rec('Best Afterparty', r.bestAfterparty ? r.bestAfterparty + ' shows' : null),
-        rec('Wins by kit', kitWins || null),
+        rec('Wins by kit', kitWins),
         rec('Highest Renown won', renownWon != null && m.wins > 0 ? 'Renown ' + renownWon : null)));
   }
   const endUI = () => (typeof UI_END !== 'undefined' && UI_END) || null;
@@ -766,7 +782,7 @@ const UI_MENUS = (() => {
     let rules = DATA().RULES_CARD;
     rules = Array.isArray(rules) ? rules : typeof rules === 'string' ? rules.split(/\n+/).map((s) => s.replace(/^\s*\d+[.)]\s*/, '')).filter(Boolean) : [];
     const gl = rows(DATA().GLOSSARY).map((g) => Array.isArray(g) ? g : [g.term || g.id || g.name, g.meaning || g.text || g.def]).filter((g) => g[0]);
-    const body = h('div', { class: 'm-body hp-body' },
+    const body = h('div', { class: 'm-body hp-body', tabindex: '0', role: 'region', 'aria-label': 'Rules, glossary and keys' },
       h('ol', { class: 'hp-card', 'aria-label': 'The rules' }, rules.slice(0, 3).map((t, i) => h('li', null, h('span', { class: 'hp-n display-italic', 'aria-hidden': 'true' }, String(i + 1)), h('span', null, t)))),
       gl.length ? h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-gl' }, h('h3', { class: 'display', id: 'hp-gl' }, 'Glossary'),
         h('dl', { class: 'hp-gloss' }, gl.map(([t, d]) => h('div', null, h('dt', null, t), h('dd', null, d))))) : null,
@@ -780,12 +796,18 @@ const UI_MENUS = (() => {
   /* ======================================================================
      TOASTS (render GAME 'toast'; max 3; auto-dismiss; aria-hidden)
      ====================================================================== */
-  const T = { list: [] };
+  const T = { list: [], held: [] };
   const TOAST_ICON = { milestone: 'star', logbook: 'book', discover: 'book', unlock: 'unlock', fusion: 'spark', tip: 'help' };
   function toast(text, kind, id) {
     const box = $('toasts');
     if (!box || !text) return;
     const now = performance.now(), tip = kind === 'tip';
+    placeToasts();
+    if (!tip && box.dataset.at === 'held') {   // a menu is up: show it when the player is back at the show
+      if (!T.held.some((t) => t[0] === text)) T.held.push([text, kind, id]);
+      if (T.held.length > 3) T.held.shift();
+      return;
+    }
     if (T.list.some((t) => t.text === text && now - t.at < 600)) return;
     const el = h('div', { class: 'toast', 'data-kind': kind || 'info' }, h('span', { class: 'toast-ico' }, icon(TOAST_ICON[kind] || 'spark')),
       h('span', { class: 'toast-text' }, tip ? h('b', { class: 'toast-k' }, 'Tip ') : null, text));
@@ -804,6 +826,36 @@ const UI_MENUS = (() => {
     if (now) { item.el.remove(); return; }
     item.el.classList.add('is-out');
     setTimeout(() => item.el.remove(), 260);
+  }
+  // Toasts sit under the HUD over the sky. While a menu is up they wait (held) and play when the
+  // player is back at the show, so nothing covers a menu. When another overlay reaches the sky band
+  // (the end screen), they rise from the bottom above its sticky footer. Tips (which point at the
+  // play screen) stay hidden until every overlay above the play screen has closed.
+  const OVERLAY_ID = { pause: 'pause-menu', settings: 'settings', logbook: 'logbook', help: 'help', end: 'end', inspect: 'inspect', showlog: 'showlog', tapContinue: 'tap-continue' };
+  const MENUS = new Set(['pause', 'settings', 'logbook', 'help', 'tapContinue']);
+  function placeToasts() {
+    const box = $('toasts'), app = $('app');
+    if (!box || !app) return;
+    const t = topName(), el = t && $(OVERLAY_ID[t] || t);
+    let at = 'top', floor = 0;
+    if (MENUS.has(t) && el && !el.hidden) at = 'held';
+    else if (el && !el.hidden) {
+      const ar = app.getBoundingClientRect();
+      const panel = el.matches('.sheet') ? el : el.querySelector('.panel, .end-card, .sheet') || el.firstElementChild || el;
+      const pr = panel.getBoundingClientRect();
+      if (pr.height && pr.top - ar.top < 140) {
+        at = 'bottom';
+        let top = ar.bottom;
+        for (const f of el.querySelectorAll('footer, .m-foot, .end-actions')) {
+          const r = f.getBoundingClientRect();
+          if (r.height && r.bottom > ar.bottom - 40 && r.top > ar.top + ar.height * 0.5) top = Math.min(top, r.top);
+        }
+        floor = Math.round(ar.bottom - top) + 10;
+      }
+    }
+    box.dataset.at = at;
+    box.style.setProperty('--toast-floor', floor + 'px');
+    if (at !== 'held' && T.held.length) for (const a of T.held.splice(0)) toast(...a);
   }
   const tipDone = (p) => { for (const t of T.list.filter((x) => x.tip && (!p || !p.id || !x.id || x.id === p.id))) dropToast(t, false); };
 
@@ -876,6 +928,7 @@ const UI_MENUS = (() => {
   }
   function onOverlay(p) {
     const name = p && p.name, open = !!(p && p.open);
+    placeToasts();
     if (open && OVERLAY_EL[name]) stackAbove($(OVERLAY_EL[name]));
     if (!open) {
       disarmAll();
@@ -912,6 +965,7 @@ const UI_MENUS = (() => {
       if (text && !p.announced) call(G, 'announce', text);   // #toasts is aria-hidden; core does not voice toasts
     });
     call(G, 'on', 'tipDone', tipDone);
+    call(G, 'on', 'resize', () => { placeToasts(); if (isOpen('logbook')) tabEdges(); });
     call(G, 'on', 'settings', (p) => {
       if (p && p.key === 'highContrast') pictoCache.clear();
       if (isOpen('settings')) syncSettings();
@@ -919,6 +973,10 @@ const UI_MENUS = (() => {
     });
     call(G, 'on', 'meta', () => { if (isOpen('logbook') && !L.open) renderLogbook(); });
     call(G, 'on', 'change', () => { if (isOpen('pause-menu')) renderPause(true); });
+    const noteBuild = () => { if (G.ui === 'BUILD' && G.state) P.lastBuild = Number(G.state.show) || 0; };
+    noteBuild();
+    call(G, 'on', 'ui', (p) => { if (p && p.to === 'BUILD') noteBuild(); if (isOpen('pause-menu')) renderPause(true); });
+    call(G, 'on', 'runStart', () => { P.lastBuild = null; noteBuild(); });
     call(G, 'onKey', 'global', globalKey);
     call(G, 'onKey', 'pause', scoped());
     call(G, 'onKey', 'settings', scoped());

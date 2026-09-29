@@ -29,7 +29,7 @@
 //                      the SIM's own sponsorPick(fn.sponsorStyle, …) when exported, else the
 //                      harness's §12.1 rule; harness: always the harness's rule
 //   --workers=N        worker threads (default 4)
-//   --out=DIR          report directory (default tools/balance/out) → balance-report.txt/.json
+//   --out=DIR          report directory (default tools/reports/balance, git-ignored) → balance-report.txt/.json
 //   --save-records=F   also write every run record as JSON lines;  --load-records=F  re-analyse
 //                      saved records without playing (the SIM is still loaded for bench/ceiling)
 //   --shapley-runs=K   human runs whose every show is checked against shapley() (default 30)
@@ -76,7 +76,7 @@ if (args.list) { for (const a of AN.A) console.log(a.id.padEnd(12), a.title); pr
 const SEEDS = intArg('seeds', 200);
 const SWEEP = intArg('sweep-seeds', SEEDS);
 const WORKERS = intArg('workers', Math.min(4, os.cpus().length || 4));
-const OUT = path.resolve(typeof args.out === 'string' ? args.out : path.join(HERE, 'out'));
+const OUT = path.resolve(typeof args.out === 'string' ? args.out : path.join(GAME, 'tools', 'reports', 'balance'));
 const QUIET = !!args.quiet;
 const log = (...m) => { if (!QUIET) process.stderr.write('[balance] ' + m.join(' ') + '\n'); };
 const onlyA = list(args.only), skipA = list(args.skip), botsF = list(args.bots);
@@ -87,14 +87,27 @@ let simOpts;
 if (typeof args.ref === 'string') simOpts = { ref: args.ref };
 else {
   const simPath = path.resolve(typeof args.sim === 'string' ? args.sim : path.join(GAME, 'src', 'sim.js'));
-  if (fs.existsSync(simPath)) simOpts = { sim: simPath };
+  if (fs.existsSync(simPath)) simOpts = { sim: simPath, orig: simPath };
   else if (!args.sim && fs.existsSync(path.join(DEFAULT_REF, 'sim.js'))) { simOpts = { ref: DEFAULT_REF }; log(`WARNING: ${simPath} does not exist yet; using the v1.1 reference sim at ${DEFAULT_REF}`); }
   else { console.error(`SIM not found: ${simPath} (pass --sim=PATH or --ref=DIR)`); process.exit(2); }
 }
+// The game's modules may be edited while a long pass runs: snapshot the SIM once so the main
+// thread and every worker (including respawned ones) play the same code, whose hash is reported.
+if (simOpts.sim && !args['no-snapshot']) {
+  try {
+    const src = fs.readFileSync(simOpts.sim);
+    const h = crypto.createHash('sha1').update(src).digest('hex').slice(0, 10);
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ooh-balance-'));
+    const snap = path.join(dir, `sim-${h}.cjs`);
+    fs.writeFileSync(snap, src);
+    simOpts = { sim: snap, orig: simOpts.orig };
+    process.on('exit', () => { try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) { /* ignore */ } });
+  } catch (e) { log('could not snapshot the SIM (' + e.message + '); workers will load it in place'); }
+}
 let api;
 try { api = loadSim(simOpts); } catch (e) { console.error('Could not load the SIM: ' + ((e && e.stack) || e)); writeFatal(String(e && e.message)); process.exit(2); }
-const simFile = api.kind === 'ref' ? path.join(api.where, 'sim.js') : api.where;
-const simHash = (() => { try { return crypto.createHash('sha1').update(fs.readFileSync(simFile)).digest('hex').slice(0, 10); } catch (e) { return '?'; } })();
+const simFile = api.kind === 'ref' ? path.join(api.where, 'sim.js') : simOpts.orig || api.where;
+const simHash = (() => { try { return crypto.createHash('sha1').update(fs.readFileSync(api.kind === 'ref' ? simFile : api.where)).digest('hex').slice(0, 10); } catch (e) { return '?'; } })();
 
 function writeFatal(msg) {
   try { fs.mkdirSync(OUT, { recursive: true }); fs.writeFileSync(path.join(OUT, 'balance-report.json'), JSON.stringify({ meta: { date: new Date().toISOString(), fatal: msg }, gates: [], analyses: {} }, null, 1)); } catch (e) { /* ignore */ }
@@ -149,7 +162,8 @@ async function runAll() {
   if (!jobs.length) return;
   jobs.sort((a, b) => b.weight - a.weight);
   log(`SIM ${path.relative(process.cwd(), simFile) || simFile} (${api.kind}, sha1 ${simHash}) · driver ${driverNote} · ${jobs.length} runs on ${WORKERS} workers`);
-  let next = 0, done = 0, lastLog = Date.now(), fatal = null;
+  let next = 0, done = 0, doneW = 0, lastLog = Date.now(), fatal = null;
+  const totalW = jobs.reduce((a, j) => a + (j.weight || 1), 0), wOf = new Map(jobs.map(j => [j.cfg + '#' + j.seed, j.weight || 1]));
   const CHUNK = 2;
   await new Promise(resolve => {
     let alive = 0;
@@ -161,7 +175,7 @@ async function runAll() {
         if (fatal || next >= jobs.length) { w.terminate(); return; }
         inflight = jobs.slice(next, next + CHUNK); next += inflight.length;
         clearTimeout(timer);
-        timer = setTimeout(() => { for (const j of inflight) errors.push({ cfg: j.cfg, seed: j.seed, error: 'timeout (180 s)' }); done += inflight.length; inflight = null; w.terminate(); }, 180000);
+        timer = setTimeout(() => { for (const j of inflight) { errors.push({ cfg: j.cfg, seed: j.seed, error: 'timeout (180 s)' }); doneW += j.weight || 1; } done += inflight.length; inflight = null; w.terminate(); }, 180000);
         w.postMessage({ type: 'jobs', id: next, jobs: inflight });
       };
       w.on('message', m => {
@@ -171,11 +185,12 @@ async function runAll() {
           clearTimeout(timer);
           for (const o of m.out) { if (o.ok) records.push(o.rec); else errors.push(o); }
           done += m.out.length; inflight = null;
-          if (Date.now() - lastLog > 3000) { lastLog = Date.now(); const el = (Date.now() - t0) / 1000; log(`${done}/${jobs.length} runs · ${el.toFixed(0)} s · ETA ${((el / Math.max(1, done)) * (jobs.length - done)).toFixed(0)} s`); }
+          for (const o of m.out) { const c = o.ok ? o.rec.cfg + '#' + o.rec.seed : o.cfg + '#' + o.seed; doneW += wOf.get(c) || 1; }
+          if (Date.now() - lastLog > (QUIET ? 3e5 : 15000)) { lastLog = Date.now(); const el = (Date.now() - t0) / 1000; log(`${done}/${jobs.length} runs · ${el.toFixed(0)} s · ETA ${((el / Math.max(1e-9, doneW)) * (totalW - doneW)).toFixed(0)} s (by CPU weight)`); }
           feed();
         }
       });
-      w.on('error', e => { clearTimeout(timer); if (inflight) { for (const j of inflight) errors.push({ cfg: j.cfg, seed: j.seed, error: 'worker crashed: ' + String(e && e.message) }); done += inflight.length; inflight = null; } });
+      w.on('error', e => { clearTimeout(timer); if (inflight) { for (const j of inflight) { errors.push({ cfg: j.cfg, seed: j.seed, error: 'worker crashed: ' + String(e && e.message) }); doneW += j.weight || 1; } done += inflight.length; inflight = null; } });
       w.on('exit', () => { clearTimeout(timer); alive--; if (!fatal && next < jobs.length) spawn(); else if (alive === 0) resolve(); });
     };
     for (let i = 0; i < Math.min(WORKERS, jobs.length); i++) spawn();

@@ -29,10 +29,11 @@ function finiteWalk(v, where, out, depth = 0) {
   if (Array.isArray(v)) { v.forEach((x, i) => finiteWalk(x, where + '[' + i + ']', out, depth + 1)); return; }
   for (const k of Object.keys(v)) finiteWalk(v[k], where + '.' + k, out, depth + 1);
 }
+const RETIME_MS = 0.5;   // steps slower than this on the wall clock are re-timed (see runJob)
 function runJob({ bot, opts, seeds, shapleyEvery }) {
   const recs = [], fails = [];
-  const steps = { build: [], light: [] };
-  let shapShows = 0, shapMs = 0, replays = 0;
+  const steps = { build: [], light: [], buildRaw: [], lightRaw: [] };
+  let shapShows = 0, shapMs = 0, replays = 0, retimed = 0;
   const fail = (seed, msg) => { if (fails.length < 40) fails.push(`${bot} seed ${seed}: ${msg}`); };
   for (const seed of seeds) {
     const o = Object.assign({}, opts, { keepLog: true });
@@ -55,14 +56,29 @@ function runJob({ bot, opts, seeds, shapleyEvery }) {
     // Determinism: replay the action log from a fresh state; same hash. Also times every step.
     const cOpts = Object.assign({}, opts); delete cOpts.keepLog;
     if (bot === 'humanBold') cOpts.bold = true;
+    OOH.clearCaches();   // time the replay cold: the bot just played this seed and warmed the mood memo
     const R = OOH.createState(seed, cOpts);
-    let seqPrev = 0;
+    let seqPrev = 0; const dts = [], slow = [];
     for (const a of res.log) {
       const t0 = performance.now(); const ev = OOH.step(R, a); const dt = performance.now() - t0;
-      (a.type === 'light' ? steps.light : steps.build).push(dt);
+      if (dt > RETIME_MS) slow.push(dts.length);
+      dts.push(dt);
       if (ev.length === 1 && ev[0].type === 'illegal') { fail(seed, 'replay illegal: ' + JSON.stringify(a)); break; }
       for (const e of ev) { if (!(e.seq > seqPrev)) { fail(seed, 'seq not increasing'); break; } seqPrev = e.seq; }
     }
+    // A wall-clock outlier is usually preemption (the suite runs 4 workers, often beside other jobs), a GC pause or a
+    // cold JIT. Re-time each one on clones of its exact pre-step state (up to 7 runs, stopping once one is under
+    // RETIME_MS) and keep the best: a genuinely slow step stays slow, noise does not. The raw figures are reported too.
+    const cost = dts.slice();
+    if (slow.length) {
+      const R2 = OOH.createState(seed, cOpts);
+      for (let i = 0, j = 0; i < dts.length && j < slow.length; i++) {
+        if (i === slow[j]) { for (let k = 0; k < 7 && cost[i] > RETIME_MS; k++) { const C = OOH.clone(R2); OOH.clearCaches(); const t0 = performance.now(); OOH.step(C, res.log[i]); cost[i] = Math.min(cost[i], performance.now() - t0); } j++; }
+        OOH.step(R2, res.log[i]);
+      }
+      retimed += slow.length;
+    }
+    for (let i = 0; i < dts.length; i++) { const L = res.log[i].type === 'light'; (L ? steps.light : steps.build).push(cost[i]); (L ? steps.lightRaw : steps.buildRaw).push(dts[i]); }
     replays++;
     if (OOH.hashState(R) !== OOH.hashState(S)) fail(seed, 'replay hash differs');
     // Shapley: values sum to the show's Applause within 1e-6 relative.
@@ -80,7 +96,7 @@ function runJob({ bot, opts, seeds, shapleyEvery }) {
     recs.push(OOH.runRecord(S));
   }
   const stat = a => { const s = a.slice().sort((x, y) => x - y); return { n: s.length, sum: s.reduce((x, y) => x + y, 0), p99: s[Math.floor(0.99 * (s.length - 1))] || 0, max: s[s.length - 1] || 0 }; };
-  return { recs, fails, steps: { build: stat(steps.build), light: stat(steps.light) }, shapShows, shapMs, replays };
+  return { recs, fails, steps: { build: stat(steps.build), light: stat(steps.light), buildRaw: stat(steps.buildRaw), lightRaw: stat(steps.lightRaw) }, shapShows, shapMs, replays, retimed };
 }
 if (!isMainThread) {
   parentPort.on('message', job => { parentPort.postMessage(Object.assign({ id: job.id }, runJob(job))); });
@@ -116,6 +132,8 @@ async function main() {
     return top.length === 2 && top.includes('OohSim') && top.includes('OOH');
   })());
   check('SIM never calls Math.random() or Date.now()', !/Math\.random\s*\(|Date\.now\s*\(/.test(src));
+  { const code = src.replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, '');   // comments stripped
+    check('SIM reads no clock at all (no Date, performance.now or crypto)', !/\bDate\b|\bperformance\s*\.\s*now\b|\bcrypto\s*\./.test(code)); }
 
   /* ---------------------------------------------------------- 1. content tables */
   section('Content tables (§4, §5)');
@@ -136,7 +154,8 @@ async function main() {
   check('★3 scales numbers (Thunder King)', OOH.describeShell('thunder', 'W', 3) === '+80 Ooh. Clears sky: ×(1+1.6 per cleared) Aah, else +4 Aah.', OOH.describeShell('thunder', 'W', 3));
   for (let f = 1; f <= 7; f++) check('Headliner window F' + f + ' non-empty', D.HEADLINER_IDS.some(id => D.HEADLINERS[id].min <= f && f <= D.HEADLINERS[id].max && id !== 'countdown'));
   check('fmt §8.5', [8100, 12345, 1234567, 12e6, 3.4e9, 1.234e12].map(OOH.fmt).join(' ') === '8,100 12K 1.2M 12M 3.4B 1.23e12', [8100, 12345, 1234567, 12e6, 3.4e9, 1.234e12].map(OOH.fmt).join(' '));
-  check('dailySeed', OOH.dailySeed('2026-9-8') === 'daily-2026-09-08');
+  check('dailySeed', OOH.dailySeed('2026-9-8') === 'daily-2026-09-08' && OOH.dailySeed('2026-09-29') === 'daily-2026-09-29' && OOH.dailySeed('2026-09-29T23:59') === 'daily-2026-09-29'
+    && OOH.dailySeed('') === null && OOH.dailySeed('2026-13-01') === null && OOH.dailySeed(undefined) === null && OOH.dailySeed(20260929) === null);
 
   /* ---------------------------------------------------------- 2. golden tests §11.8 */
   section('Golden tests (§11.8)');
@@ -371,6 +390,10 @@ async function main() {
     check('previewChips(held on an occupied non-twin) is null', OOH.previewChips(Kb, null, { card: 0 }, { zone: 'tube', i: 0 }) === null || Kb.tubes[0].shell.id === Kb.shop.cards[0].id);
     check('mood is a bucket word', ['restless', 'hopeful', 'eager'].includes(OOH.mood(K)));
     const fo = OOH.fireOrder(K, ['countdown']); check('fireOrder: Countdown numerals out and back', fo.total === 6 && fo.tubes[2].ordinals.join(',') === '1,6' && fo.tubes[2].last);
+    check('seesPerTube: starting rack sees 0/1/2, empty tube null; Wind Shift reverses', OOH.seesPerTube(K).join() === '0,1,2,' && OOH.seesPerTube(K, ['windshift']).join() === '1,0,0,',
+      OOH.seesPerTube(K).join() + ' / ' + OOH.seesPerTube(K, ['windshift']).join());
+    { const pp = OOH.payoutPreview(K); check('payoutPreview: F1 Twilight pays $4 base, +1 Crowd, Encore +2, no ratio or Applause',
+      pp.base === 4 && pp.crowdPass === 1 && pp.crowdHeadliner === 0 && pp.encoreCrowd === 2 && pp.interest === 0 && pp.rainCheck === true && !('applause' in pp) && !('ratio' in pp), JSON.stringify(pp)); }
   }
   { // End-screen helpers
     const { S } = traceRun(OOH, 'golden-1', {});
@@ -390,12 +413,29 @@ async function main() {
   section('Performance (§11.7)');
   { const tubes = rack('candle:R palm*3:R palm*2:R palm*3:R waterfall finale', R9); let x = 0;
     for (let i = 0; i < 2000; i++) x += OOH.resolveShow(tubes, { rules: ['countdown'], crowd: 84 }).applause;
-    const n = 20000, t0 = performance.now(); for (let i = 0; i < n; i++) x += OOH.resolveShow(tubes, { rules: ['countdown'], crowd: 84 }).applause;
-    const us = (performance.now() - t0) / n * 1000;
-    log(`  resolveShow, 6-tube Countdown: ${us.toFixed(1)} µs mean (budget 200 µs; reference ~17 µs)`);
+    // Best of 10 batches of 2,000: a batch mean is robust to GC, the best batch to other load on the machine.
+    let us = Infinity, usAll = 0;
+    for (let b = 0; b < 10; b++) { const t0 = performance.now(); for (let i = 0; i < 2000; i++) x += OOH.resolveShow(tubes, { rules: ['countdown'], crowd: 84 }).applause;
+      const m = (performance.now() - t0) / 2000 * 1000; us = Math.min(us, m); usAll += m / 10; }
+    log(`  resolveShow, 6-tube Countdown: ${us.toFixed(1)} µs (best batch; ${usAll.toFixed(1)} µs mean of all) — budget 200 µs; reference ~17 µs`);
     check('resolveShow ≤ 0.2 ms', us <= 200, us.toFixed(1) + ' µs');
     const t1 = performance.now(); for (let i = 0; i < 200; i++) x += OOH.shapley(tubes, ['countdown'], 84, null).crowd; const shMs = (performance.now() - t1) / 200;
     log(`  shapley, 6 tubes + Crowd (128 resolves): ${shMs.toFixed(2)} ms`); }
+  { // The mood memo (a cache inside mood) must never change a result: compare against a from-scratch mood after every step,
+    // Rival and Rehearse previews included.
+    let bad = '', n = 0;
+    const fresh = (S, pr) => { const rules = pr != null ? [].concat(pr) : OOH.rulesFor(S, S.show);
+      const T = pr != null ? OOH.baseTarget(S, OOH.nextHeadlinerShow(S.show)) : OOH.target(S, S.show);
+      const same = pr != null && rules.join() === OOH.rulesFor(S, S.show).join();
+      const fav = rules.includes('rival') ? OOH.favourite(S.tubes, S.crowd) : null; const r = OOH.resolveShow(S.tubes, { rules, crowd: S.crowd, fav }).applause / (same ? OOH.target(S, S.show) : T);
+      return r < 0.85 ? 'restless' : r < 1.25 ? 'hopeful' : 'eager'; };
+    for (const seed of [11, 12, 13]) {
+      const { log: L } = OOH.playRun(seed, 'human', { keepLog: true, renown: 7 }); const S = OOH.createState(seed, { renown: 7 });
+      for (const a of L) { OOH.step(S, a); if (S.phase !== 'build') break; n++;
+        for (const pr of [undefined, 'rival', ['countdown', 'rival']]) { const m = OOH.mood(S, pr), f = fresh(S, pr); if (m !== f && !bad) bad = `seed ${seed} show ${S.show + 1} ${pr}: ${m} vs ${f}`; }
+        if (S.mood !== fresh(S)) bad = bad || `seed ${seed} show ${S.show + 1}: state.mood ${S.mood}`; }
+    }
+    check('mood memo never changes a mood (' + n + ' states × 3 rule sets, Renown 7)', !bad, bad); }
 
   /* ---------------------------------------------------------- 5. bot suite */
   let summaries = {};
@@ -417,9 +457,9 @@ async function main() {
         const wk = new Worker(fileURLToPath(import.meta.url)); pool.push(wk);
         const feed = () => { if (next < jobs.length) wk.postMessage(jobs[next++]); };
         wk.on('message', m => {
-          const job = jobs.find(j => j.id === m.id); const acc = results[job.bot] || (results[job.bot] = { recs: [], fails: [], steps: { build: [], light: [] }, shapShows: 0, shapMs: 0, replays: 0 });
-          acc.recs.push(...m.recs); acc.fails.push(...m.fails); acc.steps.build.push(m.steps.build); acc.steps.light.push(m.steps.light);
-          acc.shapShows += m.shapShows; acc.shapMs += m.shapMs; acc.replays += m.replays;
+          const job = jobs.find(j => j.id === m.id); const acc = results[job.bot] || (results[job.bot] = { recs: [], fails: [], steps: { build: [], light: [], buildRaw: [], lightRaw: [] }, shapShows: 0, shapMs: 0, replays: 0, retimed: 0 });
+          acc.recs.push(...m.recs); acc.fails.push(...m.fails); for (const k in acc.steps) acc.steps[k].push(m.steps[k]);
+          acc.shapShows += m.shapShows; acc.shapMs += m.shapMs; acc.replays += m.replays; acc.retimed += m.retimed;
           if (++done === jobs.length) { pool.forEach(p => p.terminate()); resolve(); } else feed();
         });
         wk.on('error', reject);
@@ -429,20 +469,24 @@ async function main() {
     log(`  ran ${Object.values(results).reduce((a, r) => a + r.recs.length, 0)} runs in ${((performance.now() - t0) / 1000).toFixed(1)} s`);
 
     // Invariants and step timing.
-    let stepN = 0, stepSum = 0, stepP99 = 0, stepMax = 0, lightP99 = 0, lightMax = 0, lightSum = 0, lightN = 0, shapShows = 0, shapMs = 0, replays = 0;
+    let stepN = 0, stepSum = 0, stepP99 = 0, stepMax = 0, lightP99 = 0, lightMax = 0, lightSum = 0, lightN = 0, shapShows = 0, shapMs = 0, replays = 0, retimed = 0;
+    let rawP99 = 0, rawMax = 0;
     for (const [bot, r] of Object.entries(results)) {
       r.recs.sort((a, b) => +a.seed - +b.seed);
       for (const f of r.fails) check('invariant: ' + f, false);
       if (!r.fails.length) passes++;
       for (const s of r.steps.build) { stepN += s.n; stepSum += s.sum; stepP99 = Math.max(stepP99, s.p99); stepMax = Math.max(stepMax, s.max); }
       for (const s of r.steps.light) { lightN += s.n; lightSum += s.sum; lightP99 = Math.max(lightP99, s.p99); lightMax = Math.max(lightMax, s.max); }
-      shapShows += r.shapShows; shapMs += r.shapMs; replays += r.replays;
+      for (const s of r.steps.buildRaw.concat(r.steps.lightRaw)) { rawP99 = Math.max(rawP99, s.p99); rawMax = Math.max(rawMax, s.max); }
+      shapShows += r.shapShows; shapMs += r.shapMs; replays += r.replays; retimed += r.retimed;
     }
     log(`  invariants: no NaN/Infinity, Applause < 1e300, legalActions non-empty in every build, ≤ 6 tubes, replay hash equal (${replays} runs), Shapley sums (${shapShows} shows, ${(shapMs / Math.max(1, shapShows)).toFixed(2)} ms/show)`);
     log(`  step: build actions ${(stepSum / Math.max(1, stepN) * 1000).toFixed(0)} µs mean, worst-chunk p99 ${(stepP99 * 1000).toFixed(0)} µs, max ${stepMax.toFixed(2)} ms (n=${stepN})`);
     log(`  step: light         ${(lightSum / Math.max(1, lightN) * 1000).toFixed(0)} µs mean, worst-chunk p99 ${(lightP99 * 1000).toFixed(0)} µs, max ${lightMax.toFixed(2)} ms (n=${lightN})`);
+    log(`  step: raw wall clock worst-chunk p99 ${(rawP99 * 1000).toFixed(0)} µs, max ${rawMax.toFixed(2)} ms; ${retimed} steps over ${RETIME_MS} ms re-timed on cloned pre-step states (best of ≤ 7)`);
     check('step mean ≤ 2 ms (build and light)', stepSum / Math.max(1, stepN) <= 2 && lightSum / Math.max(1, lightN) <= 2);
     check('step p99 ≤ 2 ms', Math.max(stepP99, lightP99) <= 2, Math.max(stepP99, lightP99).toFixed(3) + ' ms');
+    check('step max ≤ 4 ms (re-timed)', Math.max(stepMax, lightMax) <= 4, Math.max(stepMax, lightMax).toFixed(3) + ' ms');
 
     // Summaries against §12.2.
     for (const [bot, r] of Object.entries(results)) summaries[bot] = OOH.summarizeRuns(r.recs, { bot });

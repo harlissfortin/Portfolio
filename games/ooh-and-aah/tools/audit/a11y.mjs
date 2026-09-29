@@ -56,7 +56,9 @@
  *                  fail. The Settings "Reduced motion: On" path is checked too.
  *   (i) contrast+  The Settings High contrast control (found by name, toggled with the
  *                  keyboard) sets <html data-contrast="high">, and clearing it removes the
- *                  attribute. It also re-runs (a) in high-contrast mode and saves a screenshot.
+ *                  attribute. It also re-runs (a) in high-contrast mode, checks §13 "2 px white
+ *                  outlines to tokens and removes glows" on every visible token, and saves a
+ *                  screenshot.
  *   (j) greyscale  Screenshots the BUILD rack and shop under filter:grayscale(1). Each pair of
  *                  tokens that differ in colour must differ in pixels (shape plate), and
  *                  tokens of the same colour but different shells must have different
@@ -69,12 +71,19 @@
  *                  visibility / opacity / content / size on a descendant, a sibling or a
  *                  pseudo-element) with no :focus / :focus-visible / :focus-within twin,
  *                  plus title="" tooltips whose text is not in the accessible name.
- *                  JS pointerover / mouseenter listeners are listed as notes.
+ *                  A rule counts only if its target is hidden at rest (emphasis is cosmetic).
+ *                  Dynamic probe: every enabled control is hovered with the mouse; any new on-screen
+ *                  text that keyboard focus and the accessible name do not also give is a FAIL
+ *                  (catches JS tooltips). JS pointerover / mouseenter listeners are listed as notes.
+ *                  Runs at 360×740 and at desktop width, in BUILD and on the end screen.
  *
- *   Full interactive flow (e, f, g, i, the end screen): 360×740 and 1440×900 (see --full).
- *   Layout checks (a, b, c, d, k) run at every viewport, in BUILD show 1 and BUILD show 2
- *   (with the shop). (h) runs in its own reduced-motion context. (j) and (l) run once at
- *   the primary viewport.
+ *   Full interactive flow (e, f, g, i, overlays, the end screen): every viewport (see --full). The
+ *   primary (360×740) and desktop (≥1200 px) viewports play the run to its end (F2 workshop,
+ *   run-end announcements); the others end it at once with Abandon (keyboard, pause menu).
+ *   Layout checks (a, b, c, d, k) run at every viewport in BUILD show 1, RESOLVING, BUILD show 2
+ *   (shop + result card), every overlay and the end screen. (h) runs in its own reduced-motion
+ *   contexts. (j) runs at the primary viewport; (l) at the primary and the desktop viewport.
+ *   Findings carry the owning module (src/CONTRACT.md) so they can be routed.
  *
  * USAGE
  *   node tools/audit/a11y.mjs                       # audits ../../index.html
@@ -84,7 +93,7 @@
  *     --out <dir>          screenshots + JSON (default: games/ooh-and-aah/tools/shots/a11y)
  *     --json <path>        JSON report path (default: <out>/a11y-report.json)
  *     --viewports <list>   default 360x740,360x640,375x548,1440x900
- *     --full <list>        viewports that get the full interactive flow (default 360x740,1440x900)
+ *     --full <list>        viewports that get the full interactive flow (default: all of --viewports)
  *     --checks <letters>   subset, e.g. --checks abk (default: all a–l)
  *     --query <qs>         URL flags for the page (default "fresh=1"; e.g. "fresh=1&seed=abc")
  *     --fonts              let Google Fonts load (default: aborted, so the run is offline and
@@ -149,7 +158,7 @@ const OPTS = {
   out: path.resolve(opt('out', path.join(GAME_DIR, 'tools', 'shots', 'a11y'))),
   json: null,
   viewports: opt('viewports', '360x740,360x640,375x548,1440x900').split(',').map(s => s.trim()).filter(Boolean),
-  full: opt('full', '360x740,1440x900').split(',').map(s => s.trim()).filter(Boolean),
+  full: opt('full', opt('viewports', '360x740,360x640,375x548,1440x900')).split(',').map(s => s.trim()).filter(Boolean),
   checks: new Set((opt('checks', 'abcdefghijkl')).toLowerCase().replace(/[^a-l]/g, '').split('')),
   query: opt('query', 'fresh=1'),
   fonts: flag('fonts') && !flag('no-fonts'),
@@ -173,7 +182,7 @@ const CHECKS = {
   h: 'prefers-reduced-motion',
   i: 'High contrast → data-contrast=high',
   j: 'Greyscale token distinctness',
-  k: 'No h-scroll, #fire unclipped, no text overflow',
+  k: 'No h-scroll, #fire unclipped, no clipping',
   l: 'No hover-only information',
 };
 const SEV = { SKIP: 0, PASS: 1, REVIEW: 2, WARN: 3, FAIL: 4, ERROR: 5 };
@@ -223,7 +232,7 @@ const MODULE_FILES = {
 const SCOPE_RE = [
   ['end', /#(end|run-it-back)\b|\bend overlay/],
   ['menus', /#(pause-menu|settings|logbook|help|toasts|tap-continue)\b|\b(pause|settings|logbook|help) overlay/],
-  ['panels', /#(board|showlog)\b/],
+  ['panels', /#(board|showlog)\b|\bshowlog overlay/],
   ['play', /#(hud|hud-[\w-]+|sponsor|sky-overlay|rack|tools|shop|workshop|fire|inspect)\b|\[data-(tube|card|crate|act)[=\]]|\binspect overlay|^(HUD|Sponsor|tubes|Crate|tools|cards|workshop|Light)$/],
   ['fx', /canvas#sky|^FX\b/],
 ];
@@ -235,6 +244,7 @@ function moduleOf(check, issue, context = '') {
   if (check === 'i' && sel === 'html') return 'core';
   // overlay mechanics (open focus, trap, Esc, restore) live in core's overlay stack (GAME.open/close/trapTab)
   if (check === 'f' && /focus did not move into|focus escaped|focus not restored|did not return focus|did not restore focus|Esc did not close/.test(msg)) return 'core';
+  if (check === 'f' && /Tab landed on an element with tabindex=-1/.test(msg)) return 'core';
   if (check === 'f' && /no keyboard path opened the (pause|logbook|help|settings)/.test(msg)) return 'menus';
   if (/^html\b|^body\b|^document\b|^#app\b/.test(sel)) return 'lead';
   for (const [m, re] of SCOPE_RE) if (re.test(sel)) return m;
@@ -284,7 +294,15 @@ function pageHelpers() {
       n = n.parentElement;
       if (parts.length >= 5) break;
     }
-    return parts.join(' > ');
+    // anchor the path on the nearest ancestor id (e.g. "#board section[…] > svg"), so every finding
+    // names its container and can be routed to the owning module
+    let out = parts.join(' > ');
+    const top = parts.length ? (function up(e, k) { return k <= 0 ? e : up(e.parentElement, k - 1); })(el, parts.length - 1) : null;
+    if (!out.startsWith('#') && top && top.parentElement) {
+      const anc = top.parentElement.closest('[id]');
+      if (anc && anc !== document.body && /^[A-Za-z][\w-]*$/.test(anc.id)) out = '#' + anc.id + ' ' + out;
+    }
+    return out;
   };
   const rectOf = el => { const r = el.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; };
   H.rectOf = id => { const el = H.get(id); return el ? rectOf(el) : null; };
@@ -347,8 +365,10 @@ function pageHelpers() {
   // hard = what can never be seen (overflow hidden/clip ancestors + the non-scrolling viewport);
   // soft = what is visible right now (also scroll containers' scrollports).
   H.clipOf = (el, includeSelf = false) => {
-    const hard = { x0: 0, y0: 0, x1: innerWidth, y1: innerHeight }, soft = { ...hard };
-    const scrollers = []; let hardBy = null;
+    // hard = clipping nobody can scroll away; the viewport only counts when no scroll container
+    // (or vertically scrollable document) sits between the element and it
+    const hard = { x0: -Infinity, y0: -Infinity, x1: Infinity, y1: Infinity }, soft = { x0: 0, y0: 0, x1: innerWidth, y1: innerHeight };
+    const scrollers = []; let hardBy = null, viewportBy = false;
     let fixed = !includeSelf && getComputedStyle(el).position === 'fixed';
     for (let n = includeSelf ? el : el.parentElement; n && n !== document.documentElement && !fixed; n = n.parentElement) {
       const cs = getComputedStyle(n);
@@ -366,7 +386,12 @@ function pageHelpers() {
       apply(soft, false);
       if (scroll) scrollers.push(H.sel(n)); else if (n !== document.body) apply(hard, true);
     }
-    return { hard, soft, scrollers, hardBy: hardBy ? H.sel(hardBy) : 'viewport' };
+    const de = document.documentElement, docY = !fixed && de.scrollHeight > innerHeight + 1 && !/hidden|clip/.test(getComputedStyle(de).overflowY + getComputedStyle(document.body).overflowY);
+    if (!scrollers.length) {
+      if (hard.x0 < 0) { hard.x0 = 0; viewportBy = true; } if (hard.x1 > innerWidth) { hard.x1 = innerWidth; viewportBy = true; }
+      if (!docY) { if (hard.y0 < 0) { hard.y0 = 0; viewportBy = true; } if (hard.y1 > innerHeight) { hard.y1 = innerHeight; viewportBy = true; } }
+    }
+    return { hard, soft, scrollers, hardBy: hardBy ? H.sel(hardBy) : 'viewport', viewportClips: viewportBy };
   };
   const inter = (r, b) => { const x0 = Math.max(r.x, b.x0), y0 = Math.max(r.y, b.y0), x1 = Math.min(r.x + r.w, b.x1), y1 = Math.min(r.y + r.h, b.y1); return x1 > x0 && y1 > y0 ? { x: x0, y: y0, w: x1 - x0, h: y1 - y0 } : null; };
   // effective scale of rendered text: the composed CSS transforms / scale / zoom of el and its ancestors.
@@ -715,13 +740,14 @@ function pageHelpers() {
   H.focusInfo = scope => {
     const a = document.activeElement;
     const inside = scope ? !!(document.querySelector(scope) && a && document.querySelector(scope).contains(a)) : null;
-    if (!a || a === document.body || a === document.documentElement) return { isBody: true, inside };
-    if (a.id === '__a11y_sentinel') return { isSentinel: true, id: H.reg(a), inside };
+    const docFocus = document.hasFocus();
+    if (!a || a === document.body || a === document.documentElement) return { isBody: true, inside, docFocus };
+    if (a.id === '__a11y_sentinel') return { isSentinel: true, id: H.reg(a), inside, docFocus };
     const r = a.getBoundingClientRect();
     return {
-      id: H.reg(a), sel: H.sel(a), tag: a.tagName.toLowerCase(), group: H.groupOf(a), rect: { x: r.left, y: r.top, w: r.width, h: r.height },
+      docFocus, id: H.reg(a), sel: H.sel(a), tag: a.tagName.toLowerCase(), group: H.groupOf(a), rect: { x: r.left, y: r.top, w: r.width, h: r.height },
       fv: a.matches(':focus-visible'), name: H.accName(a).slice(0, 80), overlay: H.overlayOf(a), inside,
-      activedescendant: a.getAttribute('aria-activedescendant'), role: a.getAttribute('role'), type: a.getAttribute('type'),
+      activedescendant: a.getAttribute('aria-activedescendant'), role: a.getAttribute('role'), type: a.getAttribute('type'), tabIndex: a.tabIndex,
     };
   };
   H.focusStyle = el => {
@@ -831,7 +857,7 @@ function pageHelpers() {
   H.tokens = () => {
     const info = H.gameInfo();
     const pick = btn => {
-      const tok = [...btn.querySelectorAll('[class*="token"]')].filter(H.shown);
+      const tok = [...btn.querySelectorAll('.tok, [class*="token"]')].filter(H.shown);
       const pool = tok.length ? tok : [...btn.querySelectorAll('canvas, svg, [class*="plate"], [class*="shape"], [class*="picto"]')].filter(H.shown);
       let best = null, ba = 0;
       for (const c of pool) { const r = c.getBoundingClientRect(); const a = r.width * r.height; if (r.width >= 18 && r.height >= 18 && a > ba) { best = c; ba = a; } }
@@ -843,9 +869,32 @@ function pageHelpers() {
       for (let t; (t = tw.nextNode());) { const v = t.nodeValue.trim(); if (/^[A-Z][A-Za-z0-9]{0,2}$/.test(v) && t.parentElement && H.shown(t.parentElement)) texts.push(v); }
       return texts.find(v => v.length === 2) || texts[0] || null;
     };
-    const shapeHint = el => {
-      const s = [el, ...el.querySelectorAll('*')].map(n => ((n.getAttribute && (n.getAttribute('data-shape') || n.getAttribute('data-col'))) || '') + ' ' + (typeof n.className === 'string' ? n.className : '')).join(' ');
-      const m = s.match(/\b(circle|triangle|square|diamond|cross|star)\b/i); return m ? m[1].toLowerCase() : null;
+    // Shape of the token plate only (never the star-rating pips): an explicit data-shape, else the
+    // geometry of the plate SVG (circle / rect / a single path's vertex count / several wedges = star).
+    const vertices = d => {
+      const t = String(d || '').match(/[a-zA-Z]|-?\d*\.?\d+(?:e-?\d+)?/g) || [];
+      let n = 0, cmd = '', k = 0;
+      for (const x of t) {
+        if (/^[a-zA-Z]$/.test(x)) { cmd = x; k = 0; if (/[zZ]/.test(x)) break; continue; }
+        const per = /[hHvV]/.test(cmd) ? 1 : /[mMlLtT]/.test(cmd) ? 2 : /[sSqQ]/.test(cmd) ? 4 : /[cC]/.test(cmd) ? 6 : /[aA]/.test(cmd) ? 7 : 2;
+        if (++k % per === 0) n++;
+      }
+      return n;
+    };
+    const shapeHint = btn => {
+      const tok = btn.querySelector('.tok, [class*="token"]') || btn;
+      const ds = tok.closest('[data-shape]') || tok.querySelector('[data-shape]');
+      if (ds) return ds.getAttribute('data-shape').toLowerCase();
+      const svg = tok.querySelector('svg[class*="plate"], svg');
+      if (!svg) return null;
+      const kids = [...svg.querySelectorAll('circle, ellipse, rect, path, polygon')];
+      if (!kids.length) return null;
+      if (kids.length >= 3) return 'star';
+      const k = kids[0], tag = k.tagName.toLowerCase();
+      if (tag === 'circle' || tag === 'ellipse') return 'circle';
+      if (tag === 'rect') return (parseFloat(k.getAttribute('rx')) || 0) > 0 ? 'rounded square' : 'square';
+      const v = tag === 'polygon' ? (k.getAttribute('points') || '').trim().split(/[\s,]+/).length / 2 : vertices(k.getAttribute('d'));
+      return v === 3 ? 'triangle' : v === 4 ? 'diamond' : v === 12 ? 'cross' : v >= 10 ? 'star' : `polygon(${v})`;
     };
     const out = [];
     for (const btn of document.querySelectorAll('button[data-tube], [data-tube][role="button"]')) {
@@ -867,7 +916,7 @@ function pageHelpers() {
 
   /* ---------- (l) hover ---------- */
   H.hoverScan = () => {
-    const out = { rules: [], cosmetic: 0, total: 0, titles: [], unreadable: [] };
+    const out = { rules: [], cosmetic: 0, total: 0, titles: [], unreadable: [], verified: [] };
     const REVEAL = /^(display|visibility|opacity|content|max-height|height|max-width|width|clip|clip-path|inset|top|left|right|bottom|overflow|overflow-x|overflow-y|-webkit-line-clamp|pointer-events)$/;
     const all = [];
     const walk = (rules, media) => {
@@ -890,11 +939,30 @@ function pageHelpers() {
         const after = s.slice(s.lastIndexOf(':hover') + 6);
         const targetsOther = /[\s>+~]/.test(after.replace(/^\([^)]*\)/, '').trimEnd()) || /::?(before|after)/.test(after);
         const hard = reveal.filter(p => /^(display|visibility|content|-webkit-line-clamp)$/.test(p));
-        const isReveal = hard.length > 0 || (reveal.length > 0 && targetsOther);
+        let isReveal = hard.length > 0 || (reveal.length > 0 && targetsOther);
+        // A rule only reveals information if what it targets is hidden at rest. Emphasis rules
+        // (a dimmed bar going from opacity .5 to 1, display:block → flex) are cosmetic.
+        let unverified = false;
+        if (isReveal && !/::?(before|after)/.test(after) && !(hard.includes('content') && r.style.getPropertyValue('content') !== 'none' && r.style.getPropertyValue('content') !== '""')) {
+          let targets = null;
+          try { targets = [...document.querySelectorAll(s.replace(/:hover/g, ''))]; } catch (e) { targets = null; }
+          if (targets && targets.length) {
+            // test only the properties the rule changes, on the element itself (so a closed
+            // overlay around it does not count as "hidden at rest")
+            const has = re => reveal.some(p => re.test(p));
+            const hiddenAtRest = el => {
+              const cs = getComputedStyle(el), rendered = el.getClientRects().length > 0, rc = el.getBoundingClientRect();
+              return (has(/^display$/) && cs.display === 'none') || (has(/^visibility$/) && cs.visibility !== 'visible') ||
+                (has(/^opacity$/) && parseFloat(cs.opacity) < 0.3) || has(/line-clamp|^clip|^overflow|^inset|^(top|left|right|bottom)$/) ||
+                (has(/(^|-)(height|width)$/) && rendered && (rc.width < 2 || rc.height < 2));
+            };
+            if (!targets.some(hiddenAtRest)) { out.cosmetic++; out.verified.push(s); continue; }
+          } else unverified = true;
+        }
         if (!isReveal) { out.cosmetic++; continue; }
         const twins = [':focus', ':focus-visible', ':focus-within', ':active'].map(f => s.replace(/:hover/g, f));
         const hasTwin = twins.some(t => selectors.has(t)) || (r.selectorText || '').split(',').some(x => /:focus/.test(x));
-        out.rules.push({ selector: s, props: reveal.map(p => p + ':' + r.style.getPropertyValue(p)).join('; '), media: media || null, hasFocusTwin: hasTwin, targetsOther });
+        out.rules.push({ selector: s, props: reveal.map(p => p + ':' + r.style.getPropertyValue(p)).join('; '), media: media || null, hasFocusTwin: hasTwin, targetsOther, unverified });
       }
     }
     for (const el of document.querySelectorAll('#app [title]')) {
@@ -905,6 +973,47 @@ function pageHelpers() {
     }
     return out;
   };
+
+  /** §13 high contrast: every visible token gets a 2 px white outline and loses its glows. */
+  H.hcTokens = () => {
+    const white = c => { const x = H.color(c); return x.a > 0.9 && x.r > 240 && x.g > 240 && x.b > 240; };
+    const out = [];
+    for (const tok of document.querySelectorAll('#rack .tok, #shop .tok, #workshop .tok')) {
+      if (!H.shown(tok)) continue;
+      const plate = tok.querySelector('.tok-plate *, svg *');
+      const tcs = getComputedStyle(tok);
+      let outline = null;
+      if (plate) {
+        const pcs = getComputedStyle(plate), svg = plate.ownerSVGElement;
+        const unit = svg && svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width ? svg.getBoundingClientRect().width / svg.viewBox.baseVal.width : 1;
+        const w = (parseFloat(pcs.strokeWidth) || 0) * unit;
+        if (pcs.stroke !== 'none' && white(pcs.stroke) && w >= 1) outline = `plate stroke ${pcs.stroke} ${w.toFixed(1)}px`;
+      }
+      if (!outline && tcs.outlineStyle !== 'none' && white(tcs.outlineColor) && parseFloat(tcs.outlineWidth) >= 1.5) outline = 'outline';
+      if (!outline && /rgb\(25[0-5], 25[0-5], 25[0-5]\)[^,]*\b0px 0px 0px [12]/.test(tcs.boxShadow)) outline = 'box-shadow ring';
+      const glows = [];
+      for (const n of [tok, ...tok.querySelectorAll('*')]) {
+        const cs = getComputedStyle(n);
+        if (/drop-shadow|blur\(/.test(cs.filter)) glows.push(`${H.sel(n)} filter ${cs.filter.slice(0, 40)}`);
+        if (cs.boxShadow !== 'none' && /\d+px \d+px [1-9]\d*px/.test(cs.boxShadow)) glows.push(`${H.sel(n)} box-shadow`);
+        if (cs.textShadow !== 'none') glows.push(`${H.sel(n)} text-shadow`);
+      }
+      out.push({ sel: H.sel(tok.closest('button') || tok), outline, glows: glows.slice(0, 2) });
+    }
+    return out;
+  };
+  /** Visible text on screen (shown text nodes + tooltip-ish elements), for the dynamic hover probe. */
+  H.textSnap = () => {
+    const out = new Set();
+    const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let t; (t = tw.nextNode());) {
+      const v = t.nodeValue.replace(/\s+/g, ' ').trim(); if (!v || v.length < 2) continue;
+      const p = t.parentElement; if (!p || p.closest('#live-polite, #live-assertive, .vh, script, style')) continue;
+      if (H.shown(p) && !H.isVH(p)) out.add(v.slice(0, 80));
+    }
+    return [...out];
+  };
+  H.hoverTargets = scope => H.controls(scope).filter(c => !c.nativeDisabled).map(c => ({ id: c.id, sel: c.sel, rect: c.rect, name: H.accName(H.get(c.id) || document.body) }));
 
   /* ---------- live regions ---------- */
   H.liveRegions = () => ['live-polite', 'live-assertive'].map(id => {
@@ -1062,10 +1171,11 @@ async function waitOpen(page, sel, want = true, timeout = 2500) {
   while (Date.now() - t0 < timeout) { if ((await isOpen(page, sel)) === want) return true; await sleep(80); }
   return false;
 }
-async function dismissTapContinue(page) {
+async function dismissTapContinue(page, expected = false) {
   const s = await uiState(page);
   if (s.top === 'tapContinue' || (await isOpen(page, '#tap-continue'))) {
-    REPORT.notes.push('tap-to-continue overlay appeared (window blur); dismissed with Enter');
+    if (!expected) REPORT.notes.push('tap-to-continue overlay appeared (window blur); dismissed with Enter');
+    await page.evaluate(() => { const b = document.querySelector('#tap-continue button'); if (b) b.focus(); }).catch(() => {});
     await page.keyboard.press('Enter').catch(() => {});
     await sleep(150);
     if (await isOpen(page, '#tap-continue')) await page.click('#tap-continue', { timeout: 1500 }).catch(() => {});
@@ -1205,7 +1315,7 @@ async function contrastAudit(G, label, scope, doing = { a: want('a'), d: want('d
       if (it.bg.kind === 'css') {
         if (it.bg.ratio != null && it.bg.ratio < it.required - 0.005) {
           const halo = it.halo && it.halo.ratio >= it.required;
-          issues.push({ level: halo ? 'REVIEW' : 'FAIL', sel: it.sel, msg: `contrast ${fx(it.bg.ratio, 2)}:1 < ${it.required}:1` + (halo ? ` against the background; passes only via its ${it.halo.kind} halo ${it.halo.color} (${fx(it.halo.ratio, 2)}:1): check visually` : ''), text: it.text, fg: it.fgHex, bg: it.bg.bgHex, via: it.bg.via, size: fx(it.eff), weight: it.weight });
+          issues.push({ level: halo ? 'REVIEW' : 'FAIL', sel: it.sel, msg: `contrast ${fx(it.bg.ratio, 2)}:1 < ${it.required}:1 (text ${it.fgHex} on ${it.bg.bgHex}, ${fx(it.eff)}px${it.weight >= 600 ? ' bold' : ''}, "${String(it.text || '').slice(0, 30)}")` + (halo ? ` against the background; passes only via its ${it.halo.kind} halo ${it.halo.color} (${fx(it.halo.ratio, 2)}:1): check visually` : ''), text: it.text, fg: it.fgHex, bg: it.bg.bgHex, via: it.bg.via, size: fx(it.eff), weight: it.weight });
         }
       } else {
         const e = est[nv.indexOf(it)];
@@ -1323,19 +1433,25 @@ async function layoutAudit(G, label, { scope = null, checks = 'abcdk', fire } = 
 const RANK = { HUD: 0, Sponsor: 1, tubes: 2, Crate: 3, tools: 4, cards: 5, workshop: 6, Light: 7 };
 async function tabWalk(page, { scope = null, max = 120, shift = false } = {}) {
   const stops = [], escapes = [];
-  let bodies = 0, cycled = false, first = null;
+  let bodies = 0, cycled = false, first = null, leftPage = false;
+  const after = () => (stops.length ? ` (after ${stops[stops.length - 1].sel})` : '');
   for (let i = 0; i < max; i++) {
     await page.keyboard.press(shift ? 'Shift+Tab' : 'Tab');
     const fi = await page.evaluate(s => window.__A11Y.focusInfo(s), scope);
+    // Tab past the last stop moves focus to the browser UI (window blur). Unscoped, that is the
+    // natural end of the document cycle; inside an open overlay it means the trap leaked.
+    if (fi.docFocus === false) { leftPage = true; if (scope) escapes.push('the browser UI (left the page)' + after()); else cycled = true; break; }
     if (fi.isSentinel) { cycled = true; break; }
-    if (fi.isBody) { if (scope) { escapes.push('body'); break; } if (++bodies > 1) break; continue; }
-    if (scope && !fi.inside) { escapes.push(fi.sel); break; }
+    if (fi.isBody) { if (scope) { escapes.push('body' + after()); break; } if (++bodies > 1) break; continue; }
+    if (scope && !fi.inside) { escapes.push(fi.sel + after()); break; }
     if (first == null) first = fi.id;
     else if (fi.id === first) { cycled = true; break; }
     if (stops.some(s => s.id === fi.id)) { cycled = true; break; }
     stops.push(fi);
   }
-  return { stops, escapes, cycled };
+  // leaving the page blurs the window, which opens the game's tap-to-continue pause (core onHidden)
+  if (leftPage) await dismissTapContinue(page, true);
+  return { stops, escapes, cycled, leftPage };
 }
 function styleIndicator(u, f) {
   const out = [];
@@ -1353,6 +1469,7 @@ function styleIndicator(u, f) {
 async function focusVisibleAudit(G, stops, label) {
   const { page, vp } = G;
   const issues = [], perStop = [];
+  await dismissTapContinue(page);
   for (const s of stops) {
     if (overBudget(30)) { perStop.push({ sel: s.sel, verdict: 'not checked (time budget)' }); continue; }
     const prep = await page.evaluate(id => window.__A11Y.prepFocus(id), s.id).catch(() => null);
@@ -1471,7 +1588,7 @@ async function keyboardBuild(G, label) {
   return stops;
 }
 
-const OVERLAY_SEL = { pause: '#pause-menu', settings: '#settings', logbook: '#logbook', help: '#help', inspect: '#inspect', end: '#end' };
+const OVERLAY_SEL = { pause: '#pause-menu', settings: '#settings', logbook: '#logbook', help: '#help', inspect: '#inspect', showlog: '#showlog', end: '#end' };
 async function pressAndWait(page, key, sel) { await page.keyboard.press(key).catch(() => {}); return waitOpen(page, sel, true, 1500); }
 async function findInOverlay(page, scope, re) {
   const ctrls = await H(page, s => window.__A11Y.controls(s), scope);
@@ -1498,6 +1615,10 @@ async function auditOverlay(G, name, openers, { close = true, expectFocus = null
   if (!how) { if (want('f')) record('f', vp, label, { issues: [{ level: 'FAIL', sel, msg: `could not open the ${name} overlay (tried ${openers.map(o => o.name).join(', ')}, GAME.open)` }], notes: fNotes }); return null; }
   fNotes.push('opened via ' + how);
   await sleep(350);
+  // core's Tab trap and Esc only apply to the top of GAME's overlay stack
+  const stackTop = await page.evaluate(() => { try { return typeof GAME !== 'undefined' && typeof GAME.top === 'function' ? GAME.top() : undefined; } catch (e) { return undefined; } }).catch(() => undefined);
+  fNotes.push(`GAME.top() = ${JSON.stringify(stackTop)}`);
+  if (stackTop !== undefined && stackTop !== name) fIssues.push({ level: 'WARN', sel, msg: `the ${name} overlay is visible but GAME.top() is ${JSON.stringify(stackTop)} (core's Tab trap and Esc act on the top entry)` });
   await shot(page, `${vp}-${name}`);
   const fi0 = await page.evaluate(s => window.__A11Y.focusInfo(s), sel);
   if (!fi0.inside) fIssues.push({ level: 'FAIL', sel, msg: `focus did not move into the overlay on open (activeElement: ${fi0.sel || 'body'})` });
@@ -1510,6 +1631,16 @@ async function auditOverlay(G, name, openers, { close = true, expectFocus = null
   const fwd = await tabWalk(page, { scope: sel, max: 80 });
   const back = await tabWalk(page, { scope: sel, max: Math.max(6, fwd.stops.length + 3), shift: true });
   for (const e of [...fwd.escapes, ...back.escapes]) fIssues.push({ level: 'FAIL', sel, msg: `focus escaped the open overlay to ${e} (focus trap)` });
+  const allStops = [...fwd.stops, ...back.stops];
+  // Tab landing on an element the browser itself never tabs to (tabindex=-1) means a script trap
+  // wrapped focus onto it: its focusable list is too broad (e.g. 'button:not([disabled])' keeps
+  // roving tabindex="-1" radios), which also makes its first/last test misfire and leak focus.
+  const ghostStops = allStops.filter(x => x.tabIndex != null && x.tabIndex < 0);
+  for (const g of ghostStops.slice(0, 2)) fIssues.push({ level: 'FAIL', sel: g.sel, msg: `Tab landed on an element with tabindex=-1 inside the ${name} overlay (the trap's focusable list includes non-tabbable elements; the core FOCUSABLE selector should exclude [tabindex="-1"])` });
+  if ((fwd.escapes.length || back.escapes.length) && ghostStops.length) {
+    const i = fIssues.find(x => /focus escaped/.test(x.msg));
+    if (i) i.msg += `; cause: the trap's list starts/ends with non-tabbable tabindex=-1 elements (${ghostStops.slice(0, 2).map(g => g.sel).join('; ')}), so Shift+Tab from the first real stop (or Tab from the last) is not caught`;
+  }
   if (!fwd.cycled && !fwd.escapes.length) fNotes.push('forward Tab walk did not cycle within 80 stops');
   const stopIds = new Set([...fwd.stops, ...back.stops].map(s => s.id));
   if (fi0.id) stopIds.add(fi0.id);
@@ -1702,14 +1833,50 @@ async function hoverAudit(G, label) {
   const r = await H(page, () => window.__A11Y.hoverScan());
   const issues = [], notes = [];
   for (const x of r.rules) {
-    issues.push({ level: x.hasFocusTwin ? 'WARN' : 'FAIL', sel: x.selector, msg: `:hover reveals content (${x.props})` + (x.hasFocusTwin ? '; has a :focus twin, but touch has no hover' : '; no :focus/:focus-visible/:focus-within twin') + (x.media ? ` [@${x.media}]` : '') });
+    issues.push({ level: x.hasFocusTwin || x.unverified ? 'WARN' : 'FAIL', sel: x.selector, unverified: x.unverified || undefined, msg: `:hover reveals content (${x.props})` + (x.hasFocusTwin ? '; has a :focus twin, but touch has no hover' : '; no :focus/:focus-visible/:focus-within twin') + (x.media ? ` [@${x.media}]` : '') + (x.unverified ? ' (no element matches right now, so its resting state was not verified)' : '') });
   }
   for (const t of r.titles) issues.push({ level: 'WARN', sel: t.sel, msg: `title tooltip "${t.title}" is hover-only (not in the accessible name or visible text)` });
   if (r.unreadable.length) notes.push('stylesheets not scannable (cross-origin): ' + r.unreadable.join(', '));
   notes.push(`${r.total} :hover selector(s) scanned, ${r.cosmetic} cosmetic only`);
   const js = await hoverListeners(page);
   if (js.length) notes.push('JS hover listeners (review what they show): ' + js.map(l => l.error ? l.error : `${l.type} on ${l.sel}`).join('; '));
-  record('l', vp, label, { issues, notes, stats: { hoverRules: r.total, cosmetic: r.cosmetic, jsListeners: js } });
+  // Dynamic probe: hover each enabled control; any new on-screen text that neither keyboard focus
+  // nor the control's accessible name provides is hover-only information (JS tooltips included).
+  const probe = await hoverProbe(G, label.startsWith('end') ? '#end' : null);
+  issues.push(...probe.issues); notes.push(...probe.notes);
+  record('l', vp, label, { issues, notes, stats: { hoverRules: r.total, cosmetic: r.cosmetic, jsListeners: js, probed: probe.probed, verifiedCosmetic: r.verified } });
+}
+async function hoverProbe(G, scope, max = 28) {
+  const { page } = G;
+  const issues = [], notes = [];
+  const snap = () => page.evaluate(() => window.__A11Y.textSnap()).catch(() => []);
+  const park = async () => { await page.mouse.move(G.w - 2, 2).catch(() => {}); await page.evaluate(() => window.__A11Y.blurActive()).catch(() => {}); await sleep(120); };
+  const targets = (await page.evaluate(s => window.__A11Y.hoverTargets(s), scope).catch(() => [])).filter(t => t.rect.w > 0 && t.rect.h > 0 && t.rect.y >= 0 && t.rect.y + t.rect.h <= G.h).slice(0, max);
+  await park();
+  const a = new Set(await snap()); await sleep(200); const b = new Set(await snap());
+  const noise = new Set([...a].filter(x => !b.has(x)).concat([...b].filter(x => !a.has(x))));
+  let probed = 0;
+  for (const t of targets) {
+    if (overBudget(30)) { notes.push('hover probe stopped early (time budget)'); break; }
+    await park();
+    const base = new Set(await snap());
+    await page.mouse.move(t.rect.x + t.rect.w / 2, t.rect.y + t.rect.h / 2).catch(() => {});
+    await sleep(450);
+    const onHover = (await snap()).filter(x => !base.has(x) && !noise.has(x));
+    await park();
+    if (!onHover.length) { probed++; continue; }
+    await page.keyboard.press('Shift').catch(() => {}); // keyboard modality → :focus-visible
+    await page.evaluate(id => window.__A11Y.focusId(id), t.id).catch(() => {});
+    await sleep(450);
+    const onFocus = new Set(await snap());
+    const name = String(t.name || '').toLowerCase();
+    const only = onHover.filter(x => !onFocus.has(x) && !name.includes(x.toLowerCase()));
+    if (only.length) issues.push({ level: 'FAIL', sel: t.sel, msg: `hovering shows text that keyboard focus and the accessible name do not: ${only.slice(0, 3).map(x => `"${x}"`).join(', ')}` });
+    probed++;
+  }
+  await park();
+  notes.push(`hover probe: ${probed} control(s) hovered${scope ? ' in ' + scope : ''}`);
+  return { issues, notes, probed };
 }
 
 /* ============================================================================
@@ -1837,10 +2004,9 @@ async function auditViewport(vp, full) {
     if (buy.ok && buy.via && !/pointer/.test(buy.via)) REPORT.notes.push(`${vp}: purchase made via ${buy.via}`);
     await sleep(300);
     marks.afterBuy = (await liveLog(page)).length;
-    if (vp === PRIMARY) {
-      await guard('j', vp, 'BUILD show 2', () => greyscaleAudit(G, 'BUILD show 2'));
-      await guard('l', vp, 'BUILD show 2', () => hoverAudit(G, 'BUILD show 2'));
-    }
+    if (vp === PRIMARY) await guard('j', vp, 'BUILD show 2', () => greyscaleAudit(G, 'BUILD show 2'));
+    // hover: the phone layout and the desktop layout (where a mouse is the norm)
+    if (vp === PRIMARY || G.w >= 1200) await guard('l', vp, 'BUILD show 2', () => hoverAudit(G, 'BUILD show 2'));
     if (!full) {
       await guard('g', vp, 'scripted show', async () => {
         const log = await liveLog(page);
@@ -1924,6 +2090,15 @@ async function auditViewport(vp, full) {
           await sleep(200);
           await shot(page, `${vp}-high-contrast`);
           await layoutAudit(G, 'BUILD (high contrast)', { checks: 'a' });
+          await guard('i', vp, 'high contrast tokens (§13)', async () => {
+            const toks = await H(page, () => window.__A11Y.hcTokens());
+            const issues = [];
+            for (const t of toks) {
+              if (!t.outline) issues.push({ level: 'FAIL', sel: t.sel, msg: 'high contrast: token has no 2 px white outline (§13: "adds 2 px white outlines to tokens")' });
+              if (t.glows.length) issues.push({ level: 'WARN', sel: t.sel, msg: `high contrast: token still has a glow (§13: "removes glows"): ${t.glows.join('; ')}` });
+            }
+            record('i', vp, 'high contrast tokens (§13)', toks.length ? { issues, notes: [`${toks.length} token(s) checked`] } : { skip: 'no tokens on screen' });
+          });
           await guard('i', vp, 'high contrast off', async () => {
             const r = await page.evaluate(() => window.__A11Y.game('setSetting', 'highContrast', false));
             await sleep(200);
@@ -1957,11 +2132,20 @@ async function auditViewport(vp, full) {
         await auditOverlay(G, 'inspect', [{ name: 'key I on a tube', run: async () => { await page.evaluate(s => window.__A11Y.focusSel(s), tube); await page.keyboard.press('i'); } }], { restoreTo: tube });
       }
       for (let k = 0; k < 4; k++) { const t = (await uiState(page)).top; if (!t) break; await page.keyboard.press('Escape'); await sleep(150); }
+      // show log: a bottom sheet below 1200 px (opened from the result card's Applause), a side panel above
+      if (G.w < 1200) {
+        const logBtn = '[data-res="log"]';
+        if (await page.evaluate(s => { const e = document.querySelector(s); return !!e && window.__A11Y.shown(e); }, logBtn)) {
+          await auditOverlay(G, 'showlog', [{ name: 'Enter on the result card Applause', run: async () => { if (!(await page.evaluate(s => window.__A11Y.focusSel(s), logBtn))) return false; await page.keyboard.press('Enter'); } }], { restoreTo: logBtn });
+        } else if (want('f')) record('f', vp, 'showlog overlay', { skip: 'no result-card Applause button on screen to open the show log from' });
+      }
+      for (let k = 0; k < 4; k++) { const t = (await uiState(page)).top; if (!t) break; await page.keyboard.press('Escape'); await sleep(150); }
     }
 
     // ---- play on to the run end (F2 workshop state on the way, g assertive, end overlay)
     let ended = false, sawF2 = false, rainCheck = false, endT = 0, shows = 0;
-    for (; shows < 12; shows++) {
+    const maxShows = vp === PRIMARY || G.w >= 1200 ? 12 : 0; // other viewports: straight to Abandon
+    for (; shows < maxShows; shows++) {
       if (overBudget(45)) { REPORT.notes.push(`${vp}: stopped playing after ${shows + 1} show(s) (time budget); ending the run by Abandon`); break; }
       const st = await uiState(page);
       if (st.ui === 'END' || (await isOpen(page, '#end'))) { ended = true; break; }
@@ -2015,6 +2199,7 @@ async function auditViewport(vp, full) {
     if (ended) {
       await waitOpen(page, '#end', true, 4000);
       const endRes = await auditOverlay(G, 'end', [{ name: 'run end (automatic)', run: async () => true }], { close: false, expectFocus: '#run-it-back' });
+      if (vp === PRIMARY || G.w >= 1200) await guard('l', vp, 'end overlay', () => hoverAudit(G, 'end overlay'));
       if (endRes && want('f')) {
         await page.evaluate(() => window.__A11Y.focusSel('#run-it-back'));
         await page.keyboard.press('Enter');
@@ -2052,6 +2237,20 @@ function buildTable() {
   }
   return rows;
 }
+/** Cross-run cleanup: a :hover rule that could not be verified in one state (its elements did not
+ *  exist yet) but was verified cosmetic in another (e.g. the end screen) is dropped. */
+function finalizeRuns() {
+  const cosmetic = new Set(REPORT.runs.filter(r => r.check === 'l' && r.stats && r.stats.verifiedCosmetic).flatMap(r => r.stats.verifiedCosmetic));
+  for (const run of REPORT.runs) {
+    if (run.check !== 'l' || run.error || run.status === 'SKIP') continue;
+    const before = run.issues.length;
+    run.issues = run.issues.filter(i => !(i.unverified && cosmetic.has(i.sel)));
+    if (run.issues.length !== before) {
+      run.notes.push(`${before - run.issues.length} unverified :hover rule(s) dropped: verified cosmetic in another state`);
+      run.status = worst(['PASS', ...run.issues.map(i => (i.level === 'INFO' ? 'PASS' : i.level))]);
+    }
+  }
+}
 /** Deduplicated FAIL/WARN/REVIEW/ERROR findings grouped by owning module (for routing fixes). */
 function moduleSummary() {
   const out = {};
@@ -2061,11 +2260,14 @@ function moduleSummary() {
       if (i.level === 'INFO' || i.level === 'PASS') continue;
       const m = i.module || moduleOf(run.check, i, run.context);
       const g = out[m] = out[m] || { files: MODULE_FILES[m] || m, counts: {}, findings: [] };
-      const key = `${run.check}|${i.level}|${i.sel}|${String(i.msg).replace(/[\d.]+(px|:1|ms|\/255)?/g, '#')}`;
+      // siblings (…:nth-of-type(n)) with the same problem collapse into one finding
+      const selN = String(i.sel).replace(/:nth-of-type\(\d+\)/g, '');
+      const key = `${run.check}|${i.level}|${selN}|${String(i.msg).replace(/"[^"]*"/g, '"…"').replace(/[\d.]+(px|:1|ms|\/255)?/g, '#')}`;
       let f = g.findings.find(x => x.key === key);
-      if (!f) { f = { key, check: run.check, level: i.level, sel: i.sel, msg: i.msg, where: [] }; g.findings.push(f); g.counts[i.level] = (g.counts[i.level] || 0) + 1; }
+      if (!f) { f = { key, check: run.check, level: i.level, sel: i.sel, msg: i.msg, where: [], sels: [] }; g.findings.push(f); g.counts[i.level] = (g.counts[i.level] || 0) + 1; }
       const w = `${run.viewport} ${run.context}`;
       if (!f.where.includes(w)) f.where.push(w);
+      if (!f.sels.includes(i.sel)) f.sels.push(i.sel);
     }
   }
   for (const g of Object.values(out)) { g.findings.sort((a, b) => SEV[b.level] - SEV[a.level] || a.check.localeCompare(b.check)); for (const f of g.findings) delete f.key; }
@@ -2080,7 +2282,8 @@ function printModules(mods) {
     lines.push(`  [${m}] ${g.files}: ${order.filter(l => g.counts[l]).map(l => `${g.counts[l]} ${l}`).join(', ')}`);
     for (const f of g.findings.filter(x => x.level !== 'REVIEW').slice(0, 25)) {
       const where = f.where.length > 3 ? `${f.where.slice(0, 3).join('; ')} (+${f.where.length - 3})` : f.where.join('; ');
-      lines.push(`    ${f.level.padEnd(5)} (${f.check}) ${f.sel}: ${f.msg.slice(0, 220)}  @ ${where}`);
+      const many = f.sels.length > 1 ? ` [×${f.sels.length} elements]` : '';
+      lines.push(`    ${f.level.padEnd(5)} (${f.check}) ${f.sel}${many}: ${f.msg.slice(0, 480)}  @ ${where}`);
     }
     const more = g.findings.filter(x => x.level !== 'REVIEW').length - 25;
     if (more > 0) lines.push(`    … ${more} more in the JSON report (byModule.${m})`);
@@ -2174,7 +2377,7 @@ async function main() {
   const watchdog = setTimeout(() => {
     console.error(`a11y audit: watchdog fired (budget ${OPTS.budget}s + 90s); writing the partial report`);
     REPORT.notes.push(`WATCHDOG: the run exceeded ${OPTS.budget + 90}s and was cut short; later checks are missing`);
-    try { const rows = buildTable(); REPORT.table = rows; REPORT.screenshots = SHOTS; printReport(rows); } catch (e) { /* ignore */ }
+    try { finalizeRuns(); const rows = buildTable(); REPORT.table = rows; REPORT.screenshots = SHOTS; printReport(rows); } catch (e) { /* ignore */ }
     REPORT.summary = { status: 'ERROR', error: 'watchdog timeout', seconds: +((Date.now() - T0) / 1000).toFixed(1) };
     try { fs.writeFileSync(OPTS.json, JSON.stringify(REPORT, null, 2)); } catch (e) { /* ignore */ }
     process.exit(2);
@@ -2205,6 +2408,7 @@ async function main() {
     await BROWSER.close().catch(() => {});
     SERVER.close();
   }
+  finalizeRuns();
   const rows = buildTable();
   REPORT.table = rows;
   REPORT.screenshots = SHOTS;

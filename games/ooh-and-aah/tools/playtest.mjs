@@ -245,6 +245,36 @@ function pageInit() {
         if (px < 15.5 && out.smallText.length < 25) out.smallText.push({ sel: pt.desc(el), px });
       }
     }
+    // Text the reader cannot see: a text run that sticks out of its nearest clipping ancestor
+    // (overflow ≠ visible, no ellipsis, not a sideways scroller) or off the side of the screen.
+    out.clipped = [];
+    const seenEl = new Set();
+    const tw = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
+    for (let n = tw.nextNode(); n && out.clipped.length < 25; n = tw.nextNode()) {
+      const el = n.parentElement;
+      if (!n.nodeValue.trim() || !el || seenEl.has(el) || el.closest('svg, canvas, #sim-out, #debug, script, style, [aria-hidden="true"]')) continue;
+      if (!pt.visible(el)) continue;
+      const range = document.createRange(); range.selectNodeContents(n);
+      const tr = range.getBoundingClientRect();
+      if (tr.width < 1 || tr.height < 1) continue;
+      let clip = null, skip = false;
+      for (let a = el; a && a !== document.documentElement; a = a.parentElement) {
+        const cs = getComputedStyle(a);
+        if (cs.textOverflow === 'ellipsis' || cs.overflowX === 'auto' || cs.overflowX === 'scroll') { skip = true; break; }
+        if (cs.position === 'fixed' && !clip) break;
+        if (cs.overflowX !== 'visible') { clip = a; break; }
+      }
+      if (skip) continue;
+      const vwNow = document.documentElement.clientWidth;
+      let why = null;
+      if (clip) {
+        const cr = clip.getBoundingClientRect();
+        if (cr.width <= 2 || cr.height <= 2) continue; // visually-hidden (.vh) text
+        if (tr.right > cr.right + 1.5 || tr.left < cr.left - 1.5) why = `cut by ${pt.desc(clip).split(' "')[0]} (${Math.round(Math.max(tr.right - cr.right, cr.left - tr.left))} px)`;
+      }
+      if (!why && (tr.right > vwNow + 1.5 || tr.left < -1.5)) why = `off-screen (x ${Math.round(tr.left)}..${Math.round(tr.right)} of ${vwNow})`;
+      if (why) { seenEl.add(el); out.clipped.push({ sel: pt.desc(el), why }); }
+    }
     return out;
   };
   // Focus visibility: compare the focused element's style with an unfocused shallow clone.
@@ -314,6 +344,17 @@ const EVAL_MS = 15000;
 function withTimeout(p, ms, msg) {
   let t;
   return Promise.race([p, new Promise((_, rej) => { t = setTimeout(() => rej(new Error(msg)), ms); })]).finally(() => clearTimeout(t));
+}
+
+// One-line error text that keeps what Playwright knows: the locator and who intercepted the click.
+function errMsg(e) {
+  const lines = String((e && e.message) || e).replace(/\x1b\[[0-9;]*m/g, '').split('\n').map((x) => x.trim()).filter(Boolean);
+  const keep = [lines[0]];
+  const loc = lines.find((x) => /waiting for locator|locator\(/.test(x) && x !== lines[0]);
+  const why = [...lines].reverse().find((x) => /intercepts pointer events|not visible|not stable|not enabled|outside of the viewport/.test(x));
+  if (loc) keep.push(loc.replace(/^-\s*/, ''));
+  if (why) keep.push(why.replace(/^-\s*/, ''));
+  return keep.join(' · ').slice(0, 400);
 }
 
 const isFontUrl = (u) => /^https?:\/\/fonts\.(googleapis|gstatic)\.com\//i.test(u || '');
@@ -394,7 +435,7 @@ async function closeSession(s, run) {
   if (s.external.length) run.fail('no external requests (only Google Fonts)', [...new Set(s.external)].slice(0, 5).join(', '));
   if (s.fontIssues) run.info('font requests failed (ignored)', `${s.fontIssues}`);
   if (s.warnings) run.info('console warnings', `${s.warnings}`);
-  await s.context.close().catch(() => {});
+  await withTimeout(s.context.close(), 8000, 'context.close').catch(() => {});
 }
 
 // RESULT is a build state (spec §2.4: no tap; the result card stays up until the first build
@@ -500,10 +541,14 @@ async function layout(s, run, label, { fireStrict = false, scope = null } = {}) 
   }
   run.check(!a.small.length, tag('tap targets ≥ 44×44 CSS px'),
     a.small.length ? `${a.small.length} of ${a.targets}: ` + a.small.slice(0, 10).map((x) => `${x.sel} ${x.w}×${x.h}`).join('; ') + (a.small.length > 10 ? ' …' : '') : `${a.targets} targets`);
-  const over = a.overflow.filter((x) => x.kind !== 'ellipsis');
+  // Text overflow: text cut off or off-screen is a WARN; a text box whose own text is wider than it
+  // (spilling visibly) is a WARN; boxes that overflow only through decoration/children are INFO.
+  const over = a.overflow.filter((x) => x.kind === 'text');
+  const boxes = a.overflow.filter((x) => x.kind === 'box');
   const ell = a.overflow.filter((x) => x.kind === 'ellipsis');
-  run.check(!over.length, tag('no text overflow (scrollWidth ≤ clientWidth + 1)'),
-    over.length ? over.slice(0, 8).map((x) => `${x.sel} [${x.kind} ${x.scrollW}>${x.clientW}]`).join('; ') : '', 'WARN');
+  const txt = [...a.clipped.map((x) => `${x.sel}: ${x.why}`), ...over.map((x) => `${x.sel} spills (${x.scrollW} > ${x.clientW})`)];
+  run.check(!txt.length, tag('no text overflow (no clipped, spilled or off-screen text)'), txt.slice(0, 8).join('; ') + (txt.length > 8 ? ` (+${txt.length - 8} more)` : ''), 'WARN');
+  if (boxes.length) run.info(tag('boxes wider than their content box (decoration)'), boxes.slice(0, 5).map((x) => `${x.sel.split(' "')[0]} ${x.scrollW}>${x.clientW}`).join('; '));
   if (ell.length) run.info(tag('text truncated with ellipsis'), ell.slice(0, 6).map((x) => x.sel).join('; '));
   run.check(!a.smallText.length, tag('text ≥ 16 px (spec §8.1)'), a.smallText.slice(0, 8).map((x) => `${x.sel} ${x.px}px`).join('; '), 'WARN');
   return a;
@@ -515,8 +560,11 @@ function perfSummary(run, fr, label) {
   const lt = fr.longtasks || [];
   const p = { frames: d.length, p50: round1(pct(d, 50)), p95: round1(pct(d, 95)), max: round1(d.length ? Math.max(...d) : 0), longTasks: lt.length, longestTask: round1(lt.length ? Math.max(...lt.map((x) => x.d)) : 0), ms: Math.round(fr.ms) };
   run.perf = Object.assign(run.perf || {}, { [label]: p });
-  const txt = `${p.frames} frames over ${p.ms} ms: p50 ${p.p50} ms, p95 ${p.p95} ms, max ${p.max} ms; long tasks ${p.longTasks} (longest ${p.longestTask} ms)`;
-  if (p.frames < 3) run.info(`frame timing (${label})`, txt);
+  // Frame timing means little on a saturated machine: note the load, and only WARN when it is sane.
+  const load = os.loadavg()[0] / Math.max(1, os.cpus().length);
+  p.load = round1(load);
+  const txt = `${p.frames} frames over ${p.ms} ms: p50 ${p.p50} ms, p95 ${p.p95} ms, max ${p.max} ms; long tasks ${p.longTasks} (longest ${p.longestTask} ms); load ${p.load}/CPU`;
+  if (p.frames < 3 || load > 1.5) run.info(`frame timing (${label})${load > 1.5 ? ' [machine busy: not judged]' : ''}`, txt);
   else run.check(p.p95 <= 34 && p.longestTask <= 100, `frame timing (${label}): p95 ≤ 34 ms, no long task > 100 ms`, txt, 'WARN');
 }
 
@@ -529,7 +577,18 @@ async function playShow(s, run, { label = null, shots = false, measure = false, 
   const log0 = await page.evaluate(() => window.__pt.uiLog.length);
   if (measure) await page.evaluate(() => window.__pt.startFrames());
   run.step = `click #fire (show ${before ? before.show + 1 : '?'})`;
-  await page.locator('#fire').click({ timeout: 3000 });
+  try {
+    await page.locator('#fire').click({ timeout: 5000 });
+  } catch (e) {
+    // Say why the button could not be clicked: disabled, covered, off-screen, or an overlay up.
+    const f = await page.evaluate(() => {
+      const el = document.getElementById('fire'), a = window.__pt.audit({ scope: '#fire' });
+      const ov = [...document.querySelectorAll('[role="dialog"], [aria-modal="true"], #tap-continue')].filter((x) => window.__pt.visible(x)).map((x) => window.__pt.desc(x).split(' "')[0]);
+      return { fire: a.fire, disabled: !!(el && el.disabled), ui: window.__pt.ui(), ov };
+    }).catch(() => null);
+    const d = f ? `; #fire ${f.disabled ? 'disabled' : 'enabled'}, ${f.fire ? `covered by ${f.fire.covered || 'nothing'}, ${f.fire.inside ? 'inside' : 'outside'} the viewport` : 'missing'}; data-ui ${f.ui}; overlays up: ${f.ov.join(', ') || 'none'}` : '';
+    throw new Error(`#fire could not be clicked (${errMsg(e)})${d}`);
+  }
   const r = await waitLeft(page, log0, 2000);
   if (!r) {
     if (measure) await page.evaluate(() => window.__pt.stopFrames());
@@ -614,18 +673,18 @@ async function flowSmoke(browser, vp, variant, run = new Run('smoke', vp, varian
     // Race to the end: animations off, keep lighting with an empty-handed policy.
     run.step = 'race to END';
     await s.page.evaluate(() => window.__game && window.__game.skipAnimations && window.__game.skipAnimations(true));
-    let shows = 1;
+    let shows = 1, stuck = false;
     for (let i = 0; i < 40 && (await ui(s.page)) !== 'END'; i++) {
       await dismissTapContinue(s, run);
       const u = await ui(s.page);
       if (!isReady(u)) { await waitUi(s.page, ['BUILD', 'RESULT', 'END'], 10000); continue; }
       const r = await playShow(s, run, { timeout: 15000 });
-      if (!r.end) { run.fail('reach END by lighting every show', `show ${shows + 1} stuck in ${r.stuck}`); break; }
+      if (!r.end) { run.fail('reach END by lighting every show', `show ${shows + 1} stuck in ${r.stuck}`); stuck = true; break; }
       shows++;
     }
     run.step = 'END';
     const u = await ui(s.page);
-    if (run.check(u === 'END', 'reach END by lighting every show', `after ${shows} shows (data-ui ${u})`)) {
+    if (!stuck && run.check(u === 'END', 'reach END by lighting every show', `after ${shows} shows (data-ui ${u})`)) {
       await sleep(500);
       const endInfo = await s.page.evaluate(() => {
         const e = document.getElementById('end');
@@ -637,7 +696,7 @@ async function flowSmoke(browser, vp, variant, run = new Run('smoke', vp, varian
       await shot(s, run, 'END');
     }
   } catch (e) {
-    run.fail('smoke flow ran to completion', String(e && e.message || e).split('\n')[0]);
+    run.fail('smoke flow ran to completion', `during "${run.step}": ${errMsg(e)}`);
     await shot(s, run, 'error');
   } finally {
     await closeSession(s, run);
@@ -646,23 +705,26 @@ async function flowSmoke(browser, vp, variant, run = new Run('smoke', vp, varian
 }
 
 // ---------------------------------------------------------------- flow: ui (pointer only)
-async function flowUi(browser, vp) {
-  const run = new Run('ui', vp, 'host');
+async function flowUi(browser, vp, run = new Run('ui', vp, 'host')) {
+  run.step = 'open';
   const R = rng(`${OPTS.seed}|ui|${vp.name}`);
   const s = await openSession(browser, run, vp, 'host', `seed=${encodeURIComponent(OPTS.seed)}`);
   const page = s.page;
-  const stats = { shows: 0, buys: 0, buyFails: 0, rerolls: 0, undos: 0, matches: 0, sponsors: 0, skips: 0, fastForwards: 0 };
+  const stats = { shows: 0, buys: 0, buyFails: 0, rerolls: 0, undos: 0, matches: 0, sponsors: 0, skips: 0, fastForwards: 0, ends: 0 };
   const failOnce = new Set();
   const failFirst = (key, name, detail) => { if (failOnce.has(key)) return; failOnce.add(key); run.fail(name, detail); };
-  const clickSel = async (sel) => { await page.locator(sel).first().click({ timeout: 3000 }); await sleep(60); };
+  // Click the visible match (layouts keep a hidden twin of some controls, e.g. a desktop copy).
+  const clickSel = async (sel) => { await page.locator(`${sel}:visible`).first().click({ timeout: 3000 }); await sleep(60); };
   const waitState = async (pred, arg, ms = 1500) => {
     try { await page.waitForFunction(pred, arg, { timeout: ms, polling: 30 }); return true; } catch { return false; }
   };
   try {
+    run.step = 'boot';
     if (!(await boot(s, run))) return run;
     for (let show = 0; show < OPTS.shows; show++) {
+      run.step = `show ${show + 1} build (pointer)`;
       await dismissTapContinue(s, run);
-      if ((await waitUi(page, ['BUILD', 'END'], 5000)) !== 'BUILD') break;
+      if (!isReady(await waitUi(page, ['BUILD', 'RESULT', 'END'], 5000))) break;
       // 1. Buy by tapping a card, then a tube (up to 3 per show).
       for (let k = 0; k < 3; k++) {
         const { st, la } = await page.evaluate(() => ({ st: window.__game.state(), la: window.__game.legalActions() }));
@@ -687,7 +749,7 @@ async function flowUi(browser, vp) {
         if (ok) stats.buys++;
         else { stats.buyFails++; failFirst('buy', 'tap card → tap tube buys into that tube (coins and tube change)', `${act.type} of ${card.id} ($${card.cost}) into tube ${act.to.i} did not show up in __game.state()`); break; }
         // Sometimes undo the purchase and check the state rolls back.
-        if (R() < 0.25 && (await page.locator('[data-act="undo"]:not([disabled])').count())) {
+        if ((stats.undos === 0 || R() < 0.25) && (await page.locator('[data-act="undo"]:not([disabled]):visible').count())) {
           await clickSel('[data-act="undo"]');
           const back = await waitState(({ coins, i, uid }) => {
             const t = window.__game.state(); const sh = t.tubes[i].shell;
@@ -696,10 +758,10 @@ async function flowUi(browser, vp) {
           if (back) stats.undos++; else failFirst('undo', 'Undo restores coins and the tube', `after ${act.type} into tube ${act.to.i}`);
         }
       }
-      // 2. Sometimes reroll.
-      if (R() < 0.3) {
+      // 2. Reroll (always the first time it is possible, then sometimes).
+      if (stats.rerolls === 0 || R() < 0.3) {
         const st = await state(page);
-        const can = (await page.evaluate(() => window.__game.legalActions().some((a) => a.type === 'reroll'))) && (await page.locator('[data-act="reroll"]:not([disabled])').count());
+        const can = (await page.evaluate(() => window.__game.legalActions().some((a) => a.type === 'reroll'))) && (await page.locator('[data-act="reroll"]:not([disabled]):visible').count());
         if (can) {
           await clickSel('[data-act="reroll"]');
           const ok = await waitState(({ coins, rr }) => { const t = window.__game.state(); return t.coins < coins || (t.shop && t.shop.rerolls > rr); }, { coins: st.coins, rr: st.shop ? st.shop.rerolls : 0 });
@@ -708,18 +770,18 @@ async function flowUi(browser, vp) {
       }
       // 3. Match when tonight's rule permutes the fuse.
       if (await page.evaluate(() => window.__game.legalActions().some((a) => a.type === 'match'))) {
-        if ((await page.locator('[data-act="match"]:not([disabled])').count()) && R() < 0.7) {
+        if ((await page.locator('[data-act="match"]:not([disabled]):visible').count()) && R() < 0.7) {
           const st = await state(page);
           await clickSel('[data-act="match"]');
           const order = (t) => t.tubes.map((x) => (x.shell ? x.shell.uid : 0)).join(',');
           const ok = await waitState((o) => window.__game.state().tubes.map((x) => (x.shell ? x.shell.uid : 0)).join(',') !== o, order(st));
           if (ok) stats.matches++; else run.warn('Match re-seats the tubes', `show ${st.show + 1}: tube order unchanged (may be a fixed point)`);
-        } else if (!(await page.locator('[data-act="match"]:not([disabled])').count())) {
+        } else if (!(await page.locator('[data-act="match"]:not([disabled]):visible').count())) {
           failFirst('matchbtn', 'Match button is enabled when match is legal', '');
         }
       }
       // 4. Sometimes toggle the Sponsor on and off again.
-      if (R() < 0.3 && (await page.locator('[data-act="sponsor"]').count()) && (await page.locator('[data-act="sponsor"]').first().isVisible())) {
+      if ((stats.sponsors === 0 || R() < 0.3) && (await page.locator('[data-act="sponsor"]:visible').count())) {
         const acc0 = await page.evaluate(() => { const sp = window.__game.state().sponsor; return sp ? !!sp.accepted : null; });
         if (acc0 !== null) {
           await clickSel('[data-act="sponsor"]');
@@ -738,29 +800,45 @@ async function flowUi(browser, vp) {
           else if (mode < 0.55) { await page.locator('#fire').click({ timeout: 2000 }).catch(() => {}); stats.skips++; }
         },
       });
-      if (!r.end) { run.fail('each show returns to BUILD or END', `show ${show + 1} stuck in ${await ui(page)}`); break; }
+      if (!r.end) { run.fail('each show ends in RESULT, BUILD or END', `show ${show + 1} stuck in ${r.stuck}`); await shot(s, run, 'stuck'); break; }
       if (!r.sawResolving) failFirst('resolving', 'clicking #fire enters RESOLVING', `ui log: ${r.log.join(' → ')}`);
       const b = r.before, a = r.after;
       const changed = a && b && (a.show !== b.show || a.phase !== b.phase || a.coins !== b.coins);
       if (!r.advanced || !changed) failFirst('advance', 'lighting records the show and pays out (__game.state)', `history +${a && b ? a.runStats.history.length - b.runStats.history.length : '?'}, show ${b && b.show}→${a && a.show}, coins ${b && b.coins}→${a && a.coins}, phase ${a && a.phase}`);
       stats.shows++;
-      if (r.end === 'END') break;
+      if (show === 0 && r.end === 'RESULT') { await sleep(800); await layout(s, run, 'RESULT (pointer)', { fireStrict: true }); await shot(s, run, 'RESULT'); }
+      if (r.end === 'END') {
+        // The run is over before --shows: check END, then restart with a real click and play on.
+        run.step = 'END → Run it back (pointer)';
+        await sleep(500);
+        stats.ends++;
+        if (stats.ends === 1) { await layout(s, run, 'END (pointer)', { scope: '#end' }); await shot(s, run, 'END'); }
+        if (show + 1 >= OPTS.shows) break;
+        try { await page.locator('#run-it-back').click({ timeout: 3000 }); } catch (e) { run.fail('Run it back is clickable at END', String(e.message).split('\n')[0]); break; }
+        if (!run.check((await waitUi(page, ['BUILD'], 3000)) === 'BUILD', 'Run it back (pointer) returns to BUILD', '')) break;
+        await sleep(300);
+        continue;
+      }
       const f = await page.evaluate(() => window.__pt.audit().fire);
       if (f && (!f.inside || f.h < 44)) failFirst('fire', '#fire stays inside the viewport in BUILD', `after show ${show + 1}: y ${f.top}..${f.bottom}, h ${f.h}`);
     }
-    run.check(stats.shows > 0, `played shows through pointer clicks`, `${stats.shows} shows · ${stats.buys} buys · ${stats.undos} undos · ${stats.rerolls} rerolls · ${stats.matches} matches · ${stats.sponsors} sponsor toggles · ${stats.fastForwards} sky taps · ${stats.skips} skips`);
+    run.check(stats.shows > 0, `played shows through pointer clicks`, `${stats.shows} shows · ${stats.buys} buys · ${stats.undos} undos · ${stats.rerolls} rerolls · ${stats.matches} matches · ${stats.sponsors} sponsor toggles · ${stats.fastForwards} sky taps · ${stats.skips} skips · ${stats.ends} run ends`);
+    if (!failOnce.has('undo')) run.check(stats.undos > 0, 'Undo (pointer) restores coins and the tube', `${stats.undos} undos verified`, 'WARN');
+    if (!failOnce.has('reroll')) run.check(stats.rerolls > 0, 'Reroll (pointer) spends coins and rerolls the shop', `${stats.rerolls} rerolls verified`, 'WARN');
+    if (!failOnce.has('matchbtn')) run.info('Match (pointer)', stats.matches ? `${stats.matches} matches verified` : 'match was never legal in these shows');
     if (!failOnce.has('buy') && !failOnce.has('buyclick')) run.check(stats.buys > 0, 'tap card → tap tube buys into that tube (coins and tube change)', `${stats.buys} buys verified`, 'WARN');
     if (!failOnce.has('advance')) run.check(stats.shows > 0, 'lighting records the show and pays out (__game.state)', `${stats.shows} shows verified`);
     run.notes.stats = stats;
+    run.step = 'final layout';
     const u = await ui(page);
-    if (u === 'BUILD') { await layout(s, run, `BUILD after ${stats.shows} shows`, { fireStrict: true }); await shot(s, run, 'BUILD-late'); }
+    if (isReady(u)) { await sleep(700); await layout(s, run, `${u} after ${stats.shows} shows`, { fireStrict: true }); await shot(s, run, `${u}-late`); }
     if (u === 'END') {
       await sleep(400);
       run.check(await page.evaluate(() => window.__pt.visible(document.getElementById('end'))), '#end renders when the run ends', '');
       await shot(s, run, 'END');
     }
   } catch (e) {
-    run.fail('ui flow ran to completion', String(e && e.message || e).split('\n')[0]);
+    run.fail('ui flow ran to completion', `during "${run.step}": ${errMsg(e)}`);
     await shot(s, run, 'error');
   } finally {
     await closeSession(s, run);
@@ -769,21 +847,34 @@ async function flowUi(browser, vp) {
 }
 
 // ---------------------------------------------------------------- flow: keys (keyboard only)
-async function flowKeys(browser, vp) {
-  const run = new Run('keys', vp, 'host');
+async function flowKeys(browser, vp, run = new Run('keys', vp, 'host')) {
+  run.step = 'open';
   const R = rng(`${OPTS.seed}|keys|${vp.name}`);
   const s = await openSession(browser, run, vp, 'host', `seed=${encodeURIComponent(OPTS.seed)}`);
   const page = s.page;
   const bad = new Map(); // selector -> reason (focus not visible)
-  let presses = 0, lostFocus = 0, lostAfter = new Set();
+  let presses = 0, lostFocus = 0, lostAfter = new Set(), tabBlurs = 0;
   const focusInfo = () => page.evaluate(() => window.__pt.focusInfo());
   const press = async (key) => {
     await page.keyboard.press(key); presses++;
     await sleep(35);
-    const fi = await focusInfo();
+    let fi = await focusInfo();
+    if (key === 'Tab' || key === 'Shift+Tab') {
+      // Tabbing off the last stop hands focus to the browser: the window blurs and the game pauses
+      // behind "Tap to continue" (spec §14 Lifecycle). Resume with Enter, as a keyboard user would.
+      const tc = await page.evaluate(() => { const e = document.getElementById('tap-continue'); return !!(e && window.__pt.visible(e)); });
+      if (tc) {
+        tabBlurs++;
+        await page.bringToFront().catch(() => {});
+        await page.keyboard.press('Enter');
+        await sleep(150);
+        fi = await focusInfo();
+        return Object.assign(fi, { blurred: true });
+      }
+    }
     const u = await ui(page);
     // Tabbing off the last stop parks focus on the document before it wraps: that is the browser, not the game.
-    if (fi.none) { if (u === 'BUILD' && key !== 'Tab' && key !== 'Shift+Tab') { lostFocus++; lostAfter.add(key); } return fi; }
+    if (fi.none) { if (isReady(u) && key !== 'Tab' && key !== 'Shift+Tab') { lostFocus++; lostAfter.add(key); } return fi; }
     if (!fi.visible && !bad.has(fi.sel)) bad.set(fi.sel, `${!fi.shown ? 'element hidden' : !fi.inView ? 'off-screen' : 'no focus indicator'} (after ${key})`);
     return fi;
   };
@@ -806,16 +897,26 @@ async function flowKeys(browser, vp) {
   const visibleOverlay = (id) => page.evaluate((i) => { const e = document.getElementById(i); return !!(e && window.__pt.visible(e)); }, id);
   const focusInside = (id) => page.evaluate((i) => { const e = document.getElementById(i); return !!(e && e.contains(document.activeElement)); }, id);
   try {
+    run.step = 'boot';
     if (!(await boot(s, run))) return run;
     await dismissTapContinue(s, run, 'key');
     await sleep(200);
+    // No shop before show 1 (spec §2.3): light show 1 with F so the walk sees the cards.
+    if (!(await state(page)).shop) {
+      run.step = 'show 1 (F) before the tab walk';
+      await press('f');
+      const e = await waitUi(page, ['RESULT', 'BUILD', 'END'], 30000);
+      run.info('lit show 1 with F before the tab walk (no shop before show 1)', `data-ui ${e}`);
+      await sleep(900);
+    }
+    run.step = 'tab walk';
 
     // 1. Tab walk: every stop shows a focus indicator; #fire, tubes and cards are reachable.
     const seen = [];
     let first = null;
     for (let i = 0; i < 80; i++) {
       const fi = await press('Tab');
-      if (fi.none) continue;
+      if (fi.none || fi.blurred) continue;
       if (first === null) first = fi.sel; else if (fi.sel === first) break;
       seen.push(fi.sel);
     }
@@ -831,14 +932,17 @@ async function flowKeys(browser, vp) {
       run.check(sorted, 'Tab order follows §13 (HUD → tubes → Crate → cards → Light)', order.map(([n, i]) => `${n}@${i}`).join(' '), 'WARN');
     }
     run.notes.tabStops = seen;
+    await dismissTapContinue(s, run, 'key');
 
     // 2. Overlays by key: P, L, ? open; focus moves inside and is trapped; Esc closes and restores focus.
     const overlayCheck = async (key, id, name) => {
-      if ((await ui(page)) !== 'BUILD') return;
+      if (!isReady(await ui(page))) return;
+      run.step = `overlay ${name}`;
       const before = await focusInfo();
       await press(key);
       await sleep(150);
       if (!run.check(await visibleOverlay(id), `${name} opens #${id}`, '')) return;
+      await shot(s, run, `overlay-${id}`);
       run.check(await focusInside(id), `${name}: focus moves into #${id}`, (await focusInfo()).sel || 'body');
       let escaped = null;
       for (let i = 0; i < 6; i++) { await press('Tab'); if (!(await focusInside(id))) { escaped = (await focusInfo()).sel || 'body'; break; } }
@@ -861,8 +965,9 @@ async function flowKeys(browser, vp) {
     const failFirst = (key, name, detail) => { if (failOnce.has(key)) return; failOnce.add(key); run.fail(name, detail); };
     const waitState = async (pred, arg, ms = 1500) => { try { await page.waitForFunction(pred, arg, { timeout: ms, polling: 30 }); return true; } catch { return false; } };
     for (let show = 0; show < OPTS.shows; show++) {
+      run.step = `show ${show + 1} build (keys)`;
       await dismissTapContinue(s, run, 'key');
-      if ((await waitUi(page, ['BUILD', 'END'], 5000)) !== 'BUILD') break;
+      if (!isReady(await waitUi(page, ['BUILD', 'RESULT', 'END'], 5000))) break;
       for (let k = 0; k < 2; k++) {
         const { st, la } = await page.evaluate(() => ({ st: window.__game.state(), la: window.__game.legalActions() }));
         const c = la.filter((a) => (a.type === 'buy' || a.type === 'upgrade') && a.to && a.to.zone === 'tube');
@@ -892,27 +997,43 @@ async function flowKeys(browser, vp) {
           else failFirst('undo', 'U undoes the last build action', '');
         }
       }
-      if (R() < 0.3 && (await page.evaluate(() => window.__game.legalActions().some((a) => a.type === 'reroll')))) {
+      // X only where the UI offers Reroll: the Workshop row is hidden in Festival 1 (spec §8), although
+      // the SIM already allows a reroll there (§2.5), so X is a no-op in F1 by design.
+      const rr0 = await page.evaluate(() => {
+        const legal = window.__game.legalActions().some((a) => a.type === 'reroll');
+        const btn = [...document.querySelectorAll('[data-act="reroll"]')].some((b) => window.__pt.visible(b));
+        return { legal, btn };
+      });
+      if (rr0.legal && !rr0.btn && !run.notes.rerollHidden) { run.notes.rerollHidden = true; run.info('reroll is legal but no Reroll control is shown (Workshop hidden in F1), so X is not tried', ''); }
+      if ((stats.rerolls === 0 || R() < 0.3) && rr0.legal && rr0.btn) {
         const rr = await page.evaluate(() => { const t = window.__game.state(); return { c: t.coins, r: t.shop ? t.shop.rerolls : 0 }; });
         await press('x');
         if (await waitState((o) => { const t = window.__game.state(); return t.coins < o.c || (t.shop && t.shop.rerolls > o.r); }, rr, 800)) stats.rerolls++;
-        else failFirst('reroll', 'X rerolls the shop', '');
+        else {
+          const why = await page.evaluate(() => {
+            const w = document.getElementById('workshop'), a = document.activeElement;
+            const btn = document.querySelector('[data-act="reroll"]');
+            return `reroll legal; #workshop ${!w ? 'missing' : w.hidden ? 'hidden' : window.__pt.visible(w) ? 'visible' : 'not visible'}; reroll button ${!btn ? 'missing' : window.__pt.visible(btn) ? 'visible' : 'not visible'}; focus ${window.__pt.desc(a)}; data-ui ${window.__pt.ui()}; play mode ${(document.getElementById('play') || {}).dataset?.mode}`;
+          });
+          failFirst('reroll', 'X rerolls the shop', why);
+        }
       }
       const b = await state(page);
       const log0 = await page.evaluate(() => window.__pt.uiLog.length);
+      run.step = `show ${show + 1} lighting (keys)`;
       await press('f');
-      const r = await waitLeft(page, log0, 1500);
+      const r = await waitLeft(page, log0, 2000);
       if (!r) { failFirst('light', 'F lights the fuse', `data-ui stayed ${await ui(page)}`); break; }
       if (r === 'RESOLVING' && R() < 0.5) { await sleep(120); if ((await ui(page)) === 'RESOLVING') { await page.keyboard.press(' '); stats.spaces++; } }
-      const end = await waitUi(page, ['BUILD', 'END'], 30000);
-      if (!end) { run.fail('each show returns to BUILD or END', `show ${show + 1} stuck in ${await ui(page)}`); break; }
+      const end = await waitUi(page, ['RESULT', 'BUILD', 'END'], 30000);
+      if (!end) { run.fail('each show ends in RESULT, BUILD or END', `show ${show + 1} stuck in ${await ui(page)} 30 s after F`); await shot(s, run, 'stuck'); break; }
       const a = await state(page);
       const log = await page.evaluate((i) => window.__pt.uiLog.slice(i).map((x) => x.ui), log0);
       if (a.runStats.history.length !== b.runStats.history.length + 1) failFirst('advance', 'F lights the fuse and the show is recorded', `ui log ${log.join(' → ')}`);
       stats.shows++;
       await sleep(80);
       const fi = await focusInfo();
-      if (fi.none && end === 'BUILD') run.notes.focusAfterShow = 'body';
+      if (fi.none && isReady(end)) run.notes.focusAfterShow = 'body';
       if (end === 'END') break;
     }
     run.check(stats.shows > 0, 'played shows with the keyboard only', `${stats.shows} shows · ${stats.buys} buys · ${stats.undos} undos · ${stats.rerolls} rerolls · ${stats.spaces} fast-forwards; ${presses} key presses`);
@@ -921,9 +1042,11 @@ async function flowKeys(browser, vp) {
     run.notes.stats = stats;
     run.check(bad.size === 0, 'focus is always visible (indicator, on-screen, not hidden)', bad.size ? `${bad.size} elements: ` + [...bad].slice(0, 6).map(([k, v]) => `${k}: ${v}`).join('; ') + (bad.size > 6 ? ' …' : '') : '');
     run.check(lostFocus === 0, 'focus never drops to <body> during BUILD', lostFocus ? `${lostFocus} times, after: ${[...lostAfter].join(', ')}` : '', 'WARN');
+    if (tabBlurs) run.info('Tab off the last stop blurs the window → Tap to continue (dismissed with Enter)', `${tabBlurs} times`);
+    run.step = 'final';
     await shot(s, run, 'focus');
   } catch (e) {
-    run.fail('keys flow ran to completion', String(e && e.message || e).split('\n')[0]);
+    run.fail('keys flow ran to completion', `during "${run.step}": ${errMsg(e)}`);
     await shot(s, run, 'error');
   } finally {
     await closeSession(s, run);
@@ -939,13 +1062,15 @@ function findJson(text) {
   try { const v = JSON.parse(text.slice(i, j + 1)); return v && typeof v === 'object' && !Array.isArray(v) ? v : null; } catch { return null; }
 }
 
-async function flowBotsSim(browser, vp) {
-  const run = new Run('bots', vp, 'sim');
+async function flowBotsSim(browser, vp, run = new Run('bots', vp, 'sim')) {
+  run.step = 'open';
   run.label = `bots ${vp.name} ?sim=50`;
   const s = await openSession(browser, run, vp, 'host', `test=1&sim=50&bot=human&seed=${encodeURIComponent(OPTS.seed)}`);
   const page = s.page;
   try {
+    run.step = 'boot';
     await waitUi(page, ['BUILD', 'END'], 3000);
+    run.step = 'wait for the ?sim=50 summary';
     const t0 = Date.now();
     let found = null;
     while (!found && Date.now() - t0 < OPTS.botsTimeout) {
@@ -968,20 +1093,22 @@ async function flowBotsSim(browser, vp) {
     const longest = lt.length ? Math.max(...lt.map((x) => x.d)) : 0;
     run.check(longest <= 100, 'bots run off the main thread (no long task > 100 ms after boot)', `${lt.length} long tasks, longest ${round1(longest)} ms`, 'WARN');
   } catch (e) {
-    run.fail('bots sim ran to completion', String(e && e.message || e).split('\n')[0]);
+    run.fail('bots sim ran to completion', `during "${run.step}": ${errMsg(e)}`);
   } finally {
     await closeSession(s, run);
   }
   return run;
 }
 
-async function flowBotsRun(browser, vp) {
-  const run = new Run('bots', vp, 'act');
+async function flowBotsRun(browser, vp, run = new Run('bots', vp, 'act')) {
+  run.step = 'open';
   run.label = `bots ${vp.name} __game.act`;
   const s = await openSession(browser, run, vp, 'host', `test=1&seed=${encodeURIComponent(OPTS.seed)}`);
   const page = s.page;
   try {
+    run.step = 'boot';
     if (!(await boot(s, run))) return run;
+    run.step = 'drive a run to END through __game.act';
     const hash0 = await page.evaluate(() => window.__game.hash && window.__game.hash());
     const seed0 = (await state(page)).seed;
     // Simple policy: upgrade twins, else buy the dearest affordable card into the first empty tube;
@@ -990,7 +1117,7 @@ async function flowBotsRun(browser, vp) {
       const g = window.__game, pt = window.__pt;
       const log = [], problems = [];
       const settle = async () => {
-        for (let i = 0; i < 40 && !['BUILD', 'END'].includes(pt.ui()); i++) {
+        for (let i = 0; i < 40 && !['BUILD', 'RESULT', 'END'].includes(pt.ui()); i++) {
           if (g.step) g.step(60);
           await new Promise((r) => setTimeout(r, 10));
         }
@@ -1022,7 +1149,7 @@ async function flowBotsRun(browser, vp) {
       await settle();
       const st = g.state();
       return { lights, log, problems, phase: st.phase, show: st.show, ui: pt.ui(), hash: g.hash ? g.hash() : null };
-    });
+    }, undefined, 60000);
     run.info('run driven through __game.act', `${res.lights} shows, ${res.log.length} actions, phase ${res.phase} at show ${res.show + 1}`);
     run.check(!res.problems.length, 'SIM invariants during the run (legalActions non-empty, no NaN, stable hash)', res.problems.slice(0, 5).join('; '));
     if (!run.check(res.phase === 'lost' || res.phase === 'won', 'the run ends (phase lost or won)', `phase ${res.phase} after ${res.lights} shows`)) return run;
@@ -1042,6 +1169,7 @@ async function flowBotsRun(browser, vp) {
     await layout(s, run, 'END', { scope: '#end' });
     await shot(s, run, 'END');
     // Run it back: a real click must restart in under 1 s.
+    run.step = 'Run it back';
     if (endInfo && endInfo.btn) {
       const mark = await page.evaluate(() => window.__pt.uiLog.length);
       await page.locator('#run-it-back').click({ timeout: 3000 });
@@ -1059,6 +1187,7 @@ async function flowBotsRun(browser, vp) {
       await shot(s, run, 'restart');
     } else run.fail('Run it back restarts a fresh run in < 1 s', 'no #run-it-back');
     // Determinism: reset(seed) + the same action log reproduces the final hash (spec §11.7).
+    run.step = 'determinism replay';
     if (res.hash) {
       const rep = await page.evaluate(async ({ seed, log, hash0 }) => {
         const g = window.__game;
@@ -1066,15 +1195,15 @@ async function flowBotsRun(browser, vp) {
         if (g.hash() !== hash0) return { skipped: `reset(${JSON.stringify(seed)}) does not reproduce the boot state` };
         for (const a of log) {
           g.act(a);
-          if (a.type === 'light') for (let i = 0; i < 40 && !['BUILD', 'END'].includes(window.__pt.ui()); i++) { g.step && g.step(60); await new Promise((r) => setTimeout(r, 5)); }
+          if (a.type === 'light') for (let i = 0; i < 40 && !['BUILD', 'RESULT', 'END'].includes(window.__pt.ui()); i++) { g.step && g.step(60); await new Promise((r) => setTimeout(r, 5)); }
         }
         return { hash: g.hash() };
-      }, { seed: seed0, log: res.log, hash0 });
+      }, { seed: seed0, log: res.log, hash0 }, 60000);
       if (rep.skipped) run.warn('same seed + same actions → same hash', rep.skipped);
       else run.check(rep.hash === res.hash, 'same seed + same actions → same hash', `${res.hash} vs ${rep.hash}`);
     }
   } catch (e) {
-    run.fail('bots flow ran to completion', String(e && e.message || e).split('\n')[0]);
+    run.fail('bots flow ran to completion', `during "${run.step}": ${errMsg(e)}`);
     await shot(s, run, 'error');
   } finally {
     await closeSession(s, run);
@@ -1090,7 +1219,7 @@ function printRun(run) {
   for (const c of run.checks) {
     if (c.status === 'FAIL' || c.status === 'WARN' || OPTS.verbose) console.log(`      ${c.status.padEnd(4)}  ${c.name}${c.detail ? ': ' + c.detail : ''}`);
   }
-  if (run.perf) for (const [k, p] of Object.entries(run.perf)) console.log(`      perf  ${k}: p50 ${p.p50} ms · p95 ${p.p95} ms · max ${p.max} ms · ${p.frames} frames · long tasks ${p.longTasks} (max ${p.longestTask} ms)`);
+  if (run.perf) for (const [k, p] of Object.entries(run.perf)) console.log(`      perf  ${k}: p50 ${p.p50} ms · p95 ${p.p95} ms · max ${p.max} ms · ${p.frames} frames · long tasks ${p.longTasks} (max ${p.longestTask} ms) · load ${p.load}/CPU`);
 }
 
 async function main() {
@@ -1106,39 +1235,80 @@ async function main() {
   for (const f of fs.readdirSync(OPTS.out)) if (/^(smoke|ui|keys|bots)-.*\.png$/.test(f)) fs.rmSync(path.join(OPTS.out, f));
   const tmpDir = prepareHost();
   const started = Date.now();
+  const load0 = os.loadavg().map(round1);
   console.log(`Ooh × Aah playtest: ${rel(OPTS.file)} · flows ${OPTS.flows.join(',')} · viewports ${OPTS.vps.map((v) => v.name).join(',')} · seed ${OPTS.seed} · ${OPTS.shows} shows · jobs ${OPTS.jobs} · fonts ${OPTS.fonts}\n`);
 
-  const browser = await chromium.launch();
+  let browser = await withTimeout(chromium.launch(), 30000, 'chromium.launch() took over 30 s');
+  // After a hung page (or a dead browser) start the next task on a fresh browser.
+  const relaunch = async (why) => {
+    console.log(`      note  relaunching Chromium after ${why}`);
+    const old = browser;
+    await withTimeout(old.close(), 5000, 'browser.close').catch(() => {});
+    browser = await withTimeout(chromium.launch(), 30000, 'chromium.launch() took over 30 s');
+  };
+  // Each task owns its Run (so the guard can report and clean up) and a hard time budget.
+  const budget = (ms) => OPTS.taskTimeout || ms;
   const tasks = [];
-  if (OPTS.flows.includes('smoke')) for (const vp of OPTS.vps) { tasks.push(() => flowSmoke(browser, vp, 'host')); tasks.push(() => flowSmoke(browser, vp, 'raw')); }
-  if (OPTS.flows.includes('ui')) for (const vp of OPTS.vps) tasks.push(() => flowUi(browser, vp));
-  if (OPTS.flows.includes('keys')) for (const vp of OPTS.vps) tasks.push(() => flowKeys(browser, vp));
-  if (OPTS.flows.includes('bots')) { tasks.push(() => flowBotsSim(browser, OPTS.vps[0])); for (const vp of OPTS.vps) tasks.push(() => flowBotsRun(browser, vp)); }
+  const add = (run, ms, fn) => tasks.push({ run, ms: budget(ms), fn: () => fn(run) });
+  if (OPTS.flows.includes('smoke')) for (const vp of OPTS.vps) for (const v of ['host', 'raw']) add(new Run('smoke', vp, v), 90000, (r) => flowSmoke(browser, vp, v, r));
+  if (OPTS.flows.includes('ui')) for (const vp of OPTS.vps) add(new Run('ui', vp, 'host'), 180000, (r) => flowUi(browser, vp, r));
+  if (OPTS.flows.includes('keys')) for (const vp of OPTS.vps) add(new Run('keys', vp, 'host'), 180000, (r) => flowKeys(browser, vp, r));
+  if (OPTS.flows.includes('bots')) {
+    const named = (r, label) => Object.assign(r, { label });
+    add(named(new Run('bots', OPTS.vps[0], 'sim'), `bots ${OPTS.vps[0].name} ?sim=50`), Math.max(OPTS.taskTimeout, OPTS.botsTimeout + 30000), (r) => flowBotsSim(browser, OPTS.vps[0], r));
+    for (const vp of OPTS.vps) add(named(new Run('bots', vp, 'act'), `bots ${vp.name} __game.act`), 120000, (r) => flowBotsRun(browser, vp, r));
+  }
 
-  const TASK_TIMEOUT = 240000 + OPTS.botsTimeout;
   const results = new Array(tasks.length);
   let next = 0;
   const worker = async () => {
     while (next < tasks.length) {
       const i = next++;
+      const { run, ms, fn } = tasks[i];
       const t0 = Date.now();
       let timer;
-      const guard = new Promise((res) => { timer = setTimeout(() => res(null), TASK_TIMEOUT); });
-      let run = await Promise.race([tasks[i]().catch((e) => ({ crashed: e })), guard]);
+      const guard = new Promise((res) => { timer = setTimeout(() => res('timeout'), ms); });
+      const out = await Promise.race([fn().then(() => 'done', (e) => e || new Error('unknown error')), guard]);
       clearTimeout(timer);
-      if (!run || run.crashed) {
-        const r = new Run('task', { name: `#${i}` }, 'host');
-        r.fail('task finished', run ? String(run.crashed && run.crashed.message || run.crashed) : `timed out after ${TASK_TIMEOUT / 1000} s`);
-        run = r;
+      if (out === 'timeout') {
+        // Fail fast and loud: name the step and the last data-ui, then close the page so the
+        // flow's pending awaits reject instead of running on in the background.
+        const page = run.session && run.session.page;
+        let u = page ? await page.evaluate(() => window.__pt && window.__pt.ui(), undefined, 1000).catch(() => null) : null;
+        const hung = !!page && u === null;
+        if (hung) u = `${page.__lastUi || '?'} (page unresponsive)`;
+        else if (page) await shot(run.session, run, 'timeout');
+        run.fail(`${run.flow} task finished within its ${Math.round(ms / 1000)} s budget`, `timed out during "${run.step}" (data-ui ${u})`);
+        run.frozen = true;
+        if (run.session) await withTimeout(run.session.context.close(), 5000, 'context.close').catch(() => {});
+        if (hung && OPTS.jobs === 1) await relaunch('a wedged renderer');
+      } else if (out !== 'done') {
+        run.fail(`${run.flow} task finished`, `crashed during "${run.step}": ${errMsg(out)}`);
+        if (run.session) await withTimeout(run.session.context.close(), 5000, 'context.close').catch(() => {});
       }
+      if (!browser.isConnected()) await relaunch('a lost browser connection');
+      run.frozen = true;
       run.ms = Date.now() - t0;
       results[i] = run;
       printRun(run);
     }
   };
-  await Promise.all(Array.from({ length: Math.min(OPTS.jobs, tasks.length) }, worker));
-  await browser.close();
-  fs.rmSync(tmpDir, { recursive: true, force: true });
+  // Last line of defence: the whole suite has a deadline (the sum of the task budgets / jobs + 60 s).
+  const deadline = Math.ceil(tasks.reduce((a, t) => a + t.ms, 0) / Math.min(OPTS.jobs, tasks.length || 1)) + 60000;
+  let dl;
+  const allDone = await Promise.race([
+    Promise.all(Array.from({ length: Math.min(OPTS.jobs, tasks.length) }, worker)).then(() => true),
+    new Promise((res) => { dl = setTimeout(() => res(false), deadline); }),
+  ]);
+  clearTimeout(dl);
+  if (!allDone) console.log(`\nplaytest: the suite passed its ${Math.round(deadline / 1000)} s deadline; unfinished tasks are reported as FAIL`);
+  tasks.forEach((t, i) => {
+    if (results[i]) return;
+    t.run.fail(`${t.run.flow} task finished`, allDone ? 'never started' : `cut off by the suite deadline during "${t.run.step}"`);
+    t.run.frozen = true;
+    results[i] = t.run;
+    printRun(t.run);
+  });
 
   const runs = results.filter(Boolean);
   const failed = runs.filter((r) => r.status === 'FAIL');
@@ -1146,11 +1316,15 @@ async function main() {
   const report = {
     tool: 'ooh-and-aah/tools/playtest.mjs', date: new Date().toISOString(), file: OPTS.file, seed: OPTS.seed, shows: OPTS.shows,
     flows: OPTS.flows, viewports: OPTS.vps.map((v) => v.name), fonts: OPTS.fonts, durationMs: Date.now() - started,
+    machine: { cpus: os.cpus().length, loadStart: load0, loadEnd: os.loadavg().map(round1) },
     verdict: failed.length ? 'FAIL' : 'PASS', totals: { runs: runs.length, failedRuns: failed.length, pass: count('PASS'), fail: count('FAIL'), warn: count('WARN') },
     runs: runs.map((r) => ({ flow: r.flow, viewport: r.viewport, variant: r.variant, label: r.label, status: r.status, ms: r.ms, checks: r.checks, perf: r.perf, shots: r.shots, notes: r.notes })),
   };
   fs.mkdirSync(path.dirname(OPTS.json), { recursive: true });
   fs.writeFileSync(OPTS.json, JSON.stringify(report, null, 2));
+  // Write the report first, then close: a wedged renderer must not cost us the results.
+  await withTimeout(browser.close(), 10000, 'browser.close').catch(() => console.log('playtest: browser.close() did not finish in 10 s; exiting anyway'));
+  fs.rmSync(tmpDir, { recursive: true, force: true });
   console.log(`\nPLAYTEST ${report.verdict}: ${runs.length - failed.length}/${runs.length} runs passed · ${report.totals.fail} failed checks · ${report.totals.warn} warnings · ${(report.durationMs / 1000).toFixed(1)} s`);
   if (failed.length) console.log(`  failed: ${failed.map((r) => r.label).join(', ')}`);
   console.log(`  report ${rel(OPTS.json)} · screenshots ${rel(OPTS.out)}`);

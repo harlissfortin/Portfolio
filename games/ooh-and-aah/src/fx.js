@@ -29,7 +29,8 @@
  *  pictogram(shellId, col, star, sizePx, opts?) → HTMLCanvasElement (CSS sizePx, backing × DPR). The burst pattern frozen at
  *        45% of its life. opts {token (plate + pictogram + monogram + star pips; height = 1.25 × size), plate, mono, pips,
  *        hang (n Hang pips under the token), washed, highContrast, dpr}
- *  finale() · dim(on = true) · critical(on | {on, pulse}) · clearSky() · stats() · attachBackdrop(canvas)
+ *  finale() · dim(on = true) · critical(on | {on, pulse}) · clearSky({all}?) (all: also popups, banners, Applause) · stats()
+ *  attachBackdrop(canvas)
  *  Helpers: fmt(n) (§8.5), tier(v), xTier(f), sootLevel(timesFired) → 0..5 (for the DOM tube rims)
  * ==========================================================================*/
 const FX = (() => {
@@ -366,6 +367,14 @@ const FX = (() => {
     return true;
   }
   function clearSky(fadeSec) {
+    if (fadeSec && typeof fadeSec === 'object') { // clearSky({all: true}): also drop every overlay (popups, banners, rings, Applause)
+      const all = !!fadeSec.all; fadeSec = fadeSec.fade != null ? +fadeSec.fade : 0.6;
+      if (all) {
+        for (const L of [POPS, BAN, RINGS, THR, BRAIDS, WAVES, SPARK, GLOWS]) for (const q of L) q.on = false;
+        AP.on = false; flashA = 0; trauma = 0; hitStop = 0; LATER.length = 0;
+        for (let i = 0; i < M.n; i++) if (M.on[i] && !(M.fl[i] & EMB)) kill(M, i);
+      }
+    }
     for (const b of BUR) if (b.on) { b.linger = false; if (b.exp < 0) b.exp = T; }
     for (let i = 0; i < M.n; i++) if (M.on[i] && (M.fl[i] & EMB) && !(M.fl[i] & FADE)) { M.fl[i] |= FADE; M.fs[i] = M.age[i] + (fadeSec ? fadeSec - 0.3 : 0); }
   }
@@ -639,9 +648,10 @@ const FX = (() => {
     c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
   }
 
-  /* ---------- trails: a half-resolution persistence layer ---------- */
+  /* ---------- trails: a persistence layer at ≤ half the backing resolution (soft by nature; its fade + composite
+     is the largest raster cost in render, so it stays small) ---------- */
   let TR = null, trc = null, trS = 1, trIdle = 0, trDirty = false;
-  function buildTrail() { trS = Math.min(1, dpr * 0.6); TR = mkCanvas(W * trS, H * trS); trc = TR.getContext('2d'); trDirty = false; }
+  function buildTrail() { trS = Math.min(0.8, dpr * 0.5); TR = mkCanvas(W * trS, H * trS); trc = TR.getContext('2d'); trDirty = false; }
   function depositTrails() {
     if (!trc) return;
     const P = M;
@@ -663,7 +673,7 @@ const FX = (() => {
 
   /* ---------- overlay entities: popups, rings, threads, braids, banners ---------- */
   const POPN = 16, POPS = [];
-  for (let i = 0; i < POPN; i++) POPS.push({on: false, cv: null, g: null, w: 0, h: 0, x: 0, y: 0, t0: 0, life: 1, kind: '', key: '', n: 1, text: '', tag: '', slam: false, tier: 0, cdpr: 0});
+  for (let i = 0; i < POPN; i++) POPS.push({on: false, cv: null, g: null, w: 0, h: 0, x: 0, y: 0, t0: 0, life: 1, kind: '', key: '', n: 1, text: '', tag: '', slam: false, tier: 0, cdpr: 0, die: -1});
   const RINGS = [];
   for (let i = 0; i < 14; i++) RINGS.push({on: false, x: 0, y: 0, r0: 0, r1: 0, t0: 0, dur: 0, col: '#FFF', lw: 2, a: 1, disc: false, line: false});
   const THR = [];
@@ -710,17 +720,49 @@ const FX = (() => {
   function popup(kind, text, x, y, tr, tag, slam) {
     // merge identical consecutive popups (150 ms, 40 px): "+15 Ooh ×3"
     for (const p of POPS) {
-      if (p.on && p.kind === kind && p.text === text && p.tag === (tag || '') && T - p.t0 < 0.15 && Math.abs(p.x - x) < 40 && Math.abs(p.y - y) < 40) {
-        p.n++; p.t0 = T; popupArt(p); return p;
+      if (p.on && p.die < 0 && p.kind === kind && p.text === text && p.tag === (tag || '') && T - p.t0 < 0.15 && Math.abs(p.x - x) < 40 && Math.abs(p.y - y) < 40) {
+        p.n++; p.t0 = T; popupArt(p); p.x = clamp(p.x, p.w / 2 + 2, W - p.w / 2 - 20); return p;
       }
     }
     let p = null, act = 0, old = null;
     for (const q of POPS) { if (q.on) { act++; if (!old || q.t0 < old.t0) old = q; } else if (!p) p = q; }
     if (act >= 12 || !p) { if (old) old.on = false; p = p || old; }   // at most 12 on screen
-    p.on = true; p.kind = kind; p.text = text; p.tag = tag || ''; p.n = 1; p.tier = tr; p.t0 = T; p.life = 1.05 + 0.08 * tr; p.slam = !!slam;
+    p.on = true; p.kind = kind; p.text = text; p.tag = tag || ''; p.n = 1; p.tier = tr; p.t0 = T; p.life = 1.05 + 0.08 * tr; p.slam = !!slam; p.die = -1;
     popupArt(p);
     p.x = clamp(x, p.w / 2 + 2, W - p.w / 2 - 20); p.y = clamp(y, p.h / 2 + 2, rTop - p.h / 2);
+    placeFree(p);
     return p;
+  }
+  // A popup's on-screen box now (its rise included).
+  const popDy = q => (opt.reducedMotion ? 0 : -18 * easeOut(Math.min(1, Math.max(0, (T - q.t0) / q.life) * 1.4)));
+  // Legibility: a new popup never lands on a live one. It moves above the one it hits (both then rise at the same
+  // rate, and the newer one never falls behind), or below it when there is no room above. At most 8 nudges.
+  function placeFree(p) {
+    const pad = 3, top = p.h / 2 + 2, bot = rTop - p.h / 2;
+    for (let it = 0; it < 8; it++) {
+      let hit = null;
+      for (const q of POPS) {
+        if (!q.on || q === p || q.die >= 0) continue;
+        const qy = q.y + popDy(q);
+        if (Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(p.y - qy) < (p.h + q.h) / 2 + pad) { hit = q; break; }
+      }
+      if (!hit) return;
+      const hy = hit.y + popDy(hit), up = hy - (hit.h + p.h) / 2 - pad;
+      if (up >= top) p.y = up;
+      else {
+        const dn = hy + (hit.h + p.h) / 2 + pad;
+        if (dn > bot) return;
+        p.y = dn;
+      }
+    }
+  }
+  // Clear popups out of a box (the Applause) with a quick fade, so L1 keeps the highest contrast.
+  function clearPopups(x0, y0, x1, y1) {
+    for (const q of POPS) {
+      if (!q.on || q.die >= 0) continue;
+      const qy = q.y + popDy(q);
+      if (q.x + q.w / 2 > x0 && q.x - q.w / 2 < x1 && qy + q.h / 2 > y0 && qy - q.h / 2 < y1) q.die = T;
+    }
   }
   function drawPopups(c) {
     const rm = opt.reducedMotion;
@@ -730,6 +772,7 @@ const FX = (() => {
       if (u >= 1) { p.on = false; continue; }
       if (u < 0) continue;
       let a = u < 0.08 ? u / 0.08 : u > 0.72 ? 1 - (u - 0.72) / 0.28 : 1, sc = 1, dy = 0;
+      if (p.die >= 0) { const k = 1 - (T - p.die) / 0.22; if (k <= 0) { p.on = false; continue; } a *= k; }
       if (!rm) {
         const e = (T - p.t0);
         sc = p.slam ? (e < 0.16 ? lerp(2.1, 1, easeBack(e / 0.16)) : 1) : (e < 0.14 ? lerp(0.6, 1, easeBack(e / 0.14)) : 1);
@@ -778,8 +821,27 @@ const FX = (() => {
   /* ---------- live readout mirror: cheer meter, anchors ---------- */
   const live = {ooh: 0, aah: 1, target: 0};
   const meter = {v: 0, goal: 0, pulse: 0, crossed: false, band: -1};
+  // Where the DOM readout sits. setScene({anchors}) wins; otherwise FX measures the page once per show: an element
+  // with data-fx-anchor="ooh|aah|coins", else UI_PLAY's live readout (.readout .ro-o/.ro-a) and #hud-coins.
+  let anchorDom = null, meterDom = null;
+  const ANCHOR_SEL = {ooh: ['[data-fx-anchor="ooh"]', '.readout .ro-o b', '.readout .ro-o'], aah: ['[data-fx-anchor="aah"]', '.readout .ro-a b', '.readout .ro-a'], coins: ['[data-fx-anchor="coins"]', '#hud-coins']};
+  function domAnchors() {
+    if (anchorDom !== null) return anchorDom;
+    anchorDom = {};
+    if (!hasDoc || !cv || !cv.getBoundingClientRect) return anchorDom;
+    try {
+      const cr = cv.getBoundingClientRect(), root = cv.parentElement || document;
+      for (const k in ANCHOR_SEL) for (const q of ANCHOR_SEL[k]) {
+        const el = root.querySelector(q) || document.querySelector(q);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (r.width || r.height) { anchorDom[k] = {x: r.left + r.width / 2 - cr.left, y: r.top + r.height / 2 - cr.top}; break; }
+      }
+    } catch (e) { /* ignore */ }
+    return anchorDom;
+  }
   function anchor(k) {
-    const a = scene.anchors && scene.anchors[k];
+    const a = (scene.anchors && scene.anchors[k]) || domAnchors()[k];
     if (a) return Array.isArray(a) ? {x: a[0], y: a[1]} : a;
     return k === 'ooh' ? {x: W / 2 - 52, y: 20} : k === 'aah' ? {x: W / 2 + 56, y: 20} : k === 'coins' ? {x: W * 0.74, y: -24} : {x: W / 2, y: 20};
   }
@@ -795,6 +857,9 @@ const FX = (() => {
   function drawMeter(c) {
     const t = tok(), x = W - 13, w = 8, top = Math.max(44, H * 0.14), bot = rTop - 12, h = bot - top;
     if (h < 28 || !opt.drawMeter) return;
+    // UI_PLAY draws the cheer meter in the DOM (#sky-overlay .cheer): never draw a second one on top of it.
+    if (meterDom === null) meterDom = !!(hasDoc && cv && cv.parentElement && cv.parentElement.querySelector('.cheer, [data-fx-meter]'));
+    if (meterDom) return;
     c.globalAlpha = 1; c.beginPath(); rr(c, x - w / 2 - 1.5, top - 1.5, w + 3, h + 3, 5.5);
     c.fillStyle = opt.highContrast ? '#000' : 'rgba(5,7,15,0.6)'; c.fill();
     c.strokeStyle = opt.highContrast ? '#FFF' : t.line; c.lineWidth = opt.highContrast ? 2 : 1; c.stroke();
@@ -821,7 +886,7 @@ const FX = (() => {
     const t = tok(), e = T - AP.t0;
     if (e < 0) return;
     let a = Math.min(1, e / 0.15);
-    if (AP.fade >= 0) { a *= 1 - (T - AP.fade) / 0.45; if (a <= 0) { AP.on = false; return; } }
+    if (AP.fade >= 0) { a *= 1 - (T - AP.fade) / 0.3; if (a <= 0) { AP.on = false; return; } }
     const tr = tier(AP.score), fs = Math.min(W * 0.155, 36 + 7 * tr), cx = W / 2 - 6, cy = clamp(rTop * 0.4, 70, rTop - fs);
     let v, sc = 1;
     if (!AP.slammed) { const k = Math.max(0, e - 0.2); v = AP.score * (1 - Math.exp(-k * 11.5)); sc = 0.82; }
@@ -946,7 +1011,7 @@ const FX = (() => {
     for (const b of BUR) if (b.on && b.linger) expire(b, false);
     live.ooh = 0; live.aah = 1; live.target = scene.target || 0;
     meter.goal = 0; meter.crossed = false; meter.pulse = 0;
-    AP.on = false; showHaze = 0; deflate = 0; hitStop = 0;
+    AP.on = false; showHaze = 0; deflate = 0; hitStop = 0; anchorDom = null; meterDom = null;
     rng = mkRng(hash(seedStr + '|fx|' + scene.show));
   }
   function present(p, i, silent) {
@@ -1217,6 +1282,10 @@ const FX = (() => {
       AP.encore = !!e.encore;
       live.target = AP.target; live.ooh = AP.ooh; live.aah = AP.aah;
       AP.on = !silent; AP.t0 = T; AP.slammed = false; AP.fade = -1; AP.hold = 0;
+      if (!silent && opt.drawApplause) { // the roll-up gets a clear stage
+        const fs = Math.min(W * 0.155, 36 + 7 * tier(AP.score)), cx = W / 2 - 6, cy = clamp(rTop * 0.4, 70, rTop - fs);
+        clearPopups(cx - fs * 2.6, cy - fs * 0.9, cx + fs * 2.6, cy + fs * 0.62 + (AP.encore ? 100 : 40));
+      }
       if (!silent && !opt.reducedMotion) { // the × spark between the OOH and AAH chips as they slide together
         const a = anchor('ooh'), b = anchor('aah'), x = (a.x + b.x) / 2, y = (a.y + b.y) / 2;
         for (let k = 0; k < 14; k++) { const th = k * TAU / 14; spawn(M, x, y, Math.cos(th) * 90, Math.sin(th) * 90, 20, 0.93, 0.5, 0.3, 0.3, 1.4, 1, 7, 0, 0, -1, 0); }
@@ -1670,7 +1739,7 @@ const FX = (() => {
       for (let x = BD.ox - tw * 2; x < w + tw; x += tw) { q.globalAlpha = 0.9; q.drawImage(TOWN.cv, x, h - th, tw, th); }
       q.globalAlpha = 1; q.fillStyle = mix(t.hor, t.ink, 0.6); q.fillRect(0, h - 2, w, 2);
     }
-    BD.bg = g;
+    BD.bg = g; BD.bare = false;
   }
   function measureBackdrop() {
     if (!BD || !cv) return;
@@ -1679,12 +1748,17 @@ const FX = (() => {
   function renderBackdrop() {
     if (!BD.bg || !BD.w) return;
     if (++BD.n % 60 === 0) measureBackdrop();
-    const c = BD.c, ox = BD.ox, oy = BD.oy;
+    const c = BD.c, ox = BD.ox, oy = BD.oy, P = M;
+    // Idle sky (the build): the backdrop is static, so skip the full-bleed repaint once it shows the bare scene.
+    let any = false;
+    for (const g of GLOWS) if (g.on) { any = true; break; }
+    if (!any) for (let i = 0; i < P.n; i++) if (P.on[i] && P.age[i] >= 0 && !(P.fl[i] & (EMB | GLOW | HOME))) { any = true; break; }
+    if (!any && BD.bare) return;
+    BD.bare = !any;
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     c.drawImage(BD.bg, 0, 0);
     c.globalCompositeOperation = 'lighter';
     for (const g of GLOWS) if (g.on) { c.globalAlpha = 0.35 * g.a; c.drawImage(BIG[g.ci], ox + g.x - g.r * 1.6, oy + g.y - g.r * 1.6, g.r * 3.2, g.r * 3.2); }
-    const P = M;
     for (let i = 0; i < P.n; i++) {
       if (!P.on[i] || P.age[i] < 0 || (P.fl[i] & (EMB | GLOW | HOME))) continue;
       const lf = P.age[i] / P.life[i], A = 0.9 * P.al[i] * (lf < 0.6 ? 1 : 1 - (lf - 0.6) / 0.4);
@@ -1838,7 +1912,15 @@ const FX = (() => {
     } catch (e) { /* ignore */ }
   }
   function onDpr() { resize(); watchDpr(); }
-  function resize() { if (layout() && BD) layoutBackdrop(); }
+  function resize() {
+    const w0 = cv ? cv.width : 0, h0 = cv ? cv.height : 0;
+    if (!layout()) return;
+    if (BD) layoutBackdrop();
+    meterDom = null; anchorDom = null;
+    // Setting canvas.width clears it; the ResizeObserver runs after this frame's render, and with no rAF loop
+    // (?test=1, paused) nothing would repaint: draw now so the sky never shows black.
+    if (cv.width !== w0 || cv.height !== h0) render();
+  }
   function init(canvas, o) {
     if (!canvas || !hasDoc) return;
     o = o || {};
@@ -1899,6 +1981,6 @@ const FX = (() => {
       resetMax() { rMax = 0; M.peak = M.count; }};
   }
 
-  return {init, resize, setOptions, setSeed, setScene, play, event, update, render, pictogram, finale, dim, critical, clearSky: () => clearSky(0.6), stats, attachBackdrop,
+  return {init, resize, setOptions, setSeed, setScene, play, event, update, render, pictogram, finale, dim, critical, clearSky: o => clearSky(o && typeof o === 'object' ? o : 0.6), stats, attachBackdrop,
     fmt, tier, xTier, sootLevel};
 })();

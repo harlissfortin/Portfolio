@@ -11,17 +11,22 @@
  * fusions and multipliers); the policy itself reads nothing but the DOM.
  *
  * The policy is a readable heuristic that looks at what a player sees:
- *   1. Shop: lift each affordable card and read the local chips on every legal tube
- *      ("+60 Ooh · sees 3", "+9 Aah", "×1.8", "✦ ?", "Crowd +4") plus the card badges
- *      ("✦ Fuses", "Twin ★2 $5"). Score = Ooh/10 + 1.5·Aah + 15·(× − 1) + fusion 6 + twin 4
- *      + 0.5·sees. Buy the best placement while it scores ≥ 1.5 (keep $5 for interest when the
- *      crowd is already Eager, unless it is a fusion or a twin). Then add a tube if the rack is
- *      full, buy the rig card if coins are spare, and reroll once if nothing appealed.
- *   2. Arrange: press Match on a Headliner that permutes the fuse (undo it if the mood drops);
- *      while the mood pill is below Eager, try up to 4 tube swaps (drag), keeping a swap only if
- *      the mood improves (otherwise Undo).
+ *   1. Shop: lift each affordable card (tap; the card gets class "sel") and read the local chips on
+ *      every tube it can drop on (class "can"): +Ooh, +Aah, ×, ✦, Crowd, +$ (never a total), the
+ *      tube's "sees N", and the card badges ("✦ Fuses", "Twin ★2 $5"). Score = Ooh/10 + 1.5·Aah
+ *      + 15·(× − 1) + 0.4·Crowd + $ + ✦ 6 + twin 4 + "✦ Fuses" badge 3 + 0.5·sees. Buy the best
+ *      placement (tap card → tap tube, or a drag ~30% of the time) while it scores ≥ 1.5 (keep $5
+ *      for interest when the crowd is already Eager, unless it is a fusion or a twin). After a new
+ *      shell lands, lift it and move it next to a ✦ partner or to a spot that reads clearly better
+ *      (Undo if the mood drops). Then add a tube if the rack is full, buy the rig card if coins
+ *      are spare, and reroll once if nothing appealed.
+ *   2. Arrange: press Match on a Headliner that permutes the fuse (Match is lit only then; Undo it
+ *      if the mood drops); while the mood pill is below Eager, try up to 4 tube swaps, keeping a
+ *      swap only if the mood improves (otherwise Undo).
  *   3. Sponsor: toggle Accept on; keep it only if the mood pill then reads Eager.
- *   4. Light the fuse.
+ *   4. Light the fuse. RESULT (the result card pinned in the sky) is a build state (spec §2.4).
+ * Anything the UI refuses that should have worked (a legal drop that does not buy, an enabled
+ * "Light the fuse" that does not light) is recorded as a finding with a screenshot.
  *
  * Pacing follows the spec §12.2 time model: show 1 takes 10 s; each later show takes 12 s of
  * reading + 6 s per purchase + 3 s of arranging + 0.4 s per burst + 4 s of slam and result.
@@ -115,62 +120,53 @@ const pad = (s, n) => String(s).padEnd(n);
 const lpad = (s, n) => String(s).padStart(n);
 const fmtNum = n => (n == null ? '—' : n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : n >= 1e4 ? Math.round(n / 1e3) + 'K' : String(Math.round(n)));
 
-/** Local chip text → numbers. The chips are local facts only (§3.3): never a total. */
-function parseChips(text) {
-  const t = String(text || '').replace(/−/g, '-');
-  const sum = re => { let v = 0; for (const m of t.matchAll(re)) v += parseFmt(m[1]) || 0; return v; };
-  let x = 1;
-  for (const m of t.matchAll(/×\s*(\d+(?:\.\d+)?)/g)) { const f = parseFloat(m[1]); if (f > 1 && f < 1000) x *= f; }
-  const sees = [...t.matchAll(/sees\s*(\d+)/gi)].map(m => +m[1]);
-  return {
-    ooh: sum(/\+\s*([\d.,]+[KMB]?)\s*Ooh/gi),
-    aah: sum(/\+\s*([\d.,]+[KMB]?)\s*Aah/gi),
-    x,
-    sees: sees.length ? Math.max(...sees) : 0,
-    fusion: /✦/.test(t),
-    crowd: sum(/Crowd\s*\+\s*(\d+)/gi),
-    coin: sum(/\+\s*\$\s*(\d+)/g),
-    last: /\bLAST\b/.test(t),
-  };
-}
-function chipDelta(base, after) {
-  return {
-    ooh: Math.max(0, after.ooh - base.ooh), aah: Math.max(0, after.aah - base.aah), x: after.x / (base.x || 1),
-    sees: after.sees, fusion: after.fusion && !base.fusion, crowd: Math.max(0, after.crowd - base.crowd),
-    coin: Math.max(0, after.coin - base.coin), last: after.last,
-  };
+/**
+ * Local chips → numbers. The chips are local facts only (§3.3, §8.4), never a total:
+ * "+60" (Ooh), "+9" (Aah), "×1.8", "✦" / "✦ ?" (a fusion), crowd "+4", "+$2", "+0" (nothing).
+ */
+function parseChips(list) {
+  const c = { ooh: 0, aah: 0, x: 1, fusion: false, crowd: 0, coin: 0, none: false, n: 0 };
+  for (const { k, t } of list || []) {
+    const v = parseFmt(String(t).replace(/−/g, '-').replace(/^[^\d-]*/, '')) || 0;
+    c.n++;
+    if (k === 'ooh') c.ooh += v; else if (k === 'aah') c.aah += v; else if (k === 'crowd') c.crowd += v; else if (k === 'coin') c.coin += v;
+    else if (k === 'x') { const m = /×\s*(\d+(?:\.\d+)?)/.exec(t); if (m && +m[1] > 1) c.x *= +m[1]; }
+    else if (k === 'fusion') c.fusion = true;
+    else if (k === 'none') c.none = true;
+  }
+  return c;
 }
 /**
  * How a player who reads the chips weighs a placement (no totals are ever shown):
  * Aah multiplies Ooh and × multiplies Aah, so they weigh more than raw Ooh; a ✦ fusion or a twin
- * upgrade is the exciting find; a shell that "sees more" is better placed.
+ * upgrade is the exciting find; a shell that "sees more" (more bursts up in the sky) is better placed.
  */
-function scorePlacement(d, { twin, fuses, chipsSeen }) {
+function scorePlacement(d, { twin, fuses, sees }) {
   let v = d.ooh / 10 + d.aah * 1.5 + (d.x > 1 ? (d.x - 1) * 15 : 0) + d.crowd * 0.4 + d.coin;
   if (d.fusion) v += 6;
   if (twin) v += 4;
-  v += Math.min(d.sees, 6) * 0.5;
-  if (!chipsSeen) v += 1 + (fuses ? 3 : 0); // no readable chips: fall back to the card badges
+  v += Math.min(sees || 0, 6) * 0.5;
+  if (fuses) v += 3;   // the "✦ Fuses" badge: it fuses with a shell I own (reposition() then seats it by its partner)
+  if (!d.n) v += 1;    // no readable chips (Chips: partners only): the badges decide
   return v;
 }
 function cardInfo(c) {
   const s = `${c.text} · ${c.aria}`;
   const twinM = s.match(/Twin[^$]*\$\s*(\d+)/i);
-  const rest = twinM ? s.replace(twinM[0], '') : s;
-  const newM = rest.match(/\$\s*(\d+)/);
-  const name = ((c.aria || '').split(/[,:(·]/)[0] || (c.text || '').split(/\$|·|\n/)[0] || '').trim();
+  const newM = (c.aria.match(/\bnew\s*\$\s*(\d+)/i) || (twinM ? s.replace(twinM[0], '') : s).match(/\$\s*(\d+)/));
+  const name = ((c.aria.match(/^\s*Card\s*\d+\s*:\s*([^,.]+)/i) || [])[1] || '').trim();
   return { i: c.i, name, price: newM ? +newM[1] : null, twinPrice: twinM ? +twinM[1] : null, twin: /\btwin\b/i.test(s),
-    fuses: /✦|\bfuses?\b/i.test(s), sold: c.sold, disabled: c.disabled, pressed: c.pressed };
+    fuses: /✦|\bfuses?\b/i.test(s), sold: c.sold, disabled: c.disabled, pressed: c.pressed, poor: c.poor };
 }
 function tubeInfo(t) {
   const aria = t.aria || '';
-  const m = aria.match(/^\s*Tube\s*\d+\s*[:,.-]?\s*([^,]*)/i);
-  const empty = /\bempty\b/i.test(aria) || (!aria && !/[A-Za-z]{2}/.test(t.inner || ''));
+  const m = aria.match(/^\s*Tube\s*\d+\s*:\s*([^,]*)/i);
   const rig = (aria.match(/\brig\s+([A-Za-z]+)/i) || [])[1] || null;
   return {
-    j: t.j, empty, name: empty ? null : (m ? m[1].trim() : (t.inner || '').trim()), star: +(aria.match(/star\s*(\d)/i) || [])[1] || 1,
-    rig: rig && !/^(none|no)$/i.test(rig) ? rig : null, fav: /favourite|favorite|♛/i.test(`${aria} ${t.inner} ${t.near.join(' ')}`),
-    chips: parseChips([t.inner, ...t.near].join(' · ')), text: [t.inner, ...t.near].join(' · '),
+    j: t.j, empty: !!t.empty, name: t.empty ? null : (m ? m[1].trim() : ''), star: +(aria.match(/star\s*(\d)/i) || [])[1] || 1,
+    rig: rig && !/^(none|no)$/i.test(rig) ? rig : null, fav: /favourite|favorite/i.test(aria), can: !!t.can,
+    sees: +((t.sees || '').match(/\d+/) || [0])[0], chips: parseChips(t.chips),
+    text: `${t.ord} ${t.sees} ${(t.chips || []).map(c => c.t).join(' ')}`.replace(/\s+/g, ' ').trim(),
   };
 }
 
@@ -194,7 +190,7 @@ function pageRead() {
   const disabled = el => !!(el.disabled || el.getAttribute('aria-disabled') === 'true' || /\bis-disabled\b/.test(cls(el)));
   const pressed = el => el.getAttribute('aria-pressed') === 'true' || el.getAttribute('aria-selected') === 'true' ||
     el.getAttribute('aria-checked') === 'true' || el.dataset.selected === 'true' || el.dataset.held === 'true' ||
-    /\b(is-)?(selected|held|picked|lifted|armed|accepted)\b/.test(cls(el));
+    /\b(is-)?(sel|selected|held|picked|lifted|accepted)\b/.test(cls(el));
   const out = { ui: (q('#app') || {}).dataset ? q('#app').dataset.ui : null };
   try { out.gameUi = typeof GAME !== 'undefined' && GAME ? GAME.ui : null; } catch (e) { out.gameUi = null; }
   out.hud = {};
@@ -204,28 +200,28 @@ function pageRead() {
   const fb = q('#firebar') || (fire && fire.parentElement);
   let moodSrc = fb ? text(fb) : '';
   if (fb) for (const el of qa('*', fb)) if (vis(el)) moodSrc += ' ' + (el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || '');
-  const mm = moodSrc.match(/\b(restless|hopeful|eager)\b/i);
+  const pill = fire && q('.mood', fire);
+  const mm = pill && !pill.hidden && vis(pill) ? (pill.dataset.mood || text(pill)).match(/\b(restless|hopeful|eager)\b/i) : moodSrc.match(/\b(restless|hopeful|eager)\b/i);
   out.mood = mm ? mm[1].toLowerCase() : null;
+  out.held = qa('#rack .sel, #tools .sel, #shop .sel, #workshop .sel').filter(vis).map(el => el.dataset.card != null ? `button[data-card="${el.dataset.card}"]`
+    : el.dataset.tube != null ? `button[data-tube="${el.dataset.tube}"]` : el.dataset.crate != null ? `button[data-crate="${el.dataset.crate}"]`
+    : el.dataset.act ? `[data-act="${el.dataset.act}"]` : null).filter(Boolean);
   out.cards = qa('button[data-card]').filter(vis).map(el => ({ i: +el.dataset.card, text: text(el), aria: el.getAttribute('aria-label') || '',
-    disabled: disabled(el), pressed: pressed(el), sold: /\bsold\b/i.test(`${text(el)} ${el.getAttribute('aria-label') || ''} ${cls(el)}`) || el.dataset.sold === 'true' }));
-  const tubes = qa('button[data-tube]').filter(vis);
-  const pitch = tubes.length > 1 ? Math.max(24, Math.abs(R(tubes[1]).x - R(tubes[0]).x)) : 56;
-  const rackTop = tubes.length ? Math.min(...tubes.map(t => t.getBoundingClientRect().top)) : 0;
-  const owners = [];
-  const scanRoots = [q('#rack'), q('#sky-overlay')].filter(Boolean);
-  for (const root of scanRoots) for (const el of qa('*', root)) {
-    if (el.closest('button[data-tube]') || !vis(el)) continue;
-    let own = ''; for (const n of el.childNodes) if (n.nodeType === 3) own += n.textContent;
-    own = own.replace(/\s+/g, ' ').trim();
-    const lab = el.classList.contains('chip') ? (el.getAttribute('aria-label') || '') : '';
-    if (!own && !lab) continue;
-    const r = R(el);
-    if (r.w > pitch * 1.6) continue; // row-wide text (info card, banners) is not a local chip
-    if (root.id === 'sky-overlay' && (r.y < rackTop - 160 || r.y > rackTop + 8)) continue;
-    owners.push({ x: r.x, t: own || lab });
-  }
-  out.tubes = tubes.map(el => { const r = R(el); return { j: +el.dataset.tube, aria: el.getAttribute('aria-label') || '', inner: text(el),
-    near: owners.filter(o => Math.abs(o.x - r.x) <= pitch / 2).map(o => o.t), disabled: disabled(el), pressed: pressed(el) }; });
+    disabled: disabled(el), pressed: pressed(el), poor: /\bpoor\b/.test(cls(el)), sold: /\bsold\b/i.test(`${text(el)} ${el.getAttribute('aria-label') || ''} ${cls(el)}`) || el.dataset.sold === 'true' }));
+  // Tubes: the local chips live inside each tube button (.t-chips > .chip.c-ooh/.c-aah/.c-x/.chip-fusion/.c-crowd/.c-coin);
+  // "sees N" (.t-sees) and the fire-order label (.t-num: "1", "2", "LAST") sit on top. A legal drop is marked
+  // with the class "can" and ", drop here" in the aria-label.
+  const chipKind = c => { const k = cls(c);
+    return /\bc-ooh\b/.test(k) ? 'ooh' : /\bc-aah\b|chip-aah/.test(k) ? 'aah' : /\bc-x\b|chip-x/.test(k) ? 'x' : /chip-fusion/.test(k) ? 'fusion'
+      : /\bc-crowd\b/.test(k) ? 'crowd' : /\bc-coin\b/.test(k) ? 'coin' : /\bc-none\b/.test(k) ? 'none' : 'other'; };
+  out.tubes = qa('button[data-tube]').filter(vis).map(el => {
+    const aria = el.getAttribute('aria-label') || '';
+    const seesEl = q('.t-sees', el), numEl = q('.t-num', el);
+    return { j: +el.dataset.tube, aria, inner: text(el), disabled: disabled(el), pressed: pressed(el),
+      can: /\bcan\b/.test(cls(el)) || /drop here/i.test(aria), empty: /\bempty\b/.test(cls(el)) || /:\s*empty\b/i.test(aria),
+      sees: seesEl ? text(seesEl) : '', ord: numEl ? text(numEl) : '',
+      chips: qa('.chip', el).filter(vis).map(c => ({ k: chipKind(c), t: text(c) })) };
+  });
   out.crate = qa('button[data-crate]').filter(vis).map(el => ({ i: +el.dataset.crate, aria: el.getAttribute('aria-label') || '', inner: text(el) }));
   out.acts = {};
   for (const a of ['reroll', 'buyTube', 'buyRig', 'undo', 'match', 'restore', 'rehearse', 'sponsor', 'pause']) {
@@ -238,7 +234,6 @@ function pageRead() {
   const end = q('#end'); out.endText = end && !end.hidden ? text(end).slice(0, 800) : '';
   out.endHeader = end && !end.hidden ? text(q('h1,h2,h3,header', end) || end).slice(0, 160) : '';
   const rib = q('#run-it-back'); out.runItBack = !!(rib && vis(rib));
-  out.rackText = (q('#rack') ? text(q('#rack')) : '') + ' | ' + (q('#sky-overlay') ? text(q('#sky-overlay')) : '');
   try { out.hash = window.__game && typeof __game.hash === 'function' ? String(__game.hash()) : null; } catch (e) { out.hash = null; }
   return out;
 }
@@ -298,6 +293,20 @@ class HumanProxy {
     this.rng = mulberry32((o.policySeed * 2654435761) >>> 0);
     this.lifted = null; // the card index we last lifted (tapped) while evaluating
     this.stats = { taps: 0, drags: 0 };
+    this.findings = new Set(); // UI problems the proxy ran into (reported, never worked around silently)
+    this.shotKeys = new Set();
+    this.curShow = null;
+  }
+  /** Record a UI problem with its context (show, coins, the info card's text) and a screenshot the first time. */
+  async note(msg) {
+    const s = await this.read().catch(() => null);
+    const info = await this.page.evaluate(() => { const el = document.querySelector('#sky-overlay .info'); return el && !el.hidden ? (el.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 160) : ''; }).catch(() => '');
+    const key = msg.replace(/\d+/g, '#');
+    const shot = !this.shotKeys.has(key);
+    if (shot) this.shotKeys.add(key);
+    const file = `run${this.o.runNo || 1}-finding${this.shotKeys.size}.png`;
+    this.findings.add(`show ${this.curShow ?? '?'}: ${msg}${s ? ` [data-ui ${s.ui}, coins ${s.hud.coins}]` : ''}${info ? ` [info card: "${info}"]` : ''}${shot ? ` [${file}]` : ''}`);
+    if (shot) await this.page.screenshot({ path: path.join(this.o.out, file) }).catch(() => {});
   }
   // ---- pacing (spec §12.2 time model)
   startClock() { this.model = 0; this.wall0 = Date.now(); this.decisions = []; }
@@ -318,6 +327,8 @@ class HumanProxy {
     }, sel);
   }
   async tap(sel) {
+    const since = Date.now() - (this.lastDragAt || 0);
+    if (since < 450) await sleep(450 - since); // the UI swallows clicks for 400 ms after a drag (a real finger is slower anyway)
     const p = await this.point(sel);
     if (!p) return false;
     const jx = (this.rng() - 0.5) * p.w * 0.3, jy = (this.rng() - 0.5) * p.h * 0.3;
@@ -333,6 +344,7 @@ class HumanProxy {
     await m.move(a.x + 6, a.y - 6, { steps: 2 });
     await m.move(b.x, b.y, { steps: 10 + Math.floor(this.rng() * 8) });
     await sleep(40); await m.up();
+    this.lastDragAt = Date.now();
     this.stats.drags++;
     return true;
   }
@@ -355,15 +367,28 @@ class HumanProxy {
       await sleep(60);
     }
   }
+  /** Put down whatever is held: tapping the held card, shell or rig again releases it. */
   async deselect() {
-    if (this.lifted == null) return;
-    const i = this.lifted; this.lifted = null;
-    const before = (await this.read()).rackText;
-    await this.tap(`button[data-card="${i}"]`); await this.settle();
-    let s = await this.read();
-    if (s.cards.some(c => c.pressed)) { await this.tap('#sky'); await this.settle(); s = await this.read(); }
-    if (s.cards.some(c => c.pressed)) await this.page.keyboard.press('Escape'); // last resort: "Esc cancels a pick"
-    void before;
+    this.lifted = null;
+    for (let k = 0; k < 3; k++) {
+      const s = await this.read();
+      if (!s.held.length) return true;
+      await this.tap(s.held[0]); await this.settle();
+    }
+    const s = await this.read();
+    if (s.held.length) { await this.note(`could not put down a held item (${s.held.join(', ')}) by tapping it again`); return false; }
+    return true;
+  }
+  /** Tap a card and confirm it is lifted (class "sel"). */
+  async lift(i) {
+    for (let k = 0; k < 2; k++) {
+      const s0 = await this.read();
+      if (s0.cards.some(c => c.i === i && c.pressed)) { this.lifted = i; return s0; }
+      await this.tap(`button[data-card="${i}"]`); await this.settle();
+    }
+    const s = await this.read();
+    this.lifted = s.cards.some(c => c.i === i && c.pressed) ? i : null;
+    return this.lifted === i ? s : null;
   }
 
   // ---- one build phase, then light
@@ -390,6 +415,7 @@ class HumanProxy {
           rec.purchases++; rec.buys.push({ card: best.card.name, tube: best.tube + 1, twin: best.twin, score: +best.score.toFixed(1), chips: best.chipText, via: how });
           if (rec.firstChoiceMade == null) rec.firstChoiceMade = this.model;
           this.decide(best.twin ? 'upgrade' : 'buy');
+          if (!best.twin) await this.reposition(rec, best);
           continue;
         }
         rec.failedCommits++;
@@ -419,7 +445,7 @@ class HumanProxy {
           if (!ok) { await this.tap('[data-act="buyRig"]'); await this.settle(); await this.tap(`button[data-tube="${target}"]`); ok = await this.changedFrom(fp); }
           if (ok) { rec.purchases++; rec.rigs.push({ rig: rigAct.text.replace(/\s*\$.*$/, ''), tube: target + 1 }); this.decide('buyRig'); continue; }
           rec.failedCommits++;
-          await this.page.keyboard.press('Escape').catch(() => {}); // drop a rig pick that did not land
+          await this.deselect(); // drop a rig pick that did not land
         }
       }
       // 1d. nothing appealed: one reroll per shop while coins are comfortable
@@ -454,7 +480,10 @@ class HumanProxy {
 
     // 3. Sponsor: accept only if the pill reads Eager with Accept on (§4.9)
     s = await this.read();
-    if (s.acts.sponsor && !s.acts.sponsor.disabled) {
+    if (s.acts.sponsor && !s.acts.sponsor.disabled && s.acts.sponsor.pressed && s.mood !== 'eager') {
+      rec.sponsorOffered = true; rec.sponsorMood = s.mood; // accepted earlier, and the crowd is no longer Eager: decline
+      const fp2 = await this.fingerprint(); await this.tap('[data-act="sponsor"]'); await this.changedFrom(fp2); await this.settle();
+    } else if (s.acts.sponsor && !s.acts.sponsor.disabled && !s.acts.sponsor.pressed) {
       rec.sponsorOffered = true;
       const fp = await this.fingerprint();
       await this.tap('[data-act="sponsor"]');
@@ -474,33 +503,43 @@ class HumanProxy {
     const fp = await this.fingerprint();
     await this.tap('#fire');
     this.decide('light');
-    return fp;
+    return { fp, ui: s.ui };
+  }
+  /**
+   * A build action that changes nothing: move a shell to another tube, then Undo. Used only after
+   * "Light the fuse" did nothing, to get the game out of RESULT (reported as a finding).
+   */
+  async nudge() {
+    const s = await this.read();
+    const occ = s.tubes.filter(t => !t.empty).map(t => t.j), other = s.tubes.map(t => t.j);
+    if (!occ.length || other.length < 2) return false;
+    const a = occ[0], b = other.find(j => j !== a);
+    const fp = await this.fingerprint();
+    await this.tap(`button[data-tube="${a}"]`); await this.settle(); await this.tap(`button[data-tube="${b}"]`);
+    if (!(await this.changedFrom(fp))) { await this.deselect(); return false; }
+    await this.settle();
+    await this.tap('[data-act="undo"]');
+    return this.changedFrom(await this.fingerprint(), 300).then(() => true);
   }
 
-  /** Lift each affordable card and read the chips on each legal tube. */
+  /** Lift each affordable card and read the chips on every tube it can drop on (class "can"). */
   async evaluateShop(snap, coins) {
-    const base = snap.tubes.map(tubeInfo);
     const cards = snap.cards.map(cardInfo).filter(c => !c.sold && !c.disabled);
     const options = [];
     for (const c of cards) {
       const newOk = c.price != null && c.price <= coins;
-      const twinOk = c.twinPrice != null ? c.twinPrice <= coins : newOk;
+      const twinOk = c.twinPrice != null && c.twinPrice <= coins;
       if (!newOk && !twinOk) continue;
-      if (this.lifted !== c.i || !snap.cards.find(x => x.i === c.i && x.pressed)) {
-        await this.tap(`button[data-card="${c.i}"]`); await this.settle();
-      }
-      this.lifted = c.i;
-      const after = await this.read();
+      const after = await this.lift(c.i);
+      if (!after) { await this.note(`tapping shop card ${c.i + 1} (${c.name}) did not lift it`); continue; }
       const held = after.tubes.map(tubeInfo);
+      if (!held.some(t => t.can)) continue; // nowhere to put it (no empty tube, no twin)
       for (const t of held) {
-        const b = base.find(x => x.j === t.j) || t;
-        const twin = !t.empty && !!t.name && !!c.name && t.name.toLowerCase() === c.name.toLowerCase() && t.star < 3;
-        if (!t.empty && !twin) continue; // a buy needs an empty tube; an upgrade needs the twin
+        if (!t.can) continue;
+        const twin = !t.empty; // a card can only drop on an occupied tube when that shell is its twin
         if (twin ? !twinOk : !newOk) continue;
-        const d = chipDelta(b.chips, t.chips);
-        const chipsSeen = !!(d.ooh || d.aah || d.x > 1 || d.fusion || d.crowd || d.coin || t.text !== b.text);
-        options.push({ card: c, tube: t.j, twin, cost: twin ? (c.twinPrice ?? c.price) : c.price, chips: d, chipsSeen,
-          chipText: t.text.replace(/\s+/g, ' ').slice(0, 80), score: scorePlacement(d, { twin, fuses: c.fuses, chipsSeen }) + this.rng() * 0.05 });
+        options.push({ card: c, tube: t.j, twin, cost: twin ? c.twinPrice : c.price, chips: t.chips, chipsSeen: t.chips.n > 0,
+          chipText: t.text.slice(0, 80), score: scorePlacement(t.chips, { twin, fuses: c.fuses, sees: t.sees }) + this.rng() * 0.05 });
       }
     }
     return options.sort((a, b) => b.score - a.score);
@@ -513,17 +552,48 @@ class HumanProxy {
       await this.deselect();
       await this.drag(card, tube);
       if (await this.changedFrom(fp0)) return 'drag';
+      await this.note(`dragging card ${opt.card.i + 1} onto tube ${opt.tube + 1} (a legal drop) did not buy`);
     }
     for (let attempt = 0; attempt < 2; attempt++) {
-      if (this.lifted !== opt.card.i) { await this.tap(card); await this.settle(); }
+      if (!(await this.lift(opt.card.i))) break;
       this.lifted = null;
       await this.tap(tube);
       if (await this.changedFrom(fp0)) return 'tap';
-      // the second tap may have toggled the card off: lift it again explicitly
-      this.lifted = null;
     }
-    this.lifted = opt.card.i;
+    await this.note(`tap card ${opt.card.i + 1} (${opt.card.name}) then tube ${opt.tube + 1} (a legal drop) did not buy`);
+    await this.deselect();
     return null;
+  }
+
+  /**
+   * "Does it see more somewhere else?" Lift the shell just bought and read its chips on the other
+   * tubes; move it next to a fusion partner (a ✦ chip), or where it reads clearly better (≥ 1.2× + 0.5),
+   * and Undo the move if the mood pill drops.
+   */
+  async reposition(rec, bought) {
+    const here = scorePlacement(bought.chips, { sees: 0 });
+    const s0 = await this.read();
+    const mood0 = s0.mood;
+    await this.tap(`button[data-tube="${bought.tube}"]`); await this.settle();
+    const s = await this.read();
+    if (!s.held.includes(`button[data-tube="${bought.tube}"]`)) { await this.deselect(); return; }
+    let best = null;
+    for (const t of s.tubes.map(tubeInfo)) {
+      if (!t.can || t.j === bought.tube) continue;
+      const v = scorePlacement(t.chips, { sees: 0 }), fuse = t.chips.fusion && !bought.chips.fusion;
+      if (!best || (fuse && !best.fuse) || (fuse === best.fuse && v > best.v)) best = { j: t.j, v, fuse, text: t.text };
+    }
+    // a ✦ chip elsewhere wins outright (prefer fusions); otherwise it must read clearly better
+    if (!best || !(best.fuse || best.v >= here * 1.2 + 0.5)) { await this.deselect(); return; }
+    const fp = await this.fingerprint();
+    await this.tap(`button[data-tube="${best.j}"]`);
+    if (!(await this.changedFrom(fp))) { await this.note(`holding the shell on tube ${bought.tube + 1} and tapping tube ${best.j + 1} (a legal target) did not move it`); await this.deselect(); return; }
+    await this.settle();
+    const after = (await this.read()).mood;
+    if (mood0 && after && rank(after) < rank(mood0)) { await this.tap('[data-act="undo"]'); await this.settle(); rec.movesUndone = (rec.movesUndone || 0) + 1; return; }
+    rec.repositions = (rec.repositions || 0) + 1;
+    rec.buys[rec.buys.length - 1].tube = `${bought.tube + 1}→T${best.j + 1}`;
+    this.decide('move');
   }
 
   /** While the pill is below Eager, try up to 4 swaps; keep a swap only if the mood improves. */
@@ -542,7 +612,7 @@ class HumanProxy {
       const fp = await this.fingerprint();
       if (this.rng() < 0.5) await this.drag(`button[data-tube="${from}"]`, `button[data-tube="${to}"]`);
       else { await this.tap(`button[data-tube="${from}"]`); await this.settle(); await this.tap(`button[data-tube="${to}"]`); }
-      if (!(await this.changedFrom(fp))) { await this.page.keyboard.press('Escape').catch(() => {}); rec.failedMoves++; continue; }
+      if (!(await this.changedFrom(fp))) { await this.deselect(); rec.failedMoves++; continue; }
       await this.settle();
       const after = (await this.read()).mood;
       rec.swapsTried++;
@@ -566,7 +636,7 @@ function pickRigTube(rigText, tubes) {
 // ---------------------------------------------------------------- one run
 async function playRun(ctx, runNo, url, o, errors) {
   const { page } = ctx;
-  const proxy = new HumanProxy(page, { ...o, policySeed: o.policySeed + runNo - 1 }, errors);
+  const proxy = new HumanProxy(page, { ...o, policySeed: o.policySeed + runNo - 1, runNo }, errors);
   const run = { run: runNo, url, viewport: o.viewport, shows: [], ended: null, telemetry: 'none' };
   const errBefore = errors.length;
   if (ctx.needsLoad) {
@@ -574,11 +644,11 @@ async function playRun(ctx, runNo, url, o, errors) {
     ctx.needsLoad = false;
   }
   const hasGame = await page.evaluate(() => typeof window.__game === 'object' || typeof GAME !== 'undefined').catch(() => false);
-  let s = await proxy.waitUi(x => x.ui === 'BUILD' || x.ui === 'END', 15000, 'the first build');
+  let s = await proxy.waitUi(x => x.ui === 'BUILD' || x.ui === 'RESULT' || x.ui === 'END', 15000, 'the first build');
   if (s.ui === 'END') {
     if (!s.runItBack) throw new Error('page opened on END with no #run-it-back');
     await proxy.tap('#run-it-back');
-    s = await proxy.waitUi(x => x.ui === 'BUILD', 15000, 'BUILD after Run it back');
+    s = await proxy.waitUi(x => x.ui === 'BUILD' || x.ui === 'RESULT', 15000, 'BUILD after Run it back');
   }
   run.telemetry = hasGame ? await page.evaluate(pageInstallObservers) : 'none';
   proxy.startClock();
@@ -590,6 +660,7 @@ async function playRun(ctx, runNo, url, o, errors) {
     tel = await proxy.telemetry();
     const sIdx = tel && Number.isInteger(tel.show) ? tel.show : n;
     const f = Math.floor(sIdx / 3) + 1;
+    proxy.curShow = sIdx + 1;
     const rec = { show: sIdx + 1, festival: f, slot: SLOTS[sIdx % 3], modelStart: proxy.model, purchases: 0, rerolls: 0, tubesBought: 0,
       buys: [], rigs: [], swapsTried: 0, swapsKept: 0, failedCommits: 0, failedMoves: 0 };
     s = await proxy.read();
@@ -597,19 +668,28 @@ async function playRun(ctx, runNo, url, o, errors) {
     if (openCards >= 2 && run.firstChoiceShown == null) { run.firstChoiceShown = proxy.model; run.firstChoiceShow = sIdx + 1; }
     const histLen = tel && tel.history ? tel.history.length : null;
     const isFirstShow = sIdx === 0 && !(tel && tel.phase !== 'build');
-    const fp = await proxy.playShow(rec, isFirstShow);
+    const { fp, ui: uiAtFire } = await proxy.playShow(rec, isFirstShow);
     if (rec.firstChoiceMade != null && run.firstChoiceMade == null) run.firstChoiceMade = rec.firstChoiceMade;
     // resolution: wait for the chain; --fast taps the sky (×4) and then Skip
     const tFire = Date.now();
     let left = false;
-    for (let tries = 0; tries < 2 && !left; tries++) {
+    for (let tries = 0; tries < 3 && !left; tries++) {
       const t1 = Date.now();
-      while (Date.now() - t1 < 4000) {
+      while (Date.now() - t1 < 2500) {
         const x = await proxy.read();
-        if (x.ui !== 'BUILD' || (await proxy.fingerprint()) !== fp) { left = true; break; }
+        if (x.ui === 'RESOLVING' || x.ui === 'END' || (await proxy.fingerprint()) !== fp) { left = true; break; }
         await sleep(40);
       }
-      if (!left) { rec.fireRetries = (rec.fireRetries || 0) + 1; await proxy.tap('#fire'); }
+      if (left) break;
+      rec.fireRetries = (rec.fireRetries || 0) + 1;
+      const x = await proxy.read();
+      if (x.ui === 'RESULT' && tries === 0) {
+        // spec §2.4: RESULT needs no tap and building (or lighting) may start at once
+        await proxy.note(`"Light the fuse" (#fire, enabled) did nothing while data-ui=RESULT (no build action since the last result); lit only after a move + Undo`);
+        rec.fireDeadInResult = true;
+        await proxy.nudge();
+      }
+      await proxy.tap('#fire');
     }
     if (!left) throw new Error(`show ${sIdx + 1}: tapping #fire did not start a resolution`);
     // a player watches the chain; a player in a hurry taps the sky (×4), then Skip (--fast only)
@@ -617,7 +697,7 @@ async function playRun(ctx, runNo, url, o, errors) {
     for (let ff = false, skip = false; ;) {
       const x = await proxy.read();
       if (x.overlays['tap-continue']) { await proxy.tap('#tap-continue'); await proxy.settle(); continue; }
-      if (x.ui === 'BUILD' || x.ui === 'END') break;
+      if (x.ui === 'BUILD' || x.ui === 'RESULT' || x.ui === 'END') break;
       if (o.scale < 0.5 && x.ui === 'RESOLVING') {
         if (!ff && Date.now() - tRes > 150) { ff = true; rec.fastForward = true; await proxy.tap('#sky'); }
         else if (!skip && Date.now() - tRes > 3000) { skip = true; rec.skipped = true; await proxy.tap('#fire'); }
@@ -667,14 +747,18 @@ async function playRun(ctx, runNo, url, o, errors) {
   run.wallSeconds = (Date.now() - proxy.wall0) / 1000;
   run.decisions = proxy.decisions.length;
   const T = proxy.model || 1;
-  run.decisionsPerMinByThird = [0, 1, 2].map(k => {
+  run.decisionsByThird = [0, 1, 2].map(k => {
     const lo = (T * k) / 3, hi = (T * (k + 1)) / 3;
-    const n = proxy.decisions.filter(d => d.t >= lo && (k === 2 ? d.t <= hi : d.t < hi)).length;
-    return +(n / (T / 3 / 60)).toFixed(2);
+    const ds = proxy.decisions.filter(d => d.t >= lo && (k === 2 ? d.t <= hi : d.t < hi));
+    const kinds = {}; for (const d of ds) kinds[d.kind] = (kinds[d.kind] || 0) + 1;
+    return { n: ds.length, kinds };
   });
+  run.decisionsPerMinByThird = run.decisionsByThird.map(x => +(x.n / (T / 3 / 60)).toFixed(2));
+  run.decisionLog = proxy.decisions.map(d => ({ t: +d.t.toFixed(1), kind: d.kind }));
   run.stats = proxy.stats;
   run.chipsRead = run.shows.some(r => r.chipsRead);
   run.errors = errors.slice(errBefore);
+  run.findings = [...proxy.findings];
   return { run, proxy };
 }
 
@@ -734,7 +818,7 @@ async function main() {
         // later runs: the real "Run it back" button on the end screen
         const proxy = new HumanProxy(ctx.page, o, errors);
         const s = await proxy.read();
-        if (s.ui === 'END' && s.runItBack) { await proxy.tap('#run-it-back'); await proxy.waitUi(x => x.ui === 'BUILD', 15000, 'BUILD after Run it back'); }
+        if (s.ui === 'END' && s.runItBack) { await proxy.tap('#run-it-back'); await proxy.waitUi(x => x.ui === 'BUILD' || x.ui === 'RESULT', 15000, 'BUILD after Run it back'); }
         else ctx.needsLoad = true;
       }
       console.log(`\nrun ${r}`);
@@ -786,7 +870,7 @@ function printRunSummary(run) {
   const ratios = run.shows.filter(r => r.ratio != null).map(r => r.ratio);
   console.log(`  seed ${run.seed ?? '?'} · first-ever run ${run.firstRun == null ? '?' : run.firstRun ? 'yes' : 'no'} · kit ${run.kit ?? '?'} · telemetry ${run.telemetry}`);
   console.log(`  ended: ${e.outcome === 'won' ? 'WON' : e.outcome === 'lost' ? 'lost' : e.outcome} at show ${e.show} (${e.festival || '?'} ${e.slot || ''})${e.header ? ` · end screen: "${e.header}"` : ''}`);
-  console.log(`  length ${mmss(run.modelSeconds)} modelled (${(run.modelSeconds / 60).toFixed(1)} min) · wall ${mmss(run.wallSeconds)} · ${run.decisions} decisions · per minute by third: ${run.decisionsPerMinByThird.join(' / ')}`);
+  console.log(`  length ${mmss(run.modelSeconds)} modelled (${(run.modelSeconds / 60).toFixed(1)} min) · wall ${mmss(run.wallSeconds)} · ${run.decisions} decisions · per minute by third: ${run.decisionsPerMinByThird.join(' / ')} (${run.decisionsByThird.map(x => Object.entries(x.kinds).map(([k, v]) => `${v} ${k}`).join(', ')).join(' | ')})`);
   if (ratios.length) {
     const sorted = ratios.slice().sort((a, b) => a - b);
     console.log(`  Applause/target: median ${sorted[Math.floor(sorted.length / 2)].toFixed(2)} · min ${sorted[0].toFixed(2)} · max ${sorted[sorted.length - 1].toFixed(2)} · misses ${run.shows.filter(r => r.pass === false).length}`);
@@ -794,6 +878,7 @@ function printRunSummary(run) {
   console.log(`  input: ${run.stats.taps} taps, ${run.stats.drags} drags`);
   for (const g of run.gates) console.log(`  [${g.status}] ${pad(g.id, 26)} ${pad(g.got, 34)} want ${g.want}`);
   for (const er of run.errors.slice(0, 10)) console.log(`  ! ${er.kind}: ${er.text.split('\n')[0]}`);
+  for (const f of run.findings || []) console.log(`  finding: ${f}`);
 }
 
 main().catch(e => { console.error('humanplay: crashed:', e && e.stack || e); process.exit(1); });

@@ -729,6 +729,9 @@ const GAME = (() => {
   function goEnd() {
     closeAll();
     setUI('END');
+    // The end screen shows milestone progress and one "Just unlocked" card each (§7.2), so milestone
+    // toasts from the final show would only cover its header.
+    S.pendingToasts = S.pendingToasts.filter(t => t[1] !== 'milestone');
     flushToasts();
     callAudio('onEvent', {type: 'critical', on: false});
     const lr = S.lastRun;
@@ -1053,7 +1056,8 @@ const GAME = (() => {
     A.queued = false;
     for (const [q, id] of [[A.polite, 'live-polite'], [A.assertive, 'live-assertive']]) {
       if (!q.length) continue;
-      const text = [...new Set(q)].join(' '), el = byId(id);
+      // Separate queued messages as sentences ("Full Spectrum 2/3. Show 2 of 24, …").
+      const text = [...new Set(q)].map(s => s.trim()).filter(Boolean).map((s, i, a) => (i < a.length - 1 && !/[.!?:…]$/.test(s) ? s + '.' : s)).join(' '), el = byId(id);
       q.length = 0;
       if (el) el.textContent = el.textContent === text ? text + ' ' : text;
     }

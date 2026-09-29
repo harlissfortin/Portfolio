@@ -70,7 +70,7 @@ function mkState(ids, o) {
   S.tubes = ids.map(s => { if (!s) return {shell: null, rig: null}; const [id, col, star, rig] = s.split(':'); return {shell: {uid: u++, id, col: col || 'R', star: +(star || 1), paid: 3}, rig: rig || null}; });
   return S;
 }
-function light(S) { return OOH.step(S, {type: 'light'}); }
+function light(S) { S._pre = {show: S.show, crowd: S.crowd}; return OOH.step(S, {type: 'light'}); }
 const SETS = {
   mixed: ['peony:R:2', 'salute:W:2', 'willow:A:2', 'echo:W:2', 'crossette:B:2', 'thunder:W:3'],
   fusion: ['palm:G:2', 'fern:G:2', 'heart:R:2', 'strontium:R:2', 'glitter:A:2', 'finale:B:3'],
@@ -89,7 +89,7 @@ const SCENES = {
   blue: () => { const S = mkState(SETS.blue, {show: 13, crowd: 220}); return {S, fest: 5, ev: light(S)}; },
   late: () => { const S = mkState(SETS.late, {show: 16, crowd: 320}); return {S, fest: 6, ev: light(S)}; },
   // the biggest chain: a 6-tube Countdown (two passes, 12+ bursts) that misses and ends the run
-  countdown: () => { const S = mkState(SETS.mixed, {show: 23, crowd: 600}); return {S, fest: 8, ev: light(S)}; },
+  countdown: () => { const S = mkState(SETS.mixed, {show: 23, crowd: 300}); return {S, fest: 8, ev: light(S)}; },
   // the events the SIM rarely produces in a demo: coin gains, a wild rainbow, encore, critical/rain check, relight, run won
   misc: () => {
     const S = mkState(['peony:X:2', 'glitter:A:3', 'heart:R:2', 'palm:G:2', 'bluemoon:B:3', 'finale:W:3'], {show: 20, crowd: 500});
@@ -154,11 +154,11 @@ function anchors() {
   return {ooh: f($('#ro-o')), aah: f($('#ro-a')), coins: f($('#coins'))};
 }
 function pushScene(S, fest, extra) {
-  const xs = tubeXs(), tf = (S.runStats && S.runStats.timesFired) || {};
+  const xs = tubeXs(), pre = S._pre || S;
   FX.setScene(Object.assign({
-    festival: fest, show: S.show, crowd: S.crowd, rules: OOH.rulesFor(S, S.show), seed: 'fx-demo',
-    tubes: S.tubes.map((t, i) => ({x: xs[i], soot: (i * 3 + S.show) % 6, shellCol: colOfShell(t.shell), rig: t.rig})),
-    haze: ((S.show - 1) % 3) / 3, mood: 'hopeful', cheer: 0.5, target: 0, anchors: anchors()
+    festival: fest, show: pre.show, crowd: pre.crowd, rules: OOH.rulesFor(S, pre.show), seed: 'fx-demo',
+    tubes: S.tubes.map((t, i) => ({x: xs[i], soot: (i * 3 + pre.show) % 6, shellCol: colOfShell(t.shell), rig: t.rig})),
+    haze: ((pre.show - 1) % 3) / 3, mood: 'hopeful', cheer: 0.5, target: 0, anchors: anchors()
   }, extra || {}));
 }
 function readout() {
@@ -172,10 +172,11 @@ function load(name, o) {
   if (!mk) throw new Error('no scene ' + name);
   FX.setOptions({reducedMotion: !!o.rm, highContrast: !!o.hc, speed: o.speed || 1, instant: false, test: false});
   document.documentElement.dataset.contrast = o.hc ? 'high' : '';
-  if (FX.dim) FX.dim(false);
-  if (FX.critical) FX.critical(false);
+  if (handle) handle.skip();
+  FX.dim(false); FX.critical(false); FX.clearSky({all: true});
   cur = mk();
-  $('#show').textContent = 'Festival ' + cur.fest + ' · Show ' + cur.S.show;
+  $('#show').textContent = 'Festival ' + cur.fest + ' · Show ' + (cur.S._pre || cur.S).show;
+  $('#ro-o b').textContent = '0'; $('#ro-a b').textContent = '1';
   layoutRack(cur.S);
   FX.resize();
   // the build that led here: crowd, mood, haze; then open the build (resets the sky)
@@ -221,6 +222,31 @@ function timing(reset) {
   if (reset) times.length = 0;
   return r;
 }
+/* Render benchmark, robust to a busy machine: replay the same scene `reps` times (FX is deterministic per seed and
+   show) and keep the per-frame MINIMUM across replays (preemption only ever adds time). Every frame is flushed with
+   getImageData so no draw list piles up across frames: `js` = FX.render() alone (what the main thread pays when the
+   canvas is GPU-rastered, the budgeted number, like tools/perf.mjs), `full` = render + software raster (upper bound). */
+function bench(name, o, ms, reps) {
+  o = o || {}; reps = reps || 3;
+  const n = Math.round(ms / (1000 / 60)), js = new Float64Array(n).fill(1e9), full = new Float64Array(n).fill(1e9);
+  let peak = 0;
+  const g = sky.getContext('2d');
+  for (let r = 0; r < reps; r++) {
+    load(name, o); step(400, {flush: true}); FX.stats().resetMax(); play({speed: o.speed || 1});
+    for (let k = 0; k < n; k++) {
+      simT += 1 / 60; FX.update(1 / 60);
+      const t0 = performance.now(); FX.render(); const t1 = performance.now(); g.getImageData(0, 0, 1, 1); const t2 = performance.now();
+      if (t1 - t0 < js[k]) js[k] = t1 - t0;
+      if (t2 - t0 < full[k]) full[k] = t2 - t0;
+    }
+    peak = Math.max(peak, FX.stats().peak);
+    if (handle) handle.skip();
+    step(100, {flush: true});
+  }
+  times.length = 0;
+  const q = (arr, p) => { const a = Array.from(arr).sort((x, y) => x - y); return +a[Math.min(a.length - 1, Math.floor(p * a.length))].toFixed(3); };
+  return {scene: name, frames: n, reps, p50: q(js, 0.5), p95: q(js, 0.95), p99: q(js, 0.99), max: q(js, 1), fullP50: q(full, 0.5), fullP95: q(full, 0.95), peak};
+}
 /* Real-time loop (manual use and the ?live=1 perf probe). */
 let live = false, lastTs = 0;
 function loop(ts) {
@@ -253,7 +279,7 @@ function sheet(hc) {
   return ids.length;
 }
 
-window.DEMO = {load, play, step, until, timing, startLive, stopLive, sheet, scenes: Object.keys(SCENES),
+window.DEMO = {load, play, step, until, timing, bench, startLive, stopLive, sheet, scenes: Object.keys(SCENES),
   get slamAt() { return slamAt; }, get doneAt() { return doneAt; }, get presented() { return presented.map(e => e.type); },
   handle: () => handle, errors: []};
 addEventListener('error', e => DEMO.errors.push(String(e.message)));

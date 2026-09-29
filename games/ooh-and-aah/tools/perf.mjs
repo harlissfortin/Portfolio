@@ -23,6 +23,7 @@
 //   --headed            show the browser
 //   --json              also print the JSON report to stdout
 //   --max-minutes=N     hard wall-clock deadline for the whole run (default 20, --quick 8)
+//   --no-profile        skip the attribution pass (cd14 under the CPU + sampling heap profilers)
 //   -h, --help
 //
 // What it measures, per profile:
@@ -231,12 +232,15 @@ function pageLib() {
   const now = () => performance.now();
   const T = (window.__oohTools = { uiLog: [], longTasks: [], rec: false });
   try {
+    // Records are batched: an instant show sets RESOLVING then RESULT in one task, so each record's
+    // value is the next record's oldValue (the attribute's current value only for the last one).
     new MutationObserver((ms) => {
-      for (const m of ms) {
-        const el = m.target;
-        if (el && el.id === 'app' && m.attributeName === 'data-ui') T.uiLog.push({ ui: el.getAttribute('data-ui'), t: now() });
+      const recs = ms.filter((m) => m.target && m.target.id === 'app' && m.attributeName === 'data-ui');
+      for (let i = 0; i < recs.length; i++) {
+        const v = i + 1 < recs.length ? recs[i + 1].oldValue : recs[i].target.getAttribute('data-ui');
+        if (v !== recs[i].oldValue) T.uiLog.push({ ui: v, t: now() });
       }
-    }).observe(document, { subtree: true, attributes: true, attributeFilter: ['data-ui'] });
+    }).observe(document, { subtree: true, attributes: true, attributeOldValue: true, attributeFilter: ['data-ui'] });
   } catch (e) { /* ignore */ }
   try {
     new PerformanceObserver((list) => { for (const e of list.getEntries()) T.longTasks.push({ start: e.startTime, dur: e.duration }); })
@@ -551,21 +555,22 @@ export async function scriptBTo(page, { seed = 'perf-scriptb', minBursts = 7, ma
   }, { seed, minBursts, maxShows });
 }
 
-// Full animations on: skipAnimations(false), instant off, speed 1, reduced motion off.
-export async function ensureAnimated(page) {
-  return page.evaluate(() => {
+// Full animations on: skipAnimations(false), instant off, speed 1, reduced motion off (or as given:
+// the gallery's reduced-motion rows pass 'on').
+export async function ensureAnimated(page, { reducedMotion = 'off' } = {}) {
+  return page.evaluate((rmWant) => {
     const out = [];
     const g = window.__game;
     try { if (g && typeof g.skipAnimations === 'function') { g.skipAnimations(false); out.push('skipAnimations(false)'); } } catch (e) { /* ignore */ }
     try { if (g && typeof g.setPaused === 'function') g.setPaused(false); } catch (e) { /* ignore */ }
     let G = null; try { G = eval('typeof GAME') !== 'undefined' ? eval('GAME') : null; } catch (e) { /* ignore */ }
     if (G && typeof G.setSetting === 'function' && G.settings) {
-      for (const [k, v] of [['instant', false], ['speed', 1], ['reducedMotion', 'off']]) {
+      for (const [k, v] of [['instant', false], ['speed', 1], ['reducedMotion', rmWant]]) {
         try { if (G.settings[k] !== v) { G.setSetting(k, v); out.push(`${k}=${v}`); } } catch (e) { /* ignore */ }
       }
     }
     return out;
-  });
+  }, reducedMotion);
 }
 
 // Lights the fuse and waits for the show to finish. Light is legal from BUILD and from RESULT (the
@@ -573,14 +578,14 @@ export async function ensureAnimated(page) {
 // "Finished" = the first RESULT, BUILD or END after RESOLVING. Returns {method, ok, endUi,
 // phases:{RESOLVING: ms, …}, log, tFinish (page ms)}.
 export const BUILDISH = ['BUILD', 'RESULT'];
-export async function lightShow(page, { timeoutMs = 30000, allowAct = true } = {}) {
+export async function lightShow(page, { timeoutMs = 30000, allowAct = true, fireWaitMs = 2500 } = {}) {
   const mark = await page.evaluate(() => window.__oohTools.uiLog.length);
   const started = () => page.evaluate((m) => window.__oohTools.uiLog.slice(m).some((e) => e.ui === 'RESOLVING' || e.ui === 'END'), mark);
   let method = null;
   const u0 = await ui(page);
   if (!BUILDISH.includes(u0)) return { ok: false, method: null, error: `not in BUILD/RESULT (data-ui=${u0})` };
   try { await page.locator('#fire').click({ force: true, timeout: 4000 }); method = 'click #fire'; } catch { /* next */ }
-  let saw = method ? await waitFor(started, 2500, 50) : null;
+  let saw = method ? await waitFor(started, fireWaitMs, 50) : null;
   const fireIgnored = method && !saw ? u0 : null; // #fire was clicked in this data-ui and nothing happened
   if (!saw) {
     const r = await page.evaluate(() => { try { if (typeof GAME !== 'undefined' && typeof GAME.light === 'function') { GAME.light(); return 'GAME.light()'; } } catch (e) { /* ignore */ } return null; });
@@ -628,6 +633,48 @@ function cpuStats(m0, m1, frames) {
   return { wallMs: Math.round(wall), threadMs: Math.round(thread), taskMs: Math.round(task), scriptMs: Math.round(d('ScriptDuration')),
     layoutMs: Math.round((d('LayoutDuration') || 0) + (d('RecalcStyleDuration') || 0)), cpuPerFrameMs: r2(thread / n), busyPerFrameMs: r2(task / n),
     cpuPct: wall ? r2((100 * thread) / wall) : null, busyPct: wall ? r2((100 * task) / wall) : null, waitRatio: thread ? r2(task / thread) : null };
+}
+// Module boundaries in the built file ("// ==== sim.js ====" markers written by tools/build.mjs).
+export function moduleMap(html) {
+  const out = []; html.split('\n').forEach((l, i) => { const m = /^\/\/ ==== ([\w.-]+) ====/.exec(l); if (m) out.push({ line: i, mod: m[1] }); });
+  return (line) => { let mod = null; for (const b of out) { if (b.line <= line) mod = b.mod; else break; } return mod || 'page'; };
+}
+// Folds a CDP CPU profile and a sampling heap profile into self time / allocation per function and module.
+function summarizeProfiles(cpu, heap, modOf) {
+  const isGame = (cf) => cf && cf.url && /index\.html|127\.0\.0\.1/.test(cf.url);
+  // Built-ins (drawImage, measureText, Math.random…) have no url: charge them to the nearest game
+  // caller. (program) = browser work outside JS (raster, style, layout, compositing).
+  const key = (cf, callers) => {
+    if (isGame(cf)) return { fn: `${cf.functionName || '(anonymous)'}:${cf.lineNumber + 1}`, mod: modOf(cf.lineNumber) };
+    const c = (callers || []).find(isGame);
+    if (c) return { fn: `${cf.functionName || '(native)'} ← ${c.functionName || '(anonymous)'}:${c.lineNumber + 1}`, mod: modOf(c.lineNumber) };
+    return { fn: cf.functionName || '(native)', mod: /^\((program|garbage collector|root)\)$/.test(cf.functionName) ? '(browser)' : '(other)' };
+  };
+  const out = { cpu: null, alloc: null };
+  if (cpu && cpu.nodes && cpu.samples && cpu.samples.length) {
+    const per = (cpu.endTime - cpu.startTime) / 1000 / cpu.samples.length; // ms per sample
+    const fns = new Map(); const mods = new Map(); let total = 0;
+    const byId = new Map(cpu.nodes.map((n) => [n.id, n])); const parent = new Map();
+    for (const n of cpu.nodes) for (const c of n.children || []) parent.set(c, n.id);
+    const callers = (n) => { const out = []; for (let id = parent.get(n.id), g = 0; id != null && g < 40; id = parent.get(id), g++) out.push(byId.get(id).callFrame); return out; };
+    for (const n of cpu.nodes) {
+      if (!n.hitCount || n.callFrame.functionName === '(idle)') continue;
+      const k = key(n.callFrame, isGame(n.callFrame) ? null : callers(n)); const ms = n.hitCount * per; total += ms;
+      fns.set(k.fn + '|' + k.mod, (fns.get(k.fn + '|' + k.mod) || 0) + ms); mods.set(k.mod, (mods.get(k.mod) || 0) + ms);
+    }
+    out.cpu = { busyMs: Math.round(total), wallMs: Math.round((cpu.endTime - cpu.startTime) / 1000),
+      byModule: [...mods].sort((a, b) => b[1] - a[1]).map(([m, ms]) => ({ module: m, ms: Math.round(ms), pct: r2((100 * ms) / total) })),
+      top: [...fns].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([k, ms]) => { const [fn, mod] = k.split('|'); return { fn, module: mod, ms: Math.round(ms), pct: r2((100 * ms) / total) }; }) };
+  }
+  if (heap && heap.head) {
+    const fns = new Map(); const mods = new Map(); let total = 0;
+    const walk = (n, up = []) => { if (n.selfSize) { const k = key(n.callFrame, up); total += n.selfSize; fns.set(k.fn + '|' + k.mod, (fns.get(k.fn + '|' + k.mod) || 0) + n.selfSize); mods.set(k.mod, (mods.get(k.mod) || 0) + n.selfSize); } for (const c of n.children || []) walk(c, [n.callFrame, ...up].slice(0, 40)); };
+    walk(heap.head);
+    out.alloc = { note: 'sampling heap profiler incl. objects already collected: bytes allocated during the show (sampled), by allocating function', totalKb: Math.round(total / 1024),
+      byModule: [...mods].sort((a, b) => b[1] - a[1]).map(([m, b]) => ({ module: m, kb: Math.round(b / 1024) })),
+      top: [...fns].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, b]) => { const [fn, mod] = k.split('|'); return { fn, module: mod, kb: Math.round(b / 1024) }; }) };
+  }
+  return out;
 }
 export function hostLoad() { const l = os.loadavg(); return { cores: os.cpus().length, load1: r2(l[0]), load5: r2(l[1]) }; }
 async function gc(cdp) { try { await cdp.send('HeapProfiler.collectGarbage'); await cdp.send('HeapProfiler.collectGarbage'); } catch { /* ignore */ } }
@@ -765,6 +812,11 @@ async function measureShow(page, srv, key, cfg, notes, beforeLight = null) {
   if (beforeLight) { try { await beforeLight(); } catch (e) { notes.push(`${key}: ${e.message}`); } }
   await sleep(300);
   const m0 = cfg.cdp ? await withTimeout(cdpMetrics(cfg.cdp), 5000).catch(() => null) : null;
+  const prof = cfg.cdp && cfg.profileJs ? await withTimeout((async () => {
+    await cfg.cdp.send('Profiler.enable'); await cfg.cdp.send('Profiler.setSamplingInterval', { interval: 500 }); await cfg.cdp.send('Profiler.start');
+    await cfg.cdp.send('HeapProfiler.enable'); await cfg.cdp.send('HeapProfiler.startSampling', { samplingInterval: 8192, includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
+    return true;
+  })(), 5000).catch(() => false) : false;
   await page.evaluate(() => window.__oohTools.start());
   const lit = await lightShow(page, { timeoutMs: cfg.showTimeoutMs, allowAct: true });
   // Keep recording through the slam / finale tail: the core holds RESULT (or opens END ~1.6 s after the
@@ -773,6 +825,10 @@ async function measureShow(page, srv, key, cfg, notes, beforeLight = null) {
   await sleep(200);
   const rec = await page.evaluate(() => window.__oohTools.stop());
   const m1 = cfg.cdp ? await withTimeout(cdpMetrics(cfg.cdp), 5000).catch(() => null) : null;
+  if (prof) {
+    const [c, h] = await withTimeout(Promise.all([cfg.cdp.send('Profiler.stop').then((r) => r.profile, () => null), cfg.cdp.send('HeapProfiler.stopSampling').then((r) => r.profile, () => null)]), 20000).catch(() => [null, null]);
+    res.jsProfile = summarizeProfiles(c, h, cfg.modOf || (() => 'page'));
+  }
   res.light = lit;
   res.frames = frameStats(rec, cfg.refreshMs);
   res.cpu = cpuStats(m0, m1, res.frames && res.frames.frames);
@@ -801,7 +857,8 @@ async function measureLeak(page, srv, cdp, shows, cfg) {
       await waitFor(async () => (await ui(page)) === 'BUILD', 8000);
       await ensureAnimated(page);
     }
-    const r = await lightShow(page, { timeoutMs: cfg.showTimeoutMs });
+    // Once #fire is known to be ignored in RESULT, do not wait the full 2.5 s for it every show.
+    const r = await lightShow(page, { timeoutMs: cfg.showTimeoutMs, fireWaitMs: out.fireIgnored ? 600 : 2500 });
     if (!r.ok) { out.notes.push(`show ${i}: ${r.error}`); break; }
     out.method = r.method;
     if (r.fireIgnored) out.fireIgnored = (out.fireIgnored || 0) + 1;
@@ -869,9 +926,9 @@ function evaluate(report) {
     for (const s of chains(primary)) {
       const fr = s.frames; let v; let src;
       if (fr.fxRenderPerFrameMs) { v = fr.fxRenderPerFrameMs.p95; src = 'FX.render per frame, p95'; } else if (fr.rafCallbackMs) { v = fr.rafCallbackMs.p95; src = 'whole rAF callback per frame, p95 (FX.render not wrappable: upper bound)'; }
-      if (v != null && (!worst || v > worst.v)) worst = { v, src, s: s.scenario, max: fr.fxRenderPerFrameMs ? fr.fxRenderPerFrameMs.max : fr.rafCallbackMs && fr.rafCallbackMs.max };
+      if (v != null && (!worst || v > worst.v)) worst = { v, src, s: s.scenario, p50: fr.fxRenderPerFrameMs ? fr.fxRenderPerFrameMs.p50 : null, cpu: s.cpu && s.cpu.cpuPerFrameMs, max: fr.fxRenderPerFrameMs ? fr.fxRenderPerFrameMs.max : fr.rafCallbackMs && fr.rafCallbackMs.max };
     }
-    if (worst) add('render', `FX render (${pname}${pname === 'mobile' ? `, CPU ×${report.config.throttle}` : ''}, §11.7)`, '≤ 6 ms', `${fmtMs(worst.v)} p95 (max ${fmtMs(worst.max)}) in ${worst.s}`, worst.v <= 6 ? 'PASS' : 'FAIL', worst.src + (worst.max > 6 ? '; some frames exceed 6 ms' : ''));
+    if (worst) add('render', `FX render (${pname}${pname === 'mobile' ? `, CPU ×${report.config.throttle}` : ''}, §11.7)`, '≤ 6 ms', `${fmtMs(worst.v)} p95, ${fmtMs(worst.p50)} p50 (max ${fmtMs(worst.max)}) in ${worst.s}`, worst.v <= 6 ? 'PASS' : 'FAIL', worst.src + (worst.max > 6 ? '; some frames exceed 6 ms' : '') + (worst.cpu != null ? `; main-thread CPU ${fmtMs(worst.cpu)} per rendered frame (all work, CDP ThreadTime)` : ''));
     else add('render', 'FX render (§11.7)', '≤ 6 ms', 'n/a', 'SKIP', 'no lit show recorded');
   }
   // step ≤ 2 ms
@@ -904,6 +961,16 @@ function evaluate(report) {
       add(`longtask.${pn}.${s.scenario}`, `Longest task during ${s.scenario} (${pn}; guide)`, `< ${ltLimit} ms`, `${fr.longTasks.maxMs} ms (${fr.longTasks.count} long tasks)`, fr.longTasks.maxMs < ltLimit ? 'PASS' : 'WARN',
         (fr.longTasks.top || []).slice(0, 3).map((l) => `${l.ms} ms at +${l.atMs} ms in ${l.phase}`).join('; '));
     }
+    {
+      const shows = chains(p).filter((s) => s.frames.allocKbPerFrame != null);
+      if (shows.length) {
+        const w = shows.reduce((a, b) => (b.frames.allocKbPerFrame > a.frames.allocKbPerFrame ? b : a));
+        const base = p.idle && p.idle.allocKbPerFrame != null ? p.idle.allocKbPerFrame : 0;
+        const over = w.frames.allocKbPerFrame - base;
+        add(`alloc.${pn}`, `JS allocation per frame during a show (${pn}; §11.7 "no allocations in the particle loop", whole-page proxy)`, '≤ 32 KB/frame above idle', `${w.frames.allocKbPerFrame} KB/frame in ${w.scenario} (idle ${base} KB/frame)`, over <= 32 ? 'PASS' : 'WARN',
+          'sum of positive usedJSHeapSize steps between frames; includes UI work, so a proxy for the particle loop');
+      }
+    }
     if (p.sim && p.sim.actRoundTrip) {
       const v = p.sim.actRoundTrip;
       add(`act.${pn}`, `__game.act round trip: dispatch + re-render (${pn}; guide)`, '≤ 16.7 ms p95', `${fmtMs(v.p95)} p95 (mean ${fmtMs(v.mean)})`, v.p95 <= 16.7 ? 'PASS' : 'WARN', '§2.1: feedback in the same frame');
@@ -921,10 +988,22 @@ function evaluate(report) {
   let ign = 0; let ignUi = null;
   for (const p of [mob, desk]) if (p) { if (p.leak && p.leak.fireIgnored) { ign += p.leak.fireIgnored; ignUi = 'RESULT'; } for (const s of Object.values(p.scenarios || {})) if (s.light && s.light.fireIgnored) { ign++; ignUi = s.light.fireIgnored; } }
   add0('fire', 'Light the fuse (#fire click) starts the show (functional)', 'always', ign ? `ignored ${ign}× (data-ui=${ignUi}); the tool fell back to GAME.light()` : 'yes', ign ? 'WARN' : 'PASS',
-    ign ? 'core allows light from RESULT and #fire is enabled there, but the click does nothing until a build action' : '');
+    ign ? 'core.light() accepts RESULT and #fire is enabled there, but the click does nothing until a build action (UI_PLAY light() only fires from BUILD)' : '');
   const errs = report.console.filter((e) => e.kind === 'pageerror' || e.kind === 'error');
   add('console', 'Page errors and console errors (guide)', 'none', `${errs.length}`, errs.length ? 'WARN' : 'PASS', errs.slice(0, 3).map((e) => e.text).join(' | '));
   add('network', 'Requests other than Google Fonts (§11.2; guide)', 'none', `${report.externalRequests.length}`, report.externalRequests.length ? 'WARN' : 'PASS', report.externalRequests.slice(0, 3).join(' '));
+  // Wall-clock timing checks taken while the host was overloaded (other processes competing for the
+  // cores) are kept but annotated, with the main thread's own CPU time where it was measured.
+  for (const c of checks) {
+    const m = /^(render|step|resolve)$/.exec(c.id) ? pname : (/^(?:frames|longtask|act|boot)\.(\w+)/.exec(c.id) || [])[1];
+    const p = m && report.profiles[m]; if (!p) continue;
+    const loads = [p.host, report.host && report.host.start, report.host && report.host.end, ...Object.values(p.scenarios || {}).map((x) => x.host)].filter(Boolean);
+    const worst = loads.reduce((w, x) => (x.load1 / x.cores > w.load1 / w.cores ? x : w), loads[0] || { load1: 0, cores: 1 });
+    const waits = Object.values(p.scenarios || {}).map((x) => x.cpu && x.cpu.waitRatio).filter((x) => x != null);
+    const wait = waits.length ? Math.max(...waits) : null;
+    if (worst.load1 / worst.cores > 1 || (wait != null && wait > 1.5 * (p.throttle || 1)))
+      c.detail = `${c.detail ? c.detail + '; ' : ''}host overloaded (load ${worst.load1} on ${worst.cores} cores${wait != null ? `, busy/CPU up to ${wait}×` : ''}): wall-clock timings inflated`;
+  }
   return checks;
 }
 
@@ -935,12 +1014,14 @@ function mdReport(rep) {
   L.push('# Ooh × Aah: performance report', '');
   L.push(`**Verdict: ${verdict}** · ${rep.generatedAt} · \`${rep.file.file}\` ${rep.file.kb} KB (gzip ${rep.file.gzipKb} KB, sha1 ${rep.file.sha1})${rep.buildNote ? ` · ${rep.buildNote}` : ''}`, '');
   L.push(`Game version: ${rep.api && rep.api.version || 'n/a'} · hooks: ${rep.api ? rep.api.hooks.join(', ') || 'none' : 'n/a'} · FX.stats: ${rep.api && rep.api.fxStats ? 'yes' : 'no'} · Chromium ${rep.browserVersion} (headless, software raster: render times are CPU-bound upper bounds)`, '');
+  const hs = rep.host || {};
+  if (hs.cores) L.push(`Host: ${hs.cores} cores; 1-min load average ${hs.start ? hs.start.load1 : '?'} at start, ${hs.end ? hs.end.load1 : '?'} at end${hs.end && hs.end.load1 > hs.cores ? ' (overloaded: wall-clock timings are inflated; compare the CPU/frame column)' : ''}.${rep.incomplete ? ` **Incomplete run:** ${rep.incomplete}.` : ''}`, '');
   L.push('## Budgets', '', '| | Check | Budget | Measured | Notes |', '|---|---|---|---|---|');
   for (const c of rep.checks) L.push(`| ${c.verdict === 'PASS' ? 'PASS' : c.verdict === 'FAIL' ? '**FAIL**' : c.verdict} | ${c.label} | ${c.budget} | ${c.measured} | ${(c.detail || '').replace(/\|/g, '/')} |`);
   L.push('');
   for (const [pn, p] of Object.entries(rep.profiles)) {
     if (!p) continue;
-    L.push(`## ${pn}: ${p.viewport}${p.throttle > 1 ? `, CPU ×${p.throttle}` : ''}`, '');
+    L.push(`## ${pn}: ${p.viewport}${p.throttle > 1 ? `, CPU ×${p.throttle}` : ''}${p.wallSeconds != null ? ` (${p.wallSeconds} s)` : ''}`, '');
     if (p.error) L.push(`Error: ${p.error}`, '');
     if (p.boot) {
       L.push(`**Boot** (clean storage, ${p.boot.loads.length} loads): to BUILD median **${p.boot.toBuildMedianMs ?? 'n/a'} ms**, FCP ${p.boot.fcpMedianMs != null ? Math.round(p.boot.fcpMedianMs) + ' ms' : 'n/a'}; loads: ${p.boot.loads.map((l) => `${l.toBuildMs ?? '—'} ms${l.ok ? '' : ' (no BUILD)'}`).join(', ')}.`, '');
@@ -949,12 +1030,13 @@ function mdReport(rep) {
     if (p.idle) rows.push(['idle (build at rest)', null, p.idle]);
     for (const k of ['show7', 'cd14', 'cdwin']) { const s = p.scenarios && p.scenarios[k]; if (s) rows.push([k, s, s.frames]); }
     if (rows.length) {
-      L.push('| Scenario | Frames | Interval p50 / p95 / p99 / max | Dropped | rAF cb p95 | FX.render p95 / max (per frame) | FX.update / frame p95 | Long tasks (max) | FX.stats max | Alloc/frame |', '|---|---|---|---|---|---|---|---|---|---|');
-      for (const [name, , fr] of rows) {
-        if (!fr) { L.push(`| ${name} | n/a | | | | | | | | |`); continue; }
+      L.push('| Scenario | Frames | Interval p50 / p95 / p99 / max | Dropped | rAF cb p95 | FX.render p95 / max (per frame) | FX.update / frame p95 | Main-thread CPU / busy per frame | Long tasks (max) | FX.stats max | Alloc/frame |', '|---|---|---|---|---|---|---|---|---|---|---|');
+      for (const [name, sc, fr] of rows) {
+        if (!fr) { L.push(`| ${name} | n/a | | | | | | | | | |`); continue; }
+        const cpu = (sc && sc.cpu) || fr.cpu;
         const m = fr.frameMs || {};
         const st = Object.entries(fr.fxStatsMax || {}).map(([k, v]) => `${k} ${Math.round(v)}`).join(', ') || '—';
-        L.push(`| ${name} | ${fr.frames} | ${[m.p50, m.p95, m.p99, m.max].map((x) => (x == null ? '—' : x.toFixed(1))).join(' / ')} ms | ${fr.droppedFrames} (${fr.droppedPct}%) | ${fmtMs(fr.rafCallbackMs && fr.rafCallbackMs.p95)} | ${fr.fxRenderPerFrameMs ? `${fmtMs(fr.fxRenderPerFrameMs.p95)} / ${fmtMs(fr.fxRenderPerFrameMs.max)}` : 'n/a'} | ${fr.fxUpdatePerFrameMs ? fmtMs(fr.fxUpdatePerFrameMs.p95) : 'n/a'} | ${fr.longTasks.count} (${fr.longTasks.maxMs} ms) | ${st} | ${fr.allocKbPerFrame != null ? fr.allocKbPerFrame + ' KB' : 'n/a'} |`);
+        L.push(`| ${name} | ${fr.frames} | ${[m.p50, m.p95, m.p99, m.max].map((x) => (x == null ? '—' : x.toFixed(1))).join(' / ')} ms | ${fr.droppedFrames} (${fr.droppedPct}%) | ${fmtMs(fr.rafCallbackMs && fr.rafCallbackMs.p95)} | ${fr.fxRenderPerFrameMs ? `${fmtMs(fr.fxRenderPerFrameMs.p95)} / ${fmtMs(fr.fxRenderPerFrameMs.max)}` : 'n/a'} | ${fr.fxUpdatePerFrameMs ? fmtMs(fr.fxUpdatePerFrameMs.p95) : 'n/a'} | ${cpu ? `${fmtMs(cpu.cpuPerFrameMs)} / ${fmtMs(cpu.busyPerFrameMs)}` : 'n/a'} | ${fr.longTasks.count} (${fr.longTasks.maxMs} ms) | ${st} | ${fr.allocKbPerFrame != null ? fr.allocKbPerFrame + ' KB' : 'n/a'} |`);
       }
       L.push('');
       for (const k of ['show7', 'cd14', 'cdwin']) {
@@ -986,6 +1068,15 @@ function mdReport(rep) {
       if (s.notes && s.notes.length) L.push('', `Notes: ${s.notes.join('; ')}`);
       L.push('');
     }
+    if (p.jsProfile && (p.jsProfile.cpu || p.jsProfile.alloc)) {
+      const j = p.jsProfile;
+      L.push(`**Where the time and memory go** (attribution pass: ${j.scenario} again under the CPU profiler and the sampling heap profiler; not used for the budgets):`, '');
+      if (j.cpu) {
+        L.push(`CPU busy ${j.cpu.busyMs} ms over ${j.cpu.wallMs} ms. By module: ${j.cpu.byModule.map((m) => `${m.module} ${m.pct}%`).join(', ')}.`, '');
+        L.push('| Function (line in index.html) | Module | Self ms | % |', '|---|---|---|---|', ...j.cpu.top.map((t) => `| \`${t.fn}\` | ${t.module} | ${t.ms} | ${t.pct}% |`), '');
+      }
+      if (j.alloc) L.push(`Allocation during the show (sampled, incl. collected objects, ${j.alloc.totalKb} KB): by module ${j.alloc.byModule.slice(0, 6).map((m) => `${m.module} ${m.kb} KB`).join(', ')}; top: ${j.alloc.top.map((t) => `\`${t.fn}\` (${t.module}) ${t.kb} KB`).join(', ')}.`, '');
+    } else if (p.jsProfile && p.jsProfile.error) L.push(`Attribution pass failed: ${p.jsProfile.error}`, '');
     if (p.leak) {
       const k = p.leak;
       L.push(`**Heap check** (${k.setup}; lit by ${k.method || 'n/a'}; ${k.restarts} run restarts): ${k.error ? 'ERROR ' + k.error : `slope ${k.heapSlopeKbPerShow} KB/show, Δheap ${k.heapDeltaKb} KB, Δnodes ${k.nodesDelta}, Δlisteners ${k.listenersDelta} over ${k.showsCompleted} shows`}.`, '');
@@ -1004,7 +1095,7 @@ function mdReport(rep) {
 const USAGE = (() => { const lines = []; for (const l of fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1)) { if (!l.startsWith('//') || l.includes('What it measures')) break; lines.push(l.slice(3)); } return lines.join('\n'); })();
 
 function parseArgs(argv) {
-  const o = { html: null, build: false, out: path.join(GAME_DIR, 'tools', 'shots', 'perf'), profiles: ['mobile', 'desktop'], throttle: 4, leak: 'desktop', shows: 10, quick: false, fonts: false, isolation: true, headed: false, json: false };
+  const o = { html: null, build: false, out: path.join(GAME_DIR, 'tools', 'shots', 'perf'), profiles: ['mobile', 'desktop'], throttle: 4, leak: 'desktop', shows: 10, quick: false, fonts: false, isolation: true, headed: false, json: false, profileJs: true };
   for (const a of argv) {
     const m = /^--([a-z-]+)(?:=(.*))?$/.exec(a);
     if (a === '-h' || a === '--help') { console.log(USAGE); process.exit(0); }
@@ -1023,6 +1114,7 @@ function parseArgs(argv) {
       case 'no-isolation': o.isolation = false; break;
       case 'headed': o.headed = true; break;
       case 'json': o.json = true; break;
+      case 'no-profile': o.profileJs = false; break;
       case 'max-minutes': o.maxMinutes = Math.max(1, Number(v) || 20); break;
       default: console.error(`unknown option --${k}\n\n${USAGE}`); process.exit(2);
     }
@@ -1098,6 +1190,15 @@ async function main() {
           try {
             P.scenarios[key] = await measureShow(page, srv, key, cfg, report.notes, before);
           } catch (e) { P.scenarios[key] = { scenario: key, label: RACKS[key].label, error: e.message }; report.notes.push(`${pn}/${key}: ${e.message}`); }
+        }
+        // Attribution pass (not used for the budgets: the profilers add overhead): cd14 again under
+        // the CPU profiler and the sampling heap profiler, folded by function and by source module.
+        if (opts.profileJs) {
+          log(`  [${pn}] cd14 under the JS profilers…`);
+          try {
+            const pr = await measureShow(page, srv, 'cd14', { ...cfg, profileJs: true, modOf: moduleMap(src.html) }, report.notes);
+            P.jsProfile = { scenario: 'cd14', ...(pr.jsProfile || { error: 'no profile' }), fxRenderPerFrameP50: pr.frames && pr.frames.fxRenderPerFrameMs && pr.frames.fxRenderPerFrameMs.p50 };
+          } catch (e) { P.jsProfile = { error: e.message }; }
         }
         if (opts.leak === 'both' || opts.leak === pn) {
           log(`  [${pn}] heap check (${opts.shows} shows)…`);

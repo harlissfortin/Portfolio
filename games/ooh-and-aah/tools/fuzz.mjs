@@ -22,18 +22,24 @@
  *   - #app[data-ui] is a valid UI state and equals GAME.ui;
  *   - no NaN / Infinity / undefined / [object Object] in any visible text or aria-label;
  *   - one double/triple tap on #fire never lights two shows;
- *   - the game is never stuck: BUILD or END is reachable within 10 s (waiting, tapping "Tap to
+ *   - the overlay stack agrees with the DOM (GAME.top() is shown; no modal shown with an empty stack);
+ *   - the game is never stuck: BUILD/RESULT or END is reachable within 10 s (waiting, tapping "Tap to
  *     continue", pressing Esc on overlays, Skip). Every 5th burst the probe must also clear every
  *     overlay (proving they all close).
  *
- * Seeded and reproducible: the same --seed gives the same action stream. On failure it prints the
- * action log since the last page load, and saves it (with a screenshot) to
- * tools/shots/fuzz/fail-<viewport>-s<seed>.json, which --replay re-runs.
+ * Soft findings (recorded, not fatal): an enabled "Light the fuse" that does not light.
+ *
+ * Seeded and reproducible: the same --seed gives the same action stream (timing aside). On a failure
+ * it prints the action log since the last page load, saves it (with a screenshot) to
+ * tools/shots/fuzz/fail-<viewport>-s<seed>-<k>.json (which --replay re-runs), reloads, and keeps
+ * going; repeats of a known failure are only counted. It stops at --max-failures distinct failures,
+ * or at the first one with --stop-on-fail.
  *
  * Usage:
  *   node tools/fuzz.mjs [--minutes 3] [--seed 1] [--viewports 360x740,1440x900]
  *        [--file index.html | --url http://…] [--segment 45] [--probe-every 5] [--out tools/shots/fuzz]
- *        [--replay tools/shots/fuzz/fail-….json] [--query debug=1] [--headed] [--raw] [--verbose]
+ *        [--replay tools/shots/fuzz/fail-….json] [--query debug=1] [--max-failures 8] [--stop-on-fail]
+ *        [--headed] [--raw] [--verbose]
  *   --query  extra URL flags appended to every page load (e.g. fairWeather tests, debug=1).
  * Exit code: 0 clean · 1 a failure was found (or the page could not load).
  */
@@ -55,11 +61,12 @@ const KEYS = ['Tab', 'Shift+Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDo
   '1', '2', '3', '4', 'g', 't', 'x', 'Backspace', 'Delete', 'c', 'm', 'b', 'u', 'z', 'h', 'i', 'f', 'p', 'l', '?', 'r', 'R'];
 const SIZES = [[360, 740], [360, 640], [375, 548], [1440, 900], [320, 480], [414, 896], [768, 1024], [1024, 700], [1920, 1080], [700, 460]];
 const OVERLAY_API = ['pause', 'settings', 'logbook', 'help'];
+const TOP_ID = { pause: 'pause-menu', settings: 'settings', logbook: 'logbook', help: 'help', inspect: 'inspect', showlog: 'showlog', tapContinue: 'tap-continue', end: 'end' };
 
 // ---------------------------------------------------------------- args
 function parseArgs(argv) {
   const o = { minutes: 3, seed: 1, viewports: '360x740,1440x900', file: null, url: null, segment: 45, probeEvery: 5,
-    out: path.join(HERE, 'shots', 'fuzz'), replay: null, headed: false, raw: false, verbose: false, query: '' };
+    out: path.join(HERE, 'shots', 'fuzz'), replay: null, headed: false, raw: false, verbose: false, query: '', maxFailures: 8, stopOnFail: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i], eq = a.indexOf('='), key = (eq > 0 ? a.slice(0, eq) : a).replace(/^--/, '');
     const val = () => (eq > 0 ? a.slice(eq + 1) : argv[++i]);
@@ -74,6 +81,8 @@ function parseArgs(argv) {
       case 'out': o.out = path.resolve(String(val())); break;
       case 'replay': o.replay = path.resolve(String(val())); break;
       case 'query': o.query = String(val()).replace(/^\?/, ''); break;
+      case 'max-failures': o.maxFailures = Math.max(1, parseInt(val(), 10) || 8); break;
+      case 'stop-on-fail': o.stopOnFail = true; break;
       case 'headed': o.headed = true; break;
       case 'raw': o.raw = true; break;
       case 'verbose': case 'v': o.verbose = true; break;
@@ -138,8 +147,11 @@ function pageLite() {
   const overlays = ['pause-menu', 'settings', 'logbook', 'help', 'inspect', 'tap-continue', 'end'].filter(vis);
   let top = null, gameUi = null, show = null, phase = null, hist = null, seed = null;
   try { if (typeof GAME !== 'undefined' && GAME) { gameUi = GAME.ui; top = typeof GAME.top === 'function' ? GAME.top() : null; } } catch (e) { /* ignore */ }
+  if (top === 'showlog' && !overlays.includes('showlog')) overlays.push('showlog'); // the mobile Show-log sheet
   try { const s = window.__game && __game.state(); if (s) { show = s.show; phase = s.phase; seed = s.seed; hist = ((s.runStats && s.runStats.history) || []).length; } } catch (e) { /* ignore */ }
-  return { ui: app ? app.dataset.ui : null, gameUi, top, overlays, show, phase, hist, seed };
+  const fire = document.getElementById('fire');
+  const fireOn = !!(fire && !fire.disabled && !fire.closest('[hidden]') && !fire.closest('[inert]'));
+  return { ui: app ? app.dataset.ui : null, gameUi, top, overlays, blocking: overlays.filter(x => x !== 'end'), show, phase, hist, seed, fireOn };
 }
 /** The invariants; returns a list of violations (empty = fine). */
 function pageInvariants() {
@@ -167,6 +179,16 @@ function pageInvariants() {
     }
     if ((st.tubes || []).filter(t => t && t.rig === 'mortar').length > 1) bad.push('more than one Mortar');
   }
+  // the overlay stack and the DOM agree (a modal nobody can close with Esc is a soft-lock)
+  try {
+    if (typeof GAME !== 'undefined' && GAME && typeof GAME.top === 'function') {
+      const ids = { pause: 'pause-menu', settings: 'settings', logbook: 'logbook', help: 'help', inspect: 'inspect', end: 'end', showlog: 'showlog', tapContinue: 'tap-continue' };
+      const top = GAME.top();
+      const shownEl = el => !!el && !el.hidden && !el.closest('[hidden]') && (!el.checkVisibility || el.checkVisibility({ visibilityProperty: true }));
+      if (top && ids[top] && !shownEl(document.getElementById(ids[top]))) bad.push(`GAME.top() is '${top}' but #${ids[top]} is not shown`);
+      if (!top) for (const n of ['pause', 'settings', 'logbook', 'help', 'tapContinue']) if (shownEl(document.getElementById(ids[n]))) bad.push(`#${ids[n]} is shown but the overlay stack is empty (GAME.top() = null)`);
+    }
+  } catch (e) { bad.push(`GAME.top() threw: ${e && e.message}`); }
   // no NaN & co. in anything a player can see or hear from a screen reader
   const re = /\bNaN\b|\bInfinity\b|\bundefined\b|\[object Object\]/;
   const shown = el => !el.closest('[hidden]') && (!el.checkVisibility || el.checkVisibility({ opacityProperty: true, visibilityProperty: true }));
@@ -205,7 +227,8 @@ function pageShopRead() {
 class Monkey {
   constructor(page, cdp, rng, o, errors, vp) {
     Object.assign(this, { page, cdp, rng, o, errors, vp });
-    this.log = []; this.cover = { ui: {}, overlays: {}, maxShow: 0, runs: new Set(), lights: 0, ops: 0, bursts: 0, kinds: {} };
+    this.log = []; this.softs = new Map();
+    this.cover = { ui: {}, overlays: {}, maxShow: 0, runs: new Set(), lights: 0, ops: 0, bursts: 0, kinds: {} };
     this.lastHist = null;
   }
   pick(a) { return a[Math.floor(this.rng() * a.length)]; }
@@ -236,12 +259,14 @@ class Monkey {
         } else {
           await m.move(a.x, a.y); await m.down(); await m.move(b.x, b.y, { steps: op.steps }); await m.up();
         }
+        this.lastDragEnd = Date.now();
         break;
       }
       case 'long': {
         const p = await this.resolvePoint(op);
         if (op.touch) { await this.touch('touchStart', p.x, p.y); await sleep(op.ms); await this.touch('touchEnd', p.x, p.y); }
         else { await m.move(p.x, p.y); await m.down(); await sleep(op.ms); await m.up(); }
+        this.lastDragEnd = Date.now();
         break;
       }
       case 'multi': {
@@ -279,13 +304,19 @@ class Monkey {
     }
     return null;
   }
-  /** Macro: play one show through the UI (buy what is affordable into empty tubes, Match, fire, Skip). */
+  /**
+   * Macro: play one show through the UI (buy what is affordable into empty tubes, Match, fire, Skip).
+   * It also asserts that an enabled "Light the fuse" lights (a soft finding: recorded, not fatal).
+   */
   async autopilot(op) {
+    // the UI swallows clicks for 400 ms after a drag or a long-press (§11.5); a deliberate player is slower than that
+    const since = Date.now() - (this.lastDragEnd || 0);
+    if (since < 450) await sleep(450 - since);
     const lite = await this.page.evaluate(pageLite);
-    if (lite.ui !== 'BUILD' || lite.overlays.some(x => x !== 'end')) return null;
+    if (!(lite.ui === 'BUILD' || lite.ui === 'RESULT') || lite.blocking.length) return null;
     const shop = await this.page.evaluate(pageShopRead);
     let coins = shop.coins; const empty = shop.empty.slice();
-    for (const c of shop.cards) {
+    for (const c of op.buy === false ? [] : shop.cards) { // op.buy false: light straight from the result (no build action)
       if (c.sold || c.price > coins || !empty.length) continue;
       const tube = empty.shift();
       const a = await this.resolvePoint({ sel: `button[data-card="${c.i}"]` }), b = await this.resolvePoint({ sel: `button[data-tube="${tube}"]` });
@@ -296,16 +327,30 @@ class Monkey {
     if (shop.match && op.match) { const p = await this.resolvePoint({ sel: '[data-act="match"]' }); if (p.x != null) await this.page.mouse.click(p.x, p.y); await sleep(60); }
     const f = await this.resolvePoint({ sel: '#fire' });
     if (f.x == null) return null;
+    const before = await this.page.evaluate(pageLite);
+    if (!(before.ui === 'BUILD' || before.ui === 'RESULT') || before.blocking.length) return null;
     await this.page.mouse.click(f.x, f.y);
-    const t0 = Date.now(); let skipped = false;
+    const t0 = Date.now(); let skipped = false, lit = false;
     while (Date.now() - t0 < 9000) {
       const s = await this.page.evaluate(pageLite);
-      if (s.overlays.includes('tap-continue')) break;
-      if ((s.ui === 'BUILD' || s.ui === 'END') && Date.now() - t0 > 200) break;
+      if (s.ui === 'RESOLVING' || s.ui === 'END' || (s.hist != null && s.hist !== before.hist) || s.seed !== before.seed) lit = true;
+      if (s.overlays.includes('tap-continue') || s.blocking.length) break;
+      if (lit && (s.ui === 'BUILD' || s.ui === 'RESULT' || s.ui === 'END') && Date.now() - t0 > 200) break;
+      if (!lit && Date.now() - t0 > 1500) {
+        if (before.fireOn && before.phase === 'build') this.soft(`tapping #fire ("Light the fuse", enabled, no overlay) did not light the show while data-ui=${before.ui}`);
+        break;
+      }
       if (!skipped && s.ui === 'RESOLVING' && Date.now() - t0 > 800) { skipped = true; const p = await this.resolvePoint({ sel: '#fire' }); if (p.x != null) await this.page.mouse.click(p.x, p.y); }
       await sleep(80);
     }
     return null;
+  }
+  /** A soft finding: a real UI bug that does not break the page. Recorded once per signature (with the log), then counted. */
+  soft(msg) {
+    const sig = msg.replace(/\d+/g, '#');
+    const f = this.softs.get(sig);
+    if (f) { f.count++; return; }
+    this.softs.set(sig, { msg, count: 1, log: this.log.slice(), fresh: true });
   }
   // ---- generation: one random op from the current screen
   async gen() {
@@ -314,7 +359,7 @@ class Monkey {
     const touch = this.rng() < 0.35;
     const vw = this.page.viewportSize().width, vh = this.page.viewportSize().height;
     const kind = this.weighted([['tap', 30], ['tapxy', 6], ['drag', 12], ['dragOff', 5], ['dragCancel', 5], ['long', 5], ['multi', 6], ['key', 16],
-      ['blur', 2], ['vis', 2], ['resize', 3], ['overlay', 4], ['wait', 3], ['auto', 4]]);
+      ['blur', 2], ['vis', 2], ['resize', 3], ['overlay', 4], ['wait', 2], ['auto', 7]]);
     const T = t => ({ sel: t.sel, x: Math.round(t.x), y: Math.round(t.y), dx: Math.round((this.rng() - 0.5) * t.w * 0.6), dy: Math.round((this.rng() - 0.5) * t.h * 0.6) });
     const anyT = () => {
       if (!targets.length) return { x: Math.round(this.rng() * vw), y: Math.round(this.rng() * vh) };
@@ -345,7 +390,7 @@ class Monkey {
         return this.rng() < 0.6 ? { k: 'api', how: 'open', name: this.pick(OVERLAY_API), gap } : { k: 'api', how: 'close', gap };
       }
       case 'wait': return { k: 'wait', ms: 200 + Math.floor(this.rng() * 1800), gap: 0 };
-      case 'auto': return { k: 'auto', match: this.rng() < 0.8, gap };
+      case 'auto': return { k: 'auto', match: this.rng() < 0.8, buy: this.rng() < 0.75, gap };
     }
     return { k: 'wait', ms: 100, gap: 0 };
   }
@@ -366,18 +411,21 @@ class Monkey {
   }
   /** BUILD or END must be reachable within 10 s. `full` also requires every overlay to close. */
   async probe(full) {
-    const t0 = Date.now(); let lastAct = 0, s = null, skipped = false, closeTries = 0;
+    const t0 = Date.now(); let lastAct = 0, s = null, skipped = false, closeTries = 0; const tried = new Set();
     while (Date.now() - t0 < 10000) {
       s = await this.page.evaluate(pageLite);
-      const blocking = s.overlays.filter(x => x !== 'end');
+      const blocking = s.blocking;
       if (s.ui === 'END' && (!full || blocking.length === 0)) return null;
-      if (s.ui === 'BUILD' && (!full || blocking.length === 0)) return null;
+      if ((s.ui === 'BUILD' || s.ui === 'RESULT') && (!full || blocking.length === 0)) return null;
+      // act on the TOP overlay only (GAME.top()); anything under it is inert
+      const topId = s.top ? (TOP_ID[s.top] || s.top) : blocking[blocking.length - 1] || null;
+      if (topId) tried.add(topId);
       if (Date.now() - lastAct > 300) {
-        if (s.overlays.includes('tap-continue')) {
+        if (topId === 'tap-continue' || (!topId && s.overlays.includes('tap-continue'))) {
           const p = await this.resolvePoint({ sel: '#tap-continue' }); if (p.x != null) await this.page.mouse.click(p.x, p.y); lastAct = Date.now();
-        } else if (blocking.length && (full || s.ui !== 'BUILD')) {
+        } else if (blocking.length && (full || !(s.ui === 'BUILD' || s.ui === 'RESULT'))) {
           if (closeTries++ % 2 === 0) await this.page.keyboard.press('Escape');
-          else { const b = await this.page.evaluate(pageOverlayCloseButton, blocking[blocking.length - 1]); if (b) await this.page.mouse.click(b.x, b.y); else await this.page.keyboard.press('Escape'); }
+          else { const b = await this.page.evaluate(pageOverlayCloseButton, topId); if (b) await this.page.mouse.click(b.x, b.y); else await this.page.keyboard.press('Escape'); }
           lastAct = Date.now();
         } else if (s.ui === 'RESOLVING' && !skipped && Date.now() - t0 > 2000) {
           skipped = true; const p = await this.resolvePoint({ sel: '#fire' }); if (p.x != null) await this.page.mouse.click(p.x, p.y); lastAct = Date.now();
@@ -385,7 +433,7 @@ class Monkey {
       }
       await sleep(80);
     }
-    return `stuck: BUILD/END not reachable within 10 s (data-ui=${s && s.ui}, GAME.ui=${s && s.gameUi}, overlays=[${s ? s.overlays.join(',') : ''}], top=${s && s.top}${full ? ', full probe' : ''})`;
+    return `stuck: BUILD/END not reachable within 10 s (data-ui=${s && s.ui}, GAME.ui=${s && s.gameUi}, overlays=[${s ? s.overlays.join(',') : ''}], top=${s && s.top}${full ? ', full probe' : ''}; tried Esc / close button / tap on: ${[...tried].join(', ') || 'nothing'})`;
   }
 }
 
@@ -404,7 +452,7 @@ function describe(op) {
     case 'resize': return `resize ${op.w}x${op.h}${op.back ? ` for ${op.ms} ms` : ''}`;
     case 'api': return op.how === 'open' ? `GAME.open('${op.name}')` : 'GAME.close()';
     case 'wait': return `wait ${op.ms} ms`;
-    case 'auto': return `autopilot one show${op.match ? ' (+Match)' : ''}`;
+    case 'auto': return `autopilot one show${op.buy === false ? ' (no buys)' : ''}${op.match ? ' (+Match)' : ''}`;
     case 'check': return `-- check${op.full ? ' + full probe' : ''} --`;
     default: return JSON.stringify(op);
   }
@@ -440,7 +488,7 @@ async function gotoAndWait(page, url) {
   const t0 = Date.now();
   for (;;) {
     const s = await page.evaluate(pageLite);
-    if (s.ui === 'BUILD' || s.ui === 'END') return null;
+    if (s.ui === 'BUILD' || s.ui === 'RESULT' || s.ui === 'END') return null;
     if (s.overlays.includes('tap-continue')) { const p = await page.evaluate(() => { const r = document.getElementById('tap-continue').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }); await page.mouse.click(p.x, p.y); }
     if (Date.now() - t0 > 10000) return `boot: data-ui stayed ${JSON.stringify(s.ui)} for 10 s after load`;
     await sleep(100);
@@ -457,16 +505,17 @@ function segmentQuery(rng, seed, n, extra) {
   return q.toString();
 }
 
-function saveFailure(o, vp, seed, log, reason, extra) {
+function saveFailure(o, vp, seed, log, reason, extra, k) {
   fs.mkdirSync(o.out, { recursive: true });
-  const base = path.join(o.out, `fail-${vp[0]}x${vp[1]}-s${seed}`);
+  const base = path.join(o.out, `fail-${vp[0]}x${vp[1]}-s${seed}${k != null ? '-' + k : ''}`);
   fs.writeFileSync(base + '.json', JSON.stringify({ tool: 'fuzz', version: 1, seed, viewport: vp, reason, ...extra, ops: log }, null, 1));
   return base;
 }
-function printFailure(reason, log, base) {
-  console.log(`\n  FAILURE: ${Array.isArray(reason) ? reason.join('\n           ') : reason}`);
-  console.log(`  action log since the last page load (${log.length} ops; the last 80 shown):`);
-  const start = Math.max(0, log.length - 80);
+function printFailure(reason, log, base, k) {
+  console.log(`\n  FAILURE${k != null ? ' #' + k : ''}: ${Array.isArray(reason) ? reason.join('\n           ') : reason}`);
+  const N = 40;
+  console.log(`  action log since the last page load (${log.length} ops; the last ${Math.min(N, log.length)} shown; all in the .json):`);
+  const start = Math.max(0, log.length - N);
   if (start > 0) console.log(`    #0 ${describe(log[0])}\n    …`);
   for (let i = start; i < log.length; i++) console.log(`    #${i} ${describe(log[i])}`);
   console.log(`  saved: ${path.relative(process.cwd(), base)}.json (+ .png)`);
@@ -474,25 +523,53 @@ function printFailure(reason, log, base) {
 }
 
 // ---------------------------------------------------------------- fuzz one viewport
+const sigOf = reasons => [].concat(reasons).map(r => String(r).split('\n')[0].replace(/\d+/g, '#').replace(/"[^"]*"/g, '"…"')).sort().join(' / ');
+
 async function fuzzViewport(browser, baseUrl, vp, o, budgetMs) {
   const errors = [];
   const rng = mulberry32(strSeed(`${o.seed}:${vp[0]}x${vp[1]}`));
   const { context, page, cdp } = await openContext(browser, vp, errors, baseUrl);
   const monkey = new Monkey(page, cdp, rng, o, errors, vp);
   const deadline = Date.now() + budgetMs;
-  let segment = 0, failure = null, log = [];
+  const failures = [], seen = new Map();
+  let segment = 0, repeats = 0, sameInARow = 0, lastSig = null;
+  const record = async (reason, log) => {
+    const sig = sigOf(reason);
+    if (seen.has(sig)) { seen.get(sig).count++; repeats++; console.log(`  (segment ${segment}: repeat of failure #${seen.get(sig).k}: ${[].concat(reason)[0].slice(0, 120)})`); }
+    else {
+      const k = failures.length + 1;
+      const base = saveFailure(o, vp, o.seed, log, reason, { url: baseUrl.replace(/^https?:\/\/127\.0\.0\.1:\d+/, ''), segment }, k);
+      await page.screenshot({ path: base + '.png' }).catch(() => {});
+      printFailure(reason, log, base, k);
+      const f = { k, reason: [].concat(reason), file: path.relative(process.cwd(), base) + '.json', count: 1, segment, ops: log.length };
+      failures.push(f); seen.set(sig, f);
+    }
+    sameInARow = sig === lastSig ? sameInARow + 1 : 1; lastSig = sig;
+  };
+  const flushSofts = async () => {
+    for (const [, f] of monkey.softs) {
+      if (!f.fresh) continue;
+      f.fresh = false;
+      const base = saveFailure(o, vp, o.seed, f.log, f.msg, { soft: true, segment }, `soft${[...monkey.softs.values()].indexOf(f) + 1}`);
+      await page.screenshot({ path: base + '.png' }).catch(() => {});
+      f.file = path.relative(process.cwd(), base) + '.json';
+      console.log(`  soft finding: ${f.msg}\n    log: ${f.file} (${f.log.length} ops; last: ${f.log.slice(-3).map(describe).join(' · ')})`);
+    }
+  };
   try {
-    while (Date.now() < deadline && !failure) {
+    while (Date.now() < deadline && failures.length < o.maxFailures && sameInARow < 3) {
       const query = segmentQuery(rng, o.seed, segment, o.query);
+      let failure = null;
       await page.setViewportSize({ width: vp[0], height: vp[1] });
-      log = [{ k: 'goto', query, w: vp[0], h: vp[1] }];
+      const log = [{ k: 'goto', query, w: vp[0], h: vp[1] }];
+      monkey.log = log;
       if (o.verbose) console.log(`  segment ${segment}: ?${query}`);
-      const bootErr = await gotoAndWait(page, `${baseUrl}${query ? '?' + query : ''}`);
+      const bootErr = await gotoAndWait(page, `${baseUrl}${query ? '?' + query : ''}`).catch(e => `page load failed: ${e.message.split('\n')[0]}`);
       const early = monkey.takeErrors();
-      if (bootErr || early.length) { failure = [bootErr, ...early.map(e => `${e.kind}: ${e.text.split('\n')[0]}`)].filter(Boolean); break; }
+      if (bootErr || early.length) failure = [bootErr, ...early.map(e => `${e.kind}: ${e.text.split('\n')[0]}`)].filter(Boolean);
       const segEnd = Math.min(deadline, Date.now() + o.segment * 1000);
       let burst = 0;
-      while (Date.now() < segEnd && !failure) {
+      while (!failure && Date.now() < segEnd) {
         const n = 3 + Math.floor(rng() * 8);
         for (let i = 0; i < n && !failure; i++) {
           const op = await monkey.gen();
@@ -503,6 +580,7 @@ async function fuzzViewport(browser, baseUrl, vp, o, budgetMs) {
           catch (e) { failure = [`harness could not perform "${describe(op)}": ${e.message.split('\n')[0]}`]; }
           monkey.cover.ops++;
         }
+        await flushSofts();
         if (failure) break;
         burst++; monkey.cover.bursts++;
         const full = burst % o.probeEvery === 0;
@@ -514,17 +592,17 @@ async function fuzzViewport(browser, baseUrl, vp, o, budgetMs) {
         const bad2 = await monkey.check(); // the probe's own taps must not break anything either
         if (bad2.length) { failure = bad2; break; }
       }
+      if (failure) {
+        await record(failure, log);
+        monkey.takeErrors();
+        if (o.stopOnFail) break;
+      } else sameInARow = 0;
       segment++;
-    }
-    if (failure) {
-      const base = saveFailure(o, vp, o.seed, log, failure, { url: baseUrl.replace(/^https?:\/\/127\.0\.0\.1:\d+/, '') });
-      await page.screenshot({ path: base + '.png' }).catch(() => {});
-      printFailure(failure, log, base);
     }
   } finally {
     await context.close();
   }
-  return { vp, failure, cover: monkey.cover, segments: segment };
+  return { vp, failures, repeats, softs: [...monkey.softs.values()].map(f => ({ msg: f.msg, count: f.count, file: f.file })), cover: monkey.cover, segments: segment };
 }
 
 // ---------------------------------------------------------------- replay a saved log
@@ -549,6 +627,7 @@ async function replay(browser, baseUrl, o) {
       }
       if (op.gap) await sleep(op.gap);
       try { const r = await monkey.exec(op); if (r) failure = [r]; } catch (e) { failure = [`harness: ${e.message.split('\n')[0]}`]; }
+      if (!failure && monkey.softs.size) failure = [...monkey.softs.values()].map(f => `soft: ${f.msg}`);
     }
     if (!failure) { const bad = await monkey.check(); if (bad.length) failure = bad; else { const st = await monkey.probe(true); if (st) failure = [st]; } }
   } finally { await context.close(); }
@@ -571,6 +650,7 @@ async function main() {
   let exit = 0;
   try {
     if (o.replay) { exit = await replay(browser, baseUrl, o); return; }
+    if (fs.existsSync(o.out)) for (const f of fs.readdirSync(o.out)) if (/^fail-.*\.(json|png)$/.test(f)) fs.rmSync(path.join(o.out, f));
     const per = (o.minutes * 60000) / o.vps.length;
     console.log(`fuzz: ${o.url || path.relative(process.cwd(), file)} · seed ${o.seed} · ${o.minutes} min over ${o.vps.map(v => v.join('x')).join(', ')}`);
     const results = [];
@@ -579,13 +659,16 @@ async function main() {
       const r = await fuzzViewport(browser, baseUrl, vp, o, per);
       results.push(r);
       const c = r.cover;
-      console.log(`  ${c.ops} ops in ${c.bursts} bursts · ${r.segments} page loads · ${c.runs.size} runs · ${c.lights} shows lit · furthest show ${c.maxShow}`);
+      console.log(`\n  ${c.ops} ops in ${c.bursts} bursts · ${r.segments} page loads · ${c.runs.size} runs · ${c.lights} shows lit · furthest show ${c.maxShow}`);
       console.log(`  ui seen: ${Object.entries(c.ui).map(([k, v]) => `${k} ${v}`).join(', ')} · overlays seen: ${Object.keys(c.overlays).join(', ') || 'none'}`);
       if (o.verbose) console.log(`  op mix: ${Object.entries(c.kinds).map(([k, v]) => `${k} ${v}`).join(', ')}`);
-      console.log(r.failure ? '  RESULT: FAIL' : '  RESULT: clean');
-      if (r.failure) exit = 1;
+      for (const f of r.failures) console.log(`  FAIL #${f.k} (×${f.count}): ${f.reason[0].slice(0, 160)}${f.reason.length > 1 ? ` (+${f.reason.length - 1} more)` : ''}  → ${f.file}`);
+      for (const f of r.softs) console.log(`  soft (×${f.count}): ${f.msg}  → ${f.file}`);
+      console.log(r.failures.length ? `  RESULT: FAIL (${r.failures.length} distinct, ${r.repeats} repeats)` : r.softs.length ? '  RESULT: clean (soft findings only)' : '  RESULT: clean');
+      if (r.failures.length) exit = 1;
     }
-    console.log(exit ? '\nfuzz: FAILED' : '\nfuzz: OK (no errors, invariants held, never stuck)');
+    const softN = results.reduce((n, r) => n + r.softs.length, 0);
+    console.log(exit ? '\nfuzz: FAILED' : `\nfuzz: OK (no errors, invariants held, never stuck)${softN ? ` · ${softN} soft finding(s)` : ''}`);
   } finally {
     await browser.close();
     if (server) server.close();

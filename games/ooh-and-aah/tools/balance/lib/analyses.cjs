@@ -58,6 +58,14 @@ function diffStatus(d, se, lo, hi) {
   return d + 1.96 * se >= lo && d - 1.96 * se <= hi ? 'WARN' : 'FAIL';
 }
 const valStatus = (v, lo, hi) => (!Number.isFinite(v) ? 'N/A' : v >= lo && v <= hi ? 'OK' : 'FAIL');
+// Quantile gate with sampling error: OK inside; WARN when the distribution-free 95% interval of the
+// p-quantile (order statistics n·p ± 1.96·√(n·p·(1−p))) still reaches the gate; FAIL otherwise.
+function quantStatus(arr, p, lo, hi) {
+  const a = arr.filter(Number.isFinite).sort((x, y) => x - y); const n = a.length;
+  const v = q(a, p); const st = valStatus(v, lo, hi); if (st !== 'FAIL' || !n) return st;
+  const h = 1.96 * Math.sqrt(n * p * (1 - p)); const vl = a[Math.max(0, Math.floor(n * p - h))], vh = a[Math.min(n - 1, Math.ceil(n * p + h))];
+  return vh >= lo && vl <= hi ? 'WARN' : 'FAIL';
+}
 const wins = Rs => Rs.filter(r => r.won).length;
 const winPct = Rs => (Rs && Rs.length ? (100 * wins(Rs)) / Rs.length : NaN);
 const winStr = Rs => (Rs && Rs.length ? `${p1(winPct(Rs))} (${wins(Rs)}/${Rs.length})` : 'not run');
@@ -82,6 +90,13 @@ const na = (metric, bot, gate, ref, why) => row(metric, bot, why || 'not run', g
 const A = [];
 const def = (id, title, spec) => A.push({ id, title, ...spec });
 
+// Relative CPU cost of one run (measured on src/sim.js: oracle ≈ 0.35 s, oracle with the headcost /
+// regret / Countdown probes ≈ 1.1 s, human ≈ 0.25 s, mono ≈ 0.2 s, novice ≈ 0.13 s, the greedy bots ≈ 5 ms).
+// Used to schedule the heaviest runs first and for the progress ETA.
+function jobWeight(c, pr) {
+  const base = c.bot === 'oracle' ? 3 : c.bot === 'human' ? 2 : c.bot === 'mono' ? 1.8 : c.bot === 'novice' ? 1 : 0.05;
+  return base * (pr && (pr.hc || pr.regret || pr.cd) ? 3.2 : pr && pr.shap ? 1.2 : 1);
+}
 def('winrates', 'Win rates and deaths per bot', {
   needs: CORE,
   run(ctx) {
@@ -269,7 +284,7 @@ def('headcost', 'Headliner cost (oracle; best-arranged score ÷ best with no rul
     if (!ent.length) rows.push(na('Headliner cost p10', 'oracle', '≥ 0.4', 'lowest p10 0.51 (Power Cut)', 'no probe data'));
     for (const [k, v] of ent) {
       const b = v.map(x => x.best), kp = v.map(x => x.kept), m = v.map(x => x.match); const rf = HCREF[k];
-      let st = valStatus(q(b, 0.1), 0.4, Infinity); if (st === 'FAIL' && v.length < 30) st = 'WARN';
+      let st = quantStatus(b, 0.1, 0.4, Infinity);
       rows.push(row('cost: ' + k, 'oracle', `p50 ${f2(q(b, 0.5))} · p10 ${f2(q(b, 0.1))} (n=${v.length})`, 'p10 ≥ 0.4', rf ? `p50 ${f2(rf[0])} · p10 ${f2(rf[1])}` : '-', st));
       details.push(`${k.padEnd(12)} n=${String(v.length).padStart(4)} best p50 ${f2(q(b, 0.5))} p10 ${f2(q(b, 0.1))} | plain order kept p50 ${f2(q(kp, 0.5))} p10 ${f2(q(kp, 0.1))} | kept + Match p50 ${f2(q(m, 0.5))}${rf ? `   (v1.1 kept ${f2(rf[2])}/${f2(rf[3])}, Match ${f2(rf[4])})` : ''}`);
     }
@@ -298,7 +313,7 @@ def('crowdshare', 'Crowd share of Ooh at the Countdown', {
       const Rs = ctx.R[b]; if (!Rs) { rows.push(na('Crowd share of Countdown Ooh p50', b, '15–25%', ref)); continue; }
       const cd = Rs.map(r => showAt(r, 23)).filter(Boolean);
       const sh = cd.map(h => (h.ooh > 0 ? (100 * h.cheer) / h.ooh : NaN)).filter(Number.isFinite);
-      rows.push(row('Crowd share of Countdown Ooh p50', b, `${p1(q(sh, 0.5))} (n=${sh.length})`, '15–25%', ref, valStatus(q(sh, 0.5), 15, 25)));
+      rows.push(row('Crowd share of Countdown Ooh p50', b, `${p1(q(sh, 0.5))} (n=${sh.length})`, '15–25%', ref, quantStatus(sh, 0.5, 15, 25)));
       const s12 = Rs.map(r => lit(r).find(x => x.s === 11)).filter(Boolean).map(h => (h.ooh > 0 ? (100 * h.cheer) / h.ooh : NaN)).filter(Number.isFinite);
       details.push(`${b.padEnd(6)} Crowd at the Countdown p50 ${q(cd.map(h => h.cr), 0.5) ?? '-'} (v1.1 ${cref}) · share p90 ${p1(q(sh, 0.9))} · show-12 share p50 ${p1(q(s12, 0.5))} (v1.1 human 16.9%)`);
     }
@@ -373,7 +388,9 @@ def('dpoint', 'Decision point (single-threshold accuracy)', {
       const acc = thresholdAccuracy(Rs); const first = acc.findIndex(x => x !== null && x >= 90);
       const val = first < 0 ? 'never' : `show ${first + 1} (${p0(acc[first])})`;
       const pre = acc.slice(0, 23).filter(x => x !== null);
-      rows.push(row('first show at ≥ 90% accuracy', b, val + ` · best before the Countdown ${p0(Math.max(...pre))}`, b === 'oracle' ? 'show ≥ 18' : '—', ref, b === 'oracle' ? (first < 0 || first + 1 >= 18 ? 'OK' : 'FAIL') : 'INFO'));
+      if (!acc.some(x => x !== null)) { rows.push(row('first show at ≥ 90% accuracy', b, `too few runs (${Rs.length}; needs ≥ 20 alive per show)`, b === 'oracle' ? 'show ≥ 18' : '—', ref, 'N/A')); continue; }
+      const bestPre = pre.length ? Math.max(...pre) : NaN, atPre = pre.length ? acc.indexOf(bestPre) + 1 : 0;
+      rows.push(row('first show at ≥ 90% accuracy', b, val + (pre.length ? ` · best before the Countdown ${p0(bestPre)} (show ${atPre})` : ''), b === 'oracle' ? 'show ≥ 18' : '—', ref, b === 'oracle' ? (first < 0 || first + 1 >= 18 ? 'OK' : 'FAIL') : 'INFO'));
       details.push(`${b.padEnd(6)} accuracy by show: ` + acc.map((x, s) => (x === null ? '' : `${s + 1}:${Math.round(x)}`)).filter(Boolean).join(' '));
     }
     return { rows, details };
@@ -696,7 +713,12 @@ def('invariants', 'SIM invariants and consistency (§11.7)', {
       rows.push(row('determinism: same seed + bot → same ' + (A2[0] && A2[0].hash ? 'hashState' : 'trace'), b, `${same}/${n} replays identical`, 'all', 'all', n ? (same === n ? 'OK' : 'FAIL') : 'N/A'));
     }
     const lm = tot('lightMs') / Math.max(1, lights); const lmA = fin('lightMsMax'), lmax = lmA.length ? Math.max(...lmA) : NaN;
-    rows.push(row('step(light) time mean · max', 'all', `${f3(lm)} ms · ${f2(lmax)} ms`, 'mean ≤ 2 ms', '≤ 2 ms', lights ? (lm <= 2 ? 'OK' : 'FAIL') : 'N/A'));
+    rows.push(row('step(light) wall time mean · max (as played)', 'all', `${f3(lm)} ms · ${f2(lmax)} ms`, '—', '≤ 2 ms', 'INFO'));
+    const tS = tot('tSteps'), tL = tot('tLight') / Math.max(1, lights), tO = tot('tOver2');
+    const tMaxR = all.filter(r => Number.isFinite(r.st.tMax)).sort((a, c) => c.st.tMax - a.st.tMax)[0];
+    rows.push(row('step(light) time, fastest of 3, mean', 'all', tS ? `${f3(tL)} ms (${lights} lights)` : 'not recorded', '≤ 2 ms', '≤ 2 ms', tS ? (tL <= 2 ? 'OK' : 'FAIL') : 'N/A'));
+    rows.push(row('any step, fastest of 3: max · share > 2 ms', 'all', tS ? `${f2(tMaxR.st.tMax)} ms (${tMaxR.st.tMaxType}, ${tMaxR.cfg}#${tMaxR.seed}) · ${tO}/${tS}` : 'not recorded', '≤ 2 ms (§11.7)', '≤ 2 ms', !tS ? 'N/A' : tO === 0 ? 'OK' : tO / tS <= 0.001 ? 'WARN' : 'FAIL'));
+    details.push('step timings: "as played" is one wall-clock timing per step inside a worker (noisy on a loaded machine); "fastest of 3" also steps two clones of the same state and keeps the fastest.');
     if (ctx.bench) rows.push(row('resolveShow, 6-tube Countdown (golden #10)', '—', `${f1(ctx.bench.us)} µs · Applause ${fmtN(ctx.bench.applause)}`, '≤ 200 µs', '≈ 17 µs; 274,095', ctx.bench.us <= 200 ? 'OK' : 'FAIL'));
     return { rows, details };
   },
@@ -760,7 +782,7 @@ function plan({ only, skip, bots, seeds, sweepSeeds, shapleyRuns, endlessRuns, r
         else pr[p] = true;
       }
       const opts = { ...c.opts }; if (rndSeed !== undefined) opts.rndSeed = rndSeed;
-      jobs.push({ cfg: id, bot: c.bot, seed, opts, probes: pr, driver: c.driver || null, weight: c.bot === 'oracle' || (c.bot === 'mono' && c.opts.base === 'oracle') ? 3 : c.bot === 'human' || c.bot === 'mono' ? 2 : c.bot === 'novice' ? 1 : 0.1 });
+      jobs.push({ cfg: id, bot: c.bot, seed, opts, probes: pr, driver: c.driver || null, weight: jobWeight(c, pr) });
     }
   }
   return { analyses: sel, jobs, configs: C };

@@ -94,11 +94,14 @@ const UI_PLAY = (() => {
     match: svg(S_('M3 7h14M13.5 3.5 17 7l-3.5 3.5M21 17H7M10.5 13.5 7 17l3.5 3.5')),
     restore: svg(S_('M3.5 12a8.5 8.5 0 1 0 2.6-6.1M3.5 4v5h5M12 7.5V12l3 2')),
     rehearse: svg(S_('M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z') + '<circle cx="12" cy="12" r="3"/>'),
+    eye: svg(S_('M2.5 12s3.4-5.8 9.5-5.8 9.5 5.8 9.5 5.8-3.4 5.8-9.5 5.8S2.5 12 2.5 12z') + '<circle class="f" cx="12" cy="12" r="3.2"/>', 'ic eye'),
     info: svg('<circle cx="12" cy="12" r="9.2"/>' + S_('M12 11v6M12 7.6v.2')),
     crown: svg(F_('M3 8.5l4.6 3.8L12 5l4.4 7.3L21 8.5 19.2 19H4.8z'), 'ic crown'),
     crate: svg(S_('M3.5 9h17v11h-17zM3.5 9l2-4.5h13l2 4.5M9.5 13h5')),
     reroll: svg(S_('M19.5 11A7.8 7.8 0 0 0 5.6 6.4L4 8.2M4 3.5v4.8h4.8M4.5 13a7.8 7.8 0 0 0 13.9 4.6l1.6-1.8M20 20.5v-4.8h-4.8')),
     plus: svg(S_('M12 5v14M5 12h14')),
+    addTube: svg(S_('M5 21V9.5h7.5V21M4 21h9.5M5 12.5h7.5M18 3.5v7M14.5 7h7')),
+    twin: svg('<circle cx="9" cy="12" r="5.6"/><circle cx="15" cy="12" r="5.6"/>', 'ic twin'),
     gust: svg(S_('M3 8.5h10.5a2.8 2.8 0 1 0-2.8-2.8M3 12.5h14.5a2.8 2.8 0 1 1-2.8 2.8M3 16.5h6')),
     monocle: svg('<circle cx="10" cy="10" r="5.5"/>' + S_('M14 14l6 6.5')),
     lamp: svg(S_('M12 21V10M8 10h8l-1.8-5h-4.4zM9 21h6')),
@@ -137,6 +140,25 @@ const UI_PLAY = (() => {
   const building = () => ui() === 'BUILD' || ui() === 'RESULT';
   const reduced = () => !!(G && G.reducedMotion);
   const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+  const overflows = el => !!el && el.getClientRects().length > 0 && el.scrollWidth > el.clientWidth + 0.5;
+  // Progressive fitting: raise host[data-fit] one level at a time (CSS sheds detail per level) until over() is false.
+  function fitLadder(host, levels, over) {
+    if (!host) return 0;
+    let lv = 0;
+    host.dataset.fit = '0';
+    while (lv < levels && safe(over, false)) host.dataset.fit = String(++lv);
+    return lv;
+  }
+  // A soft hyphen in long words (a VC|CV or V|CV break nearest the middle), for engines without hyphenation dictionaries.
+  const shy = str => String(str).replace(/[A-Za-z]{11,}/g, w => {
+    const V = c => /[aeiouy]/i.test(c);
+    let best = -1;
+    for (let p = 3; p <= w.length - 4; p++) {
+      const ok = (V(w[p - 2]) && !V(w[p - 1]) && !V(w[p])) || (V(w[p - 1]) && !V(w[p]) && V(w[p + 1]));
+      if (ok && (best < 0 || Math.abs(p - w.length / 2) < Math.abs(best - w.length / 2))) best = p;
+    }
+    return best < 0 ? w : w.slice(0, best) + '\u00ad' + w.slice(best);
+  });
   const sfx = (name, opts) => { const a = audioApi(); if (fnIn(a, 'ui')) { try { a.ui(name, opts); } catch (e) { /* audio never blocks play */ } } };
   const announce = (text, o) => { if (G && fnIn(G, 'announce') && text) G.announce(text, o); };
   const haptic = p => { if (G && fnIn(G, 'haptic')) G.haptic(p); };
@@ -465,6 +487,7 @@ const UI_PLAY = (() => {
       `<div class="hud-crowd"><span class="vh">Crowd</span>${ICON.crowd}<span id="hud-crowd" class="num"></span><span class="hud-half" hidden>½</span></div>` +
       '<button type="button" class="hud-ic hud-rain" data-hud="rain"></button>';
     E.hudTitle = $('.hud-title', E.hud);
+    E.hudTgt = $('.hud-tgt', E.hud);
     E.show = $('#hud-show');
     E.target = $('#hud-target');
     E.next = $('.hud-next', E.hud);
@@ -508,6 +531,7 @@ const UI_PLAY = (() => {
     E.rack.innerHTML = '<svg class="arc" aria-hidden="true" focusable="false"></svg>' +
       `<div class="tubes">${tubes}</div><div class="fuse" aria-hidden="true"><i class="ember"></i></div>`;
     E.arc = $('.arc', E.rack);
+    E.tubesWrap = $('.tubes', E.rack);
     E.fuse = $('.fuse', E.rack);
     E.tubes = [...E.rack.querySelectorAll('.tube')].map(b => ({
       btn: b, num: $('.t-num', b), sees: $('.t-sees', b), body: $('.t-body', b), tok: $('.t-tok', b), chips: $('.t-chips', b), rig: $('.t-rig', b),
@@ -650,7 +674,12 @@ const UI_PLAY = (() => {
   /* ---------- HUD (Regular: 2 rows; Compact: 1 row) ---------- */
   function renderHud() {
     const st = S(), s = view.s;
-    E.show.textContent = festName(festOf(s)) + ' · ' + showName(s);
+    // "Festival · Show"; when that would truncate, the show name folds into 3 pips (Twilight · Evening · ♛ Headliner)
+    const k = slotOf(s);
+    let pips = '';
+    for (let j = 0; j < 3; j++) pips += j === 2 ? `<i class="hl${k === 2 ? ' now' : ''}">${ICON.crown}</i>` : `<i class="${j < k ? 'done' : j === k ? 'now' : ''}"></i>`;
+    E.show.innerHTML = `<span class="hs-fest">${esc(festName(festOf(s)))}</span><span class="hs-slot"> · ${esc(showName(s))}</span>` +
+      `<span class="hs-pips" aria-hidden="true" title="${esc(showName(s))}">${pips}</span>`;
     E.target.innerHTML = `Target <b class="display num">${fmt(targetOf(s))}</b>`;
     const nx = [];
     for (let j = s + 1; j <= Math.min(lastShow(), s + 2); j++) nx.push(`<span class="nx${j - s}">${fmt(targetOf(j))}${slotOf(j) === 2 ? ICON.crown : ''}</span>`);
@@ -672,6 +701,14 @@ const UI_PLAY = (() => {
     E.rain.innerHTML = ICON.umbrella.replace('</svg>', (used ? ICON.crack : '') + '</svg>') + (fw ? '<span class="fw">FW</span>' : '');
     E.rain.dataset.state = used ? 'used' : noRain ? 'none' : 'ok';
     E.rain.setAttribute('aria-label', (used ? 'Rain check used: last chance' : noRain ? 'No rain check tonight' : 'Rain check: unused') + (fw ? '. Fair Weather on' : ''));
+    fitHud();
+  }
+  // Nothing in the HUD clips at 360 px: each row sheds detail in a fixed order until it fits (fonts vary by device).
+  function fitHud() {
+    // Row A (Regular only; Compact shows the name in the sky): 1 pips · 2 Crowd to Row B · 3 both · 4 festival name only
+    if (mode === 'regular') fitLadder(E.hud, 4, () => overflows(E.show)); else E.hud.dataset.fit = '0';
+    // Row B: 1 Headliner chip icon only · 2 one next target · 3 no next targets
+    fitLadder(E.hudTgt, 3, () => E.hudTgt.scrollWidth > E.hudTgt.clientWidth + 0.5);
   }
   function ruleIcon(id) {
     const m = { headwind: ICON.gust, critic: ICON.monocle, streetlights: ICON.lamp, fog: ICON.fog, powercut: ICON.bolt };
@@ -687,7 +724,11 @@ const UI_PLAY = (() => {
     const s = view.s, t = sp.accepted ? targetOf(s) : Math.round(targetOf(s) * 1.5);
     const k = SPONSORS[sp.kind] || [cap(sp.kind), 'pays a reward', 'pays a reward'];
     E.spBtn.setAttribute('aria-pressed', sp.accepted ? 'true' : 'false');
-    E.spBtn.querySelector('.sp-text').innerHTML = `<b>Sponsor</b> ×1.5 → <b class="num">${fmt(t)}</b> · ${esc(k[1])}`;
+    const pay = String(k[1]).replace(/^pays /, '');
+    E.spBtn.querySelector('.sp-text').innerHTML = `<b class="sp-w">Sponsor </b><span class="sp-x">×1.5 </span><span class="sp-a">→ </span><b class="num">${fmt(t)}</b> · <span class="sp-p">pays </span>${esc(pay)}`;
+    // 360 px: drop "×1.5", then "pays", then the arrow, then the word "Sponsor" (all stay in the aria-label and Inspect)
+    const tx = E.spBtn.querySelector('.sp-text');
+    fitLadder(E.sponsor, 4, () => overflows(tx));
     E.spBtn.querySelector('.sp-word').textContent = sp.accepted ? 'Accepted' : 'Accept';
     E.spBtn.setAttribute('aria-label', `Sponsor, ${k[0]}: target times 1.5, to ${fmt(t)}; ${k[2]} if you pass. ${sp.accepted ? 'Accepted' : 'Not accepted'}.`);
   }
@@ -705,25 +746,34 @@ const UI_PLAY = (() => {
     const tf = (st.runStats && st.runStats.timesFired) || {};
     const firstT = v.order.seq[0];
     const critic = criticMarks(st.tubes, rules);
+    // Spread the tubes when there are fewer than 6 (8–16 px gaps), so each "sees" chip has room.
+    const W = E.tubesWrap.clientWidth, gap = n > 1 && W ? Math.max(8, Math.min(16, Math.floor((W - n * 48) / (n - 1)))) : 8;
+    E.rack.style.setProperty('--tgap', gap + 'px');
+    // Numerals and sees chips describe ONE rack: the hovered drop's rack while hovering, else tonight's rack.
+    // Each other legal drop shows its own local "sees" (and, on an empty tube, a ghost numeral).
+    const hovKey = held && hover && hover.zone === 'tube' && targets.has(slotKey(hover)) ? slotKey(hover) : null;
+    const hv = hovKey ? hypoFor(hovKey) : null;
     for (let i = 0; i < 6; i++) {
       const T = E.tubes[i], tb = st.tubes[i];
       T.btn.hidden = !tb;
       if (!tb) continue;
       const key = 'tube:' + i, can = !!held && targets.has(key), hy = can ? hypoFor(key) : null;
-      const sh = tb.shell, ord = hy ? hy.order : v.order;
+      const sh = tb.shell, ghost = !hv && !!hy && !sh, ord = hv ? hv.order : ghost ? hy.order : v.order;
       // fire-order numerals (one row per fuse pass)
       let num = '';
       for (let p = 0; p < passes; p++) {
         const e = ord.per[i].find(x => x.pass === p);
-        const last = e && e.to === ord.total;
+        const last = e && e.to === ord.total && !ghost;
         const lbl = !e ? '' : last && e.from === e.to ? 'LAST' : e.from === e.to ? String(e.from) : e.from + '–' + e.to;
-        num += `<span class="n${last ? ' last' : ''}${!e ? ' none' : ''}">${lbl}</span>`;
+        num += `<span class="n${last ? ' last' : ''}${ghost && e ? ' ghost' : ''}${!e ? ' none' : ''}">${lbl}</span>`;
       }
       if (rules.includes('shortfuse') && i >= 5) num = '<span class="n none">no fuse</span>';
       T.num.innerHTML = num;
       // sees chip (hypothetical while this tube is a legal drop)
-      const sees = hy ? hy.sees[i] : v.sees[i];
-      T.sees.textContent = sh || hy ? (sees == null ? '' : 'sees ' + sees) : '';
+      const sees = hv ? hv.sees[i] : hy ? hy.sees[i] : v.sees[i];
+      const showSees = (sh || hy || (hv && hovKey === key)) && sees != null;
+      T.sees.innerHTML = showSees ? `${ICON.eye}<span class="sw">sees\u00a0</span>${sees}` : '';
+      T.sees.classList.toggle('local', !!(hy || hv) && showSees);
       T.sees.classList.toggle('fogged', rules.includes('fog') && sees != null);
       // token + telegraph badges
       const washed = rules.includes('streetlights') && i % 2 === 1;
@@ -773,7 +823,9 @@ const UI_PLAY = (() => {
     // fuse: ember at the first tube; direction from tonight's (or rehearsed) rule
     const dir = rules.includes('countdown') || rules.includes('countdown3') ? 'back' : rules.includes('windshift') ? 'rtl' : rules.includes('crossed') ? 'cross' : 'ltr';
     E.fuse.dataset.dir = dir;
-    E.fuse.style.width = Math.max(0, (n - 1) * 56) + 'px';
+    E.fuse.style.width = Math.max(0, (n - 1) * (48 + gap)) + 'px';
+    // "sees N" must never touch its neighbour: snug, then an eye glyph for the word (fonts vary by device)
+    fitLadder(E.rack, 2, () => E.tubes.some(t => !t.btn.hidden && t.sees.firstChild && t.sees.offsetWidth > 48 + gap - 3));
     renderArc();
   }
   function tubeLabel(i, ord, sees, o) {
@@ -816,17 +868,18 @@ const UI_PLAY = (() => {
     let src = null, tubes = null;
     if (held && hover && hover.zone === 'tube' && targets.has(slotKey(hover))) { const hy = hypoFor(slotKey(hover)); if (hy) { src = hover.i; tubes = hy.state.tubes; } }
     else if (held && held.kind === 'shell' && held.slot.zone === 'tube') { src = held.slot.i; tubes = S().tubes; }
-    if (src == null || !tubes || !tubes[src] || !tubes[src].shell) { E.arc.innerHTML = ''; E.arc.removeAttribute('data-on'); return; }
+    E.skyWrap.classList.toggle('has-arc', src != null);
+    if (src == null || !tubes || !tubes[src] || !tubes[src].shell) { E.arc.innerHTML = ''; E.arc.removeAttribute('data-on'); E.skyWrap.classList.remove('has-arc'); return; }
     const seen = [...skyRun(tubes, view.rules).seenBy[src]];
     const rr = E.rack.getBoundingClientRect(), x = j => { const r = E.tubes[j].btn.getBoundingClientRect(); return r.left + r.width / 2 - rr.left; };
-    const col = shellCol(tubes[src].shell), H = 22;
+    const col = shellCol(tubes[src].shell), H = 20; // the arc rises from the brass rim into the sky
     E.arc.setAttribute('viewBox', `0 0 ${Math.round(rr.width)} ${H + 6}`);
     E.arc.style.width = Math.round(rr.width) + 'px';
     E.arc.dataset.col = col;
     E.arc.dataset.on = '1';
     if (!seen.length) { E.arc.innerHTML = `<circle class="src" cx="${x(src)}" cy="${H}" r="4"/>`; return; }
     const xs = [src, ...seen].map(x), lo = Math.min(...xs), hi = Math.max(...xs);
-    let d = `<path class="span" d="M${lo} ${H} C${lo} 2 ${hi} 2 ${hi} ${H}"/>`;
+    let d = `<path class="span" d="M${lo} ${H} C${lo + 4} 1 ${hi - 4} 1 ${hi} ${H}"/>`;
     seen.forEach(j => { d += `<circle class="dot" cx="${x(j)}" cy="${H}" r="3.5"/>`; });
     E.arc.innerHTML = d + `<circle class="src" cx="${x(src)}" cy="${H}" r="5"/>`;
   }
@@ -856,6 +909,7 @@ const UI_PLAY = (() => {
     E.rehearse.classList.toggle('on', view.rehearsing);
     E.rehearse.disabled = !hName || view.auto;
     E.toolsHint.textContent = view.rehearsing ? 'Rehearsing' : '';
+    E.toolsHint.style.visibility = overflows(E.toolsHint) ? 'hidden' : ''; // a word, or nothing: never a clipped half-word
   }
 
   /* ---------- Shop: 3-card row or 2×2 grid ---------- */
@@ -885,10 +939,10 @@ const UI_PLAY = (() => {
       const twin = mine.find(o => o.sh.id === c.id && (o.sh.star || 1) < 3);
       const fuses = pairs.some(([a, bb]) => (a === c.id && mine.some(o => o.sh.id === bb)) || (bb === c.id && mine.some(o => o.sh.id === a)));
       let badge = '', badgeLong = '';
-      if (twin) { badge = `<span class="c-badge b-twin">${four ? '' : 'Twin '}★${(twin.sh.star || 1) + 1} $${upCost(twin.sh)}</span>`; badgeLong = `Twin star ${(twin.sh.star || 1) + 1} for $${upCost(twin.sh)}`; }
-      else if (fuses) { badge = '<span class="c-badge b-fuse">✦ Fuses</span>'; badgeLong = 'Fuses with a shell you own'; }
-      else if (c.tag === 'collector') { badge = '<span class="c-badge b-coll">Collector</span>'; badgeLong = 'Collector card'; }
-      else if (c.tag === 'pity') { badge = '<span class="c-badge b-pity">Pity</span>'; badgeLong = 'Pity card'; }
+      if (twin) { badge = `<span class="c-badge b-twin">${four ? '' : '<span class="bw">Twin </span>'}${ICON.twin}★${(twin.sh.star || 1) + 1} $${upCost(twin.sh)}</span>`; badgeLong = `Twin star ${(twin.sh.star || 1) + 1} for $${upCost(twin.sh)}`; }
+      else if (fuses) { badge = '<span class="c-badge b-fuse">✦<span class="bw"> Fuses</span></span>'; badgeLong = 'Fuses with a shell you own'; }
+      else if (c.tag === 'collector') { badge = '<span class="c-badge b-coll"><span class="bw">Collector</span></span>'; badgeLong = 'Collector card'; }
+      else if (c.tag === 'pity') { badge = '<span class="c-badge b-pity"><span class="bw">Pity</span></span>'; badgeLong = 'Pity card'; }
       const rar = rarityOf(r);
       const poor = c.cost > st.coins && !(twin && upCost(twin.sh) <= st.coins);
       let pips = '';
@@ -897,8 +951,12 @@ const UI_PLAY = (() => {
       b.classList.toggle('poor', poor);
       b.innerHTML = tokenHTML(sh, { size, hang: r.hang || 0 }) +
         `<span class="c-side"><span class="c-price num">$${c.cost}</span><span class="c-rar" aria-hidden="true">${pips}</span></span>` +
-        `<span class="c-name" lang="en">${esc(r.name || cap(c.id))}</span>` + badge;
+        `<span class="c-name" lang="en">${shy(esc(r.name || cap(c.id)))}</span>` + badge;
       b.setAttribute('aria-label', `Card ${i + 1}: ${r.name}, ${colName(sh.col)} ${colShape(sh.col)}, ${rar[0]}, new $${c.cost}${badgeLong ? '. ' + badgeLong : ''}. ${cardText(c.id, sh.col, 1)}`);
+      b.classList.toggle('badged', !!badge);
+      b.dataset.rar = rar[1];
+      const bd = b.querySelector('.c-badge');
+      fitLadder(b, 2, () => overflows(bd)); // 1: badges shed their word ("Twin ★2 $5" → "⧉★2 $5", "✦ Fuses" → "✦") · 2: no badge
     });
   }
 
@@ -915,19 +973,22 @@ const UI_PLAY = (() => {
     } else {
       const ri = rigInfo(rc.id);
       E.rigBtn.disabled = !!rc.sold;
-      E.rigBtn.innerHTML = `<span class="ws-glyph">${ICON.rig[rc.id] || ''}</span><span class="ws-name">${esc(ri.name)}</span>` +
+      E.rigBtn.innerHTML = `<span class="ws-glyph">${ICON.rig[rc.id] || ''}</span><span class="ws-name ws-rigname">${esc(ri.name)}</span>` +
         (rc.sold ? '<span class="ws-price">Sold</span>' : `<span class="ws-price num">$${rc.cost != null ? rc.cost : ri.cost}</span>`);
       E.rigBtn.setAttribute('aria-label', rc.sold ? `Rig ${ri.name}: sold` : `Rig card: ${ri.name}, $${rc.cost != null ? rc.cost : ri.cost}. ${ri.text} Pick it, then choose a tube (G).`);
       E.rigBtn.classList.toggle('sel', !!held && held.kind === 'rig');
       E.rigBtn.classList.toggle('poor', !rc.sold && (rc.cost || ri.cost) > st.coins);
     }
     const n = st.tubes.length, tc = tubeCost();
-    E.tubeBtn.innerHTML = n >= 6 ? '<span class="ws-name">6 tubes</span>' : `${ICON.plus}<span class="ws-name">Tube</span><span class="ws-price num">$${tc}</span>`;
+    E.tubeBtn.hidden = n >= 6; // a full rack frees the room for the rig's name
+    E.tubeBtn.innerHTML = n >= 6 ? '<span class="ws-name">6 tubes</span>' : `${ICON.addTube}<span class="ws-name ws-word">Tube</span><span class="ws-price num">$${tc}</span>`;
     E.tubeBtn.disabled = n >= 6;
     E.tubeBtn.classList.toggle('poor', n < 6 && tc > st.coins);
     E.tubeBtn.setAttribute('aria-label', n >= 6 ? 'The rack is full: 6 tubes' : `Add tube ${n + 1} for $${tc} (T)`);
     const rc$ = rerollCost();
-    E.rerollBtn.innerHTML = `${ICON.reroll}<span class="ws-name">Reroll</span><span class="ws-price num">$${rc$}</span>`;
+    E.rerollBtn.innerHTML = `${ICON.reroll}<span class="ws-name ws-word">Reroll</span><span class="ws-price num">$${rc$}</span>`;
+    // 360 px: tighten, then Tube / Reroll keep only their icons, then the rig keeps only its glyph (names stay in aria-labels)
+    fitLadder(E.workshop, 3, () => [...E.workshop.querySelectorAll('.ws-name')].some(overflows));
     E.rerollBtn.disabled = !(st.shop && st.shop.cards && st.shop.cards.length);
     E.rerollBtn.classList.toggle('poor', rc$ > st.coins);
     E.rerollBtn.setAttribute('aria-label', `Reroll the shop for $${rc$} (X)`);
@@ -971,14 +1032,17 @@ const UI_PLAY = (() => {
     E.readout.hidden = !readout.on;
     E.roCap.hidden = !(readout.on && view.tonight.includes('powercut'));
     paintReadout();
-    // result card (pinned until the first build action)
-    E.result.hidden = !result || u === 'RESOLVING';
-    if (result && u !== 'RESOLVING') E.result.innerHTML = resultHTML(result);
-    // info card (docked at the sky's bottom edge)
+    // info card (docked at the sky's bottom edge); while it is up the pinned result card steps aside
     const info = u === 'RESOLVING' ? null : infoHTML();
     E.info.hidden = !info;
-    if (info) E.info.innerHTML = info;
+    if (info) { E.info.innerHTML = info; const t = E.info.querySelector('.info-t'); fitLadder(E.info, 2, () => overflows(t)); }
     E.skyWrap.classList.toggle('has-info', !!info);
+    // result card (pinned until the first build action)
+    const showRes = !!result && u !== 'RESOLVING' && !info;
+    E.result.hidden = !showRes;
+    if (showRes) { const h = resultHTML(result); if (h !== E.result.dataset.html) { E.result.innerHTML = h; E.result.dataset.html = h; } } // no replayed rise on every render
+    else delete E.result.dataset.html;
+    E.skyWrap.classList.toggle('has-result', showRes);
     // cheer meter: mood band while building, live fill while resolving
     const target = readout.on || result ? (result ? result.target : litTarget) : targetOf(view.s);
     const score = result ? result.applause : readout.on ? readout.ooh * readout.aah : 0;
@@ -1018,7 +1082,7 @@ const UI_PLAY = (() => {
     if (held.kind === 'card') {
       const c = st.shop.cards[held.i], r = row(c.id), col = c.col || r.col;
       const twin = owned().find(o => o.sh.id === c.id && (o.sh.star || 1) < 3);
-      title = `<b>${esc(r.name)}</b> · ${colName(col)} · $${c.cost}${twin ? ` · twin ★${twin.sh.star + 1} $${upCost(twin.sh)}` : ''}`;
+      title = `<b>${esc(r.name)}</b><span class="t-o1"> · ${colName(col)}</span> · $${c.cost}${twin ? `<span class="t-o2"> · twin ★${twin.sh.star + 1} $${upCost(twin.sh)}</span>` : ''}`;
       text = cardText(c.id, col, 1);
       line3 = targets.size ? 'Tap a lit tube. Chips: white +Ooh · gold +Aah · ringed ×' : `Need $${Math.min(c.cost, twin ? upCost(twin.sh) : c.cost) - st.coins} more, or a free tube.`;
       if (!targets.size && c.cost <= st.coins) line3 = 'No free tube: move a shell to the Crate, sell one, or add a tube.';
@@ -1027,14 +1091,14 @@ const UI_PLAY = (() => {
       const sh = slotShell(held.slot);
       if (!sh) return '';
       const tb = held.slot.zone === 'tube' ? st.tubes[held.slot.i] : null;
-      title = `<b>${esc(shellName(sh))}</b> · ${colName(shellCol(sh))} · ★${sh.star || 1} · Hang ${Math.max(0, tb ? hangOf(tb, view.rules) : (row(sh.id).hang || 0))}`;
+      title = `<b>${esc(shellName(sh))}</b><span class="t-o1"> · ${colName(shellCol(sh))}</span> · ★${sh.star || 1}<span class="t-o2"> · Hang ${Math.max(0, tb ? hangOf(tb, view.rules) : (row(sh.id).hang || 0))}</span>`;
       text = cardText(sh.id, shellCol(sh), sh.star || 1);
       line3 = held.slot.zone === 'crate' ? 'In the Crate: it does not fire. Tap a tube to swap it in.' : 'Tap another tube to move or swap. The arc shows who sees it.';
       const k = slotKey(held.slot), armed = sellArmed === k;
       btns += `<button type="button" class="ib sell${armed ? ' armed' : ''}" data-info="sell" aria-label="${armed ? 'Confirm: sell' : 'Sell'} ${esc(shellName(sh))} for ${sellValue(sh)} coins">${armed ? 'Tap again: sell' : 'Sell'} $${sellValue(sh)}</button>`;
     } else if (held.kind === 'rig') {
       const rc = st.shop.rig, ri = rigInfo(rc.id);
-      title = `<b>${esc(ri.name)}</b> · rig · $${rc.cost != null ? rc.cost : ri.cost}`;
+      title = `<b>${esc(ri.name)}</b><span class="t-o1"> · rig</span> · $${rc.cost != null ? rc.cost : ri.cost}`;
       text = ri.text;
       line3 = targets.size ? 'Tap a tube to install it. Rigs stay with the tube.' : `Need $${(rc.cost || ri.cost) - st.coins} more.`;
     }
@@ -1156,7 +1220,7 @@ const UI_PLAY = (() => {
   function hint(title, text) { flash = { title: `<b>${esc(title)}</b>`, text }; render(); }
 
   function light() {
-    if (ui() !== 'BUILD' || !fnIn(G, 'light')) return;
+    if (!building() || !fnIn(G, 'light')) return; // RESULT is a build too: the card stays pinned until the next action
     clearHeld(true); disarmSell(); flash = null; dismissTip();
     litTarget = targetOf(S().show | 0);
     G.light();
@@ -1237,7 +1301,14 @@ const UI_PLAY = (() => {
     }, 450);
   }
   function onMove(e) {
-    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag) { // a mouse hovering a legal drop previews it (numerals, sees, arc); taps and keys show the same by other means
+      if (held && e.pointerType === 'mouse' && building() && E.play.contains(e.target)) {
+        const t = slotAt(e.clientX, e.clientY);
+        setHover(t && targets.has(slotKey(t)) ? t : null);
+      }
+      return;
+    }
+    if (e.pointerId !== drag.id) return;
     if (!drag.moved) {
       const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
       if (dx * dx + dy * dy < 100 || drag.long) return;
@@ -1444,6 +1515,13 @@ const UI_PLAY = (() => {
       if (to !== 'RESULT') { readout.on = false; litTarget = 0; }
     }
     render();
+    if (to !== 'RESOLVING') renderSoon(); // core refreshes GAME.preview after the switch (build open); read it once settled
+  }
+  let renderQueued = false;
+  function renderSoon() {
+    if (renderQueued) return;
+    renderQueued = true;
+    Promise.resolve().then(() => { renderQueued = false; render(); });
   }
   function onPresent(ev) {
     if (!ev || !ev.type) return;
@@ -1723,6 +1801,7 @@ const UI_PLAY = (() => {
     const on = (n, f) => { if (fnIn(G, 'on')) G.on(n, x => safe(() => f(x))); };
     on('change', () => render());
     on('preview', () => render());
+    on('critical', () => renderSoon());
     on('sim', onSim);
     on('ui', onUi);
     on('present', onPresent);

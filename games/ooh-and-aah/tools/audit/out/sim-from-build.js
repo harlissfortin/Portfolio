@@ -1,3 +1,5 @@
+
+// ==== sim.js ====
 // Ooh × Aah: SIM module (spec DESIGN.md v1.1). Sections: 1 RNG · 2 DATA · 3 SIM · 4 HELPERS · 5 BOTS.
 //
 // `OohSim` is fully self-contained: it references no outer names, so the page can build a Blob Worker
@@ -1779,3 +1781,22 @@ function OohSim() {
 }
 const OOH = OohSim();
 if (typeof module === 'object' && module.exports) module.exports = OOH;
+// ==== audio.js ====
+// AUDIO: procedural WebAudio for Ooh × Aah (spec §10) and the audio column of the §9 juice map.
+//
+// API (CONTRACT.md): unlock() · onEvent(ev) · ui(name, {col}) · setSettings({sound, soundVol, music, musicVol})
+//                    setPhase('build'|'resolve'|'paused'|'off') · setCrowd(n) · suspend() · resume()
+// Every call is wrapped so it never throws; without WebAudio everything is a silent no-op.
+// The AudioContext is created (or resumed) only inside unlock(), which the core calls on the first gesture.
+//
+// Graph: one-shot voices → sfx ─┐
+//        music bus       → mus ─┴→ master 0.9 → compressor (−18 dB, knee 12, 4:1, 3 ms, 250 ms) → destination
+//
+// Payload fields read (as emitted by sim.js / core.js): buildOpen {show (0-based s; s mod 3 = 2 is a Headliner),
+// rules[], lastChance}; critical {on, lastChance} (core, every build open); burst {col, star, sees (count), n, shell
+// (id), uid, dud, half, washed}; bought/upgraded {col, uid}, sold/moved {uid} (colour remembered by uid);
+// crowdCheer {v, crowd}; applause {score, target, pass}; payout {shellCoins, interest, base, sponsor.coins} (coins
+// earned → blips, max 5); topTier {reason} (core, at the slam) and runWon play the fanfare (3 s de-dup).
+// colourSet / sponsorChanged / restored are voiced by ui-play through ui(), so they are silent here.
+
+if (typeof module === "object") module.exports = OOH;
