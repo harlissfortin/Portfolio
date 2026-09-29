@@ -337,6 +337,21 @@ const UI_END = (() => {
       date: new Date().toISOString().slice(0, 10),
       tubes: (w.st.tubes || []).map(t => (t && t.shell ? {id: t.shell.id, col: t.shell.col, star: t.shell.star || 1, rig: t.rig || null} : null))};
   }
+  // Greedy wrap at the " · " joins, then at spaces, to fit maxW (px, in the context's current font).
+  function wrapLines(g, text, maxW) {
+    const lines = [];
+    for (const part of String(text).split(' · ')) {
+      const last = lines[lines.length - 1];
+      if (last != null && g.measureText(last + ' · ' + part).width <= maxW) { lines[lines.length - 1] = last + ' · ' + part; continue; }
+      let cur = '';
+      for (const w of part.split(' ')) {
+        const t = cur ? cur + ' ' + w : w;
+        if (cur && g.measureText(t).width > maxW) { lines.push(cur); cur = w; } else cur = t;
+      }
+      lines.push(cur);
+    }
+    return lines;
+  }
   function paintPoster(cv, p, o) {
     if (!cv || !p) return;
     o = o || {};
@@ -358,7 +373,9 @@ const UI_END = (() => {
     const sub = (p.won && !p.endless ? 'Happy New Year!' : p.won ? 'Afterparty till dawn' : 'Show ' + p.show) + (p.seed ? ' · seed ' + p.seed : '');
     const fTitle = '600 26px Fraunces, Georgia, "Times New Roman", serif', fSub = '700 16px "Atkinson Hyperlegible", system-ui, sans-serif';
     g.font = fTitle; const tw = g.measureText(title).width;
-    g.font = fSub; const tBox = 14 + Math.max(tw, g.measureText(sub).width) + 10;
+    g.font = fSub;
+    const subs = wrapLines(g, sub, W - 28);                          // never clipped by the frame
+    const tBox = 14 + Math.max(tw, ...subs.map(l => g.measureText(l).width)) + 10, tBot = 64 + (subs.length - 1) * 20;
     // bursts in their tube columns
     const tubes = p.tubes || [], n = Math.max(tubes.length, 1);
     const rackW = Math.min(W - 24, n * 150), x0 = (W - rackW) / 2, colW = rackW / n;
@@ -368,7 +385,7 @@ const UI_END = (() => {
       let R = Math.min(colW * .56, 56) * (.86 + .07 * (t.star || 1));
       const x = x0 + colW * (i + .5);
       let y = Math.max(R + 8, 70 + (i % 2) * 18 + (rnd() - .5) * 10);
-      if (x - R * .8 < tBox && y - R < 64) { R = Math.min(R, (hz - 64) / 1.8); y = 64 + R; }   // whole burst below the title block
+      if (x - R * .8 < tBox && y - R < tBot) { R = Math.min(R, (hz - tBot) / 1.8); y = tBot + R; }   // whole burst below the title block
       spots.push({t, x, y, R});
     });
     for (const s of spots) {                                        // mortar trails, fading in as they rise
@@ -409,7 +426,7 @@ const UI_END = (() => {
     if (T.hc) { g.strokeStyle = T.paper; g.lineWidth = 1; g.beginPath(); g.moveTo(0, hz + .5); g.lineTo(W, hz + .5); g.stroke(); }
     // title block (drawn last, over a soft elliptical plate)
     g.save();
-    g.scale((tBox + 30) / 80, 1);
+    g.scale((tBox + 30) / 80, tBot / 64);
     const plate = g.createRadialGradient(0, 30, 0, 0, 30, 80);
     const pc = T.hc ? '0,0,0' : '7,10,24';
     plate.addColorStop(0, `rgba(${pc},.8)`); plate.addColorStop(.62, `rgba(${pc},.55)`); plate.addColorStop(1, `rgba(${pc},0)`);
@@ -418,10 +435,12 @@ const UI_END = (() => {
     g.fillStyle = T.paper; g.textBaseline = 'alphabetic';
     g.font = fTitle; g.fillText(title, 14, 34);
     g.font = fSub;
-    g.fillStyle = p.won ? T.aah : T.dim; g.fillText(sub, 14, 56);
+    g.fillStyle = p.won ? T.aah : T.dim; subs.forEach((l, i) => g.fillText(l, 14, 56 + i * 20));
     g.font = 'italic 700 16px Fraunces, Georgia, serif';
     g.textAlign = 'right'; g.fillStyle = T.brass;
-    g.fillText('Ooh × Aah', W - 12, 26); g.textAlign = 'left';
+    // the wordmark sits top right, or on the river when a long festival name reaches it
+    const wm = 'Ooh × Aah', clash = 14 + tw + 12 > W - 12 - g.measureText(wm).width;
+    g.fillText(wm, W - 12, clash ? H - 8 : 26); g.textAlign = 'left';
     g.globalAlpha = .7; g.strokeStyle = T.brass; g.lineWidth = 1; g.strokeRect(4.5, 4.5, W - 9, H - 9); g.globalAlpha = 1;
   }
 
@@ -913,8 +932,7 @@ const UI_END = (() => {
     const rec = meta.records && meta.records.bestShow;
     const isRecord = B && rec && rec.score === B.applause && String(rec.seed) === String(v.seed);
     const ms = milestones(), near = ms.slice(0, 2), sil = silhouette(ms);
-    const news = (v.lr.newUnlocks || []).map(u => (typeof u === 'string' ? {kind: row(D().SHELLS, u) ? 'shell' : 'other', id: u} : u))
-      .filter(u => u && u.id != null).sort((a, b) => (a.kind === 'milestone' ? 0 : 1) - (b.kind === 'milestone' ? 0 : 1));
+    const news = freshUnlocks(v).sort((a, b) => (a.kind === 'milestone' ? 0 : 1) - (b.kind === 'milestone' ? 0 : 1));
     const keeps = keepOptions();
     const canParty = v.kind === 'win' && has(G, 'enterAfterparty') && (!has(G, 'canAfterparty') || call(G, 'canAfterparty') !== false);
     const lost = v.lost;
@@ -997,6 +1015,31 @@ const UI_END = (() => {
     startJobs();
   }
 
+  /* The run's unlocks, in the order they came. After an Afterparty only those new since the win's end
+     screen: the core's list covers the whole run, and the win already showed the rest. The win's
+     list is remembered per run seed (in memory and, across a reload, in sessionStorage); without it,
+     everything up to the season win (m_win and what it opens) counts as shown. */
+  const WIN_SEEN = 'oohxaah.endWinSeen';
+  const unlockKey = u => u.kind + ':' + u.id;
+  let winSeen = null;
+  function freshUnlocks(view) {
+    const all = (view.lr.newUnlocks || []).map(u => (typeof u === 'string' ? {kind: row(D().SHELLS, u) ? 'shell' : 'other', id: u} : u))
+      .filter(u => u && u.id != null);
+    const seed = String(view.seed);
+    if (view.kind === 'win') {
+      winSeen = {seed, keys: all.map(unlockKey)};
+      try { sessionStorage.setItem(WIN_SEEN, JSON.stringify(winSeen)); } catch (e) { /* storage blocked: memory only */ }
+      return all;
+    }
+    if (!view.endless) return all;
+    let seen = winSeen && winSeen.seed === seed ? winSeen : null;
+    if (!seen) { try { const r = JSON.parse(sessionStorage.getItem(WIN_SEEN) || 'null'); if (r && r.seed === seed && Array.isArray(r.keys)) seen = r; } catch (e) { /* ignore */ } }
+    if (seen) { const k = new Set(seen.keys); return all.filter(u => !k.has(unlockKey(u))); }
+    let cut = -1;
+    all.forEach((u, i) => { if (u.id === 'm_win' || u.milestone === 'm_win') cut = i; });
+    return all.slice(cut + 1);
+  }
+
   /* "Just unlocked" cards (§7.2): one per milestone reached, naming what it opens; they apply from the next run. */
   function newsHTML(news) {
     if (!news.length) return '';
@@ -1074,7 +1117,11 @@ const UI_END = (() => {
     if (!el) return;
     const items = out.pareto;
     if (!items || !items.length) { el.innerHTML = '<p class="end-dim">No shows to add up yet.</p>'; return; }
-    const W = Math.floor(el.clientWidth || 300), p = paretoSVG(items, W);
+    // Size the chart to the plot's inner box (inside its border) so the SVG draws at 1:1 and its
+    // 16px labels render at 16px, not scaled down by max-width.
+    let plot = el.querySelector(':scope > .end-plot');
+    if (!plot) { el.innerHTML = '<div class="end-plot"></div>'; plot = el.firstChild; }
+    const W = Math.floor(plot.clientWidth || 300), p = paretoSVG(items, W);
     el.innerHTML = `<div class="end-plot">${p.svg}</div><p class="end-cap" id="end-pareto-cap">${esc(paretoCaption(items))}</p>
       <ul class="end-key">${p.bars.map((b, i) => `<li${i > p.vital || b.key === 'other' ? ' class="dim"' : ''}>${b.key === 'crowd' ? '<b><svg class="end-key-ico" width="22" height="14" viewBox="-11 -9 22 16" aria-hidden="true"><g class="ep-crowd"><circle cx="-6" cy="-3" r="3"/><circle cx="6" cy="-3" r="3"/><circle cx="0" cy="-5" r="3.4"/><path d="M-11,6q5,-8 11,-8q6,0 11,8z"/></g></svg></b>' : b.key === 'other' ? '<b>…</b>' : `<b>${esc(b.mono)}</b>`} ${esc(b.key === 'crowd' ? 'the Crowd' : b.key === 'other' ? 'everything else' : b.name)} <span class="num">${pct(b.share)}</span></li>`).join('')}</ul>`;
   }
@@ -1188,6 +1235,17 @@ const UI_END = (() => {
   function focusSel(q) { const el = root && root.querySelector(q); if (el) el.focus({preventScroll: false}); }
 
   /* ---------- 'end'-scope keys ---------- */
+  // A control that takes focus is scrolled fully clear of the sticky Run it back bar (and of the
+  // top edge); scroll-padding on #end does this for the browser's own focus scrolling, this covers
+  // the rest (focus() from script, engines that ignore scroll-padding for focus).
+  function keepClearOfBar(e) {
+    const t = e.target, bar = root && root.querySelector('.end-actions');
+    if (!bar || !t || t === root || bar.contains(t) || !t.getBoundingClientRect) return;
+    const r = t.getBoundingClientRect(), b = bar.getBoundingClientRect(), top = root.getBoundingClientRect().top + 8;
+    if (!r.height) return;
+    if (r.bottom > b.top - 12) root.scrollTop += Math.min(r.bottom - b.top + 12, r.top - top);
+    else if (r.top < top) root.scrollTop -= top - r.top;
+  }
   function onKey(e) {
     if (!isOpen()) return false;
     const k = e.key, ae = document.activeElement;
@@ -1236,6 +1294,7 @@ const UI_END = (() => {
     root = document.getElementById('end');
     if (!G || !root) return;
     root.addEventListener('click', onClick);
+    root.addEventListener('focusin', keepClearOfBar);
     call(G, 'onKey', 'end', onKey);
     call(G, 'on', 'runEnd', p => show((p && p.lastRun) || G.lastRun));
     call(G, 'on', 'runStart', () => { job++; if (isOpen() && has(G, 'top') && G.top() === 'end') call(G, 'close', 'end'); });

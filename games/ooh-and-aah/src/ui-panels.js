@@ -160,12 +160,17 @@ const UI_PANELS = (() => {
     const renown = st.renown | 0;
     const sub = st.phase === 'won' ? 'Happy New Year!' : st.phase === 'lost' ? 'The crowd went home' : `Show ${Math.min(s + 1, shows)} of ${shows}`;
     const oldList = boardEl.querySelector('.bd-list'), keep = oldList ? oldList.scrollTop : 0;
-    boardEl.innerHTML = `<div class="bd">
-<header class="bd-head"><h2 class="bd-title">The festival year</h2><p class="bd-sub"><span class="num">${esc(sub)}</span>${renown ? `<span class="bd-tag">Renown ${renown}</span>` : ''}${st.fairWeather ? '<span class="bd-tag">Fair Weather</span>' : ''}</p></header>
+    // Re-rendering replaces the board: keep keyboard focus on the same control (or the list).
+    const fEl = document.activeElement, hadFocus = fEl && boardEl.contains(fEl) ? (fEl.dataset && fEl.dataset.bd) || (fEl.classList.contains('bd-list') ? 'list' : null) : null;
+    boardEl.innerHTML = `<div class="bd${showScores ? ' is-scores' : ''}">
+<header class="bd-head"><h2 class="bd-title">The festival year</h2><p class="bd-sub"><span class="num">${esc(sub)}</span>${renown ? `<span class="bd-tag">Renown ${renown}</span>` : ''}${st.fairWeather ? '<span class="bd-tag">Fair Weather</span>' : ''}<button type="button" class="bd-scores" data-bd="scores" aria-pressed="${showScores}">Scores</button></p></header>
 <div class="bd-cols" aria-hidden="true"><span>Twilight</span><span>Evening</span><span>Headliner</span></div>
-<ol class="bd-list">${rows}</ol>
+<ol class="bd-list" tabindex="0" aria-label="Festivals">${rows}</ol>
 <section class="bd-curve" aria-label="Target curve">${spark(st, ctx.hm, shows, s, building)}</section>
 </div>`;
+    // First paint (or a new width): redraw the curve at the width it actually got.
+    const curve = boardEl.querySelector('.bd-curve'), svg = curve && curve.querySelector('svg.sp'), cw = curveW(curve);
+    if (svg && cw && cw !== svg.width.baseVal.value) curve.innerHTML = spark(st, ctx.hm, shows, s, building, cw);
     // Keep the reader's scroll position; after each new result bring tonight's festival into view.
     const list = boardEl.querySelector('.bd-list'), nowRow = boardEl.querySelector('.bd-row.is-now');
     const played = hist(st).length;
@@ -178,6 +183,20 @@ const UI_PANELS = (() => {
     }
     histLen = played;
     watchEdges(list); edges(list);
+    if (hadFocus) { const b = hadFocus === 'list' ? list : boardEl.querySelector(`[data-bd="${hadFocus}"]`); if (b) b.focus({preventScroll: true}); }
+  }
+  // "Scores" reveals, as text in each played festival, what the stamps and cells only show as
+  // marks and icons: each show's target and Applause and the Headliner's name (no hover needed).
+  let showScores = false;
+  function onBoardClick(e) {
+    const b = e.target.closest && e.target.closest('[data-bd="scores"]');
+    if (!b) return;
+    showScores = !showScores;
+    b.setAttribute('aria-pressed', String(showScores));
+    const bd = boardEl.querySelector('.bd');
+    if (bd) bd.classList.toggle('is-scores', showScores);
+    const list = boardEl.querySelector('.bd-list');
+    if (list) edges(list);
   }
 
   /* One festival. Once it is over it collapses to a stamped line (✓ ✓ ✗); otherwise it
@@ -220,16 +239,22 @@ const UI_PANELS = (() => {
     else if (f > curF + 1) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}<span>${esc(names)}</span></span>`;
     else card = hls.map(h => `<p class="bd-hl">${icon(h.id, 'pn-ic bd-hl-ic')}<b>${esc(h.name)}</b>${h.rule ? ' ' + esc(h.rule) : ''}</p>`).join('');
     const aria = `Festival ${f}, ${festName(f)}${now ? ', tonight' : ''}. ${say.join('. ')}. Headliner: ${posted && hls.length ? names : 'not posted yet'}.`;
+    const more = past || now ? `<ul class="bd-more" aria-hidden="true">${say.map(t => `<li>${esc(t)}</li>`).join('')}${past && hls.length ? `<li>Headliner: ${esc(names)}</li>` : ''}</ul>` : '';
     const far = !past && !now && (f > curF + 1 || !building);    // a festival further ahead: a light two-line row
     return `<li class="bd-row ${past ? 'is-past' : now ? 'is-now' : 'is-future'}${far ? ' is-far' : ''}" aria-label="${esc(aria)}"${now ? ' aria-current="step"' : ''}>
 <div class="bd-name" aria-hidden="true"><span class="bd-num num">${f}</span><span class="bd-fest">${esc(festName(f))}</span>${mini}${stamps ? `<span class="bd-stamps">${stamps}</span>` : ''}</div>
-${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card ? `<div aria-hidden="true">${card}</div>` : ''}</li>`;
+${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}${card ? `<div aria-hidden="true">${card}</div>` : ''}</li>`;
   }
 
   /* Log-y target curve (dashed step line for the shows ahead) with Applause dots, drawn to scale. */
-  function spark(st, hm, n, s, building) {
-    const box = boardEl.querySelector('.bd-curve');
-    const W = Math.max(240, Math.round((box && box.clientWidth) || boardEl.clientWidth - 34 || 286)), H = 136;
+  // The curve's content width (inside its padding), so the SVG draws 1:1 and its 16px labels render at 16px.
+  function curveW(box) {
+    if (!box || !box.clientWidth) return 0;
+    const cs = getComputedStyle(box);
+    return Math.floor(box.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0));
+  }
+  function spark(st, hm, n, s, building, w) {
+    const W = Math.max(160, w || curveW(boardEl.querySelector('.bd-curve')) || boardEl.clientWidth - 38 || 282), H = 136;
     const L = 44, R = 8, T = 10, B = 26, pw = W - L - R, ph = H - T - B;
     const tg = [], dots = [];
     for (let i = 0; i < n; i++) { const e = lastOf(hm[i]); tg.push(e && !(building && i === s) ? e.target : tgt(st, i)); }
@@ -428,6 +453,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     <div class="sl-meta"></div>
   </header>
   <div class="sl-body">
+    <p class="sl-key" aria-hidden="true"><span>Burst · what it added</span><span>Running Ooh × Aah</span></p>
     <ol class="sl-lines" aria-label="Bursts, in firing order"></ol>
     <div class="sl-sum"></div>
   </div>
@@ -437,6 +463,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     P = {meta: logEl.querySelector('.sl-meta'), body: logEl.querySelector('.sl-body'), lines: logEl.querySelector('.sl-lines'),
       sum: logEl.querySelector('.sl-sum'), live: logEl.querySelector('.sl-live')};
     watchEdges(P.body);
+    P.body.addEventListener('scroll', () => { const B = P.body; P.follow = B.scrollTop + B.clientHeight >= B.scrollHeight - 48; }, {passive: true});
     logEl.addEventListener('click', e => {
       if (e.target.classList.contains('sl-scrim')) { closeSheet(); return; }
       const b = e.target.closest('[data-sl]');
@@ -514,7 +541,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     const sees = seesText(ln, L), full = seesFull(ln, L);
     const chips = flags + (sees ? `<span class="sl-sees"${full && sees.indexOf(full) < 0 ? ` title="${esc(full)}"` : ''}>${esc(sees)}</span>` : '') + chipsHTML(ln);
     const tot = `<span class="sl-run num" title="Running Ooh × Aah">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
-    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛</span>' : ''}</span></div>
+    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛ Favourite</span>' : ''}</span></div>
 <div class="sl-chips">${chips}${tot}</div>`;
   }
   function lineLabel(ln, L) {
@@ -581,20 +608,33 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     return bits.length || after ? `<p class="sl-pay num">${bits.map(([t, k]) => `<span class="sl-pb is-${k}">${esc(t)}</span>`).join('')}${after}</p>` : '';
   }
 
+  // Painting is batched: the stream only marks the log dirty and one rAF paints it, every DOM write
+  // first and at most one scroll last, with no layout reads while streaming (whether the reader is
+  // following the bottom comes from the scroll handler). A closed sheet is painted when it opens.
+  let paintRaf = 0, paintForce = false;
+  function schedulePaint(force) {
+    paintForce = paintForce || !!force;
+    if (!paintRaf) paintRaf = requestAnimationFrame(() => { paintRaf = 0; paintLog(false); });
+  }
+  const setHTML = (el, html) => { if (el._html !== html) { el._html = html; el.innerHTML = html; } };
   function paintLog(force) {
     if (!P) return;
+    if (paintRaf) { cancelAnimationFrame(paintRaf); paintRaf = 0; }
+    force = force || paintForce; paintForce = false;
+    if (logEl.hidden) { P.stale = true; return; }
+    P.stale = false;
     const L = log;
-    P.meta.innerHTML = metaHTML(L);
+    setHTML(P.meta, metaHTML(L));
     P.live.hidden = !(L && L.live);
     panel.classList.toggle('is-live', !!(L && L.live));
     if (!L || (!L.lines.length && !L.app)) {
       P.lines.innerHTML = `<li class="sl-empty">${emptyHTML()}</li>`;
-      P.sum.innerHTML = L ? sumHTML(L) : '';
+      setHTML(P.sum, L ? sumHTML(L) : '');
       edges(P.body);
       return;
     }
     // While live, follow the stream unless the reader has scrolled up to look at an earlier line.
-    const B = P.body, follow = B.scrollTop + B.clientHeight >= B.scrollHeight - 48;
+    const B = P.body, follow = P.follow !== false;
     if (force || P.lines.querySelector('.sl-empty')) P.lines.innerHTML = '';
     const kids = P.lines.children;
     let added = false;
@@ -606,7 +646,8 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
         P.lines.appendChild(li);
         added = true;
       }
-      const key = `${ln.v}:${ln.items ? ln.items.length : 0}:${L.fav}:${Object.keys(L.byN).length}`;
+      // re-render a line only when it changed (or a name it shows became known)
+      const key = `${ln.v}:${ln.items ? ln.items.length : 0}:${L.fav}:${ln.up ? ln.up.filter(n => L.byN[n]).length : 0}`;
       if (li._key !== key) {
         li._key = key;
         li.innerHTML = lineHTML(ln, L);
@@ -617,9 +658,9 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
       }
     });
     while (kids.length > L.lines.length) P.lines.lastChild.remove();
-    P.sum.innerHTML = sumHTML(L);
-    if (L.live && (added || follow) && B.clientHeight) B.scrollTo({top: B.scrollHeight, behavior: reduced() || !added ? 'auto' : 'smooth'});
-    edges(B);
+    setHTML(P.sum, sumHTML(L));
+    if (L.live) { if (added || follow) B.scrollTo({top: 1e7, behavior: reduced() || !added ? 'auto' : 'smooth'}); }   // edges follow from the scroll events
+    else edges(B);
   }
   function emptyHTML() {
     const again = hist(G && G.state).length > 0;
@@ -652,6 +693,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     logEl.setAttribute('role', sheet ? 'dialog' : 'complementary');
     if (sheet) logEl.setAttribute('aria-modal', 'true'); else logEl.removeAttribute('aria-modal');
     syncing = false;
+    if (P && P.stale && !logEl.hidden) paintLog(true);
     if (!open) return;
     if (sheet && panel) panel.scrollTop = 0;
     if (desk && panel) { panel.classList.remove('is-flash'); void panel.offsetWidth; panel.classList.add('is-flash'); }
@@ -708,7 +750,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
       startLive(null);
     }
     reduce(log, ev);
-    paintLog(false);
+    schedulePaint(false);
   }
   function onResult(p) {
     p = p || {};
@@ -739,6 +781,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
   function init(game) {
     G = game;
     boardEl = document.getElementById('board');
+    if (boardEl) boardEl.addEventListener('click', onBoardClick);
     logEl = document.getElementById('showlog');
     if (!G || (!boardEl && !logEl)) return;
     mq = typeof matchMedia === 'function' ? matchMedia('(min-width: 1200px)') : null;

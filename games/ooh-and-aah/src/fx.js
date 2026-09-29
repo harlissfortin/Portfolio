@@ -129,6 +129,13 @@ const FX = (() => {
   }
   function resetPool(P) { P.on.fill(0); P.top = 0; for (let i = P.n - 1; i >= 0; i--) P.free[P.top++] = i; P.count = 0; }
   const M = mkPool(400);
+  // Allocation-free canvas calls (§11.7): a fractional number handed to a canvas method or setter is boxed into a
+  // fresh heap number on every call. Hot loops pass integer 1/8-px coordinates (Smis; the context is scaled by QI
+  // around them) and alphas from a table of pre-boxed values (a PACKED_ELEMENTS array: loads return the stored object).
+  const QS = 8, QI = 1 / QS, AQ = [''];
+  for (let k = 0; k <= 255; k++) AQ[k] = k / 255;
+  const qx = v => (v * QS) | 0;
+  const qa = a => AQ[a <= 0 ? 0 : a >= 1 ? 255 : (a * 255 + 0.5) | 0];
   let curBid = -1;
   function kill(P, i) { if (!P.on[i]) return; P.on[i] = 0; P.free[P.top++] = i; P.count--; }
   function steal(P) {
@@ -156,10 +163,10 @@ const FX = (() => {
     return i;
   }
   // The emitter context (reused; one pattern emission at a time).
-  const EC = {P: M, cx: 0, cy: 0, gy: 0, S: 1, m: 1, ci: 0, fl: 0, al: 1, d: 0, pr: 2, bid: -1, row: PAT.sphere, R: rng, side: 1};
+  const EC = {P: M, cx: 0, cy: 0, gy: 0, S: 1, m: 1, z: 1, ci: 0, fl: 0, al: 1, d: 0, pr: 2, bid: -1, row: PAT.sphere, R: rng, side: 1};   // z: star size ×
   function star(x, y, vx, vy, fl, delay, szm, ci) {
     const r = EC.row, s = EC.S;
-    return spawn(EC.P, x, y, vx, vy, r[2] * s, r[3], r[4] * (0.85 + EC.R() * 0.3), r[5], r[6], 1.5 * szm * (0.55 + 0.45 * Math.sqrt(s)), EC.al,
+    return spawn(EC.P, x, y, vx, vy, r[2] * s, r[3], r[4] * (0.85 + EC.R() * 0.3), r[5], r[6], 1.5 * szm * EC.z * (0.55 + 0.45 * Math.sqrt(s)), EC.al,
       ci == null ? EC.ci : ci, fl | EC.fl, EC.pr, EC.bid, EC.d + delay);
   }
   function ball(cx, cy, n, sp, fl, delay, szm, emberN) {
@@ -581,7 +588,7 @@ const FX = (() => {
     drawLanterns(c);
     const ex = opt.reducedMotion ? 0 : excite;
     for (let row = 0; row < 3; row++) {
-      c.beginPath();
+      c.beginPath(); c.save(); c.scale(QI, QI);   // the path in integer 1/8 px (no boxing); restored before fill/stroke
       let na = 0;
       for (let i = 0; i < figN; i++) {
         if (fRow[i] !== row || !fSt[i]) continue;
@@ -590,33 +597,36 @@ const FX = (() => {
         if (walking) by -= Math.abs(Math.sin(T * 9 + fPh[i])) * 1.2 * s;
         else if (ex > 0.02) by -= Math.max(0, Math.sin(T * 8.5 + fPh[i])) * 1.8 * s * ex;
         const sh = by - h * 0.64, hr = w * 0.44, hy = sh - hr * 1.12 + deflate * 0.8 * s;
-        c.moveTo(bx - w / 2, by); c.lineTo(bx - w / 2, sh + w * 0.3); c.quadraticCurveTo(bx - w / 2, sh, bx, sh); c.quadraticCurveTo(bx + w / 2, sh, bx + w / 2, sh + w * 0.3); c.lineTo(bx + w / 2, by); c.closePath();
-        c.moveTo(bx + hr, hy); c.arc(bx, hy, hr, 0, TAU);
-        if (fHat[i] === 1) { c.moveTo(bx + hr * 0.45, hy - hr * 1.05); c.arc(bx, hy - hr * 1.05, hr * 0.45, 0, TAU); }
-        else if (fHat[i] === 2) c.rect(bx - hr * 0.8, hy - hr * 2.1, hr * 1.6, hr * 1.4);
+        const X0 = qx(bx - w / 2), X1 = qx(bx + w / 2), XC = qx(bx), Y = qx(by), SH = qx(sh), SW = qx(sh + w * 0.3), HY = qx(hy), HR = qx(hr);
+        c.moveTo(X0, Y); c.lineTo(X0, SW); c.quadraticCurveTo(X0, SH, XC, SH); c.quadraticCurveTo(X1, SH, X1, SW); c.lineTo(X1, Y); c.closePath();
+        c.moveTo(XC + HR, HY); c.arc(XC, HY, HR, 0, QS);   // end angle 8 rad ≥ 2π: a full circle (a Smi, unlike TAU)
+        if (fHat[i] === 1) { const r2 = qx(hr * 0.45), y2 = qx(hy - hr * 1.05); c.moveTo(XC + r2, y2); c.arc(XC, y2, r2, 0, QS); }
+        else if (fHat[i] === 2) c.rect(qx(bx - hr * 0.8), qx(hy - hr * 2.1), qx(hr * 1.6), qx(hr * 1.4));
         ARMS[na++] = i; ARMS[na++] = bx; ARMS[na++] = sh + w * 0.18; ARMS[na++] = h;
       }
+      c.restore();
       c.fillStyle = hc ? '#000' : ROWC[row]; c.fill();
       if (hc) { c.strokeStyle = '#FFF'; c.lineWidth = 1; c.stroke(); }
       // arms: one stroked path per row (pose = mood during the build, the cheer meter during resolution)
-      c.beginPath();
+      c.beginPath(); c.save(); c.scale(QI, QI);
       for (let k = 0; k < na; k += 4) {
         const i = ARMS[k], bx = ARMS[k + 1], sy = ARMS[k + 2], L = ARMS[k + 3] * 0.44, w = fW[i];
         const p = clamp(pose + fVar[i] * 0.3 - deflate * 0.5, 0, 1) , wig = ex > 0.02 ? Math.sin(T * 10 + fPh[i]) * 0.3 * ex : 0;
-        const aL = lerp(1.83, 4.19, p) + wig, aR = lerp(1.31, -1.05, p) - wig;
-        c.moveTo(bx - w * 0.4, sy); c.lineTo(bx - w * 0.4 + Math.cos(aL) * L, sy + Math.sin(aL) * L);
-        c.moveTo(bx + w * 0.4, sy); c.lineTo(bx + w * 0.4 + Math.cos(aR) * L, sy + Math.sin(aR) * L);
+        const aL = lerp(1.83, 4.19, p) + wig, aR = lerp(1.31, -1.05, p) - wig, SY = qx(sy);
+        c.moveTo(qx(bx - w * 0.4), SY); c.lineTo(qx(bx - w * 0.4 + Math.cos(aL) * L), qx(sy + Math.sin(aL) * L));
+        c.moveTo(qx(bx + w * 0.4), SY); c.lineTo(qx(bx + w * 0.4 + Math.cos(aR) * L), qx(sy + Math.sin(aR) * L));
       }
+      c.restore();
       c.strokeStyle = hc ? '#FFF' : ROWC[row]; c.lineWidth = Math.max(1, (row === 2 ? 1.7 : 1.4) * s); c.lineCap = 'round'; c.stroke();
       if (hc) { c.strokeStyle = '#000'; c.lineWidth = Math.max(1, (row === 2 ? 1.7 : 1.4) * s) - 1; c.stroke(); }
     }
     c.globalAlpha = 1;
   }
   /* festoon lanterns strung over the embankment (they go out on runLost) */
-  const LB = new Float32Array(192);
+  const LB = new Float32Array(192), POSTS = [0.015, 0.34, 0.67, 0.985];
   let lbN = 0, lampsOff = 0, lampsOffT = 0;
   function layoutLanterns() {
-    const s = B / 36, posts = [0.015, 0.34, 0.67, 0.985], y0 = rTop + (rBot - rTop) * 0.22, sag = Math.max(5, (rBot - rTop) * 0.55);
+    const s = B / 36, posts = POSTS, y0 = rTop + (rBot - rTop) * 0.22, sag = Math.max(5, (rBot - rTop) * 0.55);
     lbN = 0;
     for (let k = 0; k < 3; k++) {
       const x0 = W * posts[k], x1 = W * posts[k + 1], n = Math.max(4, Math.floor((x1 - x0) / (12 * s)));
@@ -624,7 +634,7 @@ const FX = (() => {
     }
   }
   function drawLanterns(c) {
-    const s = B / 36, posts = [0.015, 0.34, 0.67, 0.985], y0 = rTop + (rBot - rTop) * 0.22, sag = Math.max(5, (rBot - rTop) * 0.55), f = scene.festival;
+    const s = B / 36, posts = POSTS, y0 = rTop + (rBot - rTop) * 0.22, sag = Math.max(5, (rBot - rTop) * 0.55), f = scene.festival;
     c.strokeStyle = opt.highContrast ? '#FFF' : '#0F1328'; c.lineWidth = 1; c.beginPath();
     for (let k = 0; k < 4; k++) { const x = W * posts[k]; c.moveTo(x, y0 - 3 * s); c.lineTo(x, H); }
     for (let k = 0; k < 3; k++) { const x0 = W * posts[k], x1 = W * posts[k + 1]; c.moveTo(x0, y0); c.quadraticCurveTo((x0 + x1) / 2, y0 + sag * 2, x1, y0); }
@@ -637,14 +647,16 @@ const FX = (() => {
     const spr = BIG[7] || null, dotS = HEAD[7];
     if (!dotS) return;
     c.globalCompositeOperation = opt.highContrast ? 'source-over' : 'lighter';
+    c.save(); c.scale(QI, QI);
     for (let i = 0; i < lbN; i++) {
       if (i < lampsOff) continue;
       const x = LB[i * 2], y = LB[i * 2 + 1], big = f === 1 && i % 3 === 0;
       const fl = 0.8 + 0.2 * Math.sin(T * 7 + i * 1.7) * Math.sin(T * 2.3 + i);
-      if (spr && !opt.highContrast) { c.globalAlpha = 0.16 * fl; const r = (big ? 9 : 6) * s; c.drawImage(spr, x - r, y - r, 2 * r, 2 * r); }
-      c.globalAlpha = 0.85 * fl; const r = (big ? 3.4 : 2.2) * s;
-      c.drawImage(dotS, x - r, y - r + (big ? 2 * s : 0), 2 * r, 2 * r * (big ? 1.3 : 1));
+      if (spr && !opt.highContrast) { c.globalAlpha = qa(0.16 * fl); const r = (big ? 9 : 6) * s, d = qx(2 * r); c.drawImage(spr, qx(x - r), qx(y - r), d, d); }
+      c.globalAlpha = qa(0.85 * fl); const r = (big ? 3.4 : 2.2) * s;
+      c.drawImage(dotS, qx(x - r), qx(y - r + (big ? 2 * s : 0)), qx(2 * r), qx(2 * r * (big ? 1.3 : 1)));
     }
+    c.restore();
     c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
   }
 
@@ -654,7 +666,7 @@ const FX = (() => {
   function buildTrail() { trS = Math.min(0.8, dpr * 0.5); TR = mkCanvas(W * trS, H * trS); trc = TR.getContext('2d'); trDirty = false; }
   // Trail dots are batched: one rect path per (colour × 4 alpha levels), ≤ 36 fills a tick instead of one bitmap draw
   // per particle (the per-op raster cost dominated render). Counting sort into preallocated arrays: no allocation.
-  const TBK = new Uint8Array(400), TORD = new Int16Array(400), TCNT = new Int16Array(38), TR_A = [0.12, 0.26, 0.47, 0.75];
+  const TBK = new Uint8Array(400), TORD = new Int16Array(400), TCNT = new Int16Array(38), TR_A = [0.12, 0.26, 0.47, 0.75, ''];   // '' keeps the alphas boxed (see qa)
   function depositTrails() {
     if (!trc) return;
     const P = M, n = P.n;
@@ -674,15 +686,16 @@ const FX = (() => {
     for (let k = 1; k < 38; k++) TCNT[k] += TCNT[k - 1];
     for (let i = 0; i < n; i++) if (TBK[i] !== 255) TORD[TCNT[TBK[i]]++] = i;   // TCNT[bk] now = end of bucket bk
     let j = 0;
+    trc.setTransform(QI, 0, 0, QI, 0, 0);
     for (let bk = 0; bk < 36; bk++) {
       const end = TCNT[bk];
       if (j >= end) continue;
       any = true;
       trc.globalAlpha = TR_A[bk & 3]; trc.fillStyle = COLS[bk >> 2]; trc.beginPath();
-      for (; j < end; j++) { const i = TORD[j], r = Math.max(0.6, P.sz[i] * 0.7) * trS; trc.rect(P.x[i] * trS - r, P.y[i] * trS - r, 2 * r, 2 * r); }
+      for (; j < end; j++) { const i = TORD[j], r = Math.max(0.6, P.sz[i] * 0.7) * trS, d = qx(2 * r); trc.rect(qx(P.x[i] * trS - r), qx(P.y[i] * trS - r), d, d); }
       trc.fill();
     }
-    trc.globalAlpha = 1;
+    trc.setTransform(1, 0, 0, 1, 0, 0); trc.globalAlpha = 1;
     if (any) { trIdle = 0; trDirty = true; } else if (trDirty && (trIdle += 1) > 90) { trc.clearRect(0, 0, TR.width, TR.height); trDirty = false; }
   }
 
@@ -696,16 +709,26 @@ const FX = (() => {
   const BRAIDS = [];
   for (let i = 0; i < 4; i++) BRAIDS.push({on: false, x0: 0, y0: 0, x1: 0, y1: 0, t0: 0});
   const BAN = [];
-  for (let i = 0; i < 4; i++) BAN.push({on: false, cv: null, w: 0, h: 0, y: 0, t0: 0, dur: 0.9, cdpr: 0});
+  for (let i = 0; i < 4; i++) BAN.push({on: false, cv: null, g: null, cw: 0, w: 0, h: 0, y: 0, t0: 0, dur: 0.9, cdpr: 0, kind: '', text: ''});
   const GLOWS = [];
-  for (let i = 0; i < 10; i++) GLOWS.push({on: false, x: 0, y: 0, ci: 0, a: 0, r: 0});
+  for (let i = 0; i < 10; i++) GLOWS.push({on: false, x: 0, y: 0, ci: 0, a: 0, r: 0, dk: 1.6});   // dk: fade per second
   const WAVES = [];
   for (let i = 0; i < 3; i++) WAVES.push({on: false, x: 0, y: 0, t0: 0});
   const SPARK = [];  // pip sparkles (extend)
   for (let i = 0; i < 16; i++) SPARK.push({on: false, x: 0, y: 0, t0: 0});
   const APULSE = [0, 0, 0];
   const FONT_UI = '"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
-  const FONT_D = 'Fraunces, Georgia, "Times New Roman", serif';
+  const FONT_D = 'Fraunces, Georgia, "Times New Roman", serif', FONT_SUB = '700 18px ' + FONT_UI;
+  // Text widths, cached per font and string (measureText shapes the text every call). Cleared when a web font lands.
+  const TW = new Map();
+  let twN = 0, twFonts = false;
+  function textW(g, font, text) {
+    let m = TW.get(font);
+    if (!m) { if (twN > 600) { TW.clear(); twN = 0; } TW.set(font, m = new Map()); }
+    let w = m.get(text);
+    if (w === undefined) { g.font = font; w = g.measureText(text).width; m.set(text, w); twN++; }
+    return w;
+  }
   function rr(c, x, y, w, h, r) { r = Math.min(r, w / 2, h / 2); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
   function popupArt(p) {
     const t = tok(), hc = opt.highContrast, CW = 340, CH = 64;
@@ -714,11 +737,11 @@ const FX = (() => {
     let fs = Math.min(40, 16 + 4 * p.tier);
     const main = p.text + (p.n > 1 ? ' ×' + p.n : ''), font = (x ? 'italic 700 ' : '700 ') + '%px ' + (x ? FONT_D : FONT_UI);
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, CW, CH);
-    g.font = font.replace('%', fs); let tw = g.measureText(main).width;
+    let tw = textW(g, font.replace('%', fs), main);
     const tagF = '700 ' + Math.max(12, Math.round(fs * 0.6)) + 'px ' + FONT_UI;
-    g.font = tagF; const gw = p.tag ? g.measureText(p.tag).width + 6 : 0;
+    const gw = p.tag ? textW(g, tagF, p.tag) + 6 : 0;
     const maxW = CW - 8;
-    if (tw + gw + fs * 1.1 > maxW) { fs = Math.max(12, Math.floor(fs * (maxW - gw) / (tw + fs * 1.1))); g.font = font.replace('%', fs); tw = g.measureText(main).width; }
+    if (tw + gw + fs * 1.1 > maxW) { fs = Math.max(12, Math.floor(fs * (maxW - gw) / (tw + fs * 1.1))); tw = textW(g, font.replace('%', fs), main); }
     const ph = Math.round(fs * 1.38), pw = Math.ceil(tw + gw + fs * 0.9);
     p.w = pw + 4; p.h = ph + 4;
     const colTxt = x ? t.aah : p.kind === 'aah' || p.kind === 'coin' ? t.aah : p.kind === 'tag' ? t.dim : p.kind === 'fusion' ? PAL.F : '#FFFFFF';
@@ -734,9 +757,13 @@ const FX = (() => {
   }
   function popup(kind, text, x, y, tr, tag, slam) {
     // merge identical consecutive popups (150 ms, 40 px): "+15 Ooh ×3"
-    for (const p of POPS) {
+    for (let k = 0; k < POPN; k++) {
+      const p = POPS[k];
       if (p.on && p.die < 0 && p.kind === kind && p.text === text && p.tag === (tag || '') && T - p.t0 < 0.15 && Math.abs(p.x - x) < 40 && Math.abs(p.y - y) < 40) {
-        p.y += popDy(p); p.n++; p.t0 = T; popupArt(p);   // restart its life where it stands (no jump back down) p.x = clamp(p.x, p.w / 2 + 2, W - p.w / 2 - 20); clearUnder(p); return p;
+        // restart its life where it stands (no jump back down), wider now ("×n"), and never a second copy beside it
+        p.y += popDy(p); p.n++; p.t0 = T; popupArt(p);
+        p.x = clamp(p.x, p.w / 2 + 2, W - p.w / 2 - 20); clearUnder(p);
+        return p;
       }
     }
     let p = null, act = 0, old = null;
@@ -754,13 +781,10 @@ const FX = (() => {
   // Candidates are searched nearest-first from its natural place: just above what it hits (both rise at the same rate
   // and the newer never falls behind) or just below (measured from where the other one will end its rise).
   const PC = [];
+  const popBox = (p, y, q, pad) => { const qy = q.y + popDy(q); return Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(y - qy) < (p.h + q.h) / 2 + pad; };
   function popHit(p, y, pad) {
-    for (const q of POPS) {
-      if (!q.on || q === p || q.die >= 0) continue;
-      const qy = q.y + popDy(q);
-      if (Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(y - qy) < (p.h + q.h) / 2 + pad) return q;
-    }
-    for (const b of BAN) if (b.on && Math.abs(p.x - (W / 2 - 6)) < (p.w + b.w) / 2 + pad && Math.abs(y - b.y) < (p.h + b.h) / 2 + pad) return b;
+    for (let k = 0; k < POPN; k++) { const q = POPS[k]; if (q.on && q !== p && q.die < 0 && popBox(p, y, q, pad)) return q; }
+    for (let k = 0; k < BAN.length; k++) { const b = BAN[k]; if (b.on && banHit(p, y, b, pad)) return b; }
     return null;
   }
   function placeFree(p) {
@@ -776,14 +800,26 @@ const FX = (() => {
       const q = popHit(p, y, pad);
       if (!q) { p.y = y; return; }
       const d = (q.h + p.h) / 2 + pad, rising = POPS.includes(q);
-      PC.push((rising ? q.y + popDy(q) : q.y) - d, q.y + d);
+      PC.push((rising ? q.y + popDy(q) : q.y) - d, q.y + d + (rising || opt.reducedMotion ? 0 : 18));   // below a banner: clear of it after the rise
     }
-    // No free spot: the newest news wins. Whatever it would cover fades out (220 ms) and it takes its natural place.
+    // No free spot: the newest news wins. Whatever popup it would cover fades out (220 ms) and it takes its natural
+    // place, except over a banner (L1, never covered): then it sits just below the banner, or just above it.
     p.y = y0;
+    for (let k = 0; k < BAN.length; k++) {
+      const b = BAN[k];
+      if (!b.on || !banHit(p, p.y, b, pad)) continue;
+      const below = b.y + (b.h + p.h) / 2 + pad + (opt.reducedMotion ? 0 : 18), above = b.y - (b.h + p.h) / 2 - pad;
+      p.y = below <= bot ? below : above >= top ? above : below;
+    }
     clearUnder(p);
   }
+  // A banner does not rise with the popups: test the popup's whole path (it climbs up to 18 px over its life).
+  const banHit = (p, y, b, pad) => {
+    const rise = opt.reducedMotion ? 0 : 18, top = y - rise - p.h / 2 - pad, bot = y + p.h / 2 + pad;
+    return Math.abs(p.x - (W / 2 - 6)) < (p.w + b.w) / 2 + pad && top < b.y + b.h / 2 && bot > b.y - b.h / 2;
+  };
   function clearUnder(p) {
-    for (let k = 0, q; k < POPN && (q = popHit(p, p.y, 1)); k++) { if (POPS.includes(q)) q.die = T; else break; }
+    for (let k = 0; k < POPN; k++) { const q = POPS[k]; if (q.on && q !== p && q.die < 0 && popBox(p, p.y, q, 1)) q.die = T; }
   }
   // Clear popups out of a box (the Applause) with a quick fade, so L1 keeps the highest contrast.
   function clearPopups(x0, y0, x1, y1) {
@@ -795,7 +831,7 @@ const FX = (() => {
   }
   function drawPopups(c) {
     const rm = opt.reducedMotion;
-    for (let pass = 0; pass < 2; pass++) for (const p of POPS) {
+    for (let pass = 0; pass < 2; pass++) for (let _p = 0; _p < POPS.length; _p++) { const p = POPS[_p];
       if (!p.on || (pass === 0) === p.slam) continue;
       const u = (T - p.t0) / p.life;
       if (u >= 1) { p.on = false; continue; }
@@ -819,7 +855,7 @@ const FX = (() => {
     r.on = true; r.x = x; r.y = y; r.r0 = r0; r.r1 = r1; r.t0 = T; r.dur = dur; r.col = col; r.lw = lw; r.a = a; r.disc = kind === 'disc'; r.line = kind === 'line';
   }
   function drawRings(c) {
-    for (const r of RINGS) {
+    for (let _r = 0; _r < RINGS.length; _r++) { const r = RINGS[_r];
       if (!r.on) continue;
       const u = (T - r.t0) / r.dur;
       if (u >= 1) { r.on = false; continue; }
@@ -910,7 +946,8 @@ const FX = (() => {
   }
 
   /* ---------- the Applause roll-up and slam ---------- */
-  const AP = {on: false, t0: 0, slamT: 0, score: 0, target: 0, pass: false, encore: false, fade: -1, slammed: false, ooh: 0, aah: 0};
+  const AP = {on: false, t0: 0, slamT: 0, score: 0, target: 0, pass: false, encore: false, fade: -1, slammed: false, ooh: 0, aah: 0,
+    lv: NaN, str: '', fsR: 0, font: '', subS: NaN, subG: NaN, subP: false, sub: '', subW: 0};   // per-frame text caches (no strings built per frame)
   function drawApplause(c) {
     if (!AP.on || !opt.drawApplause) return;
     const t = tok(), e = T - AP.t0;
@@ -921,19 +958,26 @@ const FX = (() => {
     let v, sc = 1;
     if (!AP.slammed) { const k = Math.max(0, e - 0.2); v = AP.score * (1 - Math.exp(-k * 11.5)); sc = 0.82; }
     else { v = AP.score; const d = T - AP.slamT; sc = opt.reducedMotion ? 1 : d < 0.2 ? lerp(1.45, 1, easeBack(d / 0.2)) : 1; }
-    const str = fmt(v);
+    if (v !== AP.lv) { AP.lv = v; AP.str = fmt(v); }
+    const str = AP.str, fsR = Math.round(fs);
+    if (fsR !== AP.fsR) { AP.fsR = fsR; AP.font = 'italic 700 ' + fsR + 'px ' + FONT_D; }
     c.globalAlpha = a * 0.62; c.drawImage(HALO, cx - fs * 2.6, cy - fs * 1.35, fs * 5.2, fs * 2.7);
     c.globalAlpha = a; c.save(); c.translate(cx, cy); c.scale(sc, sc);
-    c.font = 'italic 700 ' + Math.round(fs) + 'px ' + FONT_D; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.font = AP.font; c.textAlign = 'center'; c.textBaseline = 'middle';
     c.lineJoin = 'round'; c.lineWidth = Math.max(3, fs * 0.12); c.strokeStyle = opt.highContrast ? '#000' : t.ink; c.strokeText(str, 0, 0);
     c.fillStyle = t.paper; c.fillText(str, 0, 0);
     if (opt.highContrast) { c.lineWidth = 2; c.strokeStyle = '#FFF'; }
     c.restore();
     if (AP.slammed) {
       const d = T - AP.slamT, b = Math.min(1, d / 0.14);
-      const tg = AP.target || 1, ratio = AP.score / tg;
-      const sub = AP.pass ? 'Pass ×' + (ratio < 100 ? (Math.floor(ratio * 10) / 10).toFixed(1) : fmt(Math.floor(ratio))) : fmt(Math.ceil(tg - AP.score)) + ' short';
-      c.font = '700 ' + 18 + 'px ' + FONT_UI; const w = c.measureText(sub).width + 22;
+      if (AP.subS !== AP.score || AP.subG !== AP.target || AP.subP !== AP.pass) {
+        const tg = AP.target || 1, ratio = AP.score / tg;
+        AP.subS = AP.score; AP.subG = AP.target; AP.subP = AP.pass;
+        AP.sub = AP.pass ? 'Pass ×' + (ratio < 100 ? (Math.floor(ratio * 10) / 10).toFixed(1) : fmt(Math.floor(ratio))) : fmt(Math.ceil(tg - AP.score)) + ' short';
+        AP.subW = textW(c, FONT_SUB, AP.sub);
+      }
+      const sub = AP.sub, w = AP.subW + 22;
+      c.font = FONT_SUB;
       c.globalAlpha = a * b; c.beginPath(); rr(c, cx - w / 2, cy + fs * 0.62, w, 30, 15);
       c.fillStyle = opt.highContrast ? '#000' : 'rgba(5,7,15,0.8)'; c.fill();
       c.lineWidth = 2; c.strokeStyle = AP.pass ? t.ok : t.danger; c.stroke();
@@ -942,23 +986,30 @@ const FX = (() => {
     c.globalAlpha = 1; c.textAlign = 'left';
   }
   function banner(text, kind, dur, y) {
+    // Banners never stack (L1): the same banner again just holds longer; another one in its place hands over in 120 ms.
+    for (let k = 0; k < BAN.length; k++) {
+      const q = BAN[k];
+      if (!q.on || Math.abs(q.y - y) > (q.h + 40) / 2) continue;
+      if (q.text === text && q.kind === kind && q.cdpr === dpr) { q.dur = dur; q.t0 = T - 0.12 * dur; return q; }
+      if ((T - q.t0) / q.dur < 0.8) { q.dur = 0.6; q.t0 = T - 0.48; }
+    }
     const t = tok(), b = BAN.find(q => !q.on) || BAN[0], fs = kind === 'encore' ? 30 : 22, CW = Math.min(W, 420), CH = 58;
     if (!b.cv || b.cdpr !== dpr) { b.cv = mkCanvas(CW * dpr, CH * dpr); b.g = b.cv.getContext('2d'); b.cdpr = dpr; b.cw = CW; }
     const g = b.g; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, b.cv.width, b.cv.height);
-    g.font = 'italic 700 ' + fs + 'px ' + FONT_D; let tw = g.measureText(text).width;
+    let tw = textW(g, 'italic 700 ' + fs + 'px ' + FONT_D, text);
     const maxW = b.cv.width / dpr - 40, f2 = tw > maxW ? Math.floor(fs * maxW / tw) : fs;
-    g.font = 'italic 700 ' + f2 + 'px ' + FONT_D; tw = g.measureText(text).width;
+    const fontB = 'italic 700 ' + f2 + 'px ' + FONT_D; tw = textW(g, fontB, text); g.font = fontB;
     const col = kind === 'fusion' ? (opt.highContrast ? PAL_HC.F : PAL.F) : kind === 'encore' ? t.aah : t.paper, w = tw + 44, h = f2 * 1.55 + 6, x0 = 2, y0 = 2;
     g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0 + w, y0); g.lineTo(x0 + w - 10, y0 + h / 2); g.lineTo(x0 + w, y0 + h); g.lineTo(x0, y0 + h); g.lineTo(x0 + 10, y0 + h / 2); g.closePath();
     g.fillStyle = opt.highContrast ? '#000' : 'rgba(5,7,15,0.84)'; g.fill(); g.lineWidth = 2; g.strokeStyle = col; g.stroke();
     g.fillStyle = kind === 'fusion' ? t.paper : col; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, x0 + w / 2, y0 + h / 2 + 1);
     if (kind === 'fusion') { g.fillStyle = col; g.font = '700 ' + Math.round(f2 * 0.8) + 'px ' + FONT_UI; g.fillText('✦', x0 + 17, y0 + h / 2 + 1); g.fillText('✦', x0 + w - 17, y0 + h / 2 + 1); }
-    b.on = true; b.w = w + 4; b.h = h + 4; b.t0 = T; b.dur = dur; b.y = y; b.kind = kind;
+    b.on = true; b.w = w + 4; b.h = h + 4; b.t0 = T; b.dur = dur; b.y = y; b.kind = kind; b.text = text;
     clearPopups(W / 2 - 6 - b.w / 2, y - b.h / 2, W / 2 - 6 + b.w / 2, y + b.h / 2);   // a banner is L1: nothing sits on it
     return b;
   }
   function drawBanners(c) {
-    for (const b of BAN) {
+    for (let _b = 0; _b < BAN.length; _b++) { const b = BAN[_b];
       if (!b.on) continue;
       const u = (T - b.t0) / b.dur;
       if (u >= 1) { b.on = false; continue; }
@@ -1363,7 +1414,7 @@ const FX = (() => {
     const rm = opt.reducedMotion;
     // sky glow (L3)
     const gl = GLOWS.find(q => !q.on) || GLOWS.reduce((a, q) => (q.a < a.a ? q : a), GLOWS[0]);
-    gl.on = true; gl.x = b.x; gl.y = b.y; gl.ci = b.ci; gl.a = 1; gl.r = b.R * 2.4;
+    gl.on = true; gl.x = b.x; gl.y = b.y; gl.ci = b.ci; gl.a = 1; gl.r = b.R * 2.4; gl.dk = 1.6;
     if (rm) { // radial-gradient glow that fades over 400 ms (§9 reduced motion)
       spawn(M, b.x, b.y, 0, 0, 0, 1, 0.4, 0, 0, b.R * 0.75, 0.95, b.ci, GLOW, 2, b.id, 0);
       if (b.linger) spawnEmbers(b, true);
@@ -1402,26 +1453,38 @@ const FX = (() => {
   /* ============================================================
      PUBLIC: finale, dim, critical, event
   ============================================================ */
+  // The win finale (§9): 18 staggered bursts across the whole rack over ~2.2 s, so the sky stays full through the hand-off
+  // to END. The 400-star pool is budgeted, not raced: the lingering sky fades out to make room, each burst is ~22 stars
+  // of a high-trail pattern (the trail layer fills the sky for free) plus one long soft glow, and the confetti waits.
+  const FIN_PATS = ['trails', 'fronds', 'droop', 'glitter', 'sphere', 'cascade', 'prism', 'trails', 'glitter'], FIN_COLS = ['R', 'A', 'G', 'B', 'W'];
+  const FIN_ORDER = [0, 3, 1, 4, 2, 5];
   function finale() {
     if (!ready || T - finaleT < 2.5) return;
     finaleT = T;
     excite = 1; poseT = 1;
     addHitStop(150, W / 2, rTop * 0.4);
     if (!opt.reducedMotion) flash(0.42);
-    const tb = scene.tubes && scene.tubes.length ? scene.tubes.length : 6, pats = ['sphere', 'trails', 'droop', 'glitter', 'cluster', 'ring', 'fronds', 'prism'], cols = ['R', 'A', 'G', 'B', 'W'];
-    let q = 0;
-    for (let w = 0; w < 3; w++) for (let t = 0; t < tb; t++, q++) {
-      const at = T + w * 0.32 + t * 0.06, x = tubeX(t), y = rTop * (0.22 + 0.34 * rng()), pat = pats[(q * 3 + w) % pats.length], ci = CI[cols[(t + w) % 5]];
-      LATER.push({at, fn: () => {
-        if (opt.reducedMotion) { spawn(M, x, y, 0, 0, 0, 1, 0.4, 0, 0, 60 * S, 0.9, ci, GLOW, 2, -1, 0); return; }
-        EC.P = M; EC.cx = x; EC.cy = y; EC.gy = H + 2; EC.S = S * 0.9; EC.m = 0.55; EC.ci = ci; EC.fl = 0; EC.al = 1; EC.d = 0; EC.pr = 0; EC.bid = -1; EC.R = rng;
-        emitPattern(pat, 0); EC.pr = 2;
-        const gl = GLOWS.find(g => !g.on) || GLOWS[0]; gl.on = true; gl.x = x; gl.y = y; gl.ci = ci; gl.a = 1; gl.r = 200 * S;
-      }});
+    clearSky(0.45);   // the Hang embers hand their budget to the finale
+    const tb = scene.tubes && scene.tubes.length ? scene.tubes.length : 6, NF = 18, span = opt.reducedMotion ? 1.8 : 2.2;
+    for (let q = 0; q < NF; q++) {
+      const t = FIN_ORDER[q % 6] % tb, row = (q / 6) | 0;
+      const at = T + 0.05 + q * span / NF + (q ? rng() * 0.05 : 0);
+      const x = clamp(tubeX(t) + (rng() - 0.5) * W * 0.08, W * 0.1, W * 0.9), y = rTop * (row === 1 ? 0.2 + 0.12 * rng() : 0.3 + 0.22 * rng());
+      const pat = FIN_PATS[(q * 5 + row) % FIN_PATS.length], ci = CI[FIN_COLS[(q + row) % 5]], last = q >= NF - 3;
+      LATER.push({at, fn: () => finaleBurst(x, y, pat, ci, last)});
     }
-    if (!opt.reducedMotion) LATER.push({at: T + 0.5, fn: () => { // confetti embers
-      for (let k = 0; k < 70 && M.count < 380; k++) spawn(M, rng() * W, -10 - rng() * rTop * 0.4, (rng() - 0.5) * 20, 20 + rng() * 30, 22, 0.99, 3 + rng() * 2, 0, 0.6, 1.2, 0.4, (k % 5 === 4) ? 7 : k % 4, CONF, 0, -1, rng() * 1.2);
+    if (!opt.reducedMotion) LATER.push({at: T + 1.1, fn: () => { // confetti embers (budgeted: the pool never tops 400)
+      for (let k = 0; k < 44 && M.count < 360; k++) spawn(M, rng() * W, -10 - rng() * rTop * 0.4, (rng() - 0.5) * 20, 20 + rng() * 30, 22, 0.99, 3 + rng() * 2, 0, 0.6, 1.2, 0.4, (k % 5 === 4) ? 7 : k % 4, CONF, 0, -1, rng() * 1.4);
     }});
+  }
+  function finaleBurst(x, y, pat, ci, last) {
+    const gl = GLOWS.reduce((a, g) => (!a.on ? a : !g.on || g.a < a.a ? g : a), GLOWS[0]);   // a free slot, else the faintest
+    gl.on = true; gl.x = x; gl.y = y; gl.ci = ci; gl.a = 1; gl.r = 200 * S; gl.dk = last ? 0.5 : 0.75;   // long-lived sky glow
+    if (opt.reducedMotion) { spawn(M, x, y, 0, 0, 0, 1, last ? 1.6 : 1, 0, 0, 60 * S, 0.9, ci, GLOW, 2, -1, 0); return; }
+    const row = PAT[pat] || PAT.sphere;
+    EC.P = M; EC.cx = x; EC.cy = y; EC.gy = H + 2; EC.S = S * 1.1; EC.m = 22 / row[0]; EC.z = 1.3; EC.ci = ci; EC.fl = 0; EC.al = 1; EC.d = 0; EC.pr = 2; EC.bid = -1; EC.R = rng;
+    emitPattern(pat, 0); EC.z = 1;
+    spawn(M, x, y, 0, 0, 0, 1, 1.1, 0, 0, 46 * S, 0.55, ci, GLOW, 2, -1, 0);   // one soft bloom reads as a full head
   }
   const LATER = [];
   function dim(on) {
@@ -1492,8 +1555,8 @@ const FX = (() => {
     meter.v += (meter.goal - meter.v) * Math.min(1, dt * (opt.reducedMotion ? 60 : 9));
     meter.pulse = Math.max(0, meter.pulse - dt * 2.5);
     for (let k = 0; k < 3; k++) APULSE[k] = Math.max(0, APULSE[k] - dt * 3);
-    for (const g of GLOWS) if (g.on) { g.a -= dt * 1.6; if (g.a <= 0) g.on = false; }
-    for (const b of BUR) {
+    for (let k = 0; k < GLOWS.length; k++) { const g = GLOWS[k]; if (g.on) { g.a -= dt * g.dk; if (g.a <= 0) g.on = false; } }
+    for (let _b = 0; _b < BUR.length; _b++) { const b = BUR[_b];
       if (!b.on) continue;
       b.shown += (Math.max(0, b.hang) - b.shown) * Math.min(1, dt * 10);
       if (!b.linger && b.exp >= 0 && T - b.exp > 3) b.on = false;
@@ -1502,7 +1565,7 @@ const FX = (() => {
     if (!P0 && moodNext && (!AP.slammed || T - AP.slamT > 2.2)) applyMood();
     haze = clamp((scene.haze || 0) + showHaze, 0, 1);
     if (!P0 && AP.slammed && !dimOn && T - AP.slamT > 2.6) { // the sky resets between shows
-      let any = false; for (const b of BUR) if (b.on && b.linger) { any = true; break; }
+      let any = false; for (let k = 0; k < NB; k++) { const b = BUR[k]; if (b.on && b.linger) { any = true; break; } }
       if (any) clearSky(1.2);
     }
   }
@@ -1528,22 +1591,33 @@ const FX = (() => {
     }
     c.drawImage(BG, 0, 0, W, H);
     // twinkles (the only motion at rest, with the lanterns and the river)
-    for (let i = 0; i < stars.length; i += 4) { c.globalAlpha = 0.35 + 0.45 * Math.sin(T * (1.3 + (i % 7) * 0.2) + stars[i + 3]) ** 2; c.fillStyle = '#EAF0FF'; c.fillRect(stars[i], stars[i + 1], stars[i + 2], stars[i + 2]); }
+    c.save(); c.scale(QI, QI); c.fillStyle = '#EAF0FF';
+    for (let i = 0; i < stars.length; i += 4) { const q = Math.sin(T * (1.3 + (i % 7) * 0.2) + stars[i + 3]), d = qx(stars[i + 2]); c.globalAlpha = qa(0.35 + 0.45 * q * q); c.fillRect(qx(stars[i]), qx(stars[i + 1]), d, d); }
     c.globalAlpha = 1;
     if (!hc) { // sky glow behind the town (L3 ≤ 40%)
       c.globalCompositeOperation = 'lighter';
-      for (const g of GLOWS) if (g.on) { c.globalAlpha = 0.3 * g.a * g.a; c.drawImage(BIG[g.ci], g.x - g.r, g.y - g.r, 2 * g.r, 2 * g.r); }
+      for (let k = 0; k < GLOWS.length; k++) { const g = GLOWS[k]; if (g.on) { const d = qx(2 * g.r); c.globalAlpha = qa(0.3 * g.a * g.a); c.drawImage(BIG[g.ci], qx(g.x - g.r), qx(g.y - g.r), d, d); } }
       c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
     }
+    c.restore();
     if (TOWN) c.drawImage(TOWN.cv, 0, rTop - TOWN.h, W, TOWN.h);
     if (!hc) drawHaze(c);
     // the river: wobbling reflection strips, then burst reflections at 25%
     if (RIVER) {
-      const rh = rBot - rTop, st = 2;
-      for (let y = 0; y < rh; y += st) { const o = rm ? 0 : 2 * Math.sin(T * 1.9 + y * 0.9); c.drawImage(RIVER, 0, y * dpr, RIVER.width, st * dpr, o, rTop + y, W, st); }
+      const rh = rBot - rTop, st = 2, rw = RIVER.width, qw = qx(W), qs = qx(st);
+      c.save(); c.scale(QI, QI);
+      for (let y = 0; y < rh; y += st) {
+        const o = rm ? 0 : 2 * Math.sin(T * 1.9 + y * 0.9), sy = (y * dpr + 0.5) | 0, sh = (((y + st) * dpr + 0.5) | 0) - sy;
+        c.drawImage(RIVER, 0, sy, rw, sh, qx(o), qx(rTop + y), qw, qs);
+      }
+      c.restore();
       c.save(); c.beginPath(); c.rect(0, rTop, W, rh); c.clip();
       c.globalCompositeOperation = 'lighter';
-      if (!hc) for (const g of GLOWS) if (g.on) { const ry = rTop + (rTop - g.y) * (rh / rTop); c.globalAlpha = 0.25 * g.a * g.a; c.drawImage(BIG[g.ci], g.x - g.r * 0.6, ry - g.r * 0.18, g.r * 1.2, g.r * 0.36); }
+      if (!hc) {
+        c.save(); c.scale(QI, QI);
+        for (let k = 0; k < GLOWS.length; k++) { const g = GLOWS[k]; if (!g.on) continue; const ry = rTop + (rTop - g.y) * (rh / rTop); c.globalAlpha = qa(0.25 * g.a * g.a); c.drawImage(BIG[g.ci], qx(g.x - g.r * 0.6), qx(ry - g.r * 0.18), qx(g.r * 1.2), qx(g.r * 0.36)); }
+        c.restore();
+      }
       drawPool(c, 0, 0.25, true);
       drawPool(c, 1, 0.25, true);
       c.restore();
@@ -1566,9 +1640,9 @@ const FX = (() => {
     drawCrit(c);
     drawAnchors(c);
     drawMeter(c);
+    drawPopups(c);     // under the L1 layers: a banner or the Applause is never covered by a popup
     drawBanners(c);
     drawApplause(c);
-    drawPopups(c);
     if (flashA > 0) { c.globalAlpha = Math.min(0.5, flashA); c.fillStyle = '#FFFFFF'; c.fillRect(0, 0, W, H); c.globalAlpha = 1; }
     if (BD && frameNo % 2 === 0) renderBackdrop();
     rMs = nowMs() - t0; rN++; rAvg = rN < 2 ? rMs : rAvg * 0.95 + rMs * 0.05; if (rMs > rMax) rMax = rMs;
@@ -1576,6 +1650,7 @@ const FX = (() => {
   function drawPool(c, pass, amul, refl) {
     const P = M, x = P.x, y = P.y, age = P.age, life = P.life, fl = P.fl, on = P.on, ci = P.ci, sz = P.sz, al = P.al, tw = P.tw, ph = P.ph;
     const hc = opt.highContrast, rh = rBot - rTop, kref = rh / Math.max(1, rTop);
+    c.save(); c.scale(QI, QI);   // integer sub-pixel coordinates (see qx)
     for (let i = 0; i < P.n; i++) {
       if (!on[i]) continue;
       const a = age[i];
@@ -1603,22 +1678,24 @@ const FX = (() => {
       const spr = (f & GLOW) ? BIG[k] : HEAD[k];
       let px = x[i], py = y[i];
       const r = (f & GLOW) ? s : s * (hc ? 1.4 : 2.3);
-      c.globalAlpha = A > 1 ? 1 : A;
       if (refl) {
         if (py >= rTop) continue;
         py = rTop + (rTop - py) * kref; px += 2 * Math.sin(T * 2.3 + py * 0.7);
-        c.drawImage(spr, px - r, py - r * 0.4, 2 * r, 0.8 * r);
-      } else c.drawImage(spr, px - r, py - r, 2 * r, 2 * r);
+        c.globalAlpha = qa(A); c.drawImage(spr, qx(px - r), qx(py - r * 0.4), qx(2 * r), qx(0.8 * r));
+      } else { c.globalAlpha = qa(A); c.drawImage(spr, qx(px - r), qx(py - r), qx(2 * r), qx(2 * r)); }
     }
+    c.restore();
   }
   function drawHaze(c) {
     const f = scene.festival, rules = scene.rules || [], fog = rules.includes('fog');
     const a = Math.min(0.34, 0.05 + haze * 0.3 + (f === 6 ? 0.06 : 0));
     const drift = rules.includes('headwind') ? 16 : 4;
+    c.save(); c.scale(QI, QI);
     for (let k = 0; k < 6; k++) {
       const w = W * 0.55, x = ((k * 0.37 * W + T * drift * (0.6 + k * 0.15)) % (W + w)) - w / 2, y = rTop * (0.5 + 0.08 * Math.sin(k * 2.1)) + k * 4;
-      c.globalAlpha = a * (0.6 + 0.4 * Math.sin(k + T * 0.2)); c.drawImage(HAZE, x - w / 2, y - w * 0.22, w, w * 0.44);
+      c.globalAlpha = qa(a * (0.6 + 0.4 * Math.sin(k + T * 0.2))); c.drawImage(HAZE, qx(x - w / 2), qx(y - w * 0.22), qx(w), qx(w * 0.44));
     }
+    c.restore();
     if (fog) { c.globalAlpha = 0.3; c.drawImage(HAZE, -W * 0.2, rTop * 0.42, W * 1.4, rTop * 0.4); }
     if (f === 6) { const fl = 0.75 + 0.25 * Math.sin(T * 9) * Math.sin(T * 3.7); c.globalCompositeOperation = 'lighter'; c.globalAlpha = 0.3 * fl; c.drawImage(BIG[7], W * 0.06, rTop - B * 1.3, B * 2.2, B * 1.6); c.globalCompositeOperation = 'source-over'; }
     if (rules.includes('drizzle') && !opt.reducedMotion) { c.globalAlpha = 0.18; c.strokeStyle = '#9AA6D6'; c.lineWidth = 1; c.beginPath(); for (let k = 0; k < 26; k++) { const x = (k * 53.3 + T * 30) % W, y = (k * 97.7 + T * 260) % rTop; c.moveTo(x, y); c.lineTo(x - 2, y + 9); } c.stroke(); }
@@ -1631,30 +1708,37 @@ const FX = (() => {
   function drawSoot(c) {
     const tb = scene.tubes;
     if (!tb || !tb.length || opt.highContrast) return;
+    c.save(); c.scale(QI, QI);
     for (let k = 0; k < tb.length; k++) {
       const sv = tb[k] ? +tb[k].soot || 0 : 0, L = sv > 5 ? sootLevel(sv) : clamp(Math.round(sv), 0, 5);
       if (!L) continue;
       const x = tubeX(k);
-      for (let j = 0; j < 3; j++) { const y = H - 6 - j * 13 - ((T * 6 + j * 13) % 13), w = 18 + j * 8; c.globalAlpha = L * 0.045 * (1 - j * 0.25); c.drawImage(HAZE, x - w / 2 + Math.sin(T * 0.7 + j + k) * 3, y - w / 2, w, w); }
+      for (let j = 0; j < 3; j++) { const y = H - 6 - j * 13 - ((T * 6 + j * 13) % 13), w = 18 + j * 8; c.globalAlpha = qa(L * 0.045 * (1 - j * 0.25)); c.drawImage(HAZE, qx(x - w / 2 + Math.sin(T * 0.7 + j + k) * 3), qx(y - w / 2), w * QS, w * QS); }
     }
+    c.restore();
     c.globalAlpha = 1;
   }
-  function drawWorldFx(c) {
-    const t = tok(), hc = opt.highContrast, cols = COLS;
+  function drawWaves(c) {
+    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
     // clear wave: a white band sweeping the sky
-    for (const w of WAVES) {
+    for (let _w = 0; _w < WAVES.length; _w++) { const w = WAVES[_w];
       if (!w.on) continue;
       const u = (T - w.t0) / 0.5;
       if (u >= 1) { w.on = false; continue; }
       const r = easeOut(u) * Math.hypot(W, H);
       c.globalAlpha = 0.34 * (1 - u); c.strokeStyle = '#FFFFFF'; c.lineWidth = 16 * (1 - u * 0.5); c.beginPath(); c.arc(w.x, w.y, r, 0, TAU); c.stroke();
     }
+    c.globalAlpha = 1;
+  }
+  function drawThreads(c) {
+    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
     // reader threads (1.5 px, burst colour at 60%, pulsing 250 ms)
-    for (const th of THR) {
+    for (let _th = 0; _th < THR.length; _th++) { const th = THR[_th];
       if (!th.on) continue;
       const e = T - th.t0;
       if (e > 0.62) { th.on = false; continue; }
-      const a = e < 0.25 ? 0.6 * (0.72 + 0.28 * Math.sin(e / 0.25 * TAU * 2)) : 0.6 * (1 - (e - 0.25) / 0.37);
+      // reduced motion (§9): the threads hold still (no pulse, no shrinking end dots) and only fade
+      const a = e < 0.25 ? (rm ? 0.6 : 0.6 * (0.72 + 0.28 * Math.sin(e / 0.25 * TAU * 2))) : 0.6 * (1 - (e - 0.25) / 0.37);
       c.globalAlpha = clamp(a, 0, 0.6); c.strokeStyle = th.col; c.lineWidth = hc ? 2 : 1.5; c.beginPath();
       for (let k = 0; k < th.n; k++) {
         const x1 = th.pts[k * 2], y1 = th.pts[k * 2 + 1], mx = (th.x + x1) / 2, my = Math.min(th.y, y1) - 18 - Math.abs(th.x - x1) * 0.12;
@@ -1662,10 +1746,17 @@ const FX = (() => {
       }
       c.stroke();
       c.fillStyle = th.col;
-      for (let k = 0; k < th.n; k++) { c.beginPath(); c.arc(th.pts[k * 2], th.pts[k * 2 + 1], 3 + 2 * Math.max(0, 1 - e / 0.25), 0, TAU); c.fill(); }
+      const dr = rm ? 3.5 : 3 + 2 * Math.max(0, 1 - e / 0.25);
+      c.beginPath();
+      for (let k = 0; k < th.n; k++) { const px = th.pts[k * 2], py = th.pts[k * 2 + 1]; c.moveTo(px + dr, py); c.arc(px, py, dr, 0, TAU); }
+      c.fill();
     }
+    c.globalAlpha = 1;
+  }
+  function drawBraids(c) {
+    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
     // fusion braids (bezier spiral, fusion pink)
-    for (const br of BRAIDS) {
+    for (let _br = 0; _br < BRAIDS.length; _br++) { const br = BRAIDS[_br];
       if (!br.on) continue;
       const e = T - br.t0;
       if (e > 0.9) { br.on = false; continue; }
@@ -1681,33 +1772,63 @@ const FX = (() => {
         c.stroke();
       }
     }
-    // Hang pips beside each lingering burst: the colour's own shape (greyscale-safe)
-    for (const b of BUR) {
+    c.globalAlpha = 1; c.lineCap = 'butt';
+  }
+  function drawPips(c) {
+    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
+    // Hang pips beside each lingering burst: the colour's own shape (greyscale-safe), from cached sprites
+    c.save(); c.scale(QI, QI);
+    for (let _b = 0; _b < NB; _b++) { const b = BUR[_b];
       if (!b.on || (!b.linger && (b.exp < 0 || T - b.exp > 0.3))) continue;
       const n = Math.ceil(b.shown - 0.05);
       if (n <= 0) continue;
       const fade = b.linger ? 1 : 1 - (T - b.exp) / 0.3, r = 3.4, gap = 9, y = b.y + pipOff(b);
-      const x0 = b.x - (n - 1) * gap / 2;
+      const x0 = b.x - (n - 1) * gap / 2, fs = b.rain ? 4 : b.ci === CI.S ? 3 : pipShape(b.col), os = b.rain || b.col === 'X' ? 4 : fs;
+      const spr = pipSprite(os, fs, b.ci);
+      c.globalAlpha = qa(0.95 * fade);
       for (let k = 0; k < Math.min(n, 8); k++) {
-        const frac = clamp(b.shown - k, 0, 1), rr2 = r * (0.4 + 0.6 * frac);
-        c.globalAlpha = 0.95 * fade;
-        c.beginPath(); shapePath(c, b.rain ? 'X' : b.col === 'X' ? 'X' : (b.ci === CI.S ? 'W' : b.col), x0 + k * gap, y, rr2 + 1.4);
-        c.fillStyle = hc ? '#FFF' : t.ink; c.fill();
-        c.beginPath(); shapePath(c, b.rain ? 'X' : (b.ci === CI.S ? 'W' : b.col), x0 + k * gap, y, rr2);
-        c.fillStyle = cols[b.ci]; c.fill();
+        const frac = clamp(b.shown - k, 0, 1), h = PIP_HALF * (r * (0.4 + 0.6 * frac) + 1.4) / (r + 1.4), d = qx(2 * h);
+        c.drawImage(spr, qx(x0 + k * gap - h), qx(y - h), d, d);
       }
     }
-    for (const sp of SPARK) {
+    c.restore();
+    c.globalAlpha = 1;
+  }
+  function drawSparks(c) {
+    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
+    for (let _sp = 0; _sp < SPARK.length; _sp++) { const sp = SPARK[_sp];
       if (!sp.on) continue;
       const u = (T - sp.t0) / 0.5;
       if (u >= 1) { sp.on = false; continue; }
-      const r = 3 + 9 * easeOut(u);
+      const r = rm ? 7 : 3 + 9 * easeOut(u);   // reduced motion: a still sparkle that fades
       c.globalAlpha = 1 - u; c.strokeStyle = t.aah; c.lineWidth = 1.5; c.beginPath();
       c.moveTo(sp.x - r, sp.y); c.lineTo(sp.x + r, sp.y); c.moveTo(sp.x, sp.y - r); c.lineTo(sp.x, sp.y + r); c.stroke();
     }
+    c.globalAlpha = 1;
+  }
+  // Hang pip sprites: ink outline + colour fill per (outline shape, fill shape, colour), drawn scaled (no path math per frame)
+  let PIPC = [], pipDpr = 0, pipHc = false;
+  const PIP_CH = ['A', 'G', 'B', 'W', 'X', 'R'], PIP_R = 3.4 + 1.4, PIP_HALF = PIP_R * 1.2 + 1;   // 'R': the circle
+  const pipShape = ch => (ch === 'A' ? 0 : ch === 'G' ? 1 : ch === 'B' ? 2 : ch === 'W' ? 3 : ch === 'X' ? 4 : 5);
+  function pipSprite(os, fs, ci) {
+    if (pipDpr !== dpr || pipHc !== opt.highContrast) { PIPC = []; pipDpr = dpr; pipHc = opt.highContrast; }
+    const key = (os * 6 + fs) * 16 + ci;
+    let s = PIPC[key];
+    if (!s) {
+      const n = Math.ceil(PIP_HALF * 2 * dpr * 2), k = n / (2 * PIP_HALF), g = (s = mkCanvas(n, n)).getContext('2d');
+      g.setTransform(k, 0, 0, k, n / 2, n / 2);
+      g.beginPath(); shapePath(g, PIP_CH[os], 0, 0, PIP_R); g.fillStyle = opt.highContrast ? '#FFF' : tok().ink; g.fill();
+      g.beginPath(); shapePath(g, PIP_CH[fs], 0, 0, 3.4); g.fillStyle = COLS[ci]; g.fill();
+      PIPC[key] = s;
+    }
+    return s;
+  }
+  function drawWorldFx(c) {
+    drawWaves(c); drawThreads(c); drawBraids(c); drawPips(c); drawSparks(c);
     drawRings(c);
     c.globalAlpha = 1; c.lineCap = 'butt';
   }
+
   function drawAnchors(c) {
     if (opt.highContrast) return;
     c.globalCompositeOperation = 'lighter';
@@ -1751,7 +1872,7 @@ const FX = (() => {
   function attachBackdrop(canvas) {
     if (!canvas || !hasDoc) return;
     if (BD && BD.cv === canvas) return;
-    BD = {cv: canvas, c: canvas.getContext('2d', {alpha: false}), w: 0, h: 0, ox: 0, oy: 0, bg: null, n: 0};
+    BD = {cv: canvas, c: canvas.getContext('2d', {alpha: false}), w: 0, h: 0, s: 0.5, ox: 0, oy: 0, bg: null, n: 0, bare: false};
     if (ro) ro.observe(canvas);
     layoutBackdrop();
   }
@@ -1759,12 +1880,17 @@ const FX = (() => {
     if (!BD) return;
     const w = BD.cv.clientWidth, h = BD.cv.clientHeight;
     if (!w || !h) return;
-    BD.cv.width = w; BD.cv.height = h; BD.w = w; BD.h = h;
+    // Half resolution: the backdrop is soft L3 glow behind blurred panels at 35% opacity (base.css), and its full-bleed
+    // repaint + composite was the largest raster cost of a desktop frame (§11.7). The CSS size stays 100%.
+    const bs = BD.s, bw = Math.max(1, Math.ceil(w * bs)), bh = Math.max(1, Math.ceil(h * bs));
+    BD.cv.width = bw; BD.cv.height = bh; BD.w = w; BD.h = h;
     measureBackdrop();
-    const t = tok(), g = mkCanvas(w, h), q = g.getContext('2d'), gr = q.createLinearGradient(0, 0, 0, h);
+    const t = tok(), g = mkCanvas(bw, bh), q = g.getContext('2d'), gr = q.createLinearGradient(0, 0, 0, h);
+    q.setTransform(bs, 0, 0, bs, 0, 0);
     gr.addColorStop(0, t.top); gr.addColorStop(1, t.hor); q.fillStyle = gr; q.fillRect(0, 0, w, h);
     const R = mkRng(hash(seedStr + '|bdstars'));
-    for (let i = 0; i < w * h / 2600; i++) { q.globalAlpha = 0.2 + R() * 0.5; q.fillStyle = '#DCE3FF'; const s = 0.6 + R() * R() * 1.4; q.fillRect(R() * w, Math.pow(R(), 1.5) * h * 0.85, s, s); }
+    q.fillStyle = '#DCE3FF';
+    for (let i = 0; i < w * h / 2600; i++) { const a = 0.2 + R() * 0.5, s0 = 0.6 + R() * R() * 1.4, s = Math.max(1 / bs, s0); q.globalAlpha = a * s0 / s; q.fillRect(R() * w, Math.pow(R(), 1.5) * h * 0.85, s, s); }
     q.globalAlpha = 1;
     if (TOWN) { // the town continues beyond the play column
       const s = 1.6, th = TOWN.h * s, tw = W * s;
@@ -1780,23 +1906,37 @@ const FX = (() => {
   function renderBackdrop() {
     if (!BD.bg || !BD.w) return;
     if (++BD.n % 60 === 0) measureBackdrop();
-    const c = BD.c, ox = BD.ox, oy = BD.oy, P = M;
-    // Idle sky (the build): the backdrop is static, so skip the full-bleed repaint once it shows the bare scene.
+    const c = BD.c, ox = BD.ox, oy = BD.oy, P = M, m = 8, xr = W - m, yb = H - m;
+    // Only what shows past the opaque sky canvas matters: glows spill over its edges; a particle only near or beyond
+    // them. The idle sky (the build) is static, so the full-bleed repaint stops once it shows the bare scene.
     let any = false;
-    for (const g of GLOWS) if (g.on) { any = true; break; }
-    if (!any) for (let i = 0; i < P.n; i++) if (P.on[i] && P.age[i] >= 0 && !(P.fl[i] & (EMB | GLOW | HOME))) { any = true; break; }
+    for (let k = 0; k < GLOWS.length; k++) if (GLOWS[k].on) { any = true; break; }
+    if (!any) for (let i = 0; i < P.n; i++) {
+      if (!P.on[i] || P.age[i] < 0 || (P.fl[i] & (EMB | GLOW | HOME))) continue;
+      const x = P.x[i], y = P.y[i];
+      if (x < m || x > xr || y < m || y > yb) { any = true; break; }
+    }
     if (!any && BD.bare) return;
     BD.bare = !any;
+    const bs = BD.s * QI;
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     c.drawImage(BD.bg, 0, 0);
+    c.setTransform(bs, 0, 0, bs, 0, 0);   // CSS px × BD.s, in integer 1/8 px (see qx)
     c.globalCompositeOperation = 'lighter';
-    for (const g of GLOWS) if (g.on) { c.globalAlpha = 0.35 * g.a; c.drawImage(BIG[g.ci], ox + g.x - g.r * 1.6, oy + g.y - g.r * 1.6, g.r * 3.2, g.r * 3.2); }
+    for (let k = 0; k < GLOWS.length; k++) {
+      const g = GLOWS[k];
+      if (!g.on) continue;
+      const d = qx(g.r * 3.2);
+      c.globalAlpha = qa(0.35 * g.a); c.drawImage(BIG[g.ci], qx(ox + g.x - g.r * 1.6), qx(oy + g.y - g.r * 1.6), d, d);
+    }
     for (let i = 0; i < P.n; i++) {
       if (!P.on[i] || P.age[i] < 0 || (P.fl[i] & (EMB | GLOW | HOME))) continue;
+      const x = P.x[i], y = P.y[i];
+      if (x >= m && x <= xr && y >= m && y <= yb) continue;   // hidden under the sky canvas
       const lf = P.age[i] / P.life[i], A = 0.9 * P.al[i] * (lf < 0.6 ? 1 : 1 - (lf - 0.6) / 0.4);
       if (A < 0.03) continue;
-      const k = (P.fl[i] & RAINBOW) ? (Math.floor(P.age[i] * 5 + P.ph[i]) & 3) : P.ci[i], r = P.sz[i] * 2.4;
-      c.globalAlpha = A; c.drawImage(HEAD[k], ox + P.x[i] - r, oy + P.y[i] - r, 2 * r, 2 * r);
+      const k = (P.fl[i] & RAINBOW) ? (Math.floor(P.age[i] * 5 + P.ph[i]) & 3) : P.ci[i], r = P.sz[i] * 2.4, d = qx(2 * r);
+      c.globalAlpha = qa(A); c.drawImage(HEAD[k], qx(ox + x - r), qx(oy + y - r), d, d);
     }
     c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
   }
@@ -1973,6 +2113,8 @@ const FX = (() => {
     setCrowd(scene.crowd, false);
     if (typeof ResizeObserver === 'function') { ro = new ResizeObserver(() => resize()); ro.observe(canvas); if (BD) ro.observe(BD.cv); }
     watchDpr();
+    // cached text widths were measured in a fallback face until the web fonts land
+    try { if (!twFonts && document.fonts && document.fonts.addEventListener) { twFonts = true; document.fonts.addEventListener('loadingdone', () => { TW.clear(); twN = 0; AP.subS = NaN; }); } } catch (e) { /* ignore */ }
   }
   function setOptions(o) {
     if (!o) return;

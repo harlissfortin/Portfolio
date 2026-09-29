@@ -460,7 +460,7 @@ button{cursor:pointer;touch-action:manipulation}
 #rack[data-fit="2"] .t-sees .sw{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 #rack[data-fit="2"] .t-sees .eye{display:block}
 #rack .t-sees.fogged{color:var(--paper);box-shadow:inset 0 0 0 1px rgba(185,178,199,.6)}
-#rack .t-body{position:relative;width:48px;height:var(--tok-h);border-radius:7px 7px 5px 5px;
+#rack .t-body{position:relative;width:48px;height:var(--tok-h);transform-origin:50% 100%;border-radius:7px 7px 5px 5px;
   background:radial-gradient(ellipse 60% 9px at 50% 3px,#000 0 70%,transparent 100%),linear-gradient(90deg,#120d09,#2c2118 42%,#150f0a);
   box-shadow:inset 0 3px 0 -1px var(--brass),inset 0 0 0 1px rgba(201,162,39,.35),0 2px 4px rgba(0,0,0,.5)}
 #rack .t-body::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
@@ -500,7 +500,7 @@ button{cursor:pointer;touch-action:manipulation}
   background:repeating-linear-gradient(135deg,rgba(185,178,199,.28) 0 3px,transparent 3px 8px)}
 #rack .tube.armed .t-body{box-shadow:inset 0 3px 0 -1px var(--brass),0 0 0 3px var(--danger)}
 #rack .tube.fired .t-tok{opacity:.35}
-#rack .tube.recoil .t-body{animation:ui-recoil .12s ease-out}
+#rack .t-body.recoil{animation:ui-recoil .12s ease-out} /* fallback: UI_PLAY plays it with Web Animations */
 @keyframes ui-recoil{50%{transform:scale(1.25,.8)}}
 #rack .tube:focus-visible{outline-offset:3px}
 #rack .tube.shake,#tools .slot.shake{animation:ui-shake .28s ease-out}
@@ -518,9 +518,8 @@ button{cursor:pointer;touch-action:manipulation}
 #rack .fuse{position:absolute;left:50%;bottom:3px;height:6px;transform:translateX(-50%);border-radius:3px;pointer-events:none;
   background:repeating-linear-gradient(90deg,var(--brass) 0 7px,#7A5E12 7px 10px);box-shadow:0 1px 0 rgba(0,0,0,.5)}
 #play[data-mode="compact"] #rack .fuse,#play[data-mode="scroll"] #rack .fuse{bottom:1px}
-#rack .fuse .ember{position:absolute;left:-7px;top:-4px;width:14px;height:14px;border-radius:50%;
+#rack .fuse .ember{position:absolute;left:calc(var(--ex,0px) - 7px);top:-4px;width:14px;height:14px;border-radius:50%;
   background:radial-gradient(circle,#FFF6D0 0 18%,#FFB347 40%,rgba(255,120,0,0) 70%)}
-#rack .fuse[data-dir="rtl"] .ember,#rack .fuse[data-dir="back"] .ember{left:auto;right:-7px}
 #rack .fuse[data-dir="back"]::after{content:"";position:absolute;left:0;right:0;top:-9px;height:4px;border-radius:2px;opacity:.7;
   background:repeating-linear-gradient(90deg,var(--aah) 0 5px,transparent 5px 9px)}
 #rack .fuse[data-dir="cross"]{background:repeating-linear-gradient(90deg,var(--brass) 0 12px,transparent 12px 16px)}
@@ -571,7 +570,9 @@ button{cursor:pointer;touch-action:manipulation}
 #shop .card[data-rar="3"] .c-rar i.on{background:var(--c-B)}
 #shop .c-name{grid-column:1 / -1;grid-row:2;align-self:end;font:700 16px/18px var(--f-ui);hyphens:auto;overflow-wrap:anywhere;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-#shop .card.badged .c-name{-webkit-line-clamp:1;white-space:nowrap;text-overflow:ellipsis;display:block}
+/* a badged card whose name needs 2 lines (UI_PLAY sets data-wrap) makes room with the 40 × 48 token, never an ellipsis */
+#shop .card.badged[data-wrap]{row-gap:3px}
+#shop .card.badged[data-wrap] .tok{--tw:40px;--th:48px}
 #shop .c-badge{grid-column:1 / -1;grid-row:3;font:700 16px/20px var(--f-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #shop .b-twin{color:var(--aah)}
 #shop .b-twin .twin{display:none;width:18px;height:18px;margin-right:2px;vertical-align:-3px;stroke-width:2.2}
@@ -617,8 +618,14 @@ button{cursor:pointer;touch-action:manipulation}
 #workshop .ws-rig{flex:1.5 1 0;min-width:0;touch-action:none;border-color:rgba(201,162,39,.55);
   background:linear-gradient(90deg,rgba(201,162,39,.18),rgba(27,20,64,.92) 60%)}
 #workshop .ws-tube,#workshop .ws-reroll{flex:0 0 auto;justify-content:center}
-/* 360 px (UI_PLAY fits the row): 1 tighter · 2 Tube / Reroll show icon + price · 3 the rig shows glyph + price */
+/* 360 px (UI_PLAY fits the row): 1 tighter, each price under its word ("Mortar / $10", "Tube / $6", "Reroll / $1")
+   · 2 Tube / Reroll show icon + price · 3 the rig shows glyph + price */
 #workshop:is([data-fit="1"],[data-fit="2"],[data-fit="3"]) .ws{padding:0 8px;gap:5px}
+#workshop[data-fit="1"] .ws:not(:has(> .ws-name:only-child)),#workshop[data-fit="2"] .ws-rig:not(:has(> .ws-name:only-child)){
+  display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:18px 18px;column-gap:4px;row-gap:1px;align-content:center;padding:0 6px}
+#workshop[data-fit="1"] .ws > :is(.ic,.ws-glyph),#workshop[data-fit="2"] .ws-rig > .ws-glyph{grid-column:1;grid-row:1 / 3;align-self:center}
+#workshop[data-fit="1"] .ws .ws-name,#workshop[data-fit="2"] .ws-rig .ws-name{grid-column:2;grid-row:1;line-height:18px}
+#workshop[data-fit="1"] .ws .ws-price,#workshop[data-fit="2"] .ws-rig .ws-price{grid-column:2;grid-row:2;font-size:17px;line-height:18px;justify-self:start}
 #workshop:is([data-fit="2"],[data-fit="3"]) .ws-word{display:none}
 #workshop[data-fit="3"] .ws-rigname{display:none}
 #workshop[data-fit="3"] .ws-rig{justify-content:space-between}
@@ -695,7 +702,8 @@ button{cursor:pointer;touch-action:manipulation}
 :root[data-contrast="high"] #shop .card,:root[data-contrast="high"] #tools .slot{background:#000;border-color:#FFFFFF}
 :root[data-contrast="high"] #fire{background:var(--brass);box-shadow:none}
 :root[data-contrast="high"] #play .tip-anchor,:root[data-contrast="high"] #fire.glow{box-shadow:none!important;outline:3px solid var(--focus)}
-:root[data-motion="reduced"] #fire.glow,:root[data-motion="reduced"] #rack.pulse,:root[data-motion="reduced"] #play .tip-anchor,:root[data-motion="reduced"] #inspect{animation:none}
+:root[data-motion="reduced"] #fire.glow,:root[data-motion="reduced"] #rack.pulse,:root[data-motion="reduced"] #play .tip-anchor,:root[data-motion="reduced"] #inspect,:root[data-motion="reduced"] #rack .fuse.lit .ember{animation:none}
+:root[data-motion="reduced"] #rack .fuse.lit .ember{transform:scale(1.2)} /* lit: a steady, larger glow instead of the pulse */
 :root[data-motion="reduced"] #fire.glow{box-shadow:0 0 0 3px rgba(242,193,78,.5)}
 :root[data-motion="reduced"] #rack.pulse{box-shadow:0 -1px 0 rgba(224,83,61,.7),0 -6px 26px rgba(224,83,61,.3)}
 @media (prefers-reduced-motion: reduce){
@@ -757,6 +765,20 @@ button{cursor:pointer;touch-action:manipulation}
   mask-image:linear-gradient(180deg,var(--fade-t),#000 22px,#000 calc(100% - 28px),var(--fade-b))}
 #board .bd-list.fade-t,#showlog .sl-body.fade-t{--fade-t:transparent}
 #board .bd-list.fade-b,#showlog .sl-body.fade-b{--fade-b:transparent}
+/* keyboard focus on a scroll list: an inset ring, and no edge fade hiding part of it */
+#board .bd-list:focus-visible,#showlog .sl-body:focus-visible{outline:2px solid var(--focus);outline-offset:-2px;border-radius:8px;-webkit-mask-image:none;mask-image:none}
+/* "Scores": each played festival's shows and Headliner as text (what its stamps, cells and icons mark) */
+#board .bd-scores{position:relative;z-index:0;margin:-9px 0 -9px auto;padding:12px 12px;border:0;border-radius:999px;background:transparent;
+  color:var(--paper-dim);font:700 var(--t-xs)/1.3 var(--f-ui);cursor:pointer}   /* a 44px-tall hit area around a small pill */
+#board .bd-scores::after{content:"";position:absolute;z-index:-1;inset:9px 0;border-radius:999px;border:1px solid var(--line)}
+#board .bd-scores:hover{color:var(--paper)}
+#board .bd-scores:hover::after{border-color:var(--brass)}
+#board .bd-scores[aria-pressed="true"]{color:var(--brass)}
+#board .bd-scores[aria-pressed="true"]::after{border:2px solid var(--brass)}
+#board .bd-scores:focus-visible{outline:0}
+#board .bd-scores:focus-visible::after{outline:2px solid var(--focus);outline-offset:2px}
+#board .bd-more{display:none;list-style:none;margin:3px 0 0;padding:0 0 0 32px;color:var(--paper-dim);font:400 var(--t-xs)/1.35 var(--f-ui);font-variant-numeric:tabular-nums}
+#board .is-scores .bd-more{display:block}
 #board .bd-list{list-style:none;margin:0 -6px 0 0;padding:0 6px 26px 0;flex:1 1 auto;min-height:0;overflow:auto;
   display:flex;flex-direction:column;gap:3px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 #board .bd-row{position:relative;padding:5px 8px 6px;border-radius:9px;border:1px solid transparent}
@@ -869,7 +891,9 @@ button{cursor:pointer;touch-action:manipulation}
   font:700 var(--t-s)/1.3 var(--f-ui);color:var(--paper)}
 #showlog .sl-col{font-weight:400;color:var(--paper-dim)}
 #showlog .sl-star{margin-left:5px;color:var(--aah);letter-spacing:-1px}
-#showlog .sl-fav{color:var(--brass)}
+#showlog .sl-fav{color:var(--brass);white-space:nowrap}
+#showlog .sl-key{display:flex;justify-content:space-between;gap:8px;margin:0 0 6px;color:var(--paper-dim);font:400 var(--t-xs)/1.3 var(--f-ui)}
+#showlog .sl-body:has(.sl-empty) .sl-key{display:none}
 #showlog .sl-dim{color:var(--paper-dim);font-weight:400}
 #showlog .sl-flag{display:inline-block;margin-left:6px;padding:0 7px;border-radius:999px;border:1px solid var(--paper-dim);
   font-weight:400;font-size:var(--t-xs);line-height:1.3;color:var(--paper-dim)}
@@ -987,7 +1011,8 @@ button{cursor:pointer;touch-action:manipulation}
 
 /* ---------- the overlay: a scrolling card ---------- */
 #end{display:block;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
-  padding:calc(env(safe-area-inset-top,0px) + 12px) 8px 0;user-select:text;-webkit-user-select:text}
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 8px 0;user-select:text;-webkit-user-select:text;
+  scroll-padding:12px 0 calc(env(safe-area-inset-bottom,0px) + 104px)}   /* focus scrolls clear of the sticky bar */
 #end[data-won="0"]{background:rgba(3,5,12,.84)}
 #end[data-won="1"]{background:linear-gradient(180deg,rgba(3,5,12,.18) 0,rgba(3,5,12,.55) 260px,var(--scrim) 520px)}
 :root[data-contrast="high"] #end{background:var(--scrim)}
@@ -1204,7 +1229,7 @@ button{cursor:pointer;touch-action:manipulation}
 #settings > .st-panel{width:min(100%,560px)}
 #settings .st-sec + .st-sec{margin-top:22px}
 #settings .st-h{display:flex;align-items:center;gap:12px;margin:0 0 10px}
-#settings .st-h::after,#help .hp-sec h3::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--brass),transparent)}
+#settings .st-h .m-rule,#help .hp-sec h3 .m-rule{flex:1;height:1px;background:linear-gradient(90deg,var(--brass),transparent)}
 #settings .st-row{display:flex;align-items:center;gap:12px;min-height:56px;margin:0 0 6px;padding:8px 12px;
   border-radius:var(--radius);background:rgba(255,255,255,.035)}
 #settings label.st-row{cursor:pointer}
@@ -1313,7 +1338,7 @@ button{cursor:pointer;touch-action:manipulation}
   background:conic-gradient(var(--c-R) 0 25%,var(--c-A) 0 50%,var(--c-G) 0 75%,var(--c-B) 0)}
 #logbook .lb-plate[data-col="X"]{border-radius:0;clip-path:polygon(50% 0,61% 30%,93% 20%,72% 45%,100% 62%,66% 66%,62% 100%,50% 72%,38% 100%,34% 66%,0 62%,28% 45%,7% 20%,39% 30%)}
 #logbook .lb-badge{position:absolute;left:3px;right:3px;bottom:3px;display:flex;align-items:center;justify-content:center;gap:3px;
-  padding:1px 4px;border-radius:6px;background:rgba(5,7,15,.85);color:var(--paper);font:700 var(--t-xs)/1.1 var(--f-ui)}
+  padding:1px 4px;border-radius:6px;background:rgba(5,7,15,.85);color:var(--paper);font:700 var(--t-xs)/1.1 var(--f-ui);white-space:nowrap}
 #logbook .lb-badge .m-ico{width:14px;height:14px;color:var(--aah);stroke-width:2.4}
 #logbook .lb-mono{position:absolute;right:5px;bottom:3px;font:700 var(--t-xs)/1 var(--f-ui);color:var(--paper);text-shadow:0 1px 2px var(--ink),0 0 4px var(--ink)}
 /* silhouettes: undiscovered entries */
@@ -1327,7 +1352,7 @@ button{cursor:pointer;touch-action:manipulation}
 #logbook .lb-glyph .m-ico{width:56%;height:56%;color:var(--aah)}
 #logbook .lb-glyph.is-sil .m-ico{color:var(--paper-dim);opacity:.4}
 #logbook .lb-kit{display:flex;align-items:center;justify-content:center}
-#logbook .lb-kit .m-ico{width:50%;height:50%;color:var(--aah)}
+#logbook .lb-kit > .m-ico{width:50%;height:50%;color:var(--aah)}
 #logbook .lb-ms .lb-ring{position:absolute;inset:7%;width:86%;height:86%}
 #logbook .lb-ring-bg{fill:none;stroke:var(--line);stroke-width:5}
 #logbook .lb-ring-fg{fill:none;stroke:var(--brass);stroke-width:5;stroke-linecap:round}
@@ -1410,37 +1435,30 @@ button{cursor:pointer;touch-action:manipulation}
   background:var(--wood);color:var(--paper);font:700 var(--t-s)/1.3 var(--f-ui);text-align:center;white-space:nowrap}
 #help .hp-note{color:var(--paper-dim)}
 
-/* ---------- TOASTS ---------- */
-#toasts{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 72px);z-index:95;display:flex;flex-direction:column;
-  align-items:center;gap:8px;padding:0 16px;pointer-events:none}
-#toasts .toast{display:flex;align-items:center;gap:10px;max-width:min(100%,420px);padding:6px 18px 6px 6px;border:1px solid var(--brass);
-  border-radius:999px;background:var(--surface-2);box-shadow:0 10px 28px rgba(0,0,0,.5);color:var(--paper);font:700 var(--t-s)/1.25 var(--f-ui);
+/* ---------- TOASTS ----------
+   One at a time over the play screen, in the lowest free band of the sky (UI_MENUS measures the
+   sky and sets left / width / top on #toasts); never over a show, a menu, a sheet or the end. */
+#toasts{position:absolute;left:0;top:0;width:100%;z-index:95;display:flex;justify-content:center;pointer-events:none}
+#toasts .toast{display:flex;align-items:center;gap:8px;max-width:min(100%,420px);padding:3px 14px 3px 3px;border:1px solid var(--brass);
+  border-radius:999px;background:var(--surface-2);box-shadow:0 8px 24px rgba(0,0,0,.5);color:var(--paper);font:700 var(--t-s)/1.2 var(--f-ui);
   animation:m-toast-in .26s var(--ease-back) both}
+#toasts .toast.is-measure{visibility:hidden;animation:none}
 #toasts .toast.is-out{animation:m-toast-out .24s ease both}
-#toasts .toast-ico{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--brass);color:var(--ink)}
-#toasts .toast-ico .m-ico{width:20px;height:20px;stroke-width:2.2}
+#toasts .toast-ico{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--brass);color:var(--ink)}
+#toasts .toast-ico .m-ico{width:18px;height:18px;stroke-width:2.2}
 #toasts .toast[data-kind="milestone"] .toast-ico{background:var(--aah)}
 #toasts .toast:is([data-kind="logbook"],[data-kind="discover"],[data-kind="fusion"]) .toast-ico{background:var(--c-fusion)}
 #toasts .toast[data-kind="unlock"] .toast-ico{background:var(--ok)}
 #toasts .toast[data-kind="tip"]{border-radius:14px;border-color:var(--brass);background:var(--paper);color:var(--ink);font-weight:400}
 #toasts .toast[data-kind="tip"] .toast-ico{background:var(--ink);color:var(--aah)}
 #toasts .toast-k{font-weight:700;color:var(--wood)}
-@keyframes m-toast-in{from{opacity:0;transform:translateY(-12px) scale(.96)}}
-@keyframes m-toast-out{to{opacity:0;transform:translateY(-8px)}}
+@keyframes m-toast-in{from{opacity:0;transform:translateY(10px) scale(.96)}}
+@keyframes m-toast-out{to{opacity:0;transform:translateY(6px)}}
 :root[data-motion="reduced"] #toasts .toast{animation-name:m-toast-fade}
 @media (prefers-reduced-motion:reduce){#toasts .toast{animation-name:m-toast-fade}}
 @keyframes m-toast-fade{from{opacity:0}}
-/* an overlay covers the sky band: toasts rise from the bottom, above its sticky footer; tips wait */
-#toasts[data-at="bottom"]{top:auto;bottom:max(var(--toast-floor,0px),calc(env(safe-area-inset-bottom,0px) + 16px))}
-#toasts[data-at="bottom"] .toast{animation-name:m-toast-up;box-shadow:0 10px 30px rgba(0,0,0,.55)}
-#toasts[data-at="bottom"] .toast.is-out{animation-name:m-toast-down}
-#toasts[data-at="bottom"] .toast[data-kind="tip"],#toasts[data-at="held"]{display:none}
-@keyframes m-toast-up{from{opacity:0;transform:translateY(12px) scale(.96)}}
-@keyframes m-toast-down{to{opacity:0;transform:translateY(8px)}}
-:root[data-motion="reduced"] #toasts[data-at="bottom"] .toast{animation-name:m-toast-fade}
-@media (prefers-reduced-motion:reduce){#toasts[data-at="bottom"] .toast{animation-name:m-toast-fade}}
-:root[data-motion="reduced"] #toasts[data-at] .toast.is-out{animation-name:m-toast-fade-out}
-@media (prefers-reduced-motion:reduce){#toasts[data-at] .toast.is-out{animation-name:m-toast-fade-out}}
+:root[data-motion="reduced"] #toasts .toast.is-out{animation-name:m-toast-fade-out}
+@media (prefers-reduced-motion:reduce){#toasts .toast.is-out{animation-name:m-toast-fade-out}}
 @keyframes m-toast-fade-out{to{opacity:0}}
 
 /* ---------- TAP TO CONTINUE ---------- */
@@ -3289,7 +3307,9 @@ if (typeof module === 'object' && module.exports) module.exports = OOH;
 // API (CONTRACT.md): unlock() · onEvent(ev) · ui(name, {col}) · setSettings({sound, soundVol, music, musicVol})
 //                    setPhase('build'|'resolve'|'paused'|'off') · setCrowd(n) · suspend() · resume()
 // Every call is wrapped so it never throws; without WebAudio everything is a silent no-op.
-// The AudioContext is created (or resumed) only inside unlock(), which the core calls on the first gesture.
+// The AudioContext is created (or resumed) only through unlock() / resume(), which the core calls from a gesture.
+// Both defer the work to a short timer (still inside the gesture's activation window, which WebKit forwards to
+// timers ≤ 1 s), so the ~30 ms context start never lands in the task that starts a run or handles the tap.
 //
 // Graph: one-shot voices → sfx ─┐
 //        music bus       → mus ─┴→ master 0.9 → compressor (−18 dB, knee 12, 4:1, 3 ms, 250 ms) → destination
@@ -3312,15 +3332,26 @@ const AUDIO = (() => {
   let mOn = 0, nChord = 0, ci = 0, nBox = 0, nBeat = 0, step = 0, cur = {}, crit = 0, first = 0, heart = 0, lastFan = -9, UC = {};
   const safe = f => (...a) => { try { return f(...a); } catch (e) {} };
 
-  // 2 s white noise and brown noise (leaky integrator), built once per context.
-  const BUF = new WeakMap(), buf = (c, k) => {
-    if (!BUF.has(c)) {
-      const n = 2 * c.sampleRate, w = c.createBuffer(1, n, c.sampleRate), b = c.createBuffer(1, n, c.sampleRate);
-      const wd = w.getChannelData(0), bd = b.getChannelData(0);
-      for (let i = 0, y = 0; i < n; i++) { wd[i] = rnd() * 2 - 1; y = (y + .02 * wd[i]) / 1.02; bd[i] = y * 3.5; }
-      BUF.set(c, {w, b});
+  // 2 s white noise and brown noise (leaky integrator). The samples are computed once per page, in idle time
+  // after load (never in a show or a gesture), then copied natively into two AudioBuffers once per context;
+  // every noise voice reuses those. The page's copy is dropped once the live context has its buffers.
+  let NZ = null;
+  const noiseData = n => {
+    if (!NZ || NZ.w.length < n) {
+      const w = new Float32Array(n), b = new Float32Array(n);
+      for (let i = 0, y = 0; i < n; i++) { const x = rnd() * 2 - 1; w[i] = x; y = (y + .02 * x) / 1.02; b[i] = y * 3.5; }
+      NZ = {w, b};
     }
-    return BUF.get(c)[k];
+    return NZ;
+  };
+  const BUF = new WeakMap(), buf = (c, k) => {
+    let e = BUF.get(c);
+    if (!e) {
+      const n = 2 * c.sampleRate, d = noiseData(n), w = c.createBuffer(1, n, c.sampleRate), b = c.createBuffer(1, n, c.sampleRate);
+      w.getChannelData(0).set(d.w.subarray(0, n)); b.getChannelData(0).set(d.b.subarray(0, n));
+      BUF.set(c, e = {w, b});
+    }
+    return e[k];
   };
 
   // Node helpers. A recipe gets o = {c: context, d: output node, e: latest stop time, j: pitch jitter},
@@ -3534,18 +3565,25 @@ const AUDIO = (() => {
   'bought upgraded sold rigInstalled tubeAdded moved matched'.split(' ').forEach((k, i) =>
     ON[k] = e => { const col = colOf(e); if (e.uid != null && col) UC[e.uid] = col; play('drop', {col, coin: i < 5, up: i == 1}); });
 
+  // The deferred half of unlock() / resume(): create the context once, then resume it unless suspend() came since.
+  let pend = 0;
+  const start = safe(() => {
+    pend = 0;
+    if (!ctx) {
+      ctx = new AC();
+      const comp = ctx.createDynamicsCompressor(), m = G({c: ctx}, .9, comp);
+      Object.entries({threshold: -18, knee: 12, ratio: 4, attack: .003, release: .25}).forEach(([k, v]) => comp[k].value = v);
+      comp.connect(ctx.destination); sfx = G({c: ctx}, 0, m); mus = G({c: ctx}, 0, m);
+      buf(ctx, 'w'); NZ = null; setInterval(tick, 200); gains();
+    }
+    if (held) ctx.suspend(); else ctx.state == 'running' || ctx.resume().then(tick, () => {});
+  });
+  const later = () => { if (!pend) pend = setTimeout(start, 16); };
   const api = {
     unlock() {
       if (!AC) return;
-      if (!ctx) {
-        ctx = new AC();
-        const comp = ctx.createDynamicsCompressor(), m = G({c: ctx}, .9, comp);
-        Object.entries({threshold: -18, knee: 12, ratio: 4, attack: .003, release: .25}).forEach(([k, v]) => comp[k].value = v);
-        comp.connect(ctx.destination); sfx = G({c: ctx}, 0, m); mus = G({c: ctx}, 0, m);
-        buf(ctx, 'w'); setInterval(tick, 200); gains();
-      }
       held = 0;
-      ctx.state == 'running' || ctx.resume().then(tick, () => {});
+      if (!ctx || ctx.state != 'running') later();
     },
     onEvent(e) { e && ON[e.type] && ON[e.type](e); },
     ui(n, o) { play(n == 'chime' ? 'page' : n, o, 'ui-' + n); },
@@ -3553,14 +3591,17 @@ const AUDIO = (() => {
     setPhase(p) { phase = p; gains(); },
     setCrowd(n) { crowd = +n || 0; },
     suspend() { held = 1; ctx && ctx.suspend(); },
-    resume() { held = 0; ctx && ctx.resume().then(tick, () => {}); },
+    resume() { held = 0; ctx && ctx.state != 'running' && later(); },
   };
   for (const k in api) api[k] = safe(api[k]);
   // Suspend when hidden; the next gesture (tap to continue) resumes unless suspend() was called explicitly.
   const D = W.document, wake = () => ctx && !held && !D.hidden && ctx.state != 'running' && api.unlock();
   if (D) {
     D.addEventListener('visibilitychange', () => D.hidden && ctx && ctx.suspend());
-    W.addEventListener('pointerdown', wake, true); W.addEventListener('keydown', wake, true);
+    // click / touchend too: some mobile browsers only count those (not pointerdown) as the activating gesture.
+    for (const t of ['pointerdown', 'keydown', 'click', 'touchend']) W.addEventListener(t, wake, true);
+    // Precompute the noise samples while the page is idle after load.
+    if (AC) (W.requestIdleCallback ? f => W.requestIdleCallback(f, {timeout: 4000}) : f => setTimeout(f, 1500))(safe(() => ctx || noiseData(96000)));
   }
   // Test hooks for tools/audio-check.mjs. run(recipe, params, time, node, context) renders a recipe into any context.
   api._t = {count, R, run, ctx: () => ctx, music: () => mOn, steals: () => steals, gains: () => [sfx.gain.value, mus.gain.value],
@@ -3699,6 +3740,13 @@ const FX = (() => {
   }
   function resetPool(P) { P.on.fill(0); P.top = 0; for (let i = P.n - 1; i >= 0; i--) P.free[P.top++] = i; P.count = 0; }
   const M = mkPool(400);
+  // Allocation-free canvas calls (§11.7): a fractional number handed to a canvas method or setter is boxed into a
+  // fresh heap number on every call. Hot loops pass integer 1/8-px coordinates (Smis; the context is scaled by QI
+  // around them) and alphas from a table of pre-boxed values (a PACKED_ELEMENTS array: loads return the stored object).
+  const QS = 8, QI = 1 / QS, AQ = [''];
+  for (let k = 0; k <= 255; k++) AQ[k] = k / 255;
+  const qx = v => (v * QS) | 0;
+  const qa = a => AQ[a <= 0 ? 0 : a >= 1 ? 255 : (a * 255 + 0.5) | 0];
   let curBid = -1;
   function kill(P, i) { if (!P.on[i]) return; P.on[i] = 0; P.free[P.top++] = i; P.count--; }
   function steal(P) {
@@ -3726,10 +3774,10 @@ const FX = (() => {
     return i;
   }
   // The emitter context (reused; one pattern emission at a time).
-  const EC = {P: M, cx: 0, cy: 0, gy: 0, S: 1, m: 1, ci: 0, fl: 0, al: 1, d: 0, pr: 2, bid: -1, row: PAT.sphere, R: rng, side: 1};
+  const EC = {P: M, cx: 0, cy: 0, gy: 0, S: 1, m: 1, z: 1, ci: 0, fl: 0, al: 1, d: 0, pr: 2, bid: -1, row: PAT.sphere, R: rng, side: 1};   // z: star size ×
   function star(x, y, vx, vy, fl, delay, szm, ci) {
     const r = EC.row, s = EC.S;
-    return spawn(EC.P, x, y, vx, vy, r[2] * s, r[3], r[4] * (0.85 + EC.R() * 0.3), r[5], r[6], 1.5 * szm * (0.55 + 0.45 * Math.sqrt(s)), EC.al,
+    return spawn(EC.P, x, y, vx, vy, r[2] * s, r[3], r[4] * (0.85 + EC.R() * 0.3), r[5], r[6], 1.5 * szm * EC.z * (0.55 + 0.45 * Math.sqrt(s)), EC.al,
       ci == null ? EC.ci : ci, fl | EC.fl, EC.pr, EC.bid, EC.d + delay);
   }
   function ball(cx, cy, n, sp, fl, delay, szm, emberN) {
@@ -4151,7 +4199,7 @@ const FX = (() => {
     drawLanterns(c);
     const ex = opt.reducedMotion ? 0 : excite;
     for (let row = 0; row < 3; row++) {
-      c.beginPath();
+      c.beginPath(); c.save(); c.scale(QI, QI);   // the path in integer 1/8 px (no boxing); restored before fill/stroke
       let na = 0;
       for (let i = 0; i < figN; i++) {
         if (fRow[i] !== row || !fSt[i]) continue;
@@ -4160,33 +4208,36 @@ const FX = (() => {
         if (walking) by -= Math.abs(Math.sin(T * 9 + fPh[i])) * 1.2 * s;
         else if (ex > 0.02) by -= Math.max(0, Math.sin(T * 8.5 + fPh[i])) * 1.8 * s * ex;
         const sh = by - h * 0.64, hr = w * 0.44, hy = sh - hr * 1.12 + deflate * 0.8 * s;
-        c.moveTo(bx - w / 2, by); c.lineTo(bx - w / 2, sh + w * 0.3); c.quadraticCurveTo(bx - w / 2, sh, bx, sh); c.quadraticCurveTo(bx + w / 2, sh, bx + w / 2, sh + w * 0.3); c.lineTo(bx + w / 2, by); c.closePath();
-        c.moveTo(bx + hr, hy); c.arc(bx, hy, hr, 0, TAU);
-        if (fHat[i] === 1) { c.moveTo(bx + hr * 0.45, hy - hr * 1.05); c.arc(bx, hy - hr * 1.05, hr * 0.45, 0, TAU); }
-        else if (fHat[i] === 2) c.rect(bx - hr * 0.8, hy - hr * 2.1, hr * 1.6, hr * 1.4);
+        const X0 = qx(bx - w / 2), X1 = qx(bx + w / 2), XC = qx(bx), Y = qx(by), SH = qx(sh), SW = qx(sh + w * 0.3), HY = qx(hy), HR = qx(hr);
+        c.moveTo(X0, Y); c.lineTo(X0, SW); c.quadraticCurveTo(X0, SH, XC, SH); c.quadraticCurveTo(X1, SH, X1, SW); c.lineTo(X1, Y); c.closePath();
+        c.moveTo(XC + HR, HY); c.arc(XC, HY, HR, 0, QS);   // end angle 8 rad ≥ 2π: a full circle (a Smi, unlike TAU)
+        if (fHat[i] === 1) { const r2 = qx(hr * 0.45), y2 = qx(hy - hr * 1.05); c.moveTo(XC + r2, y2); c.arc(XC, y2, r2, 0, QS); }
+        else if (fHat[i] === 2) c.rect(qx(bx - hr * 0.8), qx(hy - hr * 2.1), qx(hr * 1.6), qx(hr * 1.4));
         ARMS[na++] = i; ARMS[na++] = bx; ARMS[na++] = sh + w * 0.18; ARMS[na++] = h;
       }
+      c.restore();
       c.fillStyle = hc ? '#000' : ROWC[row]; c.fill();
       if (hc) { c.strokeStyle = '#FFF'; c.lineWidth = 1; c.stroke(); }
       // arms: one stroked path per row (pose = mood during the build, the cheer meter during resolution)
-      c.beginPath();
+      c.beginPath(); c.save(); c.scale(QI, QI);
       for (let k = 0; k < na; k += 4) {
         const i = ARMS[k], bx = ARMS[k + 1], sy = ARMS[k + 2], L = ARMS[k + 3] * 0.44, w = fW[i];
         const p = clamp(pose + fVar[i] * 0.3 - deflate * 0.5, 0, 1) , wig = ex > 0.02 ? Math.sin(T * 10 + fPh[i]) * 0.3 * ex : 0;
-        const aL = lerp(1.83, 4.19, p) + wig, aR = lerp(1.31, -1.05, p) - wig;
-        c.moveTo(bx - w * 0.4, sy); c.lineTo(bx - w * 0.4 + Math.cos(aL) * L, sy + Math.sin(aL) * L);
-        c.moveTo(bx + w * 0.4, sy); c.lineTo(bx + w * 0.4 + Math.cos(aR) * L, sy + Math.sin(aR) * L);
+        const aL = lerp(1.83, 4.19, p) + wig, aR = lerp(1.31, -1.05, p) - wig, SY = qx(sy);
+        c.moveTo(qx(bx - w * 0.4), SY); c.lineTo(qx(bx - w * 0.4 + Math.cos(aL) * L), qx(sy + Math.sin(aL) * L));
+        c.moveTo(qx(bx + w * 0.4), SY); c.lineTo(qx(bx + w * 0.4 + Math.cos(aR) * L), qx(sy + Math.sin(aR) * L));
       }
+      c.restore();
       c.strokeStyle = hc ? '#FFF' : ROWC[row]; c.lineWidth = Math.max(1, (row === 2 ? 1.7 : 1.4) * s); c.lineCap = 'round'; c.stroke();
       if (hc) { c.strokeStyle = '#000'; c.lineWidth = Math.max(1, (row === 2 ? 1.7 : 1.4) * s) - 1; c.stroke(); }
     }
     c.globalAlpha = 1;
   }
   /* festoon lanterns strung over the embankment (they go out on runLost) */
-  const LB = new Float32Array(192);
+  const LB = new Float32Array(192), POSTS = [0.015, 0.34, 0.67, 0.985];
   let lbN = 0, lampsOff = 0, lampsOffT = 0;
   function layoutLanterns() {
-    const s = B / 36, posts = [0.015, 0.34, 0.67, 0.985], y0 = rTop + (rBot - rTop) * 0.22, sag = Math.max(5, (rBot - rTop) * 0.55);
+    const s = B / 36, posts = POSTS, y0 = rTop + (rBot - rTop) * 0.22, sag = Math.max(5, (rBot - rTop) * 0.55);
     lbN = 0;
     for (let k = 0; k < 3; k++) {
       const x0 = W * posts[k], x1 = W * posts[k + 1], n = Math.max(4, Math.floor((x1 - x0) / (12 * s)));
@@ -4194,7 +4245,7 @@ const FX = (() => {
     }
   }
   function drawLanterns(c) {
-    const s = B / 36, posts = [0.015, 0.34, 0.67, 0.985], y0 = rTop + (rBot - rTop) * 0.22, sag = Math.max(5, (rBot - rTop) * 0.55), f = scene.festival;
+    const s = B / 36, posts = POSTS, y0 = rTop + (rBot - rTop) * 0.22, sag = Math.max(5, (rBot - rTop) * 0.55), f = scene.festival;
     c.strokeStyle = opt.highContrast ? '#FFF' : '#0F1328'; c.lineWidth = 1; c.beginPath();
     for (let k = 0; k < 4; k++) { const x = W * posts[k]; c.moveTo(x, y0 - 3 * s); c.lineTo(x, H); }
     for (let k = 0; k < 3; k++) { const x0 = W * posts[k], x1 = W * posts[k + 1]; c.moveTo(x0, y0); c.quadraticCurveTo((x0 + x1) / 2, y0 + sag * 2, x1, y0); }
@@ -4207,14 +4258,16 @@ const FX = (() => {
     const spr = BIG[7] || null, dotS = HEAD[7];
     if (!dotS) return;
     c.globalCompositeOperation = opt.highContrast ? 'source-over' : 'lighter';
+    c.save(); c.scale(QI, QI);
     for (let i = 0; i < lbN; i++) {
       if (i < lampsOff) continue;
       const x = LB[i * 2], y = LB[i * 2 + 1], big = f === 1 && i % 3 === 0;
       const fl = 0.8 + 0.2 * Math.sin(T * 7 + i * 1.7) * Math.sin(T * 2.3 + i);
-      if (spr && !opt.highContrast) { c.globalAlpha = 0.16 * fl; const r = (big ? 9 : 6) * s; c.drawImage(spr, x - r, y - r, 2 * r, 2 * r); }
-      c.globalAlpha = 0.85 * fl; const r = (big ? 3.4 : 2.2) * s;
-      c.drawImage(dotS, x - r, y - r + (big ? 2 * s : 0), 2 * r, 2 * r * (big ? 1.3 : 1));
+      if (spr && !opt.highContrast) { c.globalAlpha = qa(0.16 * fl); const r = (big ? 9 : 6) * s, d = qx(2 * r); c.drawImage(spr, qx(x - r), qx(y - r), d, d); }
+      c.globalAlpha = qa(0.85 * fl); const r = (big ? 3.4 : 2.2) * s;
+      c.drawImage(dotS, qx(x - r), qx(y - r + (big ? 2 * s : 0)), qx(2 * r), qx(2 * r * (big ? 1.3 : 1)));
     }
+    c.restore();
     c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
   }
 
@@ -4224,7 +4277,7 @@ const FX = (() => {
   function buildTrail() { trS = Math.min(0.8, dpr * 0.5); TR = mkCanvas(W * trS, H * trS); trc = TR.getContext('2d'); trDirty = false; }
   // Trail dots are batched: one rect path per (colour × 4 alpha levels), ≤ 36 fills a tick instead of one bitmap draw
   // per particle (the per-op raster cost dominated render). Counting sort into preallocated arrays: no allocation.
-  const TBK = new Uint8Array(400), TORD = new Int16Array(400), TCNT = new Int16Array(38), TR_A = [0.12, 0.26, 0.47, 0.75];
+  const TBK = new Uint8Array(400), TORD = new Int16Array(400), TCNT = new Int16Array(38), TR_A = [0.12, 0.26, 0.47, 0.75, ''];   // '' keeps the alphas boxed (see qa)
   function depositTrails() {
     if (!trc) return;
     const P = M, n = P.n;
@@ -4244,15 +4297,16 @@ const FX = (() => {
     for (let k = 1; k < 38; k++) TCNT[k] += TCNT[k - 1];
     for (let i = 0; i < n; i++) if (TBK[i] !== 255) TORD[TCNT[TBK[i]]++] = i;   // TCNT[bk] now = end of bucket bk
     let j = 0;
+    trc.setTransform(QI, 0, 0, QI, 0, 0);
     for (let bk = 0; bk < 36; bk++) {
       const end = TCNT[bk];
       if (j >= end) continue;
       any = true;
       trc.globalAlpha = TR_A[bk & 3]; trc.fillStyle = COLS[bk >> 2]; trc.beginPath();
-      for (; j < end; j++) { const i = TORD[j], r = Math.max(0.6, P.sz[i] * 0.7) * trS; trc.rect(P.x[i] * trS - r, P.y[i] * trS - r, 2 * r, 2 * r); }
+      for (; j < end; j++) { const i = TORD[j], r = Math.max(0.6, P.sz[i] * 0.7) * trS, d = qx(2 * r); trc.rect(qx(P.x[i] * trS - r), qx(P.y[i] * trS - r), d, d); }
       trc.fill();
     }
-    trc.globalAlpha = 1;
+    trc.setTransform(1, 0, 0, 1, 0, 0); trc.globalAlpha = 1;
     if (any) { trIdle = 0; trDirty = true; } else if (trDirty && (trIdle += 1) > 90) { trc.clearRect(0, 0, TR.width, TR.height); trDirty = false; }
   }
 
@@ -4266,16 +4320,26 @@ const FX = (() => {
   const BRAIDS = [];
   for (let i = 0; i < 4; i++) BRAIDS.push({on: false, x0: 0, y0: 0, x1: 0, y1: 0, t0: 0});
   const BAN = [];
-  for (let i = 0; i < 4; i++) BAN.push({on: false, cv: null, w: 0, h: 0, y: 0, t0: 0, dur: 0.9, cdpr: 0});
+  for (let i = 0; i < 4; i++) BAN.push({on: false, cv: null, g: null, cw: 0, w: 0, h: 0, y: 0, t0: 0, dur: 0.9, cdpr: 0, kind: '', text: ''});
   const GLOWS = [];
-  for (let i = 0; i < 10; i++) GLOWS.push({on: false, x: 0, y: 0, ci: 0, a: 0, r: 0});
+  for (let i = 0; i < 10; i++) GLOWS.push({on: false, x: 0, y: 0, ci: 0, a: 0, r: 0, dk: 1.6});   // dk: fade per second
   const WAVES = [];
   for (let i = 0; i < 3; i++) WAVES.push({on: false, x: 0, y: 0, t0: 0});
   const SPARK = [];  // pip sparkles (extend)
   for (let i = 0; i < 16; i++) SPARK.push({on: false, x: 0, y: 0, t0: 0});
   const APULSE = [0, 0, 0];
   const FONT_UI = '"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
-  const FONT_D = 'Fraunces, Georgia, "Times New Roman", serif';
+  const FONT_D = 'Fraunces, Georgia, "Times New Roman", serif', FONT_SUB = '700 18px ' + FONT_UI;
+  // Text widths, cached per font and string (measureText shapes the text every call). Cleared when a web font lands.
+  const TW = new Map();
+  let twN = 0, twFonts = false;
+  function textW(g, font, text) {
+    let m = TW.get(font);
+    if (!m) { if (twN > 600) { TW.clear(); twN = 0; } TW.set(font, m = new Map()); }
+    let w = m.get(text);
+    if (w === undefined) { g.font = font; w = g.measureText(text).width; m.set(text, w); twN++; }
+    return w;
+  }
   function rr(c, x, y, w, h, r) { r = Math.min(r, w / 2, h / 2); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
   function popupArt(p) {
     const t = tok(), hc = opt.highContrast, CW = 340, CH = 64;
@@ -4284,11 +4348,11 @@ const FX = (() => {
     let fs = Math.min(40, 16 + 4 * p.tier);
     const main = p.text + (p.n > 1 ? ' ×' + p.n : ''), font = (x ? 'italic 700 ' : '700 ') + '%px ' + (x ? FONT_D : FONT_UI);
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, CW, CH);
-    g.font = font.replace('%', fs); let tw = g.measureText(main).width;
+    let tw = textW(g, font.replace('%', fs), main);
     const tagF = '700 ' + Math.max(12, Math.round(fs * 0.6)) + 'px ' + FONT_UI;
-    g.font = tagF; const gw = p.tag ? g.measureText(p.tag).width + 6 : 0;
+    const gw = p.tag ? textW(g, tagF, p.tag) + 6 : 0;
     const maxW = CW - 8;
-    if (tw + gw + fs * 1.1 > maxW) { fs = Math.max(12, Math.floor(fs * (maxW - gw) / (tw + fs * 1.1))); g.font = font.replace('%', fs); tw = g.measureText(main).width; }
+    if (tw + gw + fs * 1.1 > maxW) { fs = Math.max(12, Math.floor(fs * (maxW - gw) / (tw + fs * 1.1))); tw = textW(g, font.replace('%', fs), main); }
     const ph = Math.round(fs * 1.38), pw = Math.ceil(tw + gw + fs * 0.9);
     p.w = pw + 4; p.h = ph + 4;
     const colTxt = x ? t.aah : p.kind === 'aah' || p.kind === 'coin' ? t.aah : p.kind === 'tag' ? t.dim : p.kind === 'fusion' ? PAL.F : '#FFFFFF';
@@ -4304,9 +4368,13 @@ const FX = (() => {
   }
   function popup(kind, text, x, y, tr, tag, slam) {
     // merge identical consecutive popups (150 ms, 40 px): "+15 Ooh ×3"
-    for (const p of POPS) {
+    for (let k = 0; k < POPN; k++) {
+      const p = POPS[k];
       if (p.on && p.die < 0 && p.kind === kind && p.text === text && p.tag === (tag || '') && T - p.t0 < 0.15 && Math.abs(p.x - x) < 40 && Math.abs(p.y - y) < 40) {
-        p.y += popDy(p); p.n++; p.t0 = T; popupArt(p);   // restart its life where it stands (no jump back down) p.x = clamp(p.x, p.w / 2 + 2, W - p.w / 2 - 20); clearUnder(p); return p;
+        // restart its life where it stands (no jump back down), wider now ("×n"), and never a second copy beside it
+        p.y += popDy(p); p.n++; p.t0 = T; popupArt(p);
+        p.x = clamp(p.x, p.w / 2 + 2, W - p.w / 2 - 20); clearUnder(p);
+        return p;
       }
     }
     let p = null, act = 0, old = null;
@@ -4324,13 +4392,10 @@ const FX = (() => {
   // Candidates are searched nearest-first from its natural place: just above what it hits (both rise at the same rate
   // and the newer never falls behind) or just below (measured from where the other one will end its rise).
   const PC = [];
+  const popBox = (p, y, q, pad) => { const qy = q.y + popDy(q); return Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(y - qy) < (p.h + q.h) / 2 + pad; };
   function popHit(p, y, pad) {
-    for (const q of POPS) {
-      if (!q.on || q === p || q.die >= 0) continue;
-      const qy = q.y + popDy(q);
-      if (Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(y - qy) < (p.h + q.h) / 2 + pad) return q;
-    }
-    for (const b of BAN) if (b.on && Math.abs(p.x - (W / 2 - 6)) < (p.w + b.w) / 2 + pad && Math.abs(y - b.y) < (p.h + b.h) / 2 + pad) return b;
+    for (let k = 0; k < POPN; k++) { const q = POPS[k]; if (q.on && q !== p && q.die < 0 && popBox(p, y, q, pad)) return q; }
+    for (let k = 0; k < BAN.length; k++) { const b = BAN[k]; if (b.on && banHit(p, y, b, pad)) return b; }
     return null;
   }
   function placeFree(p) {
@@ -4346,14 +4411,26 @@ const FX = (() => {
       const q = popHit(p, y, pad);
       if (!q) { p.y = y; return; }
       const d = (q.h + p.h) / 2 + pad, rising = POPS.includes(q);
-      PC.push((rising ? q.y + popDy(q) : q.y) - d, q.y + d);
+      PC.push((rising ? q.y + popDy(q) : q.y) - d, q.y + d + (rising || opt.reducedMotion ? 0 : 18));   // below a banner: clear of it after the rise
     }
-    // No free spot: the newest news wins. Whatever it would cover fades out (220 ms) and it takes its natural place.
+    // No free spot: the newest news wins. Whatever popup it would cover fades out (220 ms) and it takes its natural
+    // place, except over a banner (L1, never covered): then it sits just below the banner, or just above it.
     p.y = y0;
+    for (let k = 0; k < BAN.length; k++) {
+      const b = BAN[k];
+      if (!b.on || !banHit(p, p.y, b, pad)) continue;
+      const below = b.y + (b.h + p.h) / 2 + pad + (opt.reducedMotion ? 0 : 18), above = b.y - (b.h + p.h) / 2 - pad;
+      p.y = below <= bot ? below : above >= top ? above : below;
+    }
     clearUnder(p);
   }
+  // A banner does not rise with the popups: test the popup's whole path (it climbs up to 18 px over its life).
+  const banHit = (p, y, b, pad) => {
+    const rise = opt.reducedMotion ? 0 : 18, top = y - rise - p.h / 2 - pad, bot = y + p.h / 2 + pad;
+    return Math.abs(p.x - (W / 2 - 6)) < (p.w + b.w) / 2 + pad && top < b.y + b.h / 2 && bot > b.y - b.h / 2;
+  };
   function clearUnder(p) {
-    for (let k = 0, q; k < POPN && (q = popHit(p, p.y, 1)); k++) { if (POPS.includes(q)) q.die = T; else break; }
+    for (let k = 0; k < POPN; k++) { const q = POPS[k]; if (q.on && q !== p && q.die < 0 && popBox(p, p.y, q, 1)) q.die = T; }
   }
   // Clear popups out of a box (the Applause) with a quick fade, so L1 keeps the highest contrast.
   function clearPopups(x0, y0, x1, y1) {
@@ -4365,7 +4442,7 @@ const FX = (() => {
   }
   function drawPopups(c) {
     const rm = opt.reducedMotion;
-    for (let pass = 0; pass < 2; pass++) for (const p of POPS) {
+    for (let pass = 0; pass < 2; pass++) for (let _p = 0; _p < POPS.length; _p++) { const p = POPS[_p];
       if (!p.on || (pass === 0) === p.slam) continue;
       const u = (T - p.t0) / p.life;
       if (u >= 1) { p.on = false; continue; }
@@ -4389,7 +4466,7 @@ const FX = (() => {
     r.on = true; r.x = x; r.y = y; r.r0 = r0; r.r1 = r1; r.t0 = T; r.dur = dur; r.col = col; r.lw = lw; r.a = a; r.disc = kind === 'disc'; r.line = kind === 'line';
   }
   function drawRings(c) {
-    for (const r of RINGS) {
+    for (let _r = 0; _r < RINGS.length; _r++) { const r = RINGS[_r];
       if (!r.on) continue;
       const u = (T - r.t0) / r.dur;
       if (u >= 1) { r.on = false; continue; }
@@ -4480,7 +4557,8 @@ const FX = (() => {
   }
 
   /* ---------- the Applause roll-up and slam ---------- */
-  const AP = {on: false, t0: 0, slamT: 0, score: 0, target: 0, pass: false, encore: false, fade: -1, slammed: false, ooh: 0, aah: 0};
+  const AP = {on: false, t0: 0, slamT: 0, score: 0, target: 0, pass: false, encore: false, fade: -1, slammed: false, ooh: 0, aah: 0,
+    lv: NaN, str: '', fsR: 0, font: '', subS: NaN, subG: NaN, subP: false, sub: '', subW: 0};   // per-frame text caches (no strings built per frame)
   function drawApplause(c) {
     if (!AP.on || !opt.drawApplause) return;
     const t = tok(), e = T - AP.t0;
@@ -4491,19 +4569,26 @@ const FX = (() => {
     let v, sc = 1;
     if (!AP.slammed) { const k = Math.max(0, e - 0.2); v = AP.score * (1 - Math.exp(-k * 11.5)); sc = 0.82; }
     else { v = AP.score; const d = T - AP.slamT; sc = opt.reducedMotion ? 1 : d < 0.2 ? lerp(1.45, 1, easeBack(d / 0.2)) : 1; }
-    const str = fmt(v);
+    if (v !== AP.lv) { AP.lv = v; AP.str = fmt(v); }
+    const str = AP.str, fsR = Math.round(fs);
+    if (fsR !== AP.fsR) { AP.fsR = fsR; AP.font = 'italic 700 ' + fsR + 'px ' + FONT_D; }
     c.globalAlpha = a * 0.62; c.drawImage(HALO, cx - fs * 2.6, cy - fs * 1.35, fs * 5.2, fs * 2.7);
     c.globalAlpha = a; c.save(); c.translate(cx, cy); c.scale(sc, sc);
-    c.font = 'italic 700 ' + Math.round(fs) + 'px ' + FONT_D; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.font = AP.font; c.textAlign = 'center'; c.textBaseline = 'middle';
     c.lineJoin = 'round'; c.lineWidth = Math.max(3, fs * 0.12); c.strokeStyle = opt.highContrast ? '#000' : t.ink; c.strokeText(str, 0, 0);
     c.fillStyle = t.paper; c.fillText(str, 0, 0);
     if (opt.highContrast) { c.lineWidth = 2; c.strokeStyle = '#FFF'; }
     c.restore();
     if (AP.slammed) {
       const d = T - AP.slamT, b = Math.min(1, d / 0.14);
-      const tg = AP.target || 1, ratio = AP.score / tg;
-      const sub = AP.pass ? 'Pass ×' + (ratio < 100 ? (Math.floor(ratio * 10) / 10).toFixed(1) : fmt(Math.floor(ratio))) : fmt(Math.ceil(tg - AP.score)) + ' short';
-      c.font = '700 ' + 18 + 'px ' + FONT_UI; const w = c.measureText(sub).width + 22;
+      if (AP.subS !== AP.score || AP.subG !== AP.target || AP.subP !== AP.pass) {
+        const tg = AP.target || 1, ratio = AP.score / tg;
+        AP.subS = AP.score; AP.subG = AP.target; AP.subP = AP.pass;
+        AP.sub = AP.pass ? 'Pass ×' + (ratio < 100 ? (Math.floor(ratio * 10) / 10).toFixed(1) : fmt(Math.floor(ratio))) : fmt(Math.ceil(tg - AP.score)) + ' short';
+        AP.subW = textW(c, FONT_SUB, AP.sub);
+      }
+      const sub = AP.sub, w = AP.subW + 22;
+      c.font = FONT_SUB;
       c.globalAlpha = a * b; c.beginPath(); rr(c, cx - w / 2, cy + fs * 0.62, w, 30, 15);
       c.fillStyle = opt.highContrast ? '#000' : 'rgba(5,7,15,0.8)'; c.fill();
       c.lineWidth = 2; c.strokeStyle = AP.pass ? t.ok : t.danger; c.stroke();
@@ -4512,23 +4597,30 @@ const FX = (() => {
     c.globalAlpha = 1; c.textAlign = 'left';
   }
   function banner(text, kind, dur, y) {
+    // Banners never stack (L1): the same banner again just holds longer; another one in its place hands over in 120 ms.
+    for (let k = 0; k < BAN.length; k++) {
+      const q = BAN[k];
+      if (!q.on || Math.abs(q.y - y) > (q.h + 40) / 2) continue;
+      if (q.text === text && q.kind === kind && q.cdpr === dpr) { q.dur = dur; q.t0 = T - 0.12 * dur; return q; }
+      if ((T - q.t0) / q.dur < 0.8) { q.dur = 0.6; q.t0 = T - 0.48; }
+    }
     const t = tok(), b = BAN.find(q => !q.on) || BAN[0], fs = kind === 'encore' ? 30 : 22, CW = Math.min(W, 420), CH = 58;
     if (!b.cv || b.cdpr !== dpr) { b.cv = mkCanvas(CW * dpr, CH * dpr); b.g = b.cv.getContext('2d'); b.cdpr = dpr; b.cw = CW; }
     const g = b.g; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, b.cv.width, b.cv.height);
-    g.font = 'italic 700 ' + fs + 'px ' + FONT_D; let tw = g.measureText(text).width;
+    let tw = textW(g, 'italic 700 ' + fs + 'px ' + FONT_D, text);
     const maxW = b.cv.width / dpr - 40, f2 = tw > maxW ? Math.floor(fs * maxW / tw) : fs;
-    g.font = 'italic 700 ' + f2 + 'px ' + FONT_D; tw = g.measureText(text).width;
+    const fontB = 'italic 700 ' + f2 + 'px ' + FONT_D; tw = textW(g, fontB, text); g.font = fontB;
     const col = kind === 'fusion' ? (opt.highContrast ? PAL_HC.F : PAL.F) : kind === 'encore' ? t.aah : t.paper, w = tw + 44, h = f2 * 1.55 + 6, x0 = 2, y0 = 2;
     g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0 + w, y0); g.lineTo(x0 + w - 10, y0 + h / 2); g.lineTo(x0 + w, y0 + h); g.lineTo(x0, y0 + h); g.lineTo(x0 + 10, y0 + h / 2); g.closePath();
     g.fillStyle = opt.highContrast ? '#000' : 'rgba(5,7,15,0.84)'; g.fill(); g.lineWidth = 2; g.strokeStyle = col; g.stroke();
     g.fillStyle = kind === 'fusion' ? t.paper : col; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, x0 + w / 2, y0 + h / 2 + 1);
     if (kind === 'fusion') { g.fillStyle = col; g.font = '700 ' + Math.round(f2 * 0.8) + 'px ' + FONT_UI; g.fillText('✦', x0 + 17, y0 + h / 2 + 1); g.fillText('✦', x0 + w - 17, y0 + h / 2 + 1); }
-    b.on = true; b.w = w + 4; b.h = h + 4; b.t0 = T; b.dur = dur; b.y = y; b.kind = kind;
+    b.on = true; b.w = w + 4; b.h = h + 4; b.t0 = T; b.dur = dur; b.y = y; b.kind = kind; b.text = text;
     clearPopups(W / 2 - 6 - b.w / 2, y - b.h / 2, W / 2 - 6 + b.w / 2, y + b.h / 2);   // a banner is L1: nothing sits on it
     return b;
   }
   function drawBanners(c) {
-    for (const b of BAN) {
+    for (let _b = 0; _b < BAN.length; _b++) { const b = BAN[_b];
       if (!b.on) continue;
       const u = (T - b.t0) / b.dur;
       if (u >= 1) { b.on = false; continue; }
@@ -4933,7 +5025,7 @@ const FX = (() => {
     const rm = opt.reducedMotion;
     // sky glow (L3)
     const gl = GLOWS.find(q => !q.on) || GLOWS.reduce((a, q) => (q.a < a.a ? q : a), GLOWS[0]);
-    gl.on = true; gl.x = b.x; gl.y = b.y; gl.ci = b.ci; gl.a = 1; gl.r = b.R * 2.4;
+    gl.on = true; gl.x = b.x; gl.y = b.y; gl.ci = b.ci; gl.a = 1; gl.r = b.R * 2.4; gl.dk = 1.6;
     if (rm) { // radial-gradient glow that fades over 400 ms (§9 reduced motion)
       spawn(M, b.x, b.y, 0, 0, 0, 1, 0.4, 0, 0, b.R * 0.75, 0.95, b.ci, GLOW, 2, b.id, 0);
       if (b.linger) spawnEmbers(b, true);
@@ -4972,26 +5064,38 @@ const FX = (() => {
   /* ============================================================
      PUBLIC: finale, dim, critical, event
   ============================================================ */
+  // The win finale (§9): 18 staggered bursts across the whole rack over ~2.2 s, so the sky stays full through the hand-off
+  // to END. The 400-star pool is budgeted, not raced: the lingering sky fades out to make room, each burst is ~22 stars
+  // of a high-trail pattern (the trail layer fills the sky for free) plus one long soft glow, and the confetti waits.
+  const FIN_PATS = ['trails', 'fronds', 'droop', 'glitter', 'sphere', 'cascade', 'prism', 'trails', 'glitter'], FIN_COLS = ['R', 'A', 'G', 'B', 'W'];
+  const FIN_ORDER = [0, 3, 1, 4, 2, 5];
   function finale() {
     if (!ready || T - finaleT < 2.5) return;
     finaleT = T;
     excite = 1; poseT = 1;
     addHitStop(150, W / 2, rTop * 0.4);
     if (!opt.reducedMotion) flash(0.42);
-    const tb = scene.tubes && scene.tubes.length ? scene.tubes.length : 6, pats = ['sphere', 'trails', 'droop', 'glitter', 'cluster', 'ring', 'fronds', 'prism'], cols = ['R', 'A', 'G', 'B', 'W'];
-    let q = 0;
-    for (let w = 0; w < 3; w++) for (let t = 0; t < tb; t++, q++) {
-      const at = T + w * 0.32 + t * 0.06, x = tubeX(t), y = rTop * (0.22 + 0.34 * rng()), pat = pats[(q * 3 + w) % pats.length], ci = CI[cols[(t + w) % 5]];
-      LATER.push({at, fn: () => {
-        if (opt.reducedMotion) { spawn(M, x, y, 0, 0, 0, 1, 0.4, 0, 0, 60 * S, 0.9, ci, GLOW, 2, -1, 0); return; }
-        EC.P = M; EC.cx = x; EC.cy = y; EC.gy = H + 2; EC.S = S * 0.9; EC.m = 0.55; EC.ci = ci; EC.fl = 0; EC.al = 1; EC.d = 0; EC.pr = 0; EC.bid = -1; EC.R = rng;
-        emitPattern(pat, 0); EC.pr = 2;
-        const gl = GLOWS.find(g => !g.on) || GLOWS[0]; gl.on = true; gl.x = x; gl.y = y; gl.ci = ci; gl.a = 1; gl.r = 200 * S;
-      }});
+    clearSky(0.45);   // the Hang embers hand their budget to the finale
+    const tb = scene.tubes && scene.tubes.length ? scene.tubes.length : 6, NF = 18, span = opt.reducedMotion ? 1.8 : 2.2;
+    for (let q = 0; q < NF; q++) {
+      const t = FIN_ORDER[q % 6] % tb, row = (q / 6) | 0;
+      const at = T + 0.05 + q * span / NF + (q ? rng() * 0.05 : 0);
+      const x = clamp(tubeX(t) + (rng() - 0.5) * W * 0.08, W * 0.1, W * 0.9), y = rTop * (row === 1 ? 0.2 + 0.12 * rng() : 0.3 + 0.22 * rng());
+      const pat = FIN_PATS[(q * 5 + row) % FIN_PATS.length], ci = CI[FIN_COLS[(q + row) % 5]], last = q >= NF - 3;
+      LATER.push({at, fn: () => finaleBurst(x, y, pat, ci, last)});
     }
-    if (!opt.reducedMotion) LATER.push({at: T + 0.5, fn: () => { // confetti embers
-      for (let k = 0; k < 70 && M.count < 380; k++) spawn(M, rng() * W, -10 - rng() * rTop * 0.4, (rng() - 0.5) * 20, 20 + rng() * 30, 22, 0.99, 3 + rng() * 2, 0, 0.6, 1.2, 0.4, (k % 5 === 4) ? 7 : k % 4, CONF, 0, -1, rng() * 1.2);
+    if (!opt.reducedMotion) LATER.push({at: T + 1.1, fn: () => { // confetti embers (budgeted: the pool never tops 400)
+      for (let k = 0; k < 44 && M.count < 360; k++) spawn(M, rng() * W, -10 - rng() * rTop * 0.4, (rng() - 0.5) * 20, 20 + rng() * 30, 22, 0.99, 3 + rng() * 2, 0, 0.6, 1.2, 0.4, (k % 5 === 4) ? 7 : k % 4, CONF, 0, -1, rng() * 1.4);
     }});
+  }
+  function finaleBurst(x, y, pat, ci, last) {
+    const gl = GLOWS.reduce((a, g) => (!a.on ? a : !g.on || g.a < a.a ? g : a), GLOWS[0]);   // a free slot, else the faintest
+    gl.on = true; gl.x = x; gl.y = y; gl.ci = ci; gl.a = 1; gl.r = 200 * S; gl.dk = last ? 0.5 : 0.75;   // long-lived sky glow
+    if (opt.reducedMotion) { spawn(M, x, y, 0, 0, 0, 1, last ? 1.6 : 1, 0, 0, 60 * S, 0.9, ci, GLOW, 2, -1, 0); return; }
+    const row = PAT[pat] || PAT.sphere;
+    EC.P = M; EC.cx = x; EC.cy = y; EC.gy = H + 2; EC.S = S * 1.1; EC.m = 22 / row[0]; EC.z = 1.3; EC.ci = ci; EC.fl = 0; EC.al = 1; EC.d = 0; EC.pr = 2; EC.bid = -1; EC.R = rng;
+    emitPattern(pat, 0); EC.z = 1;
+    spawn(M, x, y, 0, 0, 0, 1, 1.1, 0, 0, 46 * S, 0.55, ci, GLOW, 2, -1, 0);   // one soft bloom reads as a full head
   }
   const LATER = [];
   function dim(on) {
@@ -5062,8 +5166,8 @@ const FX = (() => {
     meter.v += (meter.goal - meter.v) * Math.min(1, dt * (opt.reducedMotion ? 60 : 9));
     meter.pulse = Math.max(0, meter.pulse - dt * 2.5);
     for (let k = 0; k < 3; k++) APULSE[k] = Math.max(0, APULSE[k] - dt * 3);
-    for (const g of GLOWS) if (g.on) { g.a -= dt * 1.6; if (g.a <= 0) g.on = false; }
-    for (const b of BUR) {
+    for (let k = 0; k < GLOWS.length; k++) { const g = GLOWS[k]; if (g.on) { g.a -= dt * g.dk; if (g.a <= 0) g.on = false; } }
+    for (let _b = 0; _b < BUR.length; _b++) { const b = BUR[_b];
       if (!b.on) continue;
       b.shown += (Math.max(0, b.hang) - b.shown) * Math.min(1, dt * 10);
       if (!b.linger && b.exp >= 0 && T - b.exp > 3) b.on = false;
@@ -5072,7 +5176,7 @@ const FX = (() => {
     if (!P0 && moodNext && (!AP.slammed || T - AP.slamT > 2.2)) applyMood();
     haze = clamp((scene.haze || 0) + showHaze, 0, 1);
     if (!P0 && AP.slammed && !dimOn && T - AP.slamT > 2.6) { // the sky resets between shows
-      let any = false; for (const b of BUR) if (b.on && b.linger) { any = true; break; }
+      let any = false; for (let k = 0; k < NB; k++) { const b = BUR[k]; if (b.on && b.linger) { any = true; break; } }
       if (any) clearSky(1.2);
     }
   }
@@ -5098,22 +5202,33 @@ const FX = (() => {
     }
     c.drawImage(BG, 0, 0, W, H);
     // twinkles (the only motion at rest, with the lanterns and the river)
-    for (let i = 0; i < stars.length; i += 4) { c.globalAlpha = 0.35 + 0.45 * Math.sin(T * (1.3 + (i % 7) * 0.2) + stars[i + 3]) ** 2; c.fillStyle = '#EAF0FF'; c.fillRect(stars[i], stars[i + 1], stars[i + 2], stars[i + 2]); }
+    c.save(); c.scale(QI, QI); c.fillStyle = '#EAF0FF';
+    for (let i = 0; i < stars.length; i += 4) { const q = Math.sin(T * (1.3 + (i % 7) * 0.2) + stars[i + 3]), d = qx(stars[i + 2]); c.globalAlpha = qa(0.35 + 0.45 * q * q); c.fillRect(qx(stars[i]), qx(stars[i + 1]), d, d); }
     c.globalAlpha = 1;
     if (!hc) { // sky glow behind the town (L3 ≤ 40%)
       c.globalCompositeOperation = 'lighter';
-      for (const g of GLOWS) if (g.on) { c.globalAlpha = 0.3 * g.a * g.a; c.drawImage(BIG[g.ci], g.x - g.r, g.y - g.r, 2 * g.r, 2 * g.r); }
+      for (let k = 0; k < GLOWS.length; k++) { const g = GLOWS[k]; if (g.on) { const d = qx(2 * g.r); c.globalAlpha = qa(0.3 * g.a * g.a); c.drawImage(BIG[g.ci], qx(g.x - g.r), qx(g.y - g.r), d, d); } }
       c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
     }
+    c.restore();
     if (TOWN) c.drawImage(TOWN.cv, 0, rTop - TOWN.h, W, TOWN.h);
     if (!hc) drawHaze(c);
     // the river: wobbling reflection strips, then burst reflections at 25%
     if (RIVER) {
-      const rh = rBot - rTop, st = 2;
-      for (let y = 0; y < rh; y += st) { const o = rm ? 0 : 2 * Math.sin(T * 1.9 + y * 0.9); c.drawImage(RIVER, 0, y * dpr, RIVER.width, st * dpr, o, rTop + y, W, st); }
+      const rh = rBot - rTop, st = 2, rw = RIVER.width, qw = qx(W), qs = qx(st);
+      c.save(); c.scale(QI, QI);
+      for (let y = 0; y < rh; y += st) {
+        const o = rm ? 0 : 2 * Math.sin(T * 1.9 + y * 0.9), sy = (y * dpr + 0.5) | 0, sh = (((y + st) * dpr + 0.5) | 0) - sy;
+        c.drawImage(RIVER, 0, sy, rw, sh, qx(o), qx(rTop + y), qw, qs);
+      }
+      c.restore();
       c.save(); c.beginPath(); c.rect(0, rTop, W, rh); c.clip();
       c.globalCompositeOperation = 'lighter';
-      if (!hc) for (const g of GLOWS) if (g.on) { const ry = rTop + (rTop - g.y) * (rh / rTop); c.globalAlpha = 0.25 * g.a * g.a; c.drawImage(BIG[g.ci], g.x - g.r * 0.6, ry - g.r * 0.18, g.r * 1.2, g.r * 0.36); }
+      if (!hc) {
+        c.save(); c.scale(QI, QI);
+        for (let k = 0; k < GLOWS.length; k++) { const g = GLOWS[k]; if (!g.on) continue; const ry = rTop + (rTop - g.y) * (rh / rTop); c.globalAlpha = qa(0.25 * g.a * g.a); c.drawImage(BIG[g.ci], qx(g.x - g.r * 0.6), qx(ry - g.r * 0.18), qx(g.r * 1.2), qx(g.r * 0.36)); }
+        c.restore();
+      }
       drawPool(c, 0, 0.25, true);
       drawPool(c, 1, 0.25, true);
       c.restore();
@@ -5136,9 +5251,9 @@ const FX = (() => {
     drawCrit(c);
     drawAnchors(c);
     drawMeter(c);
+    drawPopups(c);     // under the L1 layers: a banner or the Applause is never covered by a popup
     drawBanners(c);
     drawApplause(c);
-    drawPopups(c);
     if (flashA > 0) { c.globalAlpha = Math.min(0.5, flashA); c.fillStyle = '#FFFFFF'; c.fillRect(0, 0, W, H); c.globalAlpha = 1; }
     if (BD && frameNo % 2 === 0) renderBackdrop();
     rMs = nowMs() - t0; rN++; rAvg = rN < 2 ? rMs : rAvg * 0.95 + rMs * 0.05; if (rMs > rMax) rMax = rMs;
@@ -5146,6 +5261,7 @@ const FX = (() => {
   function drawPool(c, pass, amul, refl) {
     const P = M, x = P.x, y = P.y, age = P.age, life = P.life, fl = P.fl, on = P.on, ci = P.ci, sz = P.sz, al = P.al, tw = P.tw, ph = P.ph;
     const hc = opt.highContrast, rh = rBot - rTop, kref = rh / Math.max(1, rTop);
+    c.save(); c.scale(QI, QI);   // integer sub-pixel coordinates (see qx)
     for (let i = 0; i < P.n; i++) {
       if (!on[i]) continue;
       const a = age[i];
@@ -5173,22 +5289,24 @@ const FX = (() => {
       const spr = (f & GLOW) ? BIG[k] : HEAD[k];
       let px = x[i], py = y[i];
       const r = (f & GLOW) ? s : s * (hc ? 1.4 : 2.3);
-      c.globalAlpha = A > 1 ? 1 : A;
       if (refl) {
         if (py >= rTop) continue;
         py = rTop + (rTop - py) * kref; px += 2 * Math.sin(T * 2.3 + py * 0.7);
-        c.drawImage(spr, px - r, py - r * 0.4, 2 * r, 0.8 * r);
-      } else c.drawImage(spr, px - r, py - r, 2 * r, 2 * r);
+        c.globalAlpha = qa(A); c.drawImage(spr, qx(px - r), qx(py - r * 0.4), qx(2 * r), qx(0.8 * r));
+      } else { c.globalAlpha = qa(A); c.drawImage(spr, qx(px - r), qx(py - r), qx(2 * r), qx(2 * r)); }
     }
+    c.restore();
   }
   function drawHaze(c) {
     const f = scene.festival, rules = scene.rules || [], fog = rules.includes('fog');
     const a = Math.min(0.34, 0.05 + haze * 0.3 + (f === 6 ? 0.06 : 0));
     const drift = rules.includes('headwind') ? 16 : 4;
+    c.save(); c.scale(QI, QI);
     for (let k = 0; k < 6; k++) {
       const w = W * 0.55, x = ((k * 0.37 * W + T * drift * (0.6 + k * 0.15)) % (W + w)) - w / 2, y = rTop * (0.5 + 0.08 * Math.sin(k * 2.1)) + k * 4;
-      c.globalAlpha = a * (0.6 + 0.4 * Math.sin(k + T * 0.2)); c.drawImage(HAZE, x - w / 2, y - w * 0.22, w, w * 0.44);
+      c.globalAlpha = qa(a * (0.6 + 0.4 * Math.sin(k + T * 0.2))); c.drawImage(HAZE, qx(x - w / 2), qx(y - w * 0.22), qx(w), qx(w * 0.44));
     }
+    c.restore();
     if (fog) { c.globalAlpha = 0.3; c.drawImage(HAZE, -W * 0.2, rTop * 0.42, W * 1.4, rTop * 0.4); }
     if (f === 6) { const fl = 0.75 + 0.25 * Math.sin(T * 9) * Math.sin(T * 3.7); c.globalCompositeOperation = 'lighter'; c.globalAlpha = 0.3 * fl; c.drawImage(BIG[7], W * 0.06, rTop - B * 1.3, B * 2.2, B * 1.6); c.globalCompositeOperation = 'source-over'; }
     if (rules.includes('drizzle') && !opt.reducedMotion) { c.globalAlpha = 0.18; c.strokeStyle = '#9AA6D6'; c.lineWidth = 1; c.beginPath(); for (let k = 0; k < 26; k++) { const x = (k * 53.3 + T * 30) % W, y = (k * 97.7 + T * 260) % rTop; c.moveTo(x, y); c.lineTo(x - 2, y + 9); } c.stroke(); }
@@ -5201,30 +5319,37 @@ const FX = (() => {
   function drawSoot(c) {
     const tb = scene.tubes;
     if (!tb || !tb.length || opt.highContrast) return;
+    c.save(); c.scale(QI, QI);
     for (let k = 0; k < tb.length; k++) {
       const sv = tb[k] ? +tb[k].soot || 0 : 0, L = sv > 5 ? sootLevel(sv) : clamp(Math.round(sv), 0, 5);
       if (!L) continue;
       const x = tubeX(k);
-      for (let j = 0; j < 3; j++) { const y = H - 6 - j * 13 - ((T * 6 + j * 13) % 13), w = 18 + j * 8; c.globalAlpha = L * 0.045 * (1 - j * 0.25); c.drawImage(HAZE, x - w / 2 + Math.sin(T * 0.7 + j + k) * 3, y - w / 2, w, w); }
+      for (let j = 0; j < 3; j++) { const y = H - 6 - j * 13 - ((T * 6 + j * 13) % 13), w = 18 + j * 8; c.globalAlpha = qa(L * 0.045 * (1 - j * 0.25)); c.drawImage(HAZE, qx(x - w / 2 + Math.sin(T * 0.7 + j + k) * 3), qx(y - w / 2), w * QS, w * QS); }
     }
+    c.restore();
     c.globalAlpha = 1;
   }
-  function drawWorldFx(c) {
-    const t = tok(), hc = opt.highContrast, cols = COLS;
+  function drawWaves(c) {
+    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
     // clear wave: a white band sweeping the sky
-    for (const w of WAVES) {
+    for (let _w = 0; _w < WAVES.length; _w++) { const w = WAVES[_w];
       if (!w.on) continue;
       const u = (T - w.t0) / 0.5;
       if (u >= 1) { w.on = false; continue; }
       const r = easeOut(u) * Math.hypot(W, H);
       c.globalAlpha = 0.34 * (1 - u); c.strokeStyle = '#FFFFFF'; c.lineWidth = 16 * (1 - u * 0.5); c.beginPath(); c.arc(w.x, w.y, r, 0, TAU); c.stroke();
     }
+    c.globalAlpha = 1;
+  }
+  function drawThreads(c) {
+    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
     // reader threads (1.5 px, burst colour at 60%, pulsing 250 ms)
-    for (const th of THR) {
+    for (let _th = 0; _th < THR.length; _th++) { const th = THR[_th];
       if (!th.on) continue;
       const e = T - th.t0;
       if (e > 0.62) { th.on = false; continue; }
-      const a = e < 0.25 ? 0.6 * (0.72 + 0.28 * Math.sin(e / 0.25 * TAU * 2)) : 0.6 * (1 - (e - 0.25) / 0.37);
+      // reduced motion (§9): the threads hold still (no pulse, no shrinking end dots) and only fade
+      const a = e < 0.25 ? (rm ? 0.6 : 0.6 * (0.72 + 0.28 * Math.sin(e / 0.25 * TAU * 2))) : 0.6 * (1 - (e - 0.25) / 0.37);
       c.globalAlpha = clamp(a, 0, 0.6); c.strokeStyle = th.col; c.lineWidth = hc ? 2 : 1.5; c.beginPath();
       for (let k = 0; k < th.n; k++) {
         const x1 = th.pts[k * 2], y1 = th.pts[k * 2 + 1], mx = (th.x + x1) / 2, my = Math.min(th.y, y1) - 18 - Math.abs(th.x - x1) * 0.12;
@@ -5232,10 +5357,17 @@ const FX = (() => {
       }
       c.stroke();
       c.fillStyle = th.col;
-      for (let k = 0; k < th.n; k++) { c.beginPath(); c.arc(th.pts[k * 2], th.pts[k * 2 + 1], 3 + 2 * Math.max(0, 1 - e / 0.25), 0, TAU); c.fill(); }
+      const dr = rm ? 3.5 : 3 + 2 * Math.max(0, 1 - e / 0.25);
+      c.beginPath();
+      for (let k = 0; k < th.n; k++) { const px = th.pts[k * 2], py = th.pts[k * 2 + 1]; c.moveTo(px + dr, py); c.arc(px, py, dr, 0, TAU); }
+      c.fill();
     }
+    c.globalAlpha = 1;
+  }
+  function drawBraids(c) {
+    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
     // fusion braids (bezier spiral, fusion pink)
-    for (const br of BRAIDS) {
+    for (let _br = 0; _br < BRAIDS.length; _br++) { const br = BRAIDS[_br];
       if (!br.on) continue;
       const e = T - br.t0;
       if (e > 0.9) { br.on = false; continue; }
@@ -5251,33 +5383,63 @@ const FX = (() => {
         c.stroke();
       }
     }
-    // Hang pips beside each lingering burst: the colour's own shape (greyscale-safe)
-    for (const b of BUR) {
+    c.globalAlpha = 1; c.lineCap = 'butt';
+  }
+  function drawPips(c) {
+    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
+    // Hang pips beside each lingering burst: the colour's own shape (greyscale-safe), from cached sprites
+    c.save(); c.scale(QI, QI);
+    for (let _b = 0; _b < NB; _b++) { const b = BUR[_b];
       if (!b.on || (!b.linger && (b.exp < 0 || T - b.exp > 0.3))) continue;
       const n = Math.ceil(b.shown - 0.05);
       if (n <= 0) continue;
       const fade = b.linger ? 1 : 1 - (T - b.exp) / 0.3, r = 3.4, gap = 9, y = b.y + pipOff(b);
-      const x0 = b.x - (n - 1) * gap / 2;
+      const x0 = b.x - (n - 1) * gap / 2, fs = b.rain ? 4 : b.ci === CI.S ? 3 : pipShape(b.col), os = b.rain || b.col === 'X' ? 4 : fs;
+      const spr = pipSprite(os, fs, b.ci);
+      c.globalAlpha = qa(0.95 * fade);
       for (let k = 0; k < Math.min(n, 8); k++) {
-        const frac = clamp(b.shown - k, 0, 1), rr2 = r * (0.4 + 0.6 * frac);
-        c.globalAlpha = 0.95 * fade;
-        c.beginPath(); shapePath(c, b.rain ? 'X' : b.col === 'X' ? 'X' : (b.ci === CI.S ? 'W' : b.col), x0 + k * gap, y, rr2 + 1.4);
-        c.fillStyle = hc ? '#FFF' : t.ink; c.fill();
-        c.beginPath(); shapePath(c, b.rain ? 'X' : (b.ci === CI.S ? 'W' : b.col), x0 + k * gap, y, rr2);
-        c.fillStyle = cols[b.ci]; c.fill();
+        const frac = clamp(b.shown - k, 0, 1), h = PIP_HALF * (r * (0.4 + 0.6 * frac) + 1.4) / (r + 1.4), d = qx(2 * h);
+        c.drawImage(spr, qx(x0 + k * gap - h), qx(y - h), d, d);
       }
     }
-    for (const sp of SPARK) {
+    c.restore();
+    c.globalAlpha = 1;
+  }
+  function drawSparks(c) {
+    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
+    for (let _sp = 0; _sp < SPARK.length; _sp++) { const sp = SPARK[_sp];
       if (!sp.on) continue;
       const u = (T - sp.t0) / 0.5;
       if (u >= 1) { sp.on = false; continue; }
-      const r = 3 + 9 * easeOut(u);
+      const r = rm ? 7 : 3 + 9 * easeOut(u);   // reduced motion: a still sparkle that fades
       c.globalAlpha = 1 - u; c.strokeStyle = t.aah; c.lineWidth = 1.5; c.beginPath();
       c.moveTo(sp.x - r, sp.y); c.lineTo(sp.x + r, sp.y); c.moveTo(sp.x, sp.y - r); c.lineTo(sp.x, sp.y + r); c.stroke();
     }
+    c.globalAlpha = 1;
+  }
+  // Hang pip sprites: ink outline + colour fill per (outline shape, fill shape, colour), drawn scaled (no path math per frame)
+  let PIPC = [], pipDpr = 0, pipHc = false;
+  const PIP_CH = ['A', 'G', 'B', 'W', 'X', 'R'], PIP_R = 3.4 + 1.4, PIP_HALF = PIP_R * 1.2 + 1;   // 'R': the circle
+  const pipShape = ch => (ch === 'A' ? 0 : ch === 'G' ? 1 : ch === 'B' ? 2 : ch === 'W' ? 3 : ch === 'X' ? 4 : 5);
+  function pipSprite(os, fs, ci) {
+    if (pipDpr !== dpr || pipHc !== opt.highContrast) { PIPC = []; pipDpr = dpr; pipHc = opt.highContrast; }
+    const key = (os * 6 + fs) * 16 + ci;
+    let s = PIPC[key];
+    if (!s) {
+      const n = Math.ceil(PIP_HALF * 2 * dpr * 2), k = n / (2 * PIP_HALF), g = (s = mkCanvas(n, n)).getContext('2d');
+      g.setTransform(k, 0, 0, k, n / 2, n / 2);
+      g.beginPath(); shapePath(g, PIP_CH[os], 0, 0, PIP_R); g.fillStyle = opt.highContrast ? '#FFF' : tok().ink; g.fill();
+      g.beginPath(); shapePath(g, PIP_CH[fs], 0, 0, 3.4); g.fillStyle = COLS[ci]; g.fill();
+      PIPC[key] = s;
+    }
+    return s;
+  }
+  function drawWorldFx(c) {
+    drawWaves(c); drawThreads(c); drawBraids(c); drawPips(c); drawSparks(c);
     drawRings(c);
     c.globalAlpha = 1; c.lineCap = 'butt';
   }
+
   function drawAnchors(c) {
     if (opt.highContrast) return;
     c.globalCompositeOperation = 'lighter';
@@ -5321,7 +5483,7 @@ const FX = (() => {
   function attachBackdrop(canvas) {
     if (!canvas || !hasDoc) return;
     if (BD && BD.cv === canvas) return;
-    BD = {cv: canvas, c: canvas.getContext('2d', {alpha: false}), w: 0, h: 0, ox: 0, oy: 0, bg: null, n: 0};
+    BD = {cv: canvas, c: canvas.getContext('2d', {alpha: false}), w: 0, h: 0, s: 0.5, ox: 0, oy: 0, bg: null, n: 0, bare: false};
     if (ro) ro.observe(canvas);
     layoutBackdrop();
   }
@@ -5329,12 +5491,17 @@ const FX = (() => {
     if (!BD) return;
     const w = BD.cv.clientWidth, h = BD.cv.clientHeight;
     if (!w || !h) return;
-    BD.cv.width = w; BD.cv.height = h; BD.w = w; BD.h = h;
+    // Half resolution: the backdrop is soft L3 glow behind blurred panels at 35% opacity (base.css), and its full-bleed
+    // repaint + composite was the largest raster cost of a desktop frame (§11.7). The CSS size stays 100%.
+    const bs = BD.s, bw = Math.max(1, Math.ceil(w * bs)), bh = Math.max(1, Math.ceil(h * bs));
+    BD.cv.width = bw; BD.cv.height = bh; BD.w = w; BD.h = h;
     measureBackdrop();
-    const t = tok(), g = mkCanvas(w, h), q = g.getContext('2d'), gr = q.createLinearGradient(0, 0, 0, h);
+    const t = tok(), g = mkCanvas(bw, bh), q = g.getContext('2d'), gr = q.createLinearGradient(0, 0, 0, h);
+    q.setTransform(bs, 0, 0, bs, 0, 0);
     gr.addColorStop(0, t.top); gr.addColorStop(1, t.hor); q.fillStyle = gr; q.fillRect(0, 0, w, h);
     const R = mkRng(hash(seedStr + '|bdstars'));
-    for (let i = 0; i < w * h / 2600; i++) { q.globalAlpha = 0.2 + R() * 0.5; q.fillStyle = '#DCE3FF'; const s = 0.6 + R() * R() * 1.4; q.fillRect(R() * w, Math.pow(R(), 1.5) * h * 0.85, s, s); }
+    q.fillStyle = '#DCE3FF';
+    for (let i = 0; i < w * h / 2600; i++) { const a = 0.2 + R() * 0.5, s0 = 0.6 + R() * R() * 1.4, s = Math.max(1 / bs, s0); q.globalAlpha = a * s0 / s; q.fillRect(R() * w, Math.pow(R(), 1.5) * h * 0.85, s, s); }
     q.globalAlpha = 1;
     if (TOWN) { // the town continues beyond the play column
       const s = 1.6, th = TOWN.h * s, tw = W * s;
@@ -5350,23 +5517,37 @@ const FX = (() => {
   function renderBackdrop() {
     if (!BD.bg || !BD.w) return;
     if (++BD.n % 60 === 0) measureBackdrop();
-    const c = BD.c, ox = BD.ox, oy = BD.oy, P = M;
-    // Idle sky (the build): the backdrop is static, so skip the full-bleed repaint once it shows the bare scene.
+    const c = BD.c, ox = BD.ox, oy = BD.oy, P = M, m = 8, xr = W - m, yb = H - m;
+    // Only what shows past the opaque sky canvas matters: glows spill over its edges; a particle only near or beyond
+    // them. The idle sky (the build) is static, so the full-bleed repaint stops once it shows the bare scene.
     let any = false;
-    for (const g of GLOWS) if (g.on) { any = true; break; }
-    if (!any) for (let i = 0; i < P.n; i++) if (P.on[i] && P.age[i] >= 0 && !(P.fl[i] & (EMB | GLOW | HOME))) { any = true; break; }
+    for (let k = 0; k < GLOWS.length; k++) if (GLOWS[k].on) { any = true; break; }
+    if (!any) for (let i = 0; i < P.n; i++) {
+      if (!P.on[i] || P.age[i] < 0 || (P.fl[i] & (EMB | GLOW | HOME))) continue;
+      const x = P.x[i], y = P.y[i];
+      if (x < m || x > xr || y < m || y > yb) { any = true; break; }
+    }
     if (!any && BD.bare) return;
     BD.bare = !any;
+    const bs = BD.s * QI;
     c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
     c.drawImage(BD.bg, 0, 0);
+    c.setTransform(bs, 0, 0, bs, 0, 0);   // CSS px × BD.s, in integer 1/8 px (see qx)
     c.globalCompositeOperation = 'lighter';
-    for (const g of GLOWS) if (g.on) { c.globalAlpha = 0.35 * g.a; c.drawImage(BIG[g.ci], ox + g.x - g.r * 1.6, oy + g.y - g.r * 1.6, g.r * 3.2, g.r * 3.2); }
+    for (let k = 0; k < GLOWS.length; k++) {
+      const g = GLOWS[k];
+      if (!g.on) continue;
+      const d = qx(g.r * 3.2);
+      c.globalAlpha = qa(0.35 * g.a); c.drawImage(BIG[g.ci], qx(ox + g.x - g.r * 1.6), qx(oy + g.y - g.r * 1.6), d, d);
+    }
     for (let i = 0; i < P.n; i++) {
       if (!P.on[i] || P.age[i] < 0 || (P.fl[i] & (EMB | GLOW | HOME))) continue;
+      const x = P.x[i], y = P.y[i];
+      if (x >= m && x <= xr && y >= m && y <= yb) continue;   // hidden under the sky canvas
       const lf = P.age[i] / P.life[i], A = 0.9 * P.al[i] * (lf < 0.6 ? 1 : 1 - (lf - 0.6) / 0.4);
       if (A < 0.03) continue;
-      const k = (P.fl[i] & RAINBOW) ? (Math.floor(P.age[i] * 5 + P.ph[i]) & 3) : P.ci[i], r = P.sz[i] * 2.4;
-      c.globalAlpha = A; c.drawImage(HEAD[k], ox + P.x[i] - r, oy + P.y[i] - r, 2 * r, 2 * r);
+      const k = (P.fl[i] & RAINBOW) ? (Math.floor(P.age[i] * 5 + P.ph[i]) & 3) : P.ci[i], r = P.sz[i] * 2.4, d = qx(2 * r);
+      c.globalAlpha = qa(A); c.drawImage(HEAD[k], qx(ox + x - r), qx(oy + y - r), d, d);
     }
     c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
   }
@@ -5543,6 +5724,8 @@ const FX = (() => {
     setCrowd(scene.crowd, false);
     if (typeof ResizeObserver === 'function') { ro = new ResizeObserver(() => resize()); ro.observe(canvas); if (BD) ro.observe(BD.cv); }
     watchDpr();
+    // cached text widths were measured in a fallback face until the web fonts land
+    try { if (!twFonts && document.fonts && document.fonts.addEventListener) { twFonts = true; document.fonts.addEventListener('loadingdone', () => { TW.clear(); twN = 0; AP.subS = NaN; }); } } catch (e) { /* ignore */ }
   }
   function setOptions(o) {
     if (!o) return;
@@ -5606,8 +5789,9 @@ const GAME = (() => {
 
   /* ---------- constants ---------- */
   const STORE_KEY = 'oohxaah.v1';
-  const DT = 1 / 60, MAX_FRAME = 0.25, MAX_STEPS = 8;
+  const DT = 1 / 60, MAX_FRAME = 0.25, MAX_STEPS = 8, FX_MAX_DT = 0.1;
   const ticks = sec => Math.round(sec * 60);
+  const BUFFER_TICKS = ticks(0.12), EVQ_MAX = 1000;
   const OVERLAY_ID = {pause: 'pause-menu', settings: 'settings', logbook: 'logbook', help: 'help',
     inspect: 'inspect', end: 'end', showlog: 'showlog', tapContinue: 'tap-continue'};
   const PAUSING = ['pause', 'tapContinue'];
@@ -5898,18 +6082,23 @@ const GAME = (() => {
   // GAME.preview {rules, rehearse}: the rule set the chips use. A plain data object: UI_PLAY writes both
   // fields from its own Rehearse toggle; core resets it at every build open (tonight's rules).
   const preview = {rules: [], rehearse: false};
-  function refreshPreview() {
+  // Event 'preview' (payload GAME.preview) fires whenever its rules or rehearse flag change; at a build open it
+  // fires right after 'ui', so 'ui' / 'change' listeners already read the new build's preview (no settling).
+  function refreshPreview(quiet) {
     const st = cur();
-    if (!st) return;
-    preview.rules = rulesAt(st, previewShow());
-    preview.rehearse = S.rehearse || st.show % 3 === 2;
+    if (!st) return false;
+    const rules = rulesAt(st, previewShow()), rehearse = S.rehearse || st.show % 3 === 2;
+    const changed = rehearse !== preview.rehearse || String(rules) !== String(preview.rules);
+    preview.rules = rules;
+    preview.rehearse = rehearse;
+    if (changed && !quiet) emit('preview', preview);
+    return changed;
   }
   function setRehearse(v) {
     v = !!v;
     if (S.rehearse === v) return;
     S.rehearse = v;
     refreshPreview();
-    emit('preview', preview);
     emit('change', {state: cur()});
     const st = cur();
     if (v && st) announce('Rehearsing ' + (preview.rules.map(ruleName).join(' and ') || 'the next show') + (moodVisible() ? ': ' + moodWord(st, preview.rules, previewShow()) + '.' : '.'));
@@ -5921,14 +6110,17 @@ const GAME = (() => {
     if (S.stack.some(e => PAUSING.includes(e.name))) return 'paused';
     return S.ui === 'RESOLVING' ? 'resolve' : S.ui === 'BOOT' ? 'off' : 'build';
   }
+  // A switch into a build (BUILD / RESULT) refreshes GAME.preview first, then emits 'ui' and, if it changed, 'preview'.
   function setUI(to) {
     const from = S.ui;
     if (from === to) return;
+    const pv = (to === 'BUILD' || to === 'RESULT') && from !== 'BUILD' && from !== 'RESULT' && refreshPreview(true);
     S.ui = to;
     const app = byId('app');
     if (app) app.setAttribute('data-ui', to);
     callAudio('setPhase', audioPhase());
     emit('ui', {from, to});
+    if (pv) emit('preview', preview);
   }
 
   /* ============================================================
@@ -6009,7 +6201,9 @@ const GAME = (() => {
   }
   function newRun(o = {}) {
     if (!isObj(o)) o = {};
+    const resolving = !!S.res;
     abortResolve();
+    if (resolving) callFX('clearSky', {all: true});         // no popups / banners from the aborted show
     closeAll();
     const st = createRun(o);
     if (!st) { warn('newRun', 'no state'); return null; }
@@ -6026,7 +6220,7 @@ const GAME = (() => {
   }
   function abandon() {
     if (!S.state || S.ui === 'END' || S.ui === 'BOOT') return false;
-    if (S.res) completeNow();
+    if (S.res) { completeNow(); callFX('clearSky', {all: true}); }
     if (S.ui === 'END' || S.state.phase !== 'build') return false;
     finalizeRun({abandoned: true});
     closeAll();
@@ -6088,9 +6282,11 @@ const GAME = (() => {
   function dismissResult() { if (S.ui === 'RESULT') setUI('BUILD'); }
 
   /* ---------- dispatch + undo (§2.5) ---------- */
+  // __game.events() queue. Only test tools drain it, so in play it is a ring of the last EVQ_MAX events
+  // (~25 per show: a whole 24-show run fits) instead of growing for 200 shows.
   function queueEvents(events) {
     for (const ev of events) S.evQueue.push(ev);
-    if (S.evQueue.length > 5000) S.evQueue.splice(0, S.evQueue.length - 5000);
+    if (S.evQueue.length > EVQ_MAX + 200) S.evQueue.splice(0, S.evQueue.length - EVQ_MAX);
   }
   function illegal(action, reason) {
     const ev = {type: 'illegal', reason};
@@ -6103,6 +6299,7 @@ const GAME = (() => {
     if (!O || !S.state || !isObj(action)) return [];
     if (action.type === 'light') return light();
     if (action.type === 'endless') return enterAfterparty() ? S.evQueue.slice(-8) : illegal(action, 'not available');
+    if (S.ui === 'RESOLVING' && bufferAction(action)) return [];
     if (!(S.ui === 'BUILD' || S.ui === 'RESULT') || S.state.phase !== 'build') return illegal(action, 'busy');
     const pre = simClone(S.state);
     const t0 = now();
@@ -6129,6 +6326,18 @@ const GAME = (() => {
     actionTips(action, S.state);
     showNextTip();
     return events;
+  }
+  // §11.5 input buffer: a build action during RESOLVING (the run goes on) is held for 120 ms; if RESULT begins
+  // within that window it is applied then, in order, else it lapses as illegal 'busy'. Returns true if held.
+  function bufferAction(action) {
+    const r = S.res;
+    if (!r || !S.loopOn || !S.state || S.state.phase !== 'build' || !DROP_TYPES.includes(action.type)) return false;
+    const q = r.buffer || (r.buffer = []), b = {action: cloneJSON(action), until: S.tick + BUFFER_TICKS};
+    const lapse = x => { const i = q.indexOf(x); if (i < 0) return; q.splice(i, 1); illegal(x.action, 'busy'); };
+    q.push(b);
+    if (q.length > 4) lapse(q[0]);
+    after(BUFFER_TICKS + 1, () => { if (S.res === r) lapse(b); });
+    return true;
   }
   const canUndo = () => S.undo.length > 0 && (S.ui === 'BUILD' || S.ui === 'RESULT') && !!S.state && S.state.phase === 'build';
   function undo() {
@@ -6276,7 +6485,7 @@ const GAME = (() => {
       if (S.state.phase === 'lost' && !r.dimmed) callFX('dim');
       after(imm ? 0 : ticks(S.state.phase === 'lost' ? 0.9 : 1.6), () => { if (S.res === r) { S.res = null; goEnd(); } });
     } else {
-      after(imm ? 0 : Math.max(0, ticks(0.6) - (S.tick - r.slamTick)), () => { if (S.res === r) { S.res = null; toResult(); } });
+      after(imm ? 0 : Math.max(0, ticks(0.6) - (S.tick - r.slamTick)), () => { if (S.res === r) { S.res = null; toResult(r.buffer); } });
     }
   }
   function completeNow() {
@@ -6285,7 +6494,7 @@ const GAME = (() => {
     r.instant = true;
     if (r.handle && !r.done) { try { if (can(r.handle, 'skip')) r.handle.skip(); } catch (e) { warn('skip', e); } }
     chainDone(r.token);
-    if (S.res === r) { S.res = null; if (S.state.phase === 'build') toResult(); else goEnd(); }
+    if (S.res === r) { S.res = null; if (S.state.phase === 'build') toResult(r.buffer); else goEnd(); }
   }
   function abortResolve() {
     if (!S.res) return;
@@ -6308,12 +6517,13 @@ const GAME = (() => {
     else completeNow();
     return true;
   }
-  function toResult() {
+  function toResult(buffered) {
     setUI('RESULT');
     emit('change', {state: S.state});
     kick();
     flushToasts();
     onBuildOpen();
+    if (buffered) for (const b of buffered) if (b.until >= S.tick && (S.ui === 'RESULT' || S.ui === 'BUILD')) dispatch(b.action);
   }
   function goEnd() {
     closeAll();
@@ -6683,8 +6893,28 @@ const GAME = (() => {
   /* ============================================================
      OVERLAYS: stack, focus trap, focus restore, pausing
   ============================================================ */
-  const FOCUSABLE = 'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
-  const focusables = el => [...el.querySelectorAll(FOCUSABLE)].filter(x => x.getClientRects().length && !x.closest('[hidden],[inert]'));
+  // Tab stops only: no tabindex="-1" (roving radios), nothing disabled, hidden, inert or invisible; in a
+  // native radio group only the checked radio (else the first) is a stop, as in the browser's own order.
+  const FOCUSABLE = 'button,a[href],area[href],input:not([type="hidden"]),select,textarea,summary,iframe,[contenteditable]:not([contenteditable="false"]),[tabindex]';
+  function focusables(el) {
+    const out = [], seen = new Set();
+    for (const x of el.querySelectorAll(FOCUSABLE)) {
+      if (x.tabIndex < 0 || x.getAttribute('tabindex') === '-1' || x.hasAttribute('disabled') || safe(() => x.matches(':disabled'), false)) continue;
+      if (!x.getClientRects().length || x.closest('[hidden],[inert]')) continue;
+      if (safe(() => getComputedStyle(x).visibility, 'visible') !== 'visible') continue;
+      if (x.tagName === 'INPUT' && x.type === 'radio' && x.name) {
+        const root = x.form || el, key = x.name;
+        if (seen.has(key)) continue;
+        const group = [...root.querySelectorAll('input[type="radio"]')].filter(r => r.name === key && el.contains(r));
+        const pick = group.find(r => r.checked) || x;
+        seen.add(key);
+        out.push(pick);
+        continue;
+      }
+      out.push(x);
+    }
+    return out;
+  }
   const topEntry = () => S.stack[S.stack.length - 1] || null;
   const top = () => (topEntry() ? topEntry().name : null);
   const isOpen = name => S.stack.some(e => e.name === name);
@@ -6748,9 +6978,14 @@ const GAME = (() => {
     syncOverlays();
     emit('overlay', {name: e.name, open: false});
     if (wasTop) {
-      const t = topEntry();
-      if (t) { if (!t.el.contains(document.activeElement)) focusIn(t.el, {}); }
-      else if (e.back && document.contains(e.back) && !e.back.closest('[inert],[hidden]')) { try { e.back.focus({preventScroll: true}); } catch (err) { /* ignore */ } }
+      // Back to the control that opened the closing overlay when it is still a stop in the now-top layer
+      // (the page when the stack is empty); otherwise the top overlay's first stop.
+      const t = topEntry(), b = e.back;
+      const layer = t ? t.el : document.body;
+      const back = b && b !== document.body && b.isConnected && layer.contains(b) && !b.closest('[hidden],[inert]') &&
+        !b.hasAttribute('disabled') && b.getClientRects().length ? b : null;
+      if (back) { try { back.focus({preventScroll: true}); } catch (err) { /* ignore */ } }
+      if (t && !t.el.contains(document.activeElement)) focusIn(t.el, {});
     }
     return true;
   }
@@ -6825,7 +7060,7 @@ const GAME = (() => {
     if (t && e.target instanceof Node && !t.el.contains(e.target)) focusIn(t.el, {});
   }
 
-  /* ---------- lifecycle: hide/blur → pause + save + suspend; resume only via tapContinue ---------- */
+  /* ---------- lifecycle: page hidden → pause + save + suspend; resume only via tapContinue ---------- */
   function onHidden() {
     if (!S.booted || S.ui === 'BOOT') return;
     saveNow();
@@ -6871,9 +7106,14 @@ const GAME = (() => {
     S.timers = S.timers.filter(t => t.at > S.tick);
     for (const t of due) { try { t.fn(); } catch (e) { warn('timer', e); } }
   }
-  function tickOnce() {
+  // One loop tick: the timers only. FX is presentation, so frame() advances it once per rAF (below);
+  // the SIM never runs here (it steps on actions), so its determinism does not depend on the loop.
+  function tick() {
     S.tick++;
     runTimers();
+  }
+  function tickOnce() {
+    tick();
     callFX('update', DT * S.gameSpeed);
   }
   function frame(t) {
@@ -6885,8 +7125,11 @@ const GAME = (() => {
     if (S.ui === 'BUILD' || S.ui === 'RESULT') S.buildMs += dt * 1000;
     S.acc += dt;
     let n = 0;
-    while (S.acc >= DT && n < MAX_STEPS) { tickOnce(); S.acc -= DT; n++; }
+    while (S.acc >= DT && n < MAX_STEPS) { tick(); S.acc -= DT; n++; }
     if (n >= MAX_STEPS) S.acc = 0;
+    // A slow frame must not buy extra FX work (the old catch-up ran FX.update up to 8× per rAF and fed the
+    // stall): one update per rAF for the ticks just run, clamped to 0.1 s of show time before speed.
+    if (n) callFX('update', Math.min(FX_MAX_DT, n * DT) * S.gameSpeed);
     callFX('render');
     if (S.flags.debug) debugFrame();
   }
@@ -7102,8 +7345,10 @@ const GAME = (() => {
     window.addEventListener('pointerdown', onPointerDown, true);
     document.addEventListener('focusin', onFocusIn);
     document.addEventListener('contextmenu', e => { if (e.target instanceof Element && e.target.closest('#app') && !isTyping(e.target)) e.preventDefault(); });
+    // Only a page that is really hidden pauses (§11.5 Lifecycle): focus leaving the page (Tab past the last
+    // stop, another window) keeps the show going.
     document.addEventListener('visibilitychange', () => { if (document.hidden) onHidden(); });
-    window.addEventListener('blur', onHidden);
+    window.addEventListener('blur', () => { if (document.hidden) onHidden(); });
     window.addEventListener('pagehide', saveNow);
     const tc = byId('tap-continue');
     if (tc) tc.addEventListener('click', () => { if (isOpen('tapContinue')) close('tapContinue'); });
@@ -7301,18 +7546,38 @@ const UI_PLAY = (() => {
   // `key` names everything the fit depends on (markup, width, fonts): an unchanged key skips the climb, which
   // would otherwise force a layout per level on every render.
   let fitEpoch = 0; // bumped when web fonts arrive
-  function fitLadder(host, levels, over, key) {
+  function fitLadder(host, levels, over, key, pre) {
     if (!host) return 0;
     const k = key == null ? null : fitEpoch + '|' + mode + '|' + lastW + '|' + key;
     if (k != null && host._fitKey === k) return +host.dataset.fit || 0;
+    if (!host.getClientRects().length) { host._fitKey = null; return +host.dataset.fit || 0; } // not rendered: fit when shown
     let lv = 0;
     host.dataset.fit = '0';
+    if (pre) safe(pre);
     while (lv < levels && safe(over, false)) host.dataset.fit = String(++lv);
     host._fitKey = k;
     return lv;
   }
+  // The ladders run in one frame callback, after every render of the task has written its markup: a click or a
+  // GAME emit can render several times, and measuring inside each render forced a layout per render. The frame
+  // callback runs before that frame's own layout and paint, so nothing unfitted is ever drawn. While a show
+  // resolves the rows below the rack are collapsed: their ladders wait for the build (the next render re-queues).
+  const fitJobs = new Map();
+  let fitFrame = 0;
+  const LIVE_FITS = ['hud', 'rack']; // visible while RESOLVING
+  function queueFit(name, fn) {
+    if (ui() === 'RESOLVING' && !LIVE_FITS.includes(name)) { fitJobs.delete(name); return; }
+    fitJobs.set(name, fn);
+    if (!fitFrame) fitFrame = requestAnimationFrame(flushFits);
+  }
+  function flushFits() {
+    if (fitFrame) { cancelAnimationFrame(fitFrame); fitFrame = 0; }
+    const live = ui() === 'RESOLVING', jobs = [...fitJobs].filter(([name]) => !live || LIVE_FITS.includes(name));
+    fitJobs.clear();
+    for (const [, f] of jobs) safe(f);
+  }
   // A soft hyphen in long words (a VC|CV or V|CV break nearest the middle), for engines without hyphenation dictionaries.
-  const shy = str => String(str).replace(/[A-Za-z]{11,}/g, w => {
+  const shy = str => String(str).replace(/[A-Za-z]{8,}/g, w => {
     const V = c => /[aeiouy]/i.test(c);
     let best = -1;
     for (let p = 3; p <= w.length - 4; p++) {
@@ -7648,7 +7913,7 @@ const UI_PLAY = (() => {
       '<div class="hud-title"><span id="hud-show"></span></div>' +
       '<div class="hud-tgt"><span id="hud-target"></span><span class="hud-next"></span>' +
       '<button type="button" class="hud-head" data-hud="head"></button></div>' +
-      `<div class="hud-coins"><span class="vh">Coins</span><span id="hud-coins" class="num"></span></div>` +
+      `<div class="hud-coins"><span class="vh">Coins</span><span id="hud-coins" class="num" data-fx-anchor="coins"></span></div>` +
       `<div class="hud-crowd"><span class="vh">Crowd</span>${ICON.crowd}<span id="hud-crowd" class="num"></span><span class="hud-half" hidden>½</span></div>` +
       '<button type="button" class="hud-ic hud-rain" data-hud="rain"></button>';
     E.hudTitle = $('.hud-title', E.hud);
@@ -7670,7 +7935,7 @@ const UI_PLAY = (() => {
     E.over.innerHTML =
       '<div class="sky-top"><div class="sky-label"></div><button type="button" class="rh-pill" data-sky="rule" hidden></button></div>' +
       '<div class="lastchance" hidden>Last chance</div>' +
-      '<div class="readout" hidden aria-hidden="true"><span class="ro-o">OOH <b>0</b></span><span class="ro-x">×</span><span class="ro-a">AAH <b>1</b></span><span class="ro-cap" hidden>cap 30</span></div>' +
+      '<div class="readout" hidden aria-hidden="true"><span class="ro-o">OOH <b data-fx-anchor="ooh">0</b></span><span class="ro-x">×</span><span class="ro-a">AAH <b data-fx-anchor="aah">1</b></span><span class="ro-cap" hidden>cap 30</span></div>' +
       '<div class="result" hidden></div>' +
       '<div class="tip" hidden role="note"></div>' +
       '<div class="cheer" aria-hidden="true"><i class="band"></i><i class="fill"></i><i class="tick"></i></div>' +
@@ -7698,6 +7963,7 @@ const UI_PLAY = (() => {
     E.arc = $('.arc', E.rack);
     E.tubesWrap = $('.tubes', E.rack);
     E.fuse = $('.fuse', E.rack);
+    E.ember = $('.ember', E.fuse);
     E.tubes = [...E.rack.querySelectorAll('.tube')].map(b => ({
       btn: b, num: $('.t-num', b), sees: $('.t-sees', b), body: $('.t-body', b), tok: $('.t-tok', b), chips: $('.t-chips', b), rig: $('.t-rig', b),
     }));
@@ -7744,30 +8010,52 @@ const UI_PLAY = (() => {
   /* ================= 7. Layout (ResizeObserver on the column; §8.1) ================= */
 
   let lastW = 0;
+  // Rack geometry, read only where layout is already clean (the ResizeObserver callback) or in a frame callback,
+  // never straight after a render's DOM writes (that forces a full layout: ~130 ms of Run it back on a phone).
+  // Tube centres follow from it by arithmetic (48 px tubes, flex-centred, --tgap apart).
+  const geo = { ok: false, wrapW: 0, offX: 0, rackX: 0, rackW: 0 };
+  let rackGap = 8;
+  function readGeo() { // → true when it changed
+    const w = E.tubesWrap.clientWidth;
+    if (!w) { const was = geo.ok; geo.ok = false; return was; }
+    const tr = E.tubesWrap.getBoundingClientRect(), sr = E.sky.getBoundingClientRect(), rr = E.rack.getBoundingClientRect();
+    const g = { ok: true, wrapW: w, offX: tr.left + E.tubesWrap.clientLeft - sr.left, rackX: tr.left + E.tubesWrap.clientLeft - rr.left, rackW: rr.width };
+    const changed = !geo.ok || ['wrapW', 'offX', 'rackX', 'rackW'].some(k => Math.abs(g[k] - geo[k]) > 0.25);
+    Object.assign(geo, g);
+    return changed;
+  }
   function measure() {
     if (!E.play) return;
     const h = E.play.clientHeight, w = E.play.clientWidth;
+    const moved = readGeo();
     const m = h >= 700 ? 'regular' : h >= 520 ? 'compact' : 'scroll';
     if (m !== mode || E.play.dataset.mode !== m) {
       mode = m;
       E.play.dataset.mode = m;
       (m === 'regular' ? E.hudTitle : E.skyLabel).appendChild(E.show);
       lastW = w;
-      render();
-    } else if (w !== lastW) { lastW = w; render(); } // tube spacing and the fit ladders depend on the width
+      render(); flushFits();
+    } else if (w !== lastW || moved) { lastW = w; render(); flushFits(); } // tube spacing and the fit ladders depend on the width
     else pushScene();
   }
 
-  // Tube centres in canvas CSS px, for FX.setScene.
+  // Tube centres in canvas CSS px, for FX.setScene (x of tube i from the cached geometry; no layout read).
+  const tubeX = (i, n, off) => off + (geo.wrapW - (n * 48 + (n - 1) * rackGap)) / 2 + 24 + i * (48 + rackGap);
   function tubeCentres() {
     if (!E.sky || !G || !G.state) return [];
-    const cr = E.sky.getBoundingClientRect();
-    return S().tubes.map((_, i) => { const r = E.tubes[i].btn.getBoundingClientRect(); return r.left + r.width / 2 - cr.left; });
+    const n = S().tubes.length;
+    if (!geo.ok) readGeo(); // an explicit call before the first layout pass: measure once
+    return S().tubes.map((_, i) => tubeX(i, n, geo.offX));
   }
+  let sceneFrame = 0;
   let lastScene = '';
   function pushScene() {
     const f = fxApi();
     if (!fnIn(f, 'setScene') || !view || frozen) return;
+    if (!geo.ok) { // not laid out yet (or hidden): measure in the next frame, where the layout is due anyway
+      if (!sceneFrame) sceneFrame = requestAnimationFrame(() => { sceneFrame = 0; readGeo(); if (geo.ok) pushScene(); });
+      return;
+    }
     const st = S(), xs = tubeCentres(), tf = (st.runStats && st.runStats.timesFired) || {};
     const cheer = { restless: 0.2, hopeful: 0.5, eager: 0.85 }[view.mood] || 0;
     const scene = {
@@ -7798,10 +8086,11 @@ const UI_PLAY = (() => {
     if (!Array.isArray(sees)) sees = chips.some(c => c && c.sees != null) ? chips.map(c => (c ? c.sees : null)) : sky.sees;
     const fav = fnIn(sim(), 'favourite') ? safe(() => sim().favourite(st.tubes, st.crowd), null) : null;
     const mood = moodOf(st), pmood = rehearsing ? moodOf(st, rules) : mood;
-    view = { s, tonight, hs, hRules, rules, rehearsing, auto, order, chips, sky, sees, fav, mood, pmood, legal: legalList() };
+    view = { s, tonight, hs, hRules, rules, rehearsing, auto, order, chips, sky, sees, fav, mood, pmood, legal: legalList(), pv: pvSig() };
   }
   // GAME.preview.rehearse is the source of truth (core); a local flag stands in without it.
   function rehearseOn() { const p = G.preview; return p && typeof p === 'object' && 'rehearse' in p ? !!p.rehearse : rehearse; }
+  const pvSig = () => { const p = G.preview; return p && typeof p === 'object' ? String(p.rehearse) + '|' + String(p.rules) : ''; };
   function setRehearse(v) {
     const p = G.preview;
     if (fnIn(G, 'setRehearse')) G.setRehearse(v);
@@ -7869,7 +8158,7 @@ const UI_PLAY = (() => {
     setHTML(E.rain, ICON.umbrella.replace('</svg>', (used ? ICON.crack : '') + '</svg>') + (fw ? '<span class="fw">FW</span>' : ''));
     E.rain.dataset.state = used ? 'used' : noRain ? 'none' : 'ok';
     E.rain.setAttribute('aria-label', (used ? 'Rain check used: last chance' : noRain ? 'No rain check tonight' : 'Rain check: unused') + (fw ? '. Fair Weather on' : ''));
-    fitHud();
+    queueFit('hud', fitHud);
   }
   // Nothing in the HUD clips at 360 px: each row sheds detail in a fixed order until it fits (fonts vary by device).
   function fitHud() {
@@ -7901,7 +8190,7 @@ const UI_PLAY = (() => {
       `<span class="sp-l2"><span class="sp-dot"> · </span><span class="sp-p">pays </span>${esc(pay)}</span>`);
     // 360 px: the reward moves to a second line, then "pays" goes, then "×1.5" (all stay in the aria-label and Inspect)
     const l1 = tx.firstElementChild, l2 = tx.lastElementChild;
-    fitLadder(E.sponsor, 3, () => overflows(tx) || overflows(l1) || overflows(l2), tx._html + sp.accepted);
+    queueFit('sponsor', () => fitLadder(E.sponsor, 3, () => overflows(tx) || overflows(l1) || overflows(l2), tx._html + sp.accepted));
     E.spBtn.querySelector('.sp-word').textContent = sp.accepted ? 'Accepted' : 'Accept';
     E.spBtn.setAttribute('aria-label', `Sponsor, ${k[0]}: target times 1.5, to ${fmt(t)}; ${k[2]} if you pass. ${sp.accepted ? 'Accepted' : 'Not accepted'}.`);
   }
@@ -7920,8 +8209,9 @@ const UI_PLAY = (() => {
     const firstT = v.order.seq[0];
     const critic = criticMarks(st.tubes, rules);
     // Spread the tubes when there are fewer than 6 (8–16 px gaps), so each "sees" chip has room.
-    const W = E.tubesWrap.clientWidth, gap = n > 1 && W ? Math.max(8, Math.min(16, Math.floor((W - n * 48) / (n - 1)))) : 8;
+    const W = geo.ok ? geo.wrapW : 0, gap = n > 1 && W ? Math.max(8, Math.min(16, Math.floor((W - n * 48) / (n - 1)))) : 8;
     E.rack.style.setProperty('--tgap', gap + 'px');
+    rackGap = gap;
     // Numerals and sees chips describe ONE rack: the hovered drop's rack while hovering, else tonight's rack.
     // Each other legal drop shows its own local "sees" (and, on an empty tube, a ghost numeral).
     const hovKey = held && hover && hover.zone === 'tube' && targets.has(slotKey(hover)) ? slotKey(hover) : null;
@@ -7997,9 +8287,10 @@ const UI_PLAY = (() => {
     const dir = rules.includes('countdown') || rules.includes('countdown3') ? 'back' : rules.includes('windshift') ? 'rtl' : rules.includes('crossed') ? 'cross' : 'ltr';
     E.fuse.dataset.dir = dir;
     E.fuse.style.width = Math.max(0, (n - 1) * (48 + gap)) + 'px';
+    E.fuse.style.setProperty('--ex', (dir === 'rtl' || dir === 'back' ? Math.max(0, (n - 1) * (48 + gap)) : 0) + 'px'); // the fuse's start
     // "sees N" must never touch its neighbour: snug, then an eye glyph for the word (fonts vary by device)
-    fitLadder(E.rack, 2, () => E.tubes.some(t => !t.btn.hidden && t.sees.firstChild && t.sees.offsetWidth > 48 + gap - 3),
-      gap + E.tubes.map(t => (t.btn.hidden ? '-' : t.sees._html + t.sees.className)).join('|'));
+    const rk = gap + E.tubes.map(t => (t.btn.hidden ? '-' : t.sees._html + t.sees.className)).join('|');
+    queueFit('rack', () => fitLadder(E.rack, 2, () => E.tubes.some(t => !t.btn.hidden && t.sees.firstChild && t.sees.offsetWidth > 48 + gap - 3), rk));
     renderArc();
   }
   function tubeLabel(i, ord, sees, o) {
@@ -8052,10 +8343,11 @@ const UI_PLAY = (() => {
     const live = arcs.filter(a => a.tubes[a.src] && a.tubes[a.src].shell);
     E.skyWrap.classList.toggle('has-arc', live.length > 0);
     if (!live.length) { setHTML(E.arc, ''); E.arc.removeAttribute('data-on'); return; }
-    const rr = E.rack.getBoundingClientRect(), x = j => { const r = E.tubes[j].btn.getBoundingClientRect(); return r.left + r.width / 2 - rr.left; };
+    if (!geo.ok) readGeo();
+    const n = S().tubes.length, rw = Math.round(geo.rackW), x = j => tubeX(j, n, geo.rackX);
     const H = 20; // the arcs rise from the brass rim into the sky
-    E.arc.setAttribute('viewBox', `0 0 ${Math.round(rr.width)} ${H + 6}`);
-    E.arc.style.width = Math.round(rr.width) + 'px';
+    E.arc.setAttribute('viewBox', `0 0 ${rw} ${H + 6}`);
+    E.arc.style.width = rw + 'px';
     E.arc.dataset.col = shellCol(live[0].tubes[live[0].src].shell);
     E.arc.dataset.on = '1';
     let svgOut = '';
@@ -8095,8 +8387,17 @@ const UI_PLAY = (() => {
     E.rehearse.setAttribute('aria-label', view.auto ? (view.rules.length ? `Rehearse: tonight's ${hName} is live` : 'Rehearse (H)') : `Rehearse ${hName || 'the next Headliner'} (H)`);
     E.rehearse.classList.toggle('on', view.rehearsing);
     E.rehearse.disabled = !hName || view.auto;
-    E.toolsHint.textContent = view.rehearsing ? 'Rehearsing' : '';
-    E.toolsHint.style.visibility = overflows(E.toolsHint) ? 'hidden' : ''; // a word, or nothing: never a clipped half-word
+    const hint = view.rehearsing ? 'Rehearsing' : '';
+    if (E.toolsHint.textContent !== hint) E.toolsHint.textContent = hint;
+    // a word, or nothing: never a clipped half-word (measured only when the word or the width changes)
+    if (!hint) { E.toolsHint.style.visibility = ''; E.toolsHint._fitKey = null; }
+    else queueFit('hint', () => {
+      const k = fitEpoch + '|' + mode + '|' + lastW + '|' + E.tools.className + hint;
+      if (E.toolsHint._fitKey === k) return;
+      E.toolsHint.style.visibility = '';
+      E.toolsHint.style.visibility = overflows(E.toolsHint) ? 'hidden' : '';
+      E.toolsHint._fitKey = k;
+    });
   }
 
   /* ---------- Shop: 3-card row or 2×2 grid ---------- */
@@ -8143,7 +8444,10 @@ const UI_PLAY = (() => {
       b.classList.toggle('badged', !!badge);
       b.dataset.rar = rar[1];
       const bd = b.querySelector('.c-badge');
-      fitLadder(b, 2, () => overflows(bd), b._html + b.className); // 1: badges shed their word ("Twin ★2 $5" → "⧉★2 $5", "✦ Fuses" → "✦") · 2: no badge
+      const bk = b._html + b.className, nm = b.querySelector('.c-name');
+      // §8.1 Regular 3-card: the name gets its 2 lines (hyphens:auto) even with a badge; the token steps down to make room
+      const wrap = () => { b.removeAttribute('data-wrap'); if (!four && mode === 'regular' && badge && nm.scrollHeight > 27) b.setAttribute('data-wrap', ''); };
+      queueFit('card' + i, () => fitLadder(b, 2, () => overflows(bd), bk, wrap)); // 1: badges shed their word ("Twin ★2 $5" → "⧉★2 $5", "✦ Fuses" → "✦") · 2: no badge
     });
   }
 
@@ -8174,8 +8478,9 @@ const UI_PLAY = (() => {
     E.tubeBtn.setAttribute('aria-label', n >= 6 ? 'The rack is full: 6 tubes' : `Add tube ${n + 1} for $${tc} (T)`);
     const rc$ = rerollCost();
     setHTML(E.rerollBtn, `${ICON.reroll}<span class="ws-name ws-word">Reroll</span><span class="ws-price num">$${rc$}</span>`);
-    // 360 px: tighten, then Tube / Reroll keep only their icons, then the rig keeps only its glyph (names stay in aria-labels)
-    fitLadder(E.workshop, 3, () => [...E.workshop.querySelectorAll('.ws-name')].some(overflows), E.rigBtn._html + E.tubeBtn._html + E.tubeBtn.hidden + E.rerollBtn._html);
+    // 360 px: tighten with each price under its word, then Tube / Reroll keep only their icons, then the rig keeps only its glyph (names stay in aria-labels)
+    const wk = E.rigBtn._html + E.tubeBtn._html + E.tubeBtn.hidden + E.rerollBtn._html;
+    queueFit('workshop', () => fitLadder(E.workshop, 3, () => [...E.workshop.querySelectorAll('.ws-name')].some(overflows), wk));
     E.rerollBtn.disabled = !(st.shop && st.shop.cards && st.shop.cards.length);
     E.rerollBtn.classList.toggle('poor', rc$ > st.coins);
     E.rerollBtn.setAttribute('aria-label', `Reroll the shop for $${rc$} (X)`);
@@ -8227,7 +8532,7 @@ const UI_PLAY = (() => {
       // the hover line (a drop's local chips) replaces the card text; a card with nowhere to go says why
       E.info.classList.toggle('hovering', !flash && !!held && !!hover && targets.has(slotKey(hover)));
       E.info.classList.toggle('blocked', !flash && !!held && held.kind !== 'shell' && !targets.size);
-      const t = E.info.querySelector('.info-t'); fitLadder(E.info, 2, () => overflows(t), info);
+      const t = E.info.querySelector('.info-t'); queueFit('info', () => fitLadder(E.info, 2, () => overflows(t), info));
     }
     E.skyWrap.classList.toggle('has-info', !!info);
     // result card (pinned until the first build action)
@@ -8247,11 +8552,36 @@ const UI_PLAY = (() => {
     E.roO.textContent = fmt(readout.ooh);
     E.roA.textContent = fmtAah(readout.aah);
   }
-  function punch(el, big) {
+  // Restart a one-shot animation. Web Animations need no reflow (a class restart forced a layout per event,
+  // dozens per show); the CSS class is the fallback.
+  function replay(el, frames, opts, cls) {
+    if (!el) return;
+    if (fnIn(el, 'animate')) { if (el._anim) el._anim.cancel(); el._anim = el.animate(frames, opts); return; }
+    el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+  }
+  function punch(el, big) { // §9: the counter punches 1.15× (90 ms); × punches harder
     if (reduced() || !el) return;
-    el.classList.remove('punch', 'punch-big');
-    void el.offsetWidth;
-    el.classList.add(big ? 'punch-big' : 'punch');
+    const easing = big ? 'cubic-bezier(.34,1.56,.64,1)' : 'ease-out'; // per segment, as the CSS keyframes had it
+    replay(el, [{ transform: 'none', easing }, { transform: `scale(${big ? 1.3 : 1.15})`, offset: big ? 0.45 : 0.5, easing }, { transform: 'none' }],
+      { duration: big ? 160 : 90 }, big ? 'punch-big' : 'punch');
+  }
+  // §9 fuseLit: the ember crawls in along the fuse to the first tube that fires (280 ms), then glows there.
+  function lightFuse(ev) {
+    const n = S().tubes.length, step = 48 + rackGap, len = Math.max(0, (n - 1) * step);
+    const seq = ev && Array.isArray(ev.order) && ev.order.length ? ev.order : view && view.order.seq.length ? view.order.seq : [0];
+    const x = Math.max(0, Math.min(n - 1, seq[0] | 0)) * step;
+    const rules = ev && Array.isArray(ev.rules) ? ev.rules : view ? view.tonight : [];
+    const right = rules.some(r => r === 'windshift' || /^countdown/.test(r)); // the fuse starts at the right end
+    const lead = Math.min(40, Math.max(18, geo.ok ? (geo.wrapW - len) / 2 : 24)); // from off the rack's edge
+    const from = right ? len + lead : -lead;
+    E.fuse.style.setProperty('--ex', x + 'px');
+    E.fuse.classList.add('lit');
+    if (!reduced()) replay(E.ember, [{ transform: `translateX(${from - x}px) scale(.6)`, opacity: 0.5 }, { transform: 'none', opacity: 1 }], { duration: 280, easing: 'linear' }, 'crawl');
+  }
+  // §9 launch: the tube recoils (squash 1.25 × 0.8, 120 ms).
+  function recoil(T) {
+    if (!T || reduced()) return;
+    replay(T.body, [{ transform: 'none', easing: 'ease-out' }, { transform: 'scale(1.25,.8)', offset: 0.5, easing: 'ease-out' }, { transform: 'none' }], { duration: 120 }, 'recoil');
   }
 
   function resultHTML(r) {
@@ -8700,15 +9030,17 @@ const UI_PLAY = (() => {
       litTarget = litTarget || targetOf(S().show | 0);
       readout.on = true; readout.ooh = 0; readout.aah = 1; readout.score = 0;
       result = null;
-      E.tubes.forEach(t => t.btn.classList.remove('fired', 'recoil'));
+      E.tubes.forEach(t => { t.btn.classList.remove('fired'); t.body.classList.remove('recoil'); });
     } else {
       frozen = false;
-      E.tubes.forEach(t => t.btn.classList.remove('fired', 'recoil'));
+      E.tubes.forEach(t => { t.btn.classList.remove('fired'); t.body.classList.remove('recoil'); });
       E.fuse.classList.remove('lit');
       if (to !== 'RESULT') { readout.on = false; litTarget = 0; }
     }
     render();
-    if (to !== 'RESOLVING') renderSoon(); // core refreshes GAME.preview after the switch (build open); read it once settled
+    // Core refreshes GAME.preview before 'ui' and emits 'preview' when it changes (subscribed in init). Guard for a
+    // core without that event: re-render once settled only if the preview we drew from went stale.
+    if (to !== 'RESOLVING') Promise.resolve().then(() => { if (view && pvSig() !== view.pv) render(); });
   }
   let renderQueued = false;
   function renderSoon() {
@@ -8720,8 +9052,8 @@ const UI_PLAY = (() => {
     if (!ev || !ev.type) return;
     const T = typeof ev.tube === 'number' ? E.tubes[ev.tube] : null;
     switch (ev.type) {
-      case 'fuseLit': E.fuse.classList.add('lit'); if (typeof ev.target === 'number') litTarget = ev.target; break;
-      case 'launch': if (T && !reduced()) { T.btn.classList.remove('recoil'); void T.btn.offsetWidth; T.btn.classList.add('recoil'); } break;
+      case 'fuseLit': lightFuse(ev); if (typeof ev.target === 'number') litTarget = ev.target; break;
+      case 'launch': recoil(T); break;
       case 'burst': if (T) T.btn.classList.add('fired'); break;
       case 'gainOoh': case 'crowdCheer': readout.ooh += +ev.v || 0; punch(E.roO); break;
       case 'gainAah': readout.aah += +ev.v || 0; punch(E.roA); break;
@@ -9000,12 +9332,12 @@ const UI_PLAY = (() => {
       if (dirty && building()) requestAnimationFrame(render);
     }, true);
     // layout mode
-    if (typeof ResizeObserver === 'function') new ResizeObserver(measure).observe(E.play);
+    if (typeof ResizeObserver === 'function') { const ro = new ResizeObserver(() => measure()); [E.play, E.tubesWrap].forEach(el => ro.observe(el)); }
     window.addEventListener('resize', measure);
     // GAME wiring
     const on = (n, f) => { if (fnIn(G, 'on')) G.on(n, x => safe(() => f(x))); };
     on('change', () => render());
-    on('preview', () => render());
+    on('preview', () => { if (ui() !== 'RESOLVING') render(); }); // GAME.preview changed (Rehearse, build open)
     on('critical', () => renderSoon());
     on('sim', onSim);
     on('ui', onUi);
@@ -9204,12 +9536,17 @@ const UI_PANELS = (() => {
     const renown = st.renown | 0;
     const sub = st.phase === 'won' ? 'Happy New Year!' : st.phase === 'lost' ? 'The crowd went home' : `Show ${Math.min(s + 1, shows)} of ${shows}`;
     const oldList = boardEl.querySelector('.bd-list'), keep = oldList ? oldList.scrollTop : 0;
-    boardEl.innerHTML = `<div class="bd">
-<header class="bd-head"><h2 class="bd-title">The festival year</h2><p class="bd-sub"><span class="num">${esc(sub)}</span>${renown ? `<span class="bd-tag">Renown ${renown}</span>` : ''}${st.fairWeather ? '<span class="bd-tag">Fair Weather</span>' : ''}</p></header>
+    // Re-rendering replaces the board: keep keyboard focus on the same control (or the list).
+    const fEl = document.activeElement, hadFocus = fEl && boardEl.contains(fEl) ? (fEl.dataset && fEl.dataset.bd) || (fEl.classList.contains('bd-list') ? 'list' : null) : null;
+    boardEl.innerHTML = `<div class="bd${showScores ? ' is-scores' : ''}">
+<header class="bd-head"><h2 class="bd-title">The festival year</h2><p class="bd-sub"><span class="num">${esc(sub)}</span>${renown ? `<span class="bd-tag">Renown ${renown}</span>` : ''}${st.fairWeather ? '<span class="bd-tag">Fair Weather</span>' : ''}<button type="button" class="bd-scores" data-bd="scores" aria-pressed="${showScores}">Scores</button></p></header>
 <div class="bd-cols" aria-hidden="true"><span>Twilight</span><span>Evening</span><span>Headliner</span></div>
-<ol class="bd-list">${rows}</ol>
+<ol class="bd-list" tabindex="0" aria-label="Festivals">${rows}</ol>
 <section class="bd-curve" aria-label="Target curve">${spark(st, ctx.hm, shows, s, building)}</section>
 </div>`;
+    // First paint (or a new width): redraw the curve at the width it actually got.
+    const curve = boardEl.querySelector('.bd-curve'), svg = curve && curve.querySelector('svg.sp'), cw = curveW(curve);
+    if (svg && cw && cw !== svg.width.baseVal.value) curve.innerHTML = spark(st, ctx.hm, shows, s, building, cw);
     // Keep the reader's scroll position; after each new result bring tonight's festival into view.
     const list = boardEl.querySelector('.bd-list'), nowRow = boardEl.querySelector('.bd-row.is-now');
     const played = hist(st).length;
@@ -9222,6 +9559,20 @@ const UI_PANELS = (() => {
     }
     histLen = played;
     watchEdges(list); edges(list);
+    if (hadFocus) { const b = hadFocus === 'list' ? list : boardEl.querySelector(`[data-bd="${hadFocus}"]`); if (b) b.focus({preventScroll: true}); }
+  }
+  // "Scores" reveals, as text in each played festival, what the stamps and cells only show as
+  // marks and icons: each show's target and Applause and the Headliner's name (no hover needed).
+  let showScores = false;
+  function onBoardClick(e) {
+    const b = e.target.closest && e.target.closest('[data-bd="scores"]');
+    if (!b) return;
+    showScores = !showScores;
+    b.setAttribute('aria-pressed', String(showScores));
+    const bd = boardEl.querySelector('.bd');
+    if (bd) bd.classList.toggle('is-scores', showScores);
+    const list = boardEl.querySelector('.bd-list');
+    if (list) edges(list);
   }
 
   /* One festival. Once it is over it collapses to a stamped line (✓ ✓ ✗); otherwise it
@@ -9264,16 +9615,22 @@ const UI_PANELS = (() => {
     else if (f > curF + 1) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}<span>${esc(names)}</span></span>`;
     else card = hls.map(h => `<p class="bd-hl">${icon(h.id, 'pn-ic bd-hl-ic')}<b>${esc(h.name)}</b>${h.rule ? ' ' + esc(h.rule) : ''}</p>`).join('');
     const aria = `Festival ${f}, ${festName(f)}${now ? ', tonight' : ''}. ${say.join('. ')}. Headliner: ${posted && hls.length ? names : 'not posted yet'}.`;
+    const more = past || now ? `<ul class="bd-more" aria-hidden="true">${say.map(t => `<li>${esc(t)}</li>`).join('')}${past && hls.length ? `<li>Headliner: ${esc(names)}</li>` : ''}</ul>` : '';
     const far = !past && !now && (f > curF + 1 || !building);    // a festival further ahead: a light two-line row
     return `<li class="bd-row ${past ? 'is-past' : now ? 'is-now' : 'is-future'}${far ? ' is-far' : ''}" aria-label="${esc(aria)}"${now ? ' aria-current="step"' : ''}>
 <div class="bd-name" aria-hidden="true"><span class="bd-num num">${f}</span><span class="bd-fest">${esc(festName(f))}</span>${mini}${stamps ? `<span class="bd-stamps">${stamps}</span>` : ''}</div>
-${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card ? `<div aria-hidden="true">${card}</div>` : ''}</li>`;
+${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}${card ? `<div aria-hidden="true">${card}</div>` : ''}</li>`;
   }
 
   /* Log-y target curve (dashed step line for the shows ahead) with Applause dots, drawn to scale. */
-  function spark(st, hm, n, s, building) {
-    const box = boardEl.querySelector('.bd-curve');
-    const W = Math.max(240, Math.round((box && box.clientWidth) || boardEl.clientWidth - 34 || 286)), H = 136;
+  // The curve's content width (inside its padding), so the SVG draws 1:1 and its 16px labels render at 16px.
+  function curveW(box) {
+    if (!box || !box.clientWidth) return 0;
+    const cs = getComputedStyle(box);
+    return Math.floor(box.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0));
+  }
+  function spark(st, hm, n, s, building, w) {
+    const W = Math.max(160, w || curveW(boardEl.querySelector('.bd-curve')) || boardEl.clientWidth - 38 || 282), H = 136;
     const L = 44, R = 8, T = 10, B = 26, pw = W - L - R, ph = H - T - B;
     const tg = [], dots = [];
     for (let i = 0; i < n; i++) { const e = lastOf(hm[i]); tg.push(e && !(building && i === s) ? e.target : tgt(st, i)); }
@@ -9472,6 +9829,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     <div class="sl-meta"></div>
   </header>
   <div class="sl-body">
+    <p class="sl-key" aria-hidden="true"><span>Burst · what it added</span><span>Running Ooh × Aah</span></p>
     <ol class="sl-lines" aria-label="Bursts, in firing order"></ol>
     <div class="sl-sum"></div>
   </div>
@@ -9481,6 +9839,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     P = {meta: logEl.querySelector('.sl-meta'), body: logEl.querySelector('.sl-body'), lines: logEl.querySelector('.sl-lines'),
       sum: logEl.querySelector('.sl-sum'), live: logEl.querySelector('.sl-live')};
     watchEdges(P.body);
+    P.body.addEventListener('scroll', () => { const B = P.body; P.follow = B.scrollTop + B.clientHeight >= B.scrollHeight - 48; }, {passive: true});
     logEl.addEventListener('click', e => {
       if (e.target.classList.contains('sl-scrim')) { closeSheet(); return; }
       const b = e.target.closest('[data-sl]');
@@ -9558,7 +9917,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     const sees = seesText(ln, L), full = seesFull(ln, L);
     const chips = flags + (sees ? `<span class="sl-sees"${full && sees.indexOf(full) < 0 ? ` title="${esc(full)}"` : ''}>${esc(sees)}</span>` : '') + chipsHTML(ln);
     const tot = `<span class="sl-run num" title="Running Ooh × Aah">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
-    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛</span>' : ''}</span></div>
+    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛ Favourite</span>' : ''}</span></div>
 <div class="sl-chips">${chips}${tot}</div>`;
   }
   function lineLabel(ln, L) {
@@ -9625,20 +9984,33 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     return bits.length || after ? `<p class="sl-pay num">${bits.map(([t, k]) => `<span class="sl-pb is-${k}">${esc(t)}</span>`).join('')}${after}</p>` : '';
   }
 
+  // Painting is batched: the stream only marks the log dirty and one rAF paints it, every DOM write
+  // first and at most one scroll last, with no layout reads while streaming (whether the reader is
+  // following the bottom comes from the scroll handler). A closed sheet is painted when it opens.
+  let paintRaf = 0, paintForce = false;
+  function schedulePaint(force) {
+    paintForce = paintForce || !!force;
+    if (!paintRaf) paintRaf = requestAnimationFrame(() => { paintRaf = 0; paintLog(false); });
+  }
+  const setHTML = (el, html) => { if (el._html !== html) { el._html = html; el.innerHTML = html; } };
   function paintLog(force) {
     if (!P) return;
+    if (paintRaf) { cancelAnimationFrame(paintRaf); paintRaf = 0; }
+    force = force || paintForce; paintForce = false;
+    if (logEl.hidden) { P.stale = true; return; }
+    P.stale = false;
     const L = log;
-    P.meta.innerHTML = metaHTML(L);
+    setHTML(P.meta, metaHTML(L));
     P.live.hidden = !(L && L.live);
     panel.classList.toggle('is-live', !!(L && L.live));
     if (!L || (!L.lines.length && !L.app)) {
       P.lines.innerHTML = `<li class="sl-empty">${emptyHTML()}</li>`;
-      P.sum.innerHTML = L ? sumHTML(L) : '';
+      setHTML(P.sum, L ? sumHTML(L) : '');
       edges(P.body);
       return;
     }
     // While live, follow the stream unless the reader has scrolled up to look at an earlier line.
-    const B = P.body, follow = B.scrollTop + B.clientHeight >= B.scrollHeight - 48;
+    const B = P.body, follow = P.follow !== false;
     if (force || P.lines.querySelector('.sl-empty')) P.lines.innerHTML = '';
     const kids = P.lines.children;
     let added = false;
@@ -9650,7 +10022,8 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
         P.lines.appendChild(li);
         added = true;
       }
-      const key = `${ln.v}:${ln.items ? ln.items.length : 0}:${L.fav}:${Object.keys(L.byN).length}`;
+      // re-render a line only when it changed (or a name it shows became known)
+      const key = `${ln.v}:${ln.items ? ln.items.length : 0}:${L.fav}:${ln.up ? ln.up.filter(n => L.byN[n]).length : 0}`;
       if (li._key !== key) {
         li._key = key;
         li.innerHTML = lineHTML(ln, L);
@@ -9661,9 +10034,9 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
       }
     });
     while (kids.length > L.lines.length) P.lines.lastChild.remove();
-    P.sum.innerHTML = sumHTML(L);
-    if (L.live && (added || follow) && B.clientHeight) B.scrollTo({top: B.scrollHeight, behavior: reduced() || !added ? 'auto' : 'smooth'});
-    edges(B);
+    setHTML(P.sum, sumHTML(L));
+    if (L.live) { if (added || follow) B.scrollTo({top: 1e7, behavior: reduced() || !added ? 'auto' : 'smooth'}); }   // edges follow from the scroll events
+    else edges(B);
   }
   function emptyHTML() {
     const again = hist(G && G.state).length > 0;
@@ -9696,6 +10069,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
     logEl.setAttribute('role', sheet ? 'dialog' : 'complementary');
     if (sheet) logEl.setAttribute('aria-modal', 'true'); else logEl.removeAttribute('aria-modal');
     syncing = false;
+    if (P && P.stale && !logEl.hidden) paintLog(true);
     if (!open) return;
     if (sheet && panel) panel.scrollTop = 0;
     if (desk && panel) { panel.classList.remove('is-flash'); void panel.offsetWidth; panel.classList.add('is-flash'); }
@@ -9752,7 +10126,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
       startLive(null);
     }
     reduce(log, ev);
-    paintLog(false);
+    schedulePaint(false);
   }
   function onResult(p) {
     p = p || {};
@@ -9783,6 +10157,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${card 
   function init(game) {
     G = game;
     boardEl = document.getElementById('board');
+    if (boardEl) boardEl.addEventListener('click', onBoardClick);
     logEl = document.getElementById('showlog');
     if (!G || (!boardEl && !logEl)) return;
     mq = typeof matchMedia === 'function' ? matchMedia('(min-width: 1200px)') : null;
@@ -10181,6 +10556,21 @@ const UI_END = (() => {
       date: new Date().toISOString().slice(0, 10),
       tubes: (w.st.tubes || []).map(t => (t && t.shell ? {id: t.shell.id, col: t.shell.col, star: t.shell.star || 1, rig: t.rig || null} : null))};
   }
+  // Greedy wrap at the " · " joins, then at spaces, to fit maxW (px, in the context's current font).
+  function wrapLines(g, text, maxW) {
+    const lines = [];
+    for (const part of String(text).split(' · ')) {
+      const last = lines[lines.length - 1];
+      if (last != null && g.measureText(last + ' · ' + part).width <= maxW) { lines[lines.length - 1] = last + ' · ' + part; continue; }
+      let cur = '';
+      for (const w of part.split(' ')) {
+        const t = cur ? cur + ' ' + w : w;
+        if (cur && g.measureText(t).width > maxW) { lines.push(cur); cur = w; } else cur = t;
+      }
+      lines.push(cur);
+    }
+    return lines;
+  }
   function paintPoster(cv, p, o) {
     if (!cv || !p) return;
     o = o || {};
@@ -10202,7 +10592,9 @@ const UI_END = (() => {
     const sub = (p.won && !p.endless ? 'Happy New Year!' : p.won ? 'Afterparty till dawn' : 'Show ' + p.show) + (p.seed ? ' · seed ' + p.seed : '');
     const fTitle = '600 26px Fraunces, Georgia, "Times New Roman", serif', fSub = '700 16px "Atkinson Hyperlegible", system-ui, sans-serif';
     g.font = fTitle; const tw = g.measureText(title).width;
-    g.font = fSub; const tBox = 14 + Math.max(tw, g.measureText(sub).width) + 10;
+    g.font = fSub;
+    const subs = wrapLines(g, sub, W - 28);                          // never clipped by the frame
+    const tBox = 14 + Math.max(tw, ...subs.map(l => g.measureText(l).width)) + 10, tBot = 64 + (subs.length - 1) * 20;
     // bursts in their tube columns
     const tubes = p.tubes || [], n = Math.max(tubes.length, 1);
     const rackW = Math.min(W - 24, n * 150), x0 = (W - rackW) / 2, colW = rackW / n;
@@ -10212,7 +10604,7 @@ const UI_END = (() => {
       let R = Math.min(colW * .56, 56) * (.86 + .07 * (t.star || 1));
       const x = x0 + colW * (i + .5);
       let y = Math.max(R + 8, 70 + (i % 2) * 18 + (rnd() - .5) * 10);
-      if (x - R * .8 < tBox && y - R < 64) { R = Math.min(R, (hz - 64) / 1.8); y = 64 + R; }   // whole burst below the title block
+      if (x - R * .8 < tBox && y - R < tBot) { R = Math.min(R, (hz - tBot) / 1.8); y = tBot + R; }   // whole burst below the title block
       spots.push({t, x, y, R});
     });
     for (const s of spots) {                                        // mortar trails, fading in as they rise
@@ -10253,7 +10645,7 @@ const UI_END = (() => {
     if (T.hc) { g.strokeStyle = T.paper; g.lineWidth = 1; g.beginPath(); g.moveTo(0, hz + .5); g.lineTo(W, hz + .5); g.stroke(); }
     // title block (drawn last, over a soft elliptical plate)
     g.save();
-    g.scale((tBox + 30) / 80, 1);
+    g.scale((tBox + 30) / 80, tBot / 64);
     const plate = g.createRadialGradient(0, 30, 0, 0, 30, 80);
     const pc = T.hc ? '0,0,0' : '7,10,24';
     plate.addColorStop(0, `rgba(${pc},.8)`); plate.addColorStop(.62, `rgba(${pc},.55)`); plate.addColorStop(1, `rgba(${pc},0)`);
@@ -10262,10 +10654,12 @@ const UI_END = (() => {
     g.fillStyle = T.paper; g.textBaseline = 'alphabetic';
     g.font = fTitle; g.fillText(title, 14, 34);
     g.font = fSub;
-    g.fillStyle = p.won ? T.aah : T.dim; g.fillText(sub, 14, 56);
+    g.fillStyle = p.won ? T.aah : T.dim; subs.forEach((l, i) => g.fillText(l, 14, 56 + i * 20));
     g.font = 'italic 700 16px Fraunces, Georgia, serif';
     g.textAlign = 'right'; g.fillStyle = T.brass;
-    g.fillText('Ooh × Aah', W - 12, 26); g.textAlign = 'left';
+    // the wordmark sits top right, or on the river when a long festival name reaches it
+    const wm = 'Ooh × Aah', clash = 14 + tw + 12 > W - 12 - g.measureText(wm).width;
+    g.fillText(wm, W - 12, clash ? H - 8 : 26); g.textAlign = 'left';
     g.globalAlpha = .7; g.strokeStyle = T.brass; g.lineWidth = 1; g.strokeRect(4.5, 4.5, W - 9, H - 9); g.globalAlpha = 1;
   }
 
@@ -10757,8 +11151,7 @@ const UI_END = (() => {
     const rec = meta.records && meta.records.bestShow;
     const isRecord = B && rec && rec.score === B.applause && String(rec.seed) === String(v.seed);
     const ms = milestones(), near = ms.slice(0, 2), sil = silhouette(ms);
-    const news = (v.lr.newUnlocks || []).map(u => (typeof u === 'string' ? {kind: row(D().SHELLS, u) ? 'shell' : 'other', id: u} : u))
-      .filter(u => u && u.id != null).sort((a, b) => (a.kind === 'milestone' ? 0 : 1) - (b.kind === 'milestone' ? 0 : 1));
+    const news = freshUnlocks(v).sort((a, b) => (a.kind === 'milestone' ? 0 : 1) - (b.kind === 'milestone' ? 0 : 1));
     const keeps = keepOptions();
     const canParty = v.kind === 'win' && has(G, 'enterAfterparty') && (!has(G, 'canAfterparty') || call(G, 'canAfterparty') !== false);
     const lost = v.lost;
@@ -10841,6 +11234,31 @@ const UI_END = (() => {
     startJobs();
   }
 
+  /* The run's unlocks, in the order they came. After an Afterparty only those new since the win's end
+     screen: the core's list covers the whole run, and the win already showed the rest. The win's
+     list is remembered per run seed (in memory and, across a reload, in sessionStorage); without it,
+     everything up to the season win (m_win and what it opens) counts as shown. */
+  const WIN_SEEN = 'oohxaah.endWinSeen';
+  const unlockKey = u => u.kind + ':' + u.id;
+  let winSeen = null;
+  function freshUnlocks(view) {
+    const all = (view.lr.newUnlocks || []).map(u => (typeof u === 'string' ? {kind: row(D().SHELLS, u) ? 'shell' : 'other', id: u} : u))
+      .filter(u => u && u.id != null);
+    const seed = String(view.seed);
+    if (view.kind === 'win') {
+      winSeen = {seed, keys: all.map(unlockKey)};
+      try { sessionStorage.setItem(WIN_SEEN, JSON.stringify(winSeen)); } catch (e) { /* storage blocked: memory only */ }
+      return all;
+    }
+    if (!view.endless) return all;
+    let seen = winSeen && winSeen.seed === seed ? winSeen : null;
+    if (!seen) { try { const r = JSON.parse(sessionStorage.getItem(WIN_SEEN) || 'null'); if (r && r.seed === seed && Array.isArray(r.keys)) seen = r; } catch (e) { /* ignore */ } }
+    if (seen) { const k = new Set(seen.keys); return all.filter(u => !k.has(unlockKey(u))); }
+    let cut = -1;
+    all.forEach((u, i) => { if (u.id === 'm_win' || u.milestone === 'm_win') cut = i; });
+    return all.slice(cut + 1);
+  }
+
   /* "Just unlocked" cards (§7.2): one per milestone reached, naming what it opens; they apply from the next run. */
   function newsHTML(news) {
     if (!news.length) return '';
@@ -10918,7 +11336,11 @@ const UI_END = (() => {
     if (!el) return;
     const items = out.pareto;
     if (!items || !items.length) { el.innerHTML = '<p class="end-dim">No shows to add up yet.</p>'; return; }
-    const W = Math.floor(el.clientWidth || 300), p = paretoSVG(items, W);
+    // Size the chart to the plot's inner box (inside its border) so the SVG draws at 1:1 and its
+    // 16px labels render at 16px, not scaled down by max-width.
+    let plot = el.querySelector(':scope > .end-plot');
+    if (!plot) { el.innerHTML = '<div class="end-plot"></div>'; plot = el.firstChild; }
+    const W = Math.floor(plot.clientWidth || 300), p = paretoSVG(items, W);
     el.innerHTML = `<div class="end-plot">${p.svg}</div><p class="end-cap" id="end-pareto-cap">${esc(paretoCaption(items))}</p>
       <ul class="end-key">${p.bars.map((b, i) => `<li${i > p.vital || b.key === 'other' ? ' class="dim"' : ''}>${b.key === 'crowd' ? '<b><svg class="end-key-ico" width="22" height="14" viewBox="-11 -9 22 16" aria-hidden="true"><g class="ep-crowd"><circle cx="-6" cy="-3" r="3"/><circle cx="6" cy="-3" r="3"/><circle cx="0" cy="-5" r="3.4"/><path d="M-11,6q5,-8 11,-8q6,0 11,8z"/></g></svg></b>' : b.key === 'other' ? '<b>…</b>' : `<b>${esc(b.mono)}</b>`} ${esc(b.key === 'crowd' ? 'the Crowd' : b.key === 'other' ? 'everything else' : b.name)} <span class="num">${pct(b.share)}</span></li>`).join('')}</ul>`;
   }
@@ -11032,6 +11454,17 @@ const UI_END = (() => {
   function focusSel(q) { const el = root && root.querySelector(q); if (el) el.focus({preventScroll: false}); }
 
   /* ---------- 'end'-scope keys ---------- */
+  // A control that takes focus is scrolled fully clear of the sticky Run it back bar (and of the
+  // top edge); scroll-padding on #end does this for the browser's own focus scrolling, this covers
+  // the rest (focus() from script, engines that ignore scroll-padding for focus).
+  function keepClearOfBar(e) {
+    const t = e.target, bar = root && root.querySelector('.end-actions');
+    if (!bar || !t || t === root || bar.contains(t) || !t.getBoundingClientRect) return;
+    const r = t.getBoundingClientRect(), b = bar.getBoundingClientRect(), top = root.getBoundingClientRect().top + 8;
+    if (!r.height) return;
+    if (r.bottom > b.top - 12) root.scrollTop += Math.min(r.bottom - b.top + 12, r.top - top);
+    else if (r.top < top) root.scrollTop -= top - r.top;
+  }
   function onKey(e) {
     if (!isOpen()) return false;
     const k = e.key, ae = document.activeElement;
@@ -11080,6 +11513,7 @@ const UI_END = (() => {
     root = document.getElementById('end');
     if (!G || !root) return;
     root.addEventListener('click', onClick);
+    root.addEventListener('focusin', keepClearOfBar);
     call(G, 'onKey', 'end', onKey);
     call(G, 'on', 'runEnd', p => show((p && p.lastRun) || G.lastRun));
     call(G, 'on', 'runStart', () => { job++; if (isOpen() && has(G, 'top') && G.top() === 'end') call(G, 'close', 'end'); });
@@ -11139,6 +11573,8 @@ const UI_MENUS = (() => {
     for (const kid of kids.flat(3)) if (kid != null && kid !== false) el.append(kid.nodeType ? kid : String(kid));
     return el;
   }
+  // A heading's brass rule is its own element (not ::after) so the text sits on the panel alone.
+  const rule = () => h('span', { class: 'm-rule', 'aria-hidden': 'true' });
   const ICONS = {
     play: '<path fill="currentColor" stroke="none" d="M8 5.5v13l10.5-6.5z"/>',
     gear: '<path d="M4 7h10M18 7h2M4 17h3M11 17h9"/><circle cx="16" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
@@ -11428,7 +11864,7 @@ const UI_MENUS = (() => {
     return h('fieldset', { class: 'st-row st-radios', role: 'radiogroup', 'aria-labelledby': 'set-' + name + '-legend' },
       h('legend', { class: 'st-label', id: 'set-' + name + '-legend' }, legend), hint != null ? h('span', { class: 'st-hint', id: 'set-' + name + '-hint' }, hint) : null, seg);
   }
-  const section = (title, ...kids) => h('section', { class: 'st-sec' }, h('h3', { class: 'display st-h' }, title), kids);
+  const section = (title, ...kids) => h('section', { class: 'st-sec' }, h('h3', { class: 'display st-h' }, h('span', null, title), rule()), kids);
 
   function buildSettings() {
     const root = $('settings');
@@ -11885,9 +12321,9 @@ const UI_MENUS = (() => {
     const gl = rows(DATA().GLOSSARY).map((g) => Array.isArray(g) ? g : [g.term || g.id || g.name, g.meaning || g.text || g.def]).filter((g) => g[0]);
     const body = h('div', { class: 'm-body hp-body', tabindex: '0', role: 'region', 'aria-label': 'Rules, glossary and keys' },
       h('ol', { class: 'hp-card', 'aria-label': 'The rules' }, rules.slice(0, 3).map((t, i) => h('li', null, h('span', { class: 'hp-n display-italic', 'aria-hidden': 'true' }, String(i + 1)), h('span', null, t)))),
-      gl.length ? h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-gl' }, h('h3', { class: 'display', id: 'hp-gl' }, 'Glossary'),
+      gl.length ? h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-gl' }, h('h3', { class: 'display', id: 'hp-gl' }, h('span', null, 'Glossary'), rule()),
         h('dl', { class: 'hp-gloss' }, gl.map(([t, d]) => h('div', null, h('dt', null, t), h('dd', null, d))))) : null,
-      h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-keys' }, h('h3', { class: 'display', id: 'hp-keys' }, 'Keys'),
+      h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-keys' }, h('h3', { class: 'display', id: 'hp-keys' }, h('span', null, 'Keys'), rule()),
         h('table', { class: 'hp-keys' }, h('tbody', null, KEYMAP.map(([k, d]) => h('tr', null,
           h('th', { scope: 'row' }, keyCell(k)), h('td', null, d)))))));
     const foot = h('footer', { class: 'm-foot' }, h('button', { type: 'button', id: 'help-done', class: 'btn btn-primary m-wide', onclick: () => G.close('help') }, 'Back to the show'));
@@ -11895,70 +12331,167 @@ const UI_MENUS = (() => {
   }
 
   /* ======================================================================
-     TOASTS (render GAME 'toast'; max 3; auto-dismiss; aria-hidden)
+     TOASTS (render GAME 'toast'; #toasts is aria-hidden: each text is voiced when it arrives)
+     One rule, everywhere, so a toast never covers level-1 information:
+       - toasts play only over the play screen in BUILD or RESULT: never during a show, never while
+         any overlay is up (menus, the Inspect and Show-log sheets, the end screen, Tap to continue);
+         until then they queue (the queue survives: they play when the player is back at the show);
+       - one at a time, in the lowest band of the sky that nothing else occupies at that moment
+         (the HUD, Sponsor strip, readout, result card, info card, sky labels and cheer meter are
+         obstacles), which is usually the sky's lower band just above the rack. When no band is
+         tall enough (a result card filling a short sky), the toast waits for the next change;
+       - a toast that something opens over, or that new sky content would touch, steps back into
+         the queue and plays again in full later;
+       - tips (one at a time) go first and stay until the core's 'tipDone' (the next action).
+     The sky is measured only when a toast is about to play, or when the screen under a playing
+     toast changes (state, overlay, resize, the sky's own content): at most once per frame.
      ====================================================================== */
-  const T = { list: [], held: [] };
+  const T = { q: [], cur: null, raf: 0, gap: 0, mo: null, ro: null, watching: false };
   const TOAST_ICON = { milestone: 'star', logbook: 'book', discover: 'book', unlock: 'unlock', fusion: 'spark', tip: 'help' };
+  const TOAST_MAX = 6, EDGE = 4, CLEAR = 6, MOVING = 24;   // queue cap; px from the sky's edges / any obstacle / a moving one
   function toast(text, kind, id) {
-    const box = $('toasts');
-    if (!box || !text) return;
-    const now = performance.now(), tip = kind === 'tip';
-    placeToasts();
-    if (!tip && box.dataset.at === 'held') {   // a menu is up: show it when the player is back at the show
-      if (!T.held.some((t) => t[0] === text)) T.held.push([text, kind, id]);
-      if (T.held.length > 3) T.held.shift();
-      return;
+    if (!$('toasts') || !text) return;
+    if ((T.cur && T.cur.text === text) || T.q.some((t) => t.text === text)) return;
+    const it = { text: String(text), kind: kind || 'info', id, tip: kind === 'tip', el: null, h: 0, timer: 0 };
+    if (it.tip) {
+      T.q = T.q.filter((t) => !t.tip || t.late);
+      if (T.cur && T.cur.tip) retire(T.cur, true);
+      else if (T.cur) requeue();                 // a tip points at the play screen now: it goes first
+      T.q.unshift(it);
+    } else {
+      T.q.push(it);
+      while (T.q.length > TOAST_MAX) { const i = T.q.findIndex((t) => !t.tip); if (i < 0) break; T.q.splice(i, 1); }
     }
-    if (T.list.some((t) => t.text === text && now - t.at < 600)) return;
-    const el = h('div', { class: 'toast', 'data-kind': kind || 'info' }, h('span', { class: 'toast-ico' }, icon(TOAST_ICON[kind] || 'spark')),
-      h('span', { class: 'toast-text' }, tip ? h('b', { class: 'toast-k' }, 'Tip ') : null, text));
-    const item = { el, text, at: now, timer: 0, tip, id };
-    if (tip) { for (const t of T.list.filter((x) => x.tip)) dropToast(t, true); box.prepend(el); }   // one tip at a time, pinned first
-    else box.append(el);
-    T.list.push(item);
-    const transient = () => T.list.filter((t) => !t.tip);
-    while (T.list.length > 3 && transient().length) dropToast(transient()[0], true);
+    kick();
+  }
+  const toastEl = (it) => h('div', { class: 'toast', 'data-kind': it.kind }, h('span', { class: 'toast-ico' }, icon(TOAST_ICON[it.kind] || 'spark')),
+    h('span', { class: 'toast-text' }, it.tip ? h('b', { class: 'toast-k' }, 'Tip ') : null, it.text));
+  // Held: not at the play screen (a show, the end, boot) or something is open over it.
+  function toastsHeld() {
+    const app = $('app'), ui = app ? app.dataset.ui : '';
+    return (ui !== 'BUILD' && ui !== 'RESULT') || !!topName() || document.hidden;
+  }
+  function kick() {
+    if (!T.raf && (T.cur || T.q.length)) T.raf = requestAnimationFrame(toastFrame);
+  }
+  function toastFrame() {
+    T.raf = 0;
+    const held = toastsHeld();
+    if (T.cur && (held || !refit())) requeue();
+    if (!T.cur && T.q.length && !T.gap && !held) playNext();
+    watchSky(!held && !!(T.cur || T.q.length));
+  }
+  // The sky's free bands (px, relative to #app), after every obstacle that shares its width.
+  function skyBands() {
+    const app = $('app'), wrap = $('sky-wrap');
+    if (!app || !wrap) return null;
+    const ar = app.getBoundingClientRect(), sr = wrap.getBoundingClientRect();
+    if (sr.height < 40 || sr.width < 160) return null;
+    let left = sr.left - ar.left + EDGE, right = sr.right - ar.left - EDGE;
+    const obs = [];
+    const add = (el) => {
+      if (!el || el.hidden || !el.getClientRects().length) return;
+      if (getComputedStyle(el).visibility === 'hidden') return;   // (one fading in counts already)
+      let r = el.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) return;
+      // Still easing in or moving (e.g. the info card lifting over the fusion arc): allow for its
+      // travel; its 'transitionend' / 'animationend' re-checks against where it settled.
+      if (el.getAnimations && el.getAnimations().length) r = { left: r.left, right: r.right, top: r.top - MOVING, bottom: r.bottom + MOVING };
+      if (el.classList.contains('cheer')) { if (r.left > sr.left + sr.width / 2) right = Math.min(right, r.left - ar.left - CLEAR); return; }
+      obs.push(r);
+    };
+    add($('hud')); add($('sponsor'));
+    const over = $('sky-overlay');
+    if (over) for (const c of over.children) add(c);
+    let free = [[sr.top - ar.top + EDGE, sr.bottom - ar.top - EDGE]];
+    for (const r of obs) {
+      if (r.right - ar.left <= left || r.left - ar.left >= right) continue;
+      const a = r.top - ar.top - CLEAR, b = r.bottom - ar.top + CLEAR;
+      free = free.flatMap(([x, y]) => (b <= x || a >= y ? [[x, y]] : [[x, Math.min(y, a)], [Math.max(x, b), y]].filter(([p, q]) => q > p)));
+    }
+    return { left: Math.round(left), width: Math.max(0, Math.round(right - left)), free };
+  }
+  // The lowest band that fits a toast of height hgt: its top edge, or null.
+  function bandTop(lane, hgt) {
+    for (let i = lane.free.length - 1; i >= 0; i--) { const [x, y] = lane.free[i]; if (y - x >= hgt) return Math.floor(y - hgt); }
+    return null;
+  }
+  function playNext() {
+    const box = $('toasts'), it = T.q[0];
+    const lane = box && it && skyBands();
+    if (!lane || lane.width < 160) return;
+    const el = it.el || (it.el = toastEl(it));
+    box.style.left = lane.left + 'px'; box.style.width = lane.width + 'px';
+    el.classList.add('is-measure');
+    box.append(el);
+    it.h = el.offsetHeight;
+    const top = bandTop(lane, it.h);
+    if (top == null) { el.remove(); return; }   // no room right now: wait for the next change
+    box.style.top = top + 'px';
+    el.classList.remove('is-measure');
+    T.q.shift();
+    T.cur = it;
+    it.w = lane.width;
     // Tips stay until core's 'tipDone' (the next action); other toasts leave on their own.
-    if (!tip) item.timer = setTimeout(() => dropToast(item, false), 3200 + Math.min(2000, text.length * 30));
+    if (!it.tip || it.late) it.timer = setTimeout(() => retire(it, false), (it.late ? 2000 : 0) + 3200 + Math.min(2000, it.text.length * 30));
   }
-  function dropToast(item, now) {
-    clearTimeout(item.timer);
-    T.list = T.list.filter((t) => t !== item);
-    if (now) { item.el.remove(); return; }
-    item.el.classList.add('is-out');
-    setTimeout(() => item.el.remove(), 260);
+  // The playing toast after a change: stays if its band is still free, moves if another band fits.
+  function refit() {
+    const it = T.cur, box = $('toasts');
+    const lane = box && skyBands();
+    if (!lane || lane.width !== it.w) return false;
+    const y = parseFloat(box.style.top) || 0;
+    if (lane.free.some(([a, b]) => a <= y && y + it.h <= b)) return true;
+    const top = bandTop(lane, it.h);
+    if (top == null) return false;
+    box.style.top = top + 'px';
+    return true;
   }
-  // Toasts sit under the HUD over the sky. While a menu is up they wait (held) and play when the
-  // player is back at the show, so nothing covers a menu. When another overlay reaches the sky band
-  // (the end screen), they rise from the bottom above its sticky footer. Tips (which point at the
-  // play screen) stay hidden until every overlay above the play screen has closed.
-  const OVERLAY_ID = { pause: 'pause-menu', settings: 'settings', logbook: 'logbook', help: 'help', end: 'end', inspect: 'inspect', showlog: 'showlog', tapContinue: 'tap-continue' };
-  const MENUS = new Set(['pause', 'settings', 'logbook', 'help', 'tapContinue']);
-  function placeToasts() {
-    const box = $('toasts'), app = $('app');
-    if (!box || !app) return;
-    const t = topName(), el = t && $(OVERLAY_ID[t] || t);
-    let at = 'top', floor = 0;
-    if (MENUS.has(t) && el && !el.hidden) at = 'held';
-    else if (el && !el.hidden) {
-      const ar = app.getBoundingClientRect();
-      const panel = el.matches('.sheet') ? el : el.querySelector('.panel, .end-card, .sheet') || el.firstElementChild || el;
-      const pr = panel.getBoundingClientRect();
-      if (pr.height && pr.top - ar.top < 140) {
-        at = 'bottom';
-        let top = ar.bottom;
-        for (const f of el.querySelectorAll('footer, .m-foot, .end-actions')) {
-          const r = f.getBoundingClientRect();
-          if (r.height && r.bottom > ar.bottom - 40 && r.top > ar.top + ar.height * 0.5) top = Math.min(top, r.top);
-        }
-        floor = Math.round(ar.bottom - top) + 10;
-      }
+  function requeue() {
+    const it = T.cur;
+    if (!it) return;
+    clearTimeout(it.timer);
+    if (it.el) it.el.remove();
+    T.cur = null;
+    T.q.unshift(it);
+  }
+  function retire(it, now) {
+    clearTimeout(it.timer);
+    T.q = T.q.filter((t) => t !== it);
+    if (T.cur !== it) return;
+    T.cur = null;
+    const el = it.el;
+    it.el = null;
+    if (el) { if (now) el.remove(); else { el.classList.add('is-out'); setTimeout(() => el.remove(), 260); } }
+    // the next toast follows once this one has gone
+    clearTimeout(T.gap);
+    T.gap = setTimeout(() => { T.gap = 0; kick(); }, now ? 0 : 300);
+  }
+  // While a toast plays or waits at the play screen, anything new in the sky (an info card, the
+  // Sponsor strip, a label) or a change of the sky's size (the layout easing between a show and the
+  // build) re-checks its band. Nothing is watched while toasts are held (a show, an overlay).
+  function watchSky(on) {
+    if (on === T.watching) return;
+    T.watching = on;
+    if (!on) { if (T.mo) T.mo.disconnect(); if (T.ro) T.ro.disconnect(); return; }
+    if (typeof MutationObserver === 'function') {
+      if (!T.mo) T.mo = new MutationObserver(kick);
+      const o = { attributes: true, attributeFilter: ['hidden', 'class', 'style'] };
+      for (const id of ['sky-wrap', 'sponsor']) if ($(id)) T.mo.observe($(id), o);
+      if ($('sky-overlay')) T.mo.observe($('sky-overlay'), { ...o, childList: true, subtree: true });
     }
-    box.dataset.at = at;
-    box.style.setProperty('--toast-floor', floor + 'px');
-    if (at !== 'held' && T.held.length) for (const a of T.held.splice(0)) toast(...a);
+    if (typeof ResizeObserver === 'function' && $('sky-wrap')) {
+      if (!T.ro) T.ro = new ResizeObserver(kick);
+      T.ro.observe($('sky-wrap'));
+    }
   }
-  const tipDone = (p) => { for (const t of T.list.filter((x) => x.tip && (!p || !p.id || !x.id || x.id === p.id))) dropToast(t, false); };
+  // The core marks a tip seen when it sends it, so a tip that is still waiting for room when its
+  // 'tipDone' arrives is not dropped: it plays later as a timed toast (any 'tipDone' also ends it).
+  const tipDone = (p) => {
+    const match = (x) => x.tip && (x.late || !p || !p.id || !x.id || x.id === p.id);
+    for (const x of T.q) if (match(x)) x.late = true;
+    if (T.cur && match(T.cur)) retire(T.cur, false);
+  };
 
   /* ======================================================================
      TAP TO CONTINUE (after the tab was hidden; any tap or key resumes)
@@ -12029,7 +12562,7 @@ const UI_MENUS = (() => {
   }
   function onOverlay(p) {
     const name = p && p.name, open = !!(p && p.open);
-    placeToasts();
+    kick();
     if (open && OVERLAY_EL[name]) stackAbove($(OVERLAY_EL[name]));
     if (!open) {
       disarmAll();
@@ -12066,7 +12599,11 @@ const UI_MENUS = (() => {
       if (text && !p.announced) call(G, 'announce', text);   // #toasts is aria-hidden; core does not voice toasts
     });
     call(G, 'on', 'tipDone', tipDone);
-    call(G, 'on', 'resize', () => { placeToasts(); if (isOpen('logbook')) tabEdges(); });
+    call(G, 'on', 'resize', () => { requeue(); kick(); if (isOpen('logbook')) tabEdges(); });
+    call(G, 'on', 'ui', kick);
+    const settled = (e) => { if ((T.cur || T.q.length) && e.target && e.target.closest && e.target.closest('#sky-wrap, #sponsor, #hud')) kick(); };
+    if ($('play')) for (const ev of ['transitionend', 'animationend']) $('play').addEventListener(ev, settled, { passive: true });
+    call(G, 'on', 'change', kick);
     call(G, 'on', 'settings', (p) => {
       if (p && p.key === 'highContrast') pictoCache.clear();
       if (isOpen('settings')) syncSettings();

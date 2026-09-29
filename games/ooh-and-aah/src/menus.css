@@ -62,7 +62,7 @@
 #settings > .st-panel{width:min(100%,560px)}
 #settings .st-sec + .st-sec{margin-top:22px}
 #settings .st-h{display:flex;align-items:center;gap:12px;margin:0 0 10px}
-#settings .st-h::after,#help .hp-sec h3::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--brass),transparent)}
+#settings .st-h .m-rule,#help .hp-sec h3 .m-rule{flex:1;height:1px;background:linear-gradient(90deg,var(--brass),transparent)}
 #settings .st-row{display:flex;align-items:center;gap:12px;min-height:56px;margin:0 0 6px;padding:8px 12px;
   border-radius:var(--radius);background:rgba(255,255,255,.035)}
 #settings label.st-row{cursor:pointer}
@@ -171,7 +171,7 @@
   background:conic-gradient(var(--c-R) 0 25%,var(--c-A) 0 50%,var(--c-G) 0 75%,var(--c-B) 0)}
 #logbook .lb-plate[data-col="X"]{border-radius:0;clip-path:polygon(50% 0,61% 30%,93% 20%,72% 45%,100% 62%,66% 66%,62% 100%,50% 72%,38% 100%,34% 66%,0 62%,28% 45%,7% 20%,39% 30%)}
 #logbook .lb-badge{position:absolute;left:3px;right:3px;bottom:3px;display:flex;align-items:center;justify-content:center;gap:3px;
-  padding:1px 4px;border-radius:6px;background:rgba(5,7,15,.85);color:var(--paper);font:700 var(--t-xs)/1.1 var(--f-ui)}
+  padding:1px 4px;border-radius:6px;background:rgba(5,7,15,.85);color:var(--paper);font:700 var(--t-xs)/1.1 var(--f-ui);white-space:nowrap}
 #logbook .lb-badge .m-ico{width:14px;height:14px;color:var(--aah);stroke-width:2.4}
 #logbook .lb-mono{position:absolute;right:5px;bottom:3px;font:700 var(--t-xs)/1 var(--f-ui);color:var(--paper);text-shadow:0 1px 2px var(--ink),0 0 4px var(--ink)}
 /* silhouettes: undiscovered entries */
@@ -185,7 +185,7 @@
 #logbook .lb-glyph .m-ico{width:56%;height:56%;color:var(--aah)}
 #logbook .lb-glyph.is-sil .m-ico{color:var(--paper-dim);opacity:.4}
 #logbook .lb-kit{display:flex;align-items:center;justify-content:center}
-#logbook .lb-kit .m-ico{width:50%;height:50%;color:var(--aah)}
+#logbook .lb-kit > .m-ico{width:50%;height:50%;color:var(--aah)}
 #logbook .lb-ms .lb-ring{position:absolute;inset:7%;width:86%;height:86%}
 #logbook .lb-ring-bg{fill:none;stroke:var(--line);stroke-width:5}
 #logbook .lb-ring-fg{fill:none;stroke:var(--brass);stroke-width:5;stroke-linecap:round}
@@ -268,37 +268,30 @@
   background:var(--wood);color:var(--paper);font:700 var(--t-s)/1.3 var(--f-ui);text-align:center;white-space:nowrap}
 #help .hp-note{color:var(--paper-dim)}
 
-/* ---------- TOASTS ---------- */
-#toasts{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 72px);z-index:95;display:flex;flex-direction:column;
-  align-items:center;gap:8px;padding:0 16px;pointer-events:none}
-#toasts .toast{display:flex;align-items:center;gap:10px;max-width:min(100%,420px);padding:6px 18px 6px 6px;border:1px solid var(--brass);
-  border-radius:999px;background:var(--surface-2);box-shadow:0 10px 28px rgba(0,0,0,.5);color:var(--paper);font:700 var(--t-s)/1.25 var(--f-ui);
+/* ---------- TOASTS ----------
+   One at a time over the play screen, in the lowest free band of the sky (UI_MENUS measures the
+   sky and sets left / width / top on #toasts); never over a show, a menu, a sheet or the end. */
+#toasts{position:absolute;left:0;top:0;width:100%;z-index:95;display:flex;justify-content:center;pointer-events:none}
+#toasts .toast{display:flex;align-items:center;gap:8px;max-width:min(100%,420px);padding:3px 14px 3px 3px;border:1px solid var(--brass);
+  border-radius:999px;background:var(--surface-2);box-shadow:0 8px 24px rgba(0,0,0,.5);color:var(--paper);font:700 var(--t-s)/1.2 var(--f-ui);
   animation:m-toast-in .26s var(--ease-back) both}
+#toasts .toast.is-measure{visibility:hidden;animation:none}
 #toasts .toast.is-out{animation:m-toast-out .24s ease both}
-#toasts .toast-ico{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--brass);color:var(--ink)}
-#toasts .toast-ico .m-ico{width:20px;height:20px;stroke-width:2.2}
+#toasts .toast-ico{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--brass);color:var(--ink)}
+#toasts .toast-ico .m-ico{width:18px;height:18px;stroke-width:2.2}
 #toasts .toast[data-kind="milestone"] .toast-ico{background:var(--aah)}
 #toasts .toast:is([data-kind="logbook"],[data-kind="discover"],[data-kind="fusion"]) .toast-ico{background:var(--c-fusion)}
 #toasts .toast[data-kind="unlock"] .toast-ico{background:var(--ok)}
 #toasts .toast[data-kind="tip"]{border-radius:14px;border-color:var(--brass);background:var(--paper);color:var(--ink);font-weight:400}
 #toasts .toast[data-kind="tip"] .toast-ico{background:var(--ink);color:var(--aah)}
 #toasts .toast-k{font-weight:700;color:var(--wood)}
-@keyframes m-toast-in{from{opacity:0;transform:translateY(-12px) scale(.96)}}
-@keyframes m-toast-out{to{opacity:0;transform:translateY(-8px)}}
+@keyframes m-toast-in{from{opacity:0;transform:translateY(10px) scale(.96)}}
+@keyframes m-toast-out{to{opacity:0;transform:translateY(6px)}}
 :root[data-motion="reduced"] #toasts .toast{animation-name:m-toast-fade}
 @media (prefers-reduced-motion:reduce){#toasts .toast{animation-name:m-toast-fade}}
 @keyframes m-toast-fade{from{opacity:0}}
-/* an overlay covers the sky band: toasts rise from the bottom, above its sticky footer; tips wait */
-#toasts[data-at="bottom"]{top:auto;bottom:max(var(--toast-floor,0px),calc(env(safe-area-inset-bottom,0px) + 16px))}
-#toasts[data-at="bottom"] .toast{animation-name:m-toast-up;box-shadow:0 10px 30px rgba(0,0,0,.55)}
-#toasts[data-at="bottom"] .toast.is-out{animation-name:m-toast-down}
-#toasts[data-at="bottom"] .toast[data-kind="tip"],#toasts[data-at="held"]{display:none}
-@keyframes m-toast-up{from{opacity:0;transform:translateY(12px) scale(.96)}}
-@keyframes m-toast-down{to{opacity:0;transform:translateY(8px)}}
-:root[data-motion="reduced"] #toasts[data-at="bottom"] .toast{animation-name:m-toast-fade}
-@media (prefers-reduced-motion:reduce){#toasts[data-at="bottom"] .toast{animation-name:m-toast-fade}}
-:root[data-motion="reduced"] #toasts[data-at] .toast.is-out{animation-name:m-toast-fade-out}
-@media (prefers-reduced-motion:reduce){#toasts[data-at] .toast.is-out{animation-name:m-toast-fade-out}}
+:root[data-motion="reduced"] #toasts .toast.is-out{animation-name:m-toast-fade-out}
+@media (prefers-reduced-motion:reduce){#toasts .toast.is-out{animation-name:m-toast-fade-out}}
 @keyframes m-toast-fade-out{to{opacity:0}}
 
 /* ---------- TAP TO CONTINUE ---------- */

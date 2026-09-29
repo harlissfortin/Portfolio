@@ -17,8 +17,9 @@ const GAME = (() => {
 
   /* ---------- constants ---------- */
   const STORE_KEY = 'oohxaah.v1';
-  const DT = 1 / 60, MAX_FRAME = 0.25, MAX_STEPS = 8;
+  const DT = 1 / 60, MAX_FRAME = 0.25, MAX_STEPS = 8, FX_MAX_DT = 0.1;
   const ticks = sec => Math.round(sec * 60);
+  const BUFFER_TICKS = ticks(0.12), EVQ_MAX = 1000;
   const OVERLAY_ID = {pause: 'pause-menu', settings: 'settings', logbook: 'logbook', help: 'help',
     inspect: 'inspect', end: 'end', showlog: 'showlog', tapContinue: 'tap-continue'};
   const PAUSING = ['pause', 'tapContinue'];
@@ -309,18 +310,23 @@ const GAME = (() => {
   // GAME.preview {rules, rehearse}: the rule set the chips use. A plain data object: UI_PLAY writes both
   // fields from its own Rehearse toggle; core resets it at every build open (tonight's rules).
   const preview = {rules: [], rehearse: false};
-  function refreshPreview() {
+  // Event 'preview' (payload GAME.preview) fires whenever its rules or rehearse flag change; at a build open it
+  // fires right after 'ui', so 'ui' / 'change' listeners already read the new build's preview (no settling).
+  function refreshPreview(quiet) {
     const st = cur();
-    if (!st) return;
-    preview.rules = rulesAt(st, previewShow());
-    preview.rehearse = S.rehearse || st.show % 3 === 2;
+    if (!st) return false;
+    const rules = rulesAt(st, previewShow()), rehearse = S.rehearse || st.show % 3 === 2;
+    const changed = rehearse !== preview.rehearse || String(rules) !== String(preview.rules);
+    preview.rules = rules;
+    preview.rehearse = rehearse;
+    if (changed && !quiet) emit('preview', preview);
+    return changed;
   }
   function setRehearse(v) {
     v = !!v;
     if (S.rehearse === v) return;
     S.rehearse = v;
     refreshPreview();
-    emit('preview', preview);
     emit('change', {state: cur()});
     const st = cur();
     if (v && st) announce('Rehearsing ' + (preview.rules.map(ruleName).join(' and ') || 'the next show') + (moodVisible() ? ': ' + moodWord(st, preview.rules, previewShow()) + '.' : '.'));
@@ -332,14 +338,17 @@ const GAME = (() => {
     if (S.stack.some(e => PAUSING.includes(e.name))) return 'paused';
     return S.ui === 'RESOLVING' ? 'resolve' : S.ui === 'BOOT' ? 'off' : 'build';
   }
+  // A switch into a build (BUILD / RESULT) refreshes GAME.preview first, then emits 'ui' and, if it changed, 'preview'.
   function setUI(to) {
     const from = S.ui;
     if (from === to) return;
+    const pv = (to === 'BUILD' || to === 'RESULT') && from !== 'BUILD' && from !== 'RESULT' && refreshPreview(true);
     S.ui = to;
     const app = byId('app');
     if (app) app.setAttribute('data-ui', to);
     callAudio('setPhase', audioPhase());
     emit('ui', {from, to});
+    if (pv) emit('preview', preview);
   }
 
   /* ============================================================
@@ -420,7 +429,9 @@ const GAME = (() => {
   }
   function newRun(o = {}) {
     if (!isObj(o)) o = {};
+    const resolving = !!S.res;
     abortResolve();
+    if (resolving) callFX('clearSky', {all: true});         // no popups / banners from the aborted show
     closeAll();
     const st = createRun(o);
     if (!st) { warn('newRun', 'no state'); return null; }
@@ -437,7 +448,7 @@ const GAME = (() => {
   }
   function abandon() {
     if (!S.state || S.ui === 'END' || S.ui === 'BOOT') return false;
-    if (S.res) completeNow();
+    if (S.res) { completeNow(); callFX('clearSky', {all: true}); }
     if (S.ui === 'END' || S.state.phase !== 'build') return false;
     finalizeRun({abandoned: true});
     closeAll();
@@ -499,9 +510,11 @@ const GAME = (() => {
   function dismissResult() { if (S.ui === 'RESULT') setUI('BUILD'); }
 
   /* ---------- dispatch + undo (§2.5) ---------- */
+  // __game.events() queue. Only test tools drain it, so in play it is a ring of the last EVQ_MAX events
+  // (~25 per show: a whole 24-show run fits) instead of growing for 200 shows.
   function queueEvents(events) {
     for (const ev of events) S.evQueue.push(ev);
-    if (S.evQueue.length > 5000) S.evQueue.splice(0, S.evQueue.length - 5000);
+    if (S.evQueue.length > EVQ_MAX + 200) S.evQueue.splice(0, S.evQueue.length - EVQ_MAX);
   }
   function illegal(action, reason) {
     const ev = {type: 'illegal', reason};
@@ -514,6 +527,7 @@ const GAME = (() => {
     if (!O || !S.state || !isObj(action)) return [];
     if (action.type === 'light') return light();
     if (action.type === 'endless') return enterAfterparty() ? S.evQueue.slice(-8) : illegal(action, 'not available');
+    if (S.ui === 'RESOLVING' && bufferAction(action)) return [];
     if (!(S.ui === 'BUILD' || S.ui === 'RESULT') || S.state.phase !== 'build') return illegal(action, 'busy');
     const pre = simClone(S.state);
     const t0 = now();
@@ -540,6 +554,18 @@ const GAME = (() => {
     actionTips(action, S.state);
     showNextTip();
     return events;
+  }
+  // §11.5 input buffer: a build action during RESOLVING (the run goes on) is held for 120 ms; if RESULT begins
+  // within that window it is applied then, in order, else it lapses as illegal 'busy'. Returns true if held.
+  function bufferAction(action) {
+    const r = S.res;
+    if (!r || !S.loopOn || !S.state || S.state.phase !== 'build' || !DROP_TYPES.includes(action.type)) return false;
+    const q = r.buffer || (r.buffer = []), b = {action: cloneJSON(action), until: S.tick + BUFFER_TICKS};
+    const lapse = x => { const i = q.indexOf(x); if (i < 0) return; q.splice(i, 1); illegal(x.action, 'busy'); };
+    q.push(b);
+    if (q.length > 4) lapse(q[0]);
+    after(BUFFER_TICKS + 1, () => { if (S.res === r) lapse(b); });
+    return true;
   }
   const canUndo = () => S.undo.length > 0 && (S.ui === 'BUILD' || S.ui === 'RESULT') && !!S.state && S.state.phase === 'build';
   function undo() {
@@ -687,7 +713,7 @@ const GAME = (() => {
       if (S.state.phase === 'lost' && !r.dimmed) callFX('dim');
       after(imm ? 0 : ticks(S.state.phase === 'lost' ? 0.9 : 1.6), () => { if (S.res === r) { S.res = null; goEnd(); } });
     } else {
-      after(imm ? 0 : Math.max(0, ticks(0.6) - (S.tick - r.slamTick)), () => { if (S.res === r) { S.res = null; toResult(); } });
+      after(imm ? 0 : Math.max(0, ticks(0.6) - (S.tick - r.slamTick)), () => { if (S.res === r) { S.res = null; toResult(r.buffer); } });
     }
   }
   function completeNow() {
@@ -696,7 +722,7 @@ const GAME = (() => {
     r.instant = true;
     if (r.handle && !r.done) { try { if (can(r.handle, 'skip')) r.handle.skip(); } catch (e) { warn('skip', e); } }
     chainDone(r.token);
-    if (S.res === r) { S.res = null; if (S.state.phase === 'build') toResult(); else goEnd(); }
+    if (S.res === r) { S.res = null; if (S.state.phase === 'build') toResult(r.buffer); else goEnd(); }
   }
   function abortResolve() {
     if (!S.res) return;
@@ -719,12 +745,13 @@ const GAME = (() => {
     else completeNow();
     return true;
   }
-  function toResult() {
+  function toResult(buffered) {
     setUI('RESULT');
     emit('change', {state: S.state});
     kick();
     flushToasts();
     onBuildOpen();
+    if (buffered) for (const b of buffered) if (b.until >= S.tick && (S.ui === 'RESULT' || S.ui === 'BUILD')) dispatch(b.action);
   }
   function goEnd() {
     closeAll();
@@ -1094,8 +1121,28 @@ const GAME = (() => {
   /* ============================================================
      OVERLAYS: stack, focus trap, focus restore, pausing
   ============================================================ */
-  const FOCUSABLE = 'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
-  const focusables = el => [...el.querySelectorAll(FOCUSABLE)].filter(x => x.getClientRects().length && !x.closest('[hidden],[inert]'));
+  // Tab stops only: no tabindex="-1" (roving radios), nothing disabled, hidden, inert or invisible; in a
+  // native radio group only the checked radio (else the first) is a stop, as in the browser's own order.
+  const FOCUSABLE = 'button,a[href],area[href],input:not([type="hidden"]),select,textarea,summary,iframe,[contenteditable]:not([contenteditable="false"]),[tabindex]';
+  function focusables(el) {
+    const out = [], seen = new Set();
+    for (const x of el.querySelectorAll(FOCUSABLE)) {
+      if (x.tabIndex < 0 || x.getAttribute('tabindex') === '-1' || x.hasAttribute('disabled') || safe(() => x.matches(':disabled'), false)) continue;
+      if (!x.getClientRects().length || x.closest('[hidden],[inert]')) continue;
+      if (safe(() => getComputedStyle(x).visibility, 'visible') !== 'visible') continue;
+      if (x.tagName === 'INPUT' && x.type === 'radio' && x.name) {
+        const root = x.form || el, key = x.name;
+        if (seen.has(key)) continue;
+        const group = [...root.querySelectorAll('input[type="radio"]')].filter(r => r.name === key && el.contains(r));
+        const pick = group.find(r => r.checked) || x;
+        seen.add(key);
+        out.push(pick);
+        continue;
+      }
+      out.push(x);
+    }
+    return out;
+  }
   const topEntry = () => S.stack[S.stack.length - 1] || null;
   const top = () => (topEntry() ? topEntry().name : null);
   const isOpen = name => S.stack.some(e => e.name === name);
@@ -1159,9 +1206,14 @@ const GAME = (() => {
     syncOverlays();
     emit('overlay', {name: e.name, open: false});
     if (wasTop) {
-      const t = topEntry();
-      if (t) { if (!t.el.contains(document.activeElement)) focusIn(t.el, {}); }
-      else if (e.back && document.contains(e.back) && !e.back.closest('[inert],[hidden]')) { try { e.back.focus({preventScroll: true}); } catch (err) { /* ignore */ } }
+      // Back to the control that opened the closing overlay when it is still a stop in the now-top layer
+      // (the page when the stack is empty); otherwise the top overlay's first stop.
+      const t = topEntry(), b = e.back;
+      const layer = t ? t.el : document.body;
+      const back = b && b !== document.body && b.isConnected && layer.contains(b) && !b.closest('[hidden],[inert]') &&
+        !b.hasAttribute('disabled') && b.getClientRects().length ? b : null;
+      if (back) { try { back.focus({preventScroll: true}); } catch (err) { /* ignore */ } }
+      if (t && !t.el.contains(document.activeElement)) focusIn(t.el, {});
     }
     return true;
   }
@@ -1236,7 +1288,7 @@ const GAME = (() => {
     if (t && e.target instanceof Node && !t.el.contains(e.target)) focusIn(t.el, {});
   }
 
-  /* ---------- lifecycle: hide/blur → pause + save + suspend; resume only via tapContinue ---------- */
+  /* ---------- lifecycle: page hidden → pause + save + suspend; resume only via tapContinue ---------- */
   function onHidden() {
     if (!S.booted || S.ui === 'BOOT') return;
     saveNow();
@@ -1282,9 +1334,14 @@ const GAME = (() => {
     S.timers = S.timers.filter(t => t.at > S.tick);
     for (const t of due) { try { t.fn(); } catch (e) { warn('timer', e); } }
   }
-  function tickOnce() {
+  // One loop tick: the timers only. FX is presentation, so frame() advances it once per rAF (below);
+  // the SIM never runs here (it steps on actions), so its determinism does not depend on the loop.
+  function tick() {
     S.tick++;
     runTimers();
+  }
+  function tickOnce() {
+    tick();
     callFX('update', DT * S.gameSpeed);
   }
   function frame(t) {
@@ -1296,8 +1353,11 @@ const GAME = (() => {
     if (S.ui === 'BUILD' || S.ui === 'RESULT') S.buildMs += dt * 1000;
     S.acc += dt;
     let n = 0;
-    while (S.acc >= DT && n < MAX_STEPS) { tickOnce(); S.acc -= DT; n++; }
+    while (S.acc >= DT && n < MAX_STEPS) { tick(); S.acc -= DT; n++; }
     if (n >= MAX_STEPS) S.acc = 0;
+    // A slow frame must not buy extra FX work (the old catch-up ran FX.update up to 8× per rAF and fed the
+    // stall): one update per rAF for the ticks just run, clamped to 0.1 s of show time before speed.
+    if (n) callFX('update', Math.min(FX_MAX_DT, n * DT) * S.gameSpeed);
     callFX('render');
     if (S.flags.debug) debugFrame();
   }
@@ -1513,8 +1573,10 @@ const GAME = (() => {
     window.addEventListener('pointerdown', onPointerDown, true);
     document.addEventListener('focusin', onFocusIn);
     document.addEventListener('contextmenu', e => { if (e.target instanceof Element && e.target.closest('#app') && !isTyping(e.target)) e.preventDefault(); });
+    // Only a page that is really hidden pauses (§11.5 Lifecycle): focus leaving the page (Tab past the last
+    // stop, another window) keeps the show going.
     document.addEventListener('visibilitychange', () => { if (document.hidden) onHidden(); });
-    window.addEventListener('blur', onHidden);
+    window.addEventListener('blur', () => { if (document.hidden) onHidden(); });
     window.addEventListener('pagehide', saveNow);
     const tc = byId('tap-continue');
     if (tc) tc.addEventListener('click', () => { if (isOpen('tapContinue')) close('tapContinue'); });

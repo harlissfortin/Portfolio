@@ -3,7 +3,9 @@
 // API (CONTRACT.md): unlock() · onEvent(ev) · ui(name, {col}) · setSettings({sound, soundVol, music, musicVol})
 //                    setPhase('build'|'resolve'|'paused'|'off') · setCrowd(n) · suspend() · resume()
 // Every call is wrapped so it never throws; without WebAudio everything is a silent no-op.
-// The AudioContext is created (or resumed) only inside unlock(), which the core calls on the first gesture.
+// The AudioContext is created (or resumed) only through unlock() / resume(), which the core calls from a gesture.
+// Both defer the work to a short timer (still inside the gesture's activation window, which WebKit forwards to
+// timers ≤ 1 s), so the ~30 ms context start never lands in the task that starts a run or handles the tap.
 //
 // Graph: one-shot voices → sfx ─┐
 //        music bus       → mus ─┴→ master 0.9 → compressor (−18 dB, knee 12, 4:1, 3 ms, 250 ms) → destination
@@ -26,15 +28,26 @@ const AUDIO = (() => {
   let mOn = 0, nChord = 0, ci = 0, nBox = 0, nBeat = 0, step = 0, cur = {}, crit = 0, first = 0, heart = 0, lastFan = -9, UC = {};
   const safe = f => (...a) => { try { return f(...a); } catch (e) {} };
 
-  // 2 s white noise and brown noise (leaky integrator), built once per context.
-  const BUF = new WeakMap(), buf = (c, k) => {
-    if (!BUF.has(c)) {
-      const n = 2 * c.sampleRate, w = c.createBuffer(1, n, c.sampleRate), b = c.createBuffer(1, n, c.sampleRate);
-      const wd = w.getChannelData(0), bd = b.getChannelData(0);
-      for (let i = 0, y = 0; i < n; i++) { wd[i] = rnd() * 2 - 1; y = (y + .02 * wd[i]) / 1.02; bd[i] = y * 3.5; }
-      BUF.set(c, {w, b});
+  // 2 s white noise and brown noise (leaky integrator). The samples are computed once per page, in idle time
+  // after load (never in a show or a gesture), then copied natively into two AudioBuffers once per context;
+  // every noise voice reuses those. The page's copy is dropped once the live context has its buffers.
+  let NZ = null;
+  const noiseData = n => {
+    if (!NZ || NZ.w.length < n) {
+      const w = new Float32Array(n), b = new Float32Array(n);
+      for (let i = 0, y = 0; i < n; i++) { const x = rnd() * 2 - 1; w[i] = x; y = (y + .02 * x) / 1.02; b[i] = y * 3.5; }
+      NZ = {w, b};
     }
-    return BUF.get(c)[k];
+    return NZ;
+  };
+  const BUF = new WeakMap(), buf = (c, k) => {
+    let e = BUF.get(c);
+    if (!e) {
+      const n = 2 * c.sampleRate, d = noiseData(n), w = c.createBuffer(1, n, c.sampleRate), b = c.createBuffer(1, n, c.sampleRate);
+      w.getChannelData(0).set(d.w.subarray(0, n)); b.getChannelData(0).set(d.b.subarray(0, n));
+      BUF.set(c, e = {w, b});
+    }
+    return e[k];
   };
 
   // Node helpers. A recipe gets o = {c: context, d: output node, e: latest stop time, j: pitch jitter},
@@ -248,18 +261,25 @@ const AUDIO = (() => {
   'bought upgraded sold rigInstalled tubeAdded moved matched'.split(' ').forEach((k, i) =>
     ON[k] = e => { const col = colOf(e); if (e.uid != null && col) UC[e.uid] = col; play('drop', {col, coin: i < 5, up: i == 1}); });
 
+  // The deferred half of unlock() / resume(): create the context once, then resume it unless suspend() came since.
+  let pend = 0;
+  const start = safe(() => {
+    pend = 0;
+    if (!ctx) {
+      ctx = new AC();
+      const comp = ctx.createDynamicsCompressor(), m = G({c: ctx}, .9, comp);
+      Object.entries({threshold: -18, knee: 12, ratio: 4, attack: .003, release: .25}).forEach(([k, v]) => comp[k].value = v);
+      comp.connect(ctx.destination); sfx = G({c: ctx}, 0, m); mus = G({c: ctx}, 0, m);
+      buf(ctx, 'w'); NZ = null; setInterval(tick, 200); gains();
+    }
+    if (held) ctx.suspend(); else ctx.state == 'running' || ctx.resume().then(tick, () => {});
+  });
+  const later = () => { if (!pend) pend = setTimeout(start, 16); };
   const api = {
     unlock() {
       if (!AC) return;
-      if (!ctx) {
-        ctx = new AC();
-        const comp = ctx.createDynamicsCompressor(), m = G({c: ctx}, .9, comp);
-        Object.entries({threshold: -18, knee: 12, ratio: 4, attack: .003, release: .25}).forEach(([k, v]) => comp[k].value = v);
-        comp.connect(ctx.destination); sfx = G({c: ctx}, 0, m); mus = G({c: ctx}, 0, m);
-        buf(ctx, 'w'); setInterval(tick, 200); gains();
-      }
       held = 0;
-      ctx.state == 'running' || ctx.resume().then(tick, () => {});
+      if (!ctx || ctx.state != 'running') later();
     },
     onEvent(e) { e && ON[e.type] && ON[e.type](e); },
     ui(n, o) { play(n == 'chime' ? 'page' : n, o, 'ui-' + n); },
@@ -267,14 +287,17 @@ const AUDIO = (() => {
     setPhase(p) { phase = p; gains(); },
     setCrowd(n) { crowd = +n || 0; },
     suspend() { held = 1; ctx && ctx.suspend(); },
-    resume() { held = 0; ctx && ctx.resume().then(tick, () => {}); },
+    resume() { held = 0; ctx && ctx.state != 'running' && later(); },
   };
   for (const k in api) api[k] = safe(api[k]);
   // Suspend when hidden; the next gesture (tap to continue) resumes unless suspend() was called explicitly.
   const D = W.document, wake = () => ctx && !held && !D.hidden && ctx.state != 'running' && api.unlock();
   if (D) {
     D.addEventListener('visibilitychange', () => D.hidden && ctx && ctx.suspend());
-    W.addEventListener('pointerdown', wake, true); W.addEventListener('keydown', wake, true);
+    // click / touchend too: some mobile browsers only count those (not pointerdown) as the activating gesture.
+    for (const t of ['pointerdown', 'keydown', 'click', 'touchend']) W.addEventListener(t, wake, true);
+    // Precompute the noise samples while the page is idle after load.
+    if (AC) (W.requestIdleCallback ? f => W.requestIdleCallback(f, {timeout: 4000}) : f => setTimeout(f, 1500))(safe(() => ctx || noiseData(96000)));
   }
   // Test hooks for tools/audio-check.mjs. run(recipe, params, time, node, context) renders a recipe into any context.
   api._t = {count, R, run, ctx: () => ctx, music: () => mOn, steals: () => steals, gains: () => [sfx.gain.value, mus.gain.value],

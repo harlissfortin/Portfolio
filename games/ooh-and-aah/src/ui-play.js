@@ -153,18 +153,38 @@ const UI_PLAY = (() => {
   // `key` names everything the fit depends on (markup, width, fonts): an unchanged key skips the climb, which
   // would otherwise force a layout per level on every render.
   let fitEpoch = 0; // bumped when web fonts arrive
-  function fitLadder(host, levels, over, key) {
+  function fitLadder(host, levels, over, key, pre) {
     if (!host) return 0;
     const k = key == null ? null : fitEpoch + '|' + mode + '|' + lastW + '|' + key;
     if (k != null && host._fitKey === k) return +host.dataset.fit || 0;
+    if (!host.getClientRects().length) { host._fitKey = null; return +host.dataset.fit || 0; } // not rendered: fit when shown
     let lv = 0;
     host.dataset.fit = '0';
+    if (pre) safe(pre);
     while (lv < levels && safe(over, false)) host.dataset.fit = String(++lv);
     host._fitKey = k;
     return lv;
   }
+  // The ladders run in one frame callback, after every render of the task has written its markup: a click or a
+  // GAME emit can render several times, and measuring inside each render forced a layout per render. The frame
+  // callback runs before that frame's own layout and paint, so nothing unfitted is ever drawn. While a show
+  // resolves the rows below the rack are collapsed: their ladders wait for the build (the next render re-queues).
+  const fitJobs = new Map();
+  let fitFrame = 0;
+  const LIVE_FITS = ['hud', 'rack']; // visible while RESOLVING
+  function queueFit(name, fn) {
+    if (ui() === 'RESOLVING' && !LIVE_FITS.includes(name)) { fitJobs.delete(name); return; }
+    fitJobs.set(name, fn);
+    if (!fitFrame) fitFrame = requestAnimationFrame(flushFits);
+  }
+  function flushFits() {
+    if (fitFrame) { cancelAnimationFrame(fitFrame); fitFrame = 0; }
+    const live = ui() === 'RESOLVING', jobs = [...fitJobs].filter(([name]) => !live || LIVE_FITS.includes(name));
+    fitJobs.clear();
+    for (const [, f] of jobs) safe(f);
+  }
   // A soft hyphen in long words (a VC|CV or V|CV break nearest the middle), for engines without hyphenation dictionaries.
-  const shy = str => String(str).replace(/[A-Za-z]{11,}/g, w => {
+  const shy = str => String(str).replace(/[A-Za-z]{8,}/g, w => {
     const V = c => /[aeiouy]/i.test(c);
     let best = -1;
     for (let p = 3; p <= w.length - 4; p++) {
@@ -500,7 +520,7 @@ const UI_PLAY = (() => {
       '<div class="hud-title"><span id="hud-show"></span></div>' +
       '<div class="hud-tgt"><span id="hud-target"></span><span class="hud-next"></span>' +
       '<button type="button" class="hud-head" data-hud="head"></button></div>' +
-      `<div class="hud-coins"><span class="vh">Coins</span><span id="hud-coins" class="num"></span></div>` +
+      `<div class="hud-coins"><span class="vh">Coins</span><span id="hud-coins" class="num" data-fx-anchor="coins"></span></div>` +
       `<div class="hud-crowd"><span class="vh">Crowd</span>${ICON.crowd}<span id="hud-crowd" class="num"></span><span class="hud-half" hidden>½</span></div>` +
       '<button type="button" class="hud-ic hud-rain" data-hud="rain"></button>';
     E.hudTitle = $('.hud-title', E.hud);
@@ -522,7 +542,7 @@ const UI_PLAY = (() => {
     E.over.innerHTML =
       '<div class="sky-top"><div class="sky-label"></div><button type="button" class="rh-pill" data-sky="rule" hidden></button></div>' +
       '<div class="lastchance" hidden>Last chance</div>' +
-      '<div class="readout" hidden aria-hidden="true"><span class="ro-o">OOH <b>0</b></span><span class="ro-x">×</span><span class="ro-a">AAH <b>1</b></span><span class="ro-cap" hidden>cap 30</span></div>' +
+      '<div class="readout" hidden aria-hidden="true"><span class="ro-o">OOH <b data-fx-anchor="ooh">0</b></span><span class="ro-x">×</span><span class="ro-a">AAH <b data-fx-anchor="aah">1</b></span><span class="ro-cap" hidden>cap 30</span></div>' +
       '<div class="result" hidden></div>' +
       '<div class="tip" hidden role="note"></div>' +
       '<div class="cheer" aria-hidden="true"><i class="band"></i><i class="fill"></i><i class="tick"></i></div>' +
@@ -550,6 +570,7 @@ const UI_PLAY = (() => {
     E.arc = $('.arc', E.rack);
     E.tubesWrap = $('.tubes', E.rack);
     E.fuse = $('.fuse', E.rack);
+    E.ember = $('.ember', E.fuse);
     E.tubes = [...E.rack.querySelectorAll('.tube')].map(b => ({
       btn: b, num: $('.t-num', b), sees: $('.t-sees', b), body: $('.t-body', b), tok: $('.t-tok', b), chips: $('.t-chips', b), rig: $('.t-rig', b),
     }));
@@ -596,30 +617,52 @@ const UI_PLAY = (() => {
   /* ================= 7. Layout (ResizeObserver on the column; §8.1) ================= */
 
   let lastW = 0;
+  // Rack geometry, read only where layout is already clean (the ResizeObserver callback) or in a frame callback,
+  // never straight after a render's DOM writes (that forces a full layout: ~130 ms of Run it back on a phone).
+  // Tube centres follow from it by arithmetic (48 px tubes, flex-centred, --tgap apart).
+  const geo = { ok: false, wrapW: 0, offX: 0, rackX: 0, rackW: 0 };
+  let rackGap = 8;
+  function readGeo() { // → true when it changed
+    const w = E.tubesWrap.clientWidth;
+    if (!w) { const was = geo.ok; geo.ok = false; return was; }
+    const tr = E.tubesWrap.getBoundingClientRect(), sr = E.sky.getBoundingClientRect(), rr = E.rack.getBoundingClientRect();
+    const g = { ok: true, wrapW: w, offX: tr.left + E.tubesWrap.clientLeft - sr.left, rackX: tr.left + E.tubesWrap.clientLeft - rr.left, rackW: rr.width };
+    const changed = !geo.ok || ['wrapW', 'offX', 'rackX', 'rackW'].some(k => Math.abs(g[k] - geo[k]) > 0.25);
+    Object.assign(geo, g);
+    return changed;
+  }
   function measure() {
     if (!E.play) return;
     const h = E.play.clientHeight, w = E.play.clientWidth;
+    const moved = readGeo();
     const m = h >= 700 ? 'regular' : h >= 520 ? 'compact' : 'scroll';
     if (m !== mode || E.play.dataset.mode !== m) {
       mode = m;
       E.play.dataset.mode = m;
       (m === 'regular' ? E.hudTitle : E.skyLabel).appendChild(E.show);
       lastW = w;
-      render();
-    } else if (w !== lastW) { lastW = w; render(); } // tube spacing and the fit ladders depend on the width
+      render(); flushFits();
+    } else if (w !== lastW || moved) { lastW = w; render(); flushFits(); } // tube spacing and the fit ladders depend on the width
     else pushScene();
   }
 
-  // Tube centres in canvas CSS px, for FX.setScene.
+  // Tube centres in canvas CSS px, for FX.setScene (x of tube i from the cached geometry; no layout read).
+  const tubeX = (i, n, off) => off + (geo.wrapW - (n * 48 + (n - 1) * rackGap)) / 2 + 24 + i * (48 + rackGap);
   function tubeCentres() {
     if (!E.sky || !G || !G.state) return [];
-    const cr = E.sky.getBoundingClientRect();
-    return S().tubes.map((_, i) => { const r = E.tubes[i].btn.getBoundingClientRect(); return r.left + r.width / 2 - cr.left; });
+    const n = S().tubes.length;
+    if (!geo.ok) readGeo(); // an explicit call before the first layout pass: measure once
+    return S().tubes.map((_, i) => tubeX(i, n, geo.offX));
   }
+  let sceneFrame = 0;
   let lastScene = '';
   function pushScene() {
     const f = fxApi();
     if (!fnIn(f, 'setScene') || !view || frozen) return;
+    if (!geo.ok) { // not laid out yet (or hidden): measure in the next frame, where the layout is due anyway
+      if (!sceneFrame) sceneFrame = requestAnimationFrame(() => { sceneFrame = 0; readGeo(); if (geo.ok) pushScene(); });
+      return;
+    }
     const st = S(), xs = tubeCentres(), tf = (st.runStats && st.runStats.timesFired) || {};
     const cheer = { restless: 0.2, hopeful: 0.5, eager: 0.85 }[view.mood] || 0;
     const scene = {
@@ -650,10 +693,11 @@ const UI_PLAY = (() => {
     if (!Array.isArray(sees)) sees = chips.some(c => c && c.sees != null) ? chips.map(c => (c ? c.sees : null)) : sky.sees;
     const fav = fnIn(sim(), 'favourite') ? safe(() => sim().favourite(st.tubes, st.crowd), null) : null;
     const mood = moodOf(st), pmood = rehearsing ? moodOf(st, rules) : mood;
-    view = { s, tonight, hs, hRules, rules, rehearsing, auto, order, chips, sky, sees, fav, mood, pmood, legal: legalList() };
+    view = { s, tonight, hs, hRules, rules, rehearsing, auto, order, chips, sky, sees, fav, mood, pmood, legal: legalList(), pv: pvSig() };
   }
   // GAME.preview.rehearse is the source of truth (core); a local flag stands in without it.
   function rehearseOn() { const p = G.preview; return p && typeof p === 'object' && 'rehearse' in p ? !!p.rehearse : rehearse; }
+  const pvSig = () => { const p = G.preview; return p && typeof p === 'object' ? String(p.rehearse) + '|' + String(p.rules) : ''; };
   function setRehearse(v) {
     const p = G.preview;
     if (fnIn(G, 'setRehearse')) G.setRehearse(v);
@@ -721,7 +765,7 @@ const UI_PLAY = (() => {
     setHTML(E.rain, ICON.umbrella.replace('</svg>', (used ? ICON.crack : '') + '</svg>') + (fw ? '<span class="fw">FW</span>' : ''));
     E.rain.dataset.state = used ? 'used' : noRain ? 'none' : 'ok';
     E.rain.setAttribute('aria-label', (used ? 'Rain check used: last chance' : noRain ? 'No rain check tonight' : 'Rain check: unused') + (fw ? '. Fair Weather on' : ''));
-    fitHud();
+    queueFit('hud', fitHud);
   }
   // Nothing in the HUD clips at 360 px: each row sheds detail in a fixed order until it fits (fonts vary by device).
   function fitHud() {
@@ -753,7 +797,7 @@ const UI_PLAY = (() => {
       `<span class="sp-l2"><span class="sp-dot"> · </span><span class="sp-p">pays </span>${esc(pay)}</span>`);
     // 360 px: the reward moves to a second line, then "pays" goes, then "×1.5" (all stay in the aria-label and Inspect)
     const l1 = tx.firstElementChild, l2 = tx.lastElementChild;
-    fitLadder(E.sponsor, 3, () => overflows(tx) || overflows(l1) || overflows(l2), tx._html + sp.accepted);
+    queueFit('sponsor', () => fitLadder(E.sponsor, 3, () => overflows(tx) || overflows(l1) || overflows(l2), tx._html + sp.accepted));
     E.spBtn.querySelector('.sp-word').textContent = sp.accepted ? 'Accepted' : 'Accept';
     E.spBtn.setAttribute('aria-label', `Sponsor, ${k[0]}: target times 1.5, to ${fmt(t)}; ${k[2]} if you pass. ${sp.accepted ? 'Accepted' : 'Not accepted'}.`);
   }
@@ -772,8 +816,9 @@ const UI_PLAY = (() => {
     const firstT = v.order.seq[0];
     const critic = criticMarks(st.tubes, rules);
     // Spread the tubes when there are fewer than 6 (8–16 px gaps), so each "sees" chip has room.
-    const W = E.tubesWrap.clientWidth, gap = n > 1 && W ? Math.max(8, Math.min(16, Math.floor((W - n * 48) / (n - 1)))) : 8;
+    const W = geo.ok ? geo.wrapW : 0, gap = n > 1 && W ? Math.max(8, Math.min(16, Math.floor((W - n * 48) / (n - 1)))) : 8;
     E.rack.style.setProperty('--tgap', gap + 'px');
+    rackGap = gap;
     // Numerals and sees chips describe ONE rack: the hovered drop's rack while hovering, else tonight's rack.
     // Each other legal drop shows its own local "sees" (and, on an empty tube, a ghost numeral).
     const hovKey = held && hover && hover.zone === 'tube' && targets.has(slotKey(hover)) ? slotKey(hover) : null;
@@ -849,9 +894,10 @@ const UI_PLAY = (() => {
     const dir = rules.includes('countdown') || rules.includes('countdown3') ? 'back' : rules.includes('windshift') ? 'rtl' : rules.includes('crossed') ? 'cross' : 'ltr';
     E.fuse.dataset.dir = dir;
     E.fuse.style.width = Math.max(0, (n - 1) * (48 + gap)) + 'px';
+    E.fuse.style.setProperty('--ex', (dir === 'rtl' || dir === 'back' ? Math.max(0, (n - 1) * (48 + gap)) : 0) + 'px'); // the fuse's start
     // "sees N" must never touch its neighbour: snug, then an eye glyph for the word (fonts vary by device)
-    fitLadder(E.rack, 2, () => E.tubes.some(t => !t.btn.hidden && t.sees.firstChild && t.sees.offsetWidth > 48 + gap - 3),
-      gap + E.tubes.map(t => (t.btn.hidden ? '-' : t.sees._html + t.sees.className)).join('|'));
+    const rk = gap + E.tubes.map(t => (t.btn.hidden ? '-' : t.sees._html + t.sees.className)).join('|');
+    queueFit('rack', () => fitLadder(E.rack, 2, () => E.tubes.some(t => !t.btn.hidden && t.sees.firstChild && t.sees.offsetWidth > 48 + gap - 3), rk));
     renderArc();
   }
   function tubeLabel(i, ord, sees, o) {
@@ -904,10 +950,11 @@ const UI_PLAY = (() => {
     const live = arcs.filter(a => a.tubes[a.src] && a.tubes[a.src].shell);
     E.skyWrap.classList.toggle('has-arc', live.length > 0);
     if (!live.length) { setHTML(E.arc, ''); E.arc.removeAttribute('data-on'); return; }
-    const rr = E.rack.getBoundingClientRect(), x = j => { const r = E.tubes[j].btn.getBoundingClientRect(); return r.left + r.width / 2 - rr.left; };
+    if (!geo.ok) readGeo();
+    const n = S().tubes.length, rw = Math.round(geo.rackW), x = j => tubeX(j, n, geo.rackX);
     const H = 20; // the arcs rise from the brass rim into the sky
-    E.arc.setAttribute('viewBox', `0 0 ${Math.round(rr.width)} ${H + 6}`);
-    E.arc.style.width = Math.round(rr.width) + 'px';
+    E.arc.setAttribute('viewBox', `0 0 ${rw} ${H + 6}`);
+    E.arc.style.width = rw + 'px';
     E.arc.dataset.col = shellCol(live[0].tubes[live[0].src].shell);
     E.arc.dataset.on = '1';
     let svgOut = '';
@@ -947,8 +994,17 @@ const UI_PLAY = (() => {
     E.rehearse.setAttribute('aria-label', view.auto ? (view.rules.length ? `Rehearse: tonight's ${hName} is live` : 'Rehearse (H)') : `Rehearse ${hName || 'the next Headliner'} (H)`);
     E.rehearse.classList.toggle('on', view.rehearsing);
     E.rehearse.disabled = !hName || view.auto;
-    E.toolsHint.textContent = view.rehearsing ? 'Rehearsing' : '';
-    E.toolsHint.style.visibility = overflows(E.toolsHint) ? 'hidden' : ''; // a word, or nothing: never a clipped half-word
+    const hint = view.rehearsing ? 'Rehearsing' : '';
+    if (E.toolsHint.textContent !== hint) E.toolsHint.textContent = hint;
+    // a word, or nothing: never a clipped half-word (measured only when the word or the width changes)
+    if (!hint) { E.toolsHint.style.visibility = ''; E.toolsHint._fitKey = null; }
+    else queueFit('hint', () => {
+      const k = fitEpoch + '|' + mode + '|' + lastW + '|' + E.tools.className + hint;
+      if (E.toolsHint._fitKey === k) return;
+      E.toolsHint.style.visibility = '';
+      E.toolsHint.style.visibility = overflows(E.toolsHint) ? 'hidden' : '';
+      E.toolsHint._fitKey = k;
+    });
   }
 
   /* ---------- Shop: 3-card row or 2×2 grid ---------- */
@@ -995,7 +1051,10 @@ const UI_PLAY = (() => {
       b.classList.toggle('badged', !!badge);
       b.dataset.rar = rar[1];
       const bd = b.querySelector('.c-badge');
-      fitLadder(b, 2, () => overflows(bd), b._html + b.className); // 1: badges shed their word ("Twin ★2 $5" → "⧉★2 $5", "✦ Fuses" → "✦") · 2: no badge
+      const bk = b._html + b.className, nm = b.querySelector('.c-name');
+      // §8.1 Regular 3-card: the name gets its 2 lines (hyphens:auto) even with a badge; the token steps down to make room
+      const wrap = () => { b.removeAttribute('data-wrap'); if (!four && mode === 'regular' && badge && nm.scrollHeight > 27) b.setAttribute('data-wrap', ''); };
+      queueFit('card' + i, () => fitLadder(b, 2, () => overflows(bd), bk, wrap)); // 1: badges shed their word ("Twin ★2 $5" → "⧉★2 $5", "✦ Fuses" → "✦") · 2: no badge
     });
   }
 
@@ -1026,8 +1085,9 @@ const UI_PLAY = (() => {
     E.tubeBtn.setAttribute('aria-label', n >= 6 ? 'The rack is full: 6 tubes' : `Add tube ${n + 1} for $${tc} (T)`);
     const rc$ = rerollCost();
     setHTML(E.rerollBtn, `${ICON.reroll}<span class="ws-name ws-word">Reroll</span><span class="ws-price num">$${rc$}</span>`);
-    // 360 px: tighten, then Tube / Reroll keep only their icons, then the rig keeps only its glyph (names stay in aria-labels)
-    fitLadder(E.workshop, 3, () => [...E.workshop.querySelectorAll('.ws-name')].some(overflows), E.rigBtn._html + E.tubeBtn._html + E.tubeBtn.hidden + E.rerollBtn._html);
+    // 360 px: tighten with each price under its word, then Tube / Reroll keep only their icons, then the rig keeps only its glyph (names stay in aria-labels)
+    const wk = E.rigBtn._html + E.tubeBtn._html + E.tubeBtn.hidden + E.rerollBtn._html;
+    queueFit('workshop', () => fitLadder(E.workshop, 3, () => [...E.workshop.querySelectorAll('.ws-name')].some(overflows), wk));
     E.rerollBtn.disabled = !(st.shop && st.shop.cards && st.shop.cards.length);
     E.rerollBtn.classList.toggle('poor', rc$ > st.coins);
     E.rerollBtn.setAttribute('aria-label', `Reroll the shop for $${rc$} (X)`);
@@ -1079,7 +1139,7 @@ const UI_PLAY = (() => {
       // the hover line (a drop's local chips) replaces the card text; a card with nowhere to go says why
       E.info.classList.toggle('hovering', !flash && !!held && !!hover && targets.has(slotKey(hover)));
       E.info.classList.toggle('blocked', !flash && !!held && held.kind !== 'shell' && !targets.size);
-      const t = E.info.querySelector('.info-t'); fitLadder(E.info, 2, () => overflows(t), info);
+      const t = E.info.querySelector('.info-t'); queueFit('info', () => fitLadder(E.info, 2, () => overflows(t), info));
     }
     E.skyWrap.classList.toggle('has-info', !!info);
     // result card (pinned until the first build action)
@@ -1099,11 +1159,36 @@ const UI_PLAY = (() => {
     E.roO.textContent = fmt(readout.ooh);
     E.roA.textContent = fmtAah(readout.aah);
   }
-  function punch(el, big) {
+  // Restart a one-shot animation. Web Animations need no reflow (a class restart forced a layout per event,
+  // dozens per show); the CSS class is the fallback.
+  function replay(el, frames, opts, cls) {
+    if (!el) return;
+    if (fnIn(el, 'animate')) { if (el._anim) el._anim.cancel(); el._anim = el.animate(frames, opts); return; }
+    el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+  }
+  function punch(el, big) { // §9: the counter punches 1.15× (90 ms); × punches harder
     if (reduced() || !el) return;
-    el.classList.remove('punch', 'punch-big');
-    void el.offsetWidth;
-    el.classList.add(big ? 'punch-big' : 'punch');
+    const easing = big ? 'cubic-bezier(.34,1.56,.64,1)' : 'ease-out'; // per segment, as the CSS keyframes had it
+    replay(el, [{ transform: 'none', easing }, { transform: `scale(${big ? 1.3 : 1.15})`, offset: big ? 0.45 : 0.5, easing }, { transform: 'none' }],
+      { duration: big ? 160 : 90 }, big ? 'punch-big' : 'punch');
+  }
+  // §9 fuseLit: the ember crawls in along the fuse to the first tube that fires (280 ms), then glows there.
+  function lightFuse(ev) {
+    const n = S().tubes.length, step = 48 + rackGap, len = Math.max(0, (n - 1) * step);
+    const seq = ev && Array.isArray(ev.order) && ev.order.length ? ev.order : view && view.order.seq.length ? view.order.seq : [0];
+    const x = Math.max(0, Math.min(n - 1, seq[0] | 0)) * step;
+    const rules = ev && Array.isArray(ev.rules) ? ev.rules : view ? view.tonight : [];
+    const right = rules.some(r => r === 'windshift' || /^countdown/.test(r)); // the fuse starts at the right end
+    const lead = Math.min(40, Math.max(18, geo.ok ? (geo.wrapW - len) / 2 : 24)); // from off the rack's edge
+    const from = right ? len + lead : -lead;
+    E.fuse.style.setProperty('--ex', x + 'px');
+    E.fuse.classList.add('lit');
+    if (!reduced()) replay(E.ember, [{ transform: `translateX(${from - x}px) scale(.6)`, opacity: 0.5 }, { transform: 'none', opacity: 1 }], { duration: 280, easing: 'linear' }, 'crawl');
+  }
+  // §9 launch: the tube recoils (squash 1.25 × 0.8, 120 ms).
+  function recoil(T) {
+    if (!T || reduced()) return;
+    replay(T.body, [{ transform: 'none', easing: 'ease-out' }, { transform: 'scale(1.25,.8)', offset: 0.5, easing: 'ease-out' }, { transform: 'none' }], { duration: 120 }, 'recoil');
   }
 
   function resultHTML(r) {
@@ -1552,15 +1637,17 @@ const UI_PLAY = (() => {
       litTarget = litTarget || targetOf(S().show | 0);
       readout.on = true; readout.ooh = 0; readout.aah = 1; readout.score = 0;
       result = null;
-      E.tubes.forEach(t => t.btn.classList.remove('fired', 'recoil'));
+      E.tubes.forEach(t => { t.btn.classList.remove('fired'); t.body.classList.remove('recoil'); });
     } else {
       frozen = false;
-      E.tubes.forEach(t => t.btn.classList.remove('fired', 'recoil'));
+      E.tubes.forEach(t => { t.btn.classList.remove('fired'); t.body.classList.remove('recoil'); });
       E.fuse.classList.remove('lit');
       if (to !== 'RESULT') { readout.on = false; litTarget = 0; }
     }
     render();
-    if (to !== 'RESOLVING') renderSoon(); // core refreshes GAME.preview after the switch (build open); read it once settled
+    // Core refreshes GAME.preview before 'ui' and emits 'preview' when it changes (subscribed in init). Guard for a
+    // core without that event: re-render once settled only if the preview we drew from went stale.
+    if (to !== 'RESOLVING') Promise.resolve().then(() => { if (view && pvSig() !== view.pv) render(); });
   }
   let renderQueued = false;
   function renderSoon() {
@@ -1572,8 +1659,8 @@ const UI_PLAY = (() => {
     if (!ev || !ev.type) return;
     const T = typeof ev.tube === 'number' ? E.tubes[ev.tube] : null;
     switch (ev.type) {
-      case 'fuseLit': E.fuse.classList.add('lit'); if (typeof ev.target === 'number') litTarget = ev.target; break;
-      case 'launch': if (T && !reduced()) { T.btn.classList.remove('recoil'); void T.btn.offsetWidth; T.btn.classList.add('recoil'); } break;
+      case 'fuseLit': lightFuse(ev); if (typeof ev.target === 'number') litTarget = ev.target; break;
+      case 'launch': recoil(T); break;
       case 'burst': if (T) T.btn.classList.add('fired'); break;
       case 'gainOoh': case 'crowdCheer': readout.ooh += +ev.v || 0; punch(E.roO); break;
       case 'gainAah': readout.aah += +ev.v || 0; punch(E.roA); break;
@@ -1852,12 +1939,12 @@ const UI_PLAY = (() => {
       if (dirty && building()) requestAnimationFrame(render);
     }, true);
     // layout mode
-    if (typeof ResizeObserver === 'function') new ResizeObserver(measure).observe(E.play);
+    if (typeof ResizeObserver === 'function') { const ro = new ResizeObserver(() => measure()); [E.play, E.tubesWrap].forEach(el => ro.observe(el)); }
     window.addEventListener('resize', measure);
     // GAME wiring
     const on = (n, f) => { if (fnIn(G, 'on')) G.on(n, x => safe(() => f(x))); };
     on('change', () => render());
-    on('preview', () => render());
+    on('preview', () => { if (ui() !== 'RESOLVING') render(); }); // GAME.preview changed (Rehearse, build open)
     on('critical', () => renderSoon());
     on('sim', onSim);
     on('ui', onUi);

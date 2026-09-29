@@ -38,6 +38,8 @@ const UI_MENUS = (() => {
     for (const kid of kids.flat(3)) if (kid != null && kid !== false) el.append(kid.nodeType ? kid : String(kid));
     return el;
   }
+  // A heading's brass rule is its own element (not ::after) so the text sits on the panel alone.
+  const rule = () => h('span', { class: 'm-rule', 'aria-hidden': 'true' });
   const ICONS = {
     play: '<path fill="currentColor" stroke="none" d="M8 5.5v13l10.5-6.5z"/>',
     gear: '<path d="M4 7h10M18 7h2M4 17h3M11 17h9"/><circle cx="16" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
@@ -327,7 +329,7 @@ const UI_MENUS = (() => {
     return h('fieldset', { class: 'st-row st-radios', role: 'radiogroup', 'aria-labelledby': 'set-' + name + '-legend' },
       h('legend', { class: 'st-label', id: 'set-' + name + '-legend' }, legend), hint != null ? h('span', { class: 'st-hint', id: 'set-' + name + '-hint' }, hint) : null, seg);
   }
-  const section = (title, ...kids) => h('section', { class: 'st-sec' }, h('h3', { class: 'display st-h' }, title), kids);
+  const section = (title, ...kids) => h('section', { class: 'st-sec' }, h('h3', { class: 'display st-h' }, h('span', null, title), rule()), kids);
 
   function buildSettings() {
     const root = $('settings');
@@ -784,9 +786,9 @@ const UI_MENUS = (() => {
     const gl = rows(DATA().GLOSSARY).map((g) => Array.isArray(g) ? g : [g.term || g.id || g.name, g.meaning || g.text || g.def]).filter((g) => g[0]);
     const body = h('div', { class: 'm-body hp-body', tabindex: '0', role: 'region', 'aria-label': 'Rules, glossary and keys' },
       h('ol', { class: 'hp-card', 'aria-label': 'The rules' }, rules.slice(0, 3).map((t, i) => h('li', null, h('span', { class: 'hp-n display-italic', 'aria-hidden': 'true' }, String(i + 1)), h('span', null, t)))),
-      gl.length ? h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-gl' }, h('h3', { class: 'display', id: 'hp-gl' }, 'Glossary'),
+      gl.length ? h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-gl' }, h('h3', { class: 'display', id: 'hp-gl' }, h('span', null, 'Glossary'), rule()),
         h('dl', { class: 'hp-gloss' }, gl.map(([t, d]) => h('div', null, h('dt', null, t), h('dd', null, d))))) : null,
-      h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-keys' }, h('h3', { class: 'display', id: 'hp-keys' }, 'Keys'),
+      h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-keys' }, h('h3', { class: 'display', id: 'hp-keys' }, h('span', null, 'Keys'), rule()),
         h('table', { class: 'hp-keys' }, h('tbody', null, KEYMAP.map(([k, d]) => h('tr', null,
           h('th', { scope: 'row' }, keyCell(k)), h('td', null, d)))))));
     const foot = h('footer', { class: 'm-foot' }, h('button', { type: 'button', id: 'help-done', class: 'btn btn-primary m-wide', onclick: () => G.close('help') }, 'Back to the show'));
@@ -794,70 +796,167 @@ const UI_MENUS = (() => {
   }
 
   /* ======================================================================
-     TOASTS (render GAME 'toast'; max 3; auto-dismiss; aria-hidden)
+     TOASTS (render GAME 'toast'; #toasts is aria-hidden: each text is voiced when it arrives)
+     One rule, everywhere, so a toast never covers level-1 information:
+       - toasts play only over the play screen in BUILD or RESULT: never during a show, never while
+         any overlay is up (menus, the Inspect and Show-log sheets, the end screen, Tap to continue);
+         until then they queue (the queue survives: they play when the player is back at the show);
+       - one at a time, in the lowest band of the sky that nothing else occupies at that moment
+         (the HUD, Sponsor strip, readout, result card, info card, sky labels and cheer meter are
+         obstacles), which is usually the sky's lower band just above the rack. When no band is
+         tall enough (a result card filling a short sky), the toast waits for the next change;
+       - a toast that something opens over, or that new sky content would touch, steps back into
+         the queue and plays again in full later;
+       - tips (one at a time) go first and stay until the core's 'tipDone' (the next action).
+     The sky is measured only when a toast is about to play, or when the screen under a playing
+     toast changes (state, overlay, resize, the sky's own content): at most once per frame.
      ====================================================================== */
-  const T = { list: [], held: [] };
+  const T = { q: [], cur: null, raf: 0, gap: 0, mo: null, ro: null, watching: false };
   const TOAST_ICON = { milestone: 'star', logbook: 'book', discover: 'book', unlock: 'unlock', fusion: 'spark', tip: 'help' };
+  const TOAST_MAX = 6, EDGE = 4, CLEAR = 6, MOVING = 24;   // queue cap; px from the sky's edges / any obstacle / a moving one
   function toast(text, kind, id) {
-    const box = $('toasts');
-    if (!box || !text) return;
-    const now = performance.now(), tip = kind === 'tip';
-    placeToasts();
-    if (!tip && box.dataset.at === 'held') {   // a menu is up: show it when the player is back at the show
-      if (!T.held.some((t) => t[0] === text)) T.held.push([text, kind, id]);
-      if (T.held.length > 3) T.held.shift();
-      return;
+    if (!$('toasts') || !text) return;
+    if ((T.cur && T.cur.text === text) || T.q.some((t) => t.text === text)) return;
+    const it = { text: String(text), kind: kind || 'info', id, tip: kind === 'tip', el: null, h: 0, timer: 0 };
+    if (it.tip) {
+      T.q = T.q.filter((t) => !t.tip || t.late);
+      if (T.cur && T.cur.tip) retire(T.cur, true);
+      else if (T.cur) requeue();                 // a tip points at the play screen now: it goes first
+      T.q.unshift(it);
+    } else {
+      T.q.push(it);
+      while (T.q.length > TOAST_MAX) { const i = T.q.findIndex((t) => !t.tip); if (i < 0) break; T.q.splice(i, 1); }
     }
-    if (T.list.some((t) => t.text === text && now - t.at < 600)) return;
-    const el = h('div', { class: 'toast', 'data-kind': kind || 'info' }, h('span', { class: 'toast-ico' }, icon(TOAST_ICON[kind] || 'spark')),
-      h('span', { class: 'toast-text' }, tip ? h('b', { class: 'toast-k' }, 'Tip ') : null, text));
-    const item = { el, text, at: now, timer: 0, tip, id };
-    if (tip) { for (const t of T.list.filter((x) => x.tip)) dropToast(t, true); box.prepend(el); }   // one tip at a time, pinned first
-    else box.append(el);
-    T.list.push(item);
-    const transient = () => T.list.filter((t) => !t.tip);
-    while (T.list.length > 3 && transient().length) dropToast(transient()[0], true);
+    kick();
+  }
+  const toastEl = (it) => h('div', { class: 'toast', 'data-kind': it.kind }, h('span', { class: 'toast-ico' }, icon(TOAST_ICON[it.kind] || 'spark')),
+    h('span', { class: 'toast-text' }, it.tip ? h('b', { class: 'toast-k' }, 'Tip ') : null, it.text));
+  // Held: not at the play screen (a show, the end, boot) or something is open over it.
+  function toastsHeld() {
+    const app = $('app'), ui = app ? app.dataset.ui : '';
+    return (ui !== 'BUILD' && ui !== 'RESULT') || !!topName() || document.hidden;
+  }
+  function kick() {
+    if (!T.raf && (T.cur || T.q.length)) T.raf = requestAnimationFrame(toastFrame);
+  }
+  function toastFrame() {
+    T.raf = 0;
+    const held = toastsHeld();
+    if (T.cur && (held || !refit())) requeue();
+    if (!T.cur && T.q.length && !T.gap && !held) playNext();
+    watchSky(!held && !!(T.cur || T.q.length));
+  }
+  // The sky's free bands (px, relative to #app), after every obstacle that shares its width.
+  function skyBands() {
+    const app = $('app'), wrap = $('sky-wrap');
+    if (!app || !wrap) return null;
+    const ar = app.getBoundingClientRect(), sr = wrap.getBoundingClientRect();
+    if (sr.height < 40 || sr.width < 160) return null;
+    let left = sr.left - ar.left + EDGE, right = sr.right - ar.left - EDGE;
+    const obs = [];
+    const add = (el) => {
+      if (!el || el.hidden || !el.getClientRects().length) return;
+      if (getComputedStyle(el).visibility === 'hidden') return;   // (one fading in counts already)
+      let r = el.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) return;
+      // Still easing in or moving (e.g. the info card lifting over the fusion arc): allow for its
+      // travel; its 'transitionend' / 'animationend' re-checks against where it settled.
+      if (el.getAnimations && el.getAnimations().length) r = { left: r.left, right: r.right, top: r.top - MOVING, bottom: r.bottom + MOVING };
+      if (el.classList.contains('cheer')) { if (r.left > sr.left + sr.width / 2) right = Math.min(right, r.left - ar.left - CLEAR); return; }
+      obs.push(r);
+    };
+    add($('hud')); add($('sponsor'));
+    const over = $('sky-overlay');
+    if (over) for (const c of over.children) add(c);
+    let free = [[sr.top - ar.top + EDGE, sr.bottom - ar.top - EDGE]];
+    for (const r of obs) {
+      if (r.right - ar.left <= left || r.left - ar.left >= right) continue;
+      const a = r.top - ar.top - CLEAR, b = r.bottom - ar.top + CLEAR;
+      free = free.flatMap(([x, y]) => (b <= x || a >= y ? [[x, y]] : [[x, Math.min(y, a)], [Math.max(x, b), y]].filter(([p, q]) => q > p)));
+    }
+    return { left: Math.round(left), width: Math.max(0, Math.round(right - left)), free };
+  }
+  // The lowest band that fits a toast of height hgt: its top edge, or null.
+  function bandTop(lane, hgt) {
+    for (let i = lane.free.length - 1; i >= 0; i--) { const [x, y] = lane.free[i]; if (y - x >= hgt) return Math.floor(y - hgt); }
+    return null;
+  }
+  function playNext() {
+    const box = $('toasts'), it = T.q[0];
+    const lane = box && it && skyBands();
+    if (!lane || lane.width < 160) return;
+    const el = it.el || (it.el = toastEl(it));
+    box.style.left = lane.left + 'px'; box.style.width = lane.width + 'px';
+    el.classList.add('is-measure');
+    box.append(el);
+    it.h = el.offsetHeight;
+    const top = bandTop(lane, it.h);
+    if (top == null) { el.remove(); return; }   // no room right now: wait for the next change
+    box.style.top = top + 'px';
+    el.classList.remove('is-measure');
+    T.q.shift();
+    T.cur = it;
+    it.w = lane.width;
     // Tips stay until core's 'tipDone' (the next action); other toasts leave on their own.
-    if (!tip) item.timer = setTimeout(() => dropToast(item, false), 3200 + Math.min(2000, text.length * 30));
+    if (!it.tip || it.late) it.timer = setTimeout(() => retire(it, false), (it.late ? 2000 : 0) + 3200 + Math.min(2000, it.text.length * 30));
   }
-  function dropToast(item, now) {
-    clearTimeout(item.timer);
-    T.list = T.list.filter((t) => t !== item);
-    if (now) { item.el.remove(); return; }
-    item.el.classList.add('is-out');
-    setTimeout(() => item.el.remove(), 260);
+  // The playing toast after a change: stays if its band is still free, moves if another band fits.
+  function refit() {
+    const it = T.cur, box = $('toasts');
+    const lane = box && skyBands();
+    if (!lane || lane.width !== it.w) return false;
+    const y = parseFloat(box.style.top) || 0;
+    if (lane.free.some(([a, b]) => a <= y && y + it.h <= b)) return true;
+    const top = bandTop(lane, it.h);
+    if (top == null) return false;
+    box.style.top = top + 'px';
+    return true;
   }
-  // Toasts sit under the HUD over the sky. While a menu is up they wait (held) and play when the
-  // player is back at the show, so nothing covers a menu. When another overlay reaches the sky band
-  // (the end screen), they rise from the bottom above its sticky footer. Tips (which point at the
-  // play screen) stay hidden until every overlay above the play screen has closed.
-  const OVERLAY_ID = { pause: 'pause-menu', settings: 'settings', logbook: 'logbook', help: 'help', end: 'end', inspect: 'inspect', showlog: 'showlog', tapContinue: 'tap-continue' };
-  const MENUS = new Set(['pause', 'settings', 'logbook', 'help', 'tapContinue']);
-  function placeToasts() {
-    const box = $('toasts'), app = $('app');
-    if (!box || !app) return;
-    const t = topName(), el = t && $(OVERLAY_ID[t] || t);
-    let at = 'top', floor = 0;
-    if (MENUS.has(t) && el && !el.hidden) at = 'held';
-    else if (el && !el.hidden) {
-      const ar = app.getBoundingClientRect();
-      const panel = el.matches('.sheet') ? el : el.querySelector('.panel, .end-card, .sheet') || el.firstElementChild || el;
-      const pr = panel.getBoundingClientRect();
-      if (pr.height && pr.top - ar.top < 140) {
-        at = 'bottom';
-        let top = ar.bottom;
-        for (const f of el.querySelectorAll('footer, .m-foot, .end-actions')) {
-          const r = f.getBoundingClientRect();
-          if (r.height && r.bottom > ar.bottom - 40 && r.top > ar.top + ar.height * 0.5) top = Math.min(top, r.top);
-        }
-        floor = Math.round(ar.bottom - top) + 10;
-      }
+  function requeue() {
+    const it = T.cur;
+    if (!it) return;
+    clearTimeout(it.timer);
+    if (it.el) it.el.remove();
+    T.cur = null;
+    T.q.unshift(it);
+  }
+  function retire(it, now) {
+    clearTimeout(it.timer);
+    T.q = T.q.filter((t) => t !== it);
+    if (T.cur !== it) return;
+    T.cur = null;
+    const el = it.el;
+    it.el = null;
+    if (el) { if (now) el.remove(); else { el.classList.add('is-out'); setTimeout(() => el.remove(), 260); } }
+    // the next toast follows once this one has gone
+    clearTimeout(T.gap);
+    T.gap = setTimeout(() => { T.gap = 0; kick(); }, now ? 0 : 300);
+  }
+  // While a toast plays or waits at the play screen, anything new in the sky (an info card, the
+  // Sponsor strip, a label) or a change of the sky's size (the layout easing between a show and the
+  // build) re-checks its band. Nothing is watched while toasts are held (a show, an overlay).
+  function watchSky(on) {
+    if (on === T.watching) return;
+    T.watching = on;
+    if (!on) { if (T.mo) T.mo.disconnect(); if (T.ro) T.ro.disconnect(); return; }
+    if (typeof MutationObserver === 'function') {
+      if (!T.mo) T.mo = new MutationObserver(kick);
+      const o = { attributes: true, attributeFilter: ['hidden', 'class', 'style'] };
+      for (const id of ['sky-wrap', 'sponsor']) if ($(id)) T.mo.observe($(id), o);
+      if ($('sky-overlay')) T.mo.observe($('sky-overlay'), { ...o, childList: true, subtree: true });
     }
-    box.dataset.at = at;
-    box.style.setProperty('--toast-floor', floor + 'px');
-    if (at !== 'held' && T.held.length) for (const a of T.held.splice(0)) toast(...a);
+    if (typeof ResizeObserver === 'function' && $('sky-wrap')) {
+      if (!T.ro) T.ro = new ResizeObserver(kick);
+      T.ro.observe($('sky-wrap'));
+    }
   }
-  const tipDone = (p) => { for (const t of T.list.filter((x) => x.tip && (!p || !p.id || !x.id || x.id === p.id))) dropToast(t, false); };
+  // The core marks a tip seen when it sends it, so a tip that is still waiting for room when its
+  // 'tipDone' arrives is not dropped: it plays later as a timed toast (any 'tipDone' also ends it).
+  const tipDone = (p) => {
+    const match = (x) => x.tip && (x.late || !p || !p.id || !x.id || x.id === p.id);
+    for (const x of T.q) if (match(x)) x.late = true;
+    if (T.cur && match(T.cur)) retire(T.cur, false);
+  };
 
   /* ======================================================================
      TAP TO CONTINUE (after the tab was hidden; any tap or key resumes)
@@ -928,7 +1027,7 @@ const UI_MENUS = (() => {
   }
   function onOverlay(p) {
     const name = p && p.name, open = !!(p && p.open);
-    placeToasts();
+    kick();
     if (open && OVERLAY_EL[name]) stackAbove($(OVERLAY_EL[name]));
     if (!open) {
       disarmAll();
@@ -965,7 +1064,11 @@ const UI_MENUS = (() => {
       if (text && !p.announced) call(G, 'announce', text);   // #toasts is aria-hidden; core does not voice toasts
     });
     call(G, 'on', 'tipDone', tipDone);
-    call(G, 'on', 'resize', () => { placeToasts(); if (isOpen('logbook')) tabEdges(); });
+    call(G, 'on', 'resize', () => { requeue(); kick(); if (isOpen('logbook')) tabEdges(); });
+    call(G, 'on', 'ui', kick);
+    const settled = (e) => { if ((T.cur || T.q.length) && e.target && e.target.closest && e.target.closest('#sky-wrap, #sponsor, #hud')) kick(); };
+    if ($('play')) for (const ev of ['transitionend', 'animationend']) $('play').addEventListener(ev, settled, { passive: true });
+    call(G, 'on', 'change', kick);
     call(G, 'on', 'settings', (p) => {
       if (p && p.key === 'highContrast') pictoCache.clear();
       if (isOpen('settings')) syncSettings();

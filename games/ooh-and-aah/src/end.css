@@ -5,7 +5,8 @@
 
 /* ---------- the overlay: a scrolling card ---------- */
 #end{display:block;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
-  padding:calc(env(safe-area-inset-top,0px) + 12px) 8px 0;user-select:text;-webkit-user-select:text}
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 8px 0;user-select:text;-webkit-user-select:text;
+  scroll-padding:12px 0 calc(env(safe-area-inset-bottom,0px) + 104px)}   /* focus scrolls clear of the sticky bar */
 #end[data-won="0"]{background:rgba(3,5,12,.84)}
 #end[data-won="1"]{background:linear-gradient(180deg,rgba(3,5,12,.18) 0,rgba(3,5,12,.55) 260px,var(--scrim) 520px)}
 :root[data-contrast="high"] #end{background:var(--scrim)}

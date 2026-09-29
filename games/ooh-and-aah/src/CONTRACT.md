@@ -97,7 +97,7 @@ It never throws, even with no WebAudio.
 | Method | What it does |
 |---|---|
 | `boot()` | Parse flags, load storage, init FX and AUDIO, `init(GAME)` every UI module present, create or restore the run, start the loop. |
-| `dispatch(action) → events` | Pushes to the undo stack, runs `OOH.step`, emits `'sim'` then `'change'`. On an illegal action it emits `'illegal'`. |
+| `dispatch(action) → events` | Pushes to the undo stack, runs `OOH.step`, emits `'sim'` then `'change'`. On an illegal action it emits `'illegal'`. During RESOLVING a build action is held for 120 ms (spec §11.5): it is applied if RESULT begins within that window, otherwise it expires with `'illegal'` reason `'busy'`; while held, `dispatch` returns `[]`. |
 | `undo()` · `canUndo()` | |
 | `light()` | Enter RESOLVING, play through FX, emit `'present'` per event and `'result'` at the slam, then go to RESULT → BUILD, or END (emitting `'runEnd'`). |
 | `fastForward()` · `skip()` | |
@@ -130,6 +130,7 @@ It never throws, even with no WebAudio.
 | `'overlay'` | `{name, open}` |
 | `'toast'` | `{text, kind}` |
 | `'resize'` | `{w, h, layout: 'regular'\|'compact'\|'scroll'\|'desktop'}` |
+| `'preview'` | `{rules, rehearse}`: fired whenever `GAME.preview` changes |
 
 **Keyboard routing.** `core.js` owns the one `keydown` listener. For each key it calls handlers in this order and stops at the first that returns `true`:
 1. The top overlay's scope (e.g. `'end'`, `'settings'`).
