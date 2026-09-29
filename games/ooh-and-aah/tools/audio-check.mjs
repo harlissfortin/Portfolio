@@ -207,11 +207,11 @@ try {
   check(d === 1, 'Headliner clear → fanfare');
   d = await page.evaluate(() => { const b = AUDIO._t.count.fanfare || 0; AUDIO.onEvent({ type: 'runWon' }); return (AUDIO._t.count.fanfare || 0) - b; });
   check(d === 0, 'runWon right after a Headliner-clear fanfare does not double up');
-  await sleep(3100);
+  await sleep(3600); // the fanfare de-dup runs on the audio clock, which can lag wall time under load
   d = await page.evaluate(() => { const b = AUDIO._t.count.fanfare || 0; AUDIO.onEvent({ type: 'runWon' }); return (AUDIO._t.count.fanfare || 0) - b; });
   check(d === 1, 'runWon → fanfare');
   await page.evaluate(() => AUDIO.onEvent({ type: 'buildOpen', show: 3, rules: [] }));
-  await sleep(3100);
+  await sleep(3600); // audio-clock margin, as above
   d = await page.evaluate(() => { const b = AUDIO._t.count.fanfare || 0; AUDIO.onEvent({ type: 'applause', score: 500, target: 400, pass: true }); AUDIO.onEvent({ type: 'applause', score: 900, target: 400, pass: true, runBest: true }); return (AUDIO._t.count.fanfare || 0) - b; });
   check(d === 1, 'Twilight clear: no fanfare; a run-best flag → fanfare');
 

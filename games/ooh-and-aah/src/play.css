@@ -420,10 +420,10 @@
 :is(#rack .t-chips,#sky-overlay .legend) .c-swap .ic{width:14px;height:14px;stroke-width:2.4}
 #rack .t-chips .c-swap.sell{color:#FF9A88;box-shadow:inset 0 0 0 1px var(--danger),0 1px 3px rgba(0,0,0,.6)}
 /* the chip legend while a card or shell is held on touch (UI_PLAY): just above the info card */
-#sky-overlay .legend{position:absolute;left:8px;right:8px;bottom:82px;display:flex;justify-content:center;align-items:center;gap:6px;
+#sky-overlay .legend{position:absolute;left:8px;right:8px;bottom:82px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px;row-gap:4px;
   pointer-events:none;transition:bottom .16s var(--ease-out)}
 #sky-overlay .legend[hidden]{display:none}
-#sky-overlay .legend .chip{height:22px;min-height:22px;padding:0 6px;line-height:22px}
+#sky-overlay .legend .chip{height:22px;min-height:22px;padding:0 4px;line-height:22px}
 #sky-wrap.info-tall #sky-overlay .legend{bottom:102px}
 #sky-wrap.has-arc #sky-overlay .legend{bottom:102px}
 #sky-wrap.has-arc.info-tall #sky-overlay .legend{bottom:122px}

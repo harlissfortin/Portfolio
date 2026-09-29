@@ -545,10 +545,10 @@ button{cursor:pointer;touch-action:manipulation}
 :is(#rack .t-chips,#sky-overlay .legend) .c-swap .ic{width:14px;height:14px;stroke-width:2.4}
 #rack .t-chips .c-swap.sell{color:#FF9A88;box-shadow:inset 0 0 0 1px var(--danger),0 1px 3px rgba(0,0,0,.6)}
 /* the chip legend while a card or shell is held on touch (UI_PLAY): just above the info card */
-#sky-overlay .legend{position:absolute;left:8px;right:8px;bottom:82px;display:flex;justify-content:center;align-items:center;gap:6px;
+#sky-overlay .legend{position:absolute;left:8px;right:8px;bottom:82px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px;row-gap:4px;
   pointer-events:none;transition:bottom .16s var(--ease-out)}
 #sky-overlay .legend[hidden]{display:none}
-#sky-overlay .legend .chip{height:22px;min-height:22px;padding:0 6px;line-height:22px}
+#sky-overlay .legend .chip{height:22px;min-height:22px;padding:0 4px;line-height:22px}
 #sky-wrap.info-tall #sky-overlay .legend{bottom:102px}
 #sky-wrap.has-arc #sky-overlay .legend{bottom:102px}
 #sky-wrap.has-arc.info-tall #sky-overlay .legend{bottom:122px}
@@ -7024,6 +7024,7 @@ const GAME = (() => {
      subject is not on screen right now (tipLive) waits in the queue until it is. */
   const TIP_ORDER = ['t_sky', 't_crate', 't_fuse', 't_rain', 't_head', 't_count', 't_match', 't_mood', 't_sponsor', 't_aah',
     't_fusion', 't_twin', 't_crowd', 't_interest', 't_rig', 't_tube'];
+  const TIP_AGAIN = new Set(); // gesture tips already given their one extra showing
   const TIP_NOW = ['t_sky'];   // tied to a gesture in progress: shown at once, and the tip it replaces goes back to the queue
   const tipRank = id => { const i = TIP_ORDER.indexOf(id); return i < 0 ? TIP_ORDER.length : i; };
   function tipText(id) {
@@ -7106,7 +7107,10 @@ const GAME = (() => {
     if (!S.tipShown) return;
     const id = S.tipShown;
     S.tipShown = null;
-    emit('tipDone', {id});
+    // A gesture tip ended by its own gesture in under 3 s was not read: show it once more on the next lift.
+    const again = TIP_NOW.includes(id) && now() - S.tipAt < 3000 && !TIP_AGAIN.has(id);
+    if (again) { TIP_AGAIN.add(id); S.meta.seenTips = S.meta.seenTips.filter(x => x !== id); }
+    emit('tipDone', {id, again});
   }
   function buildTips(st) {
     const s = st.show, f = Math.floor(s / 3) + 1, rules = rulesAt(st, s);
@@ -7130,7 +7134,7 @@ const GAME = (() => {
     if (shopFuses(st)) queueTip('t_fusion');
   }
   function actionTips(a) {
-    if ((a.type === 'buy' || a.type === 'move') && a.to && a.to.zone === 'crate') queueTip('t_crate');
+    if (((a.type === 'buy' || a.type === 'move') && a.to && a.to.zone === 'crate') || (a.type === 'buy' && a.displace === 'crate')) queueTip('t_crate');
   }
 
   /* ---------- aria-live (§13) and toasts ---------- */
@@ -8547,7 +8551,7 @@ const UI_PLAY = (() => {
         if (!partners && c.coin) chips += `<span class="chip c-coin">+$${fmtChip(c.coin)}</span>`;
         if (!partners && !c.ooh && !c.aah && !(c.x > 1) && !c.crowd && !c.coin && !fu) chips += '<span class="chip c-none">+0</span>';
       } else if (hy && !partners) chips += '<span class="chip c-none">+0</span>';
-      if (hy && hy.breaks && hy.breaks.length) chips += `<span class="chip chip-fusion c-break" title="Breaks ${esc(hy.breaks.join(', '))}">✦✕</span>`;
+      if (hy && hy.breaks && hy.breaks.length) chips += `<span class="chip chip-fusion c-break" title="Breaks ${esc(hy.breaks.map(n => n || 'a new fusion').join(', '))}">✦✕</span>`;
       if (sw) chips += sw.kind === 'swap' ? `<span class="chip c-swap" title="Swap in: ${esc(shellName(sw.out))} goes to the Crate">→${ICON.crate}</span>`
         : `<span class="chip c-swap sell" title="Replace: sells ${esc(shellName(sw.out))}">✕+$${sw.refund}</span>`;
       setHTML(T.chips, chips);
@@ -8591,7 +8595,8 @@ const UI_PLAY = (() => {
       if (sees != null) s += ', sees ' + sees;
       if (view.fav === i) s += ', Crowd Favourite';
       const vc = view.chips && view.chips[i];
-      if (vc && vc.fusion && vc.fusion !== '?') s += ', fuses: ' + vc.fusion;
+      if (vc && vc.fusion) s += vc.fusion !== '?' ? ', fuses: ' + vc.fusion : ', fuses';
+      else if (vc && vc.fusionNext) s += ', fuses with the next tube';
       if (o.half) s += ', half strength';
       if (o.washed) s += ', washed out';
     }
@@ -8599,7 +8604,7 @@ const UI_PLAY = (() => {
       const w = swaps.get('tube:' + i);
       s += !w ? ', drop here' : w.kind === 'swap' ? `, drop here to swap in: ${shellName(w.out)} goes to the Crate` : `, drop here to replace: sells ${shellName(w.out)} for ${w.refund} coins`;
       const hb = hypoFor('tube:' + i);
-      if (hb && hb.breaks && hb.breaks.length) s += `, breaks the ${hb.breaks.join(' and ')} fusion`;
+      if (hb && hb.breaks && hb.breaks.length) s += ', breaks ' + hb.breaks.map(n => n ? 'the ' + n + ' fusion' : 'a new fusion').join(' and ');
     }
     return s;
   }
@@ -8835,7 +8840,8 @@ const UI_PLAY = (() => {
       const partners = G.settings && G.settings.chips === 'partners';
       setHTML(E.legend, (partners ? '' : '<span class="chip c-ooh">+Ooh</span><span class="chip c-aah">+Aah</span><span class="chip c-x">×Aah</span>') +
         '<span class="chip chip-fusion">✦ fuse</span>' + (() => { const kinds = new Set([...swaps.values()].map(w => w.kind));
-          return (kinds.has('swap') ? `<span class="chip c-swap">→${ICON.crate} swap</span>` : '') + (kinds.has('replace') ? '<span class="chip c-swap sell">✕ sells old</span>' : ''); })());
+          return (kinds.has('swap') ? `<span class="chip c-swap">→${ICON.crate} swap</span>` : '') + (kinds.has('replace') ? '<span class="chip c-swap sell">✕ sells old</span>' : ''); })()
+        + ([...targets.keys()].some(k => { const h = hypoFor(k); return h && h.breaks && h.breaks.length; }) ? '<span class="chip chip-fusion c-break">✦✕ breaks</span>' : ''));
     }
     // result card (pinned until the first build action)
     const showRes = !!result && u !== 'RESOLVING' && !info;
@@ -8969,6 +8975,7 @@ const UI_PLAY = (() => {
     const e = hy.order.per[slot.i], w = swaps.get(key), bits = [`Tube ${slot.i + 1}`];
     if (w) bits.push(w.kind === 'swap' ? `Swap in · ${shellName(w.out)} → Crate` : `Replace · +$${w.refund}`);
     bits.push(...chipWords(hy.chips[slot.i]));
+    if (hy.breaks && hy.breaks.length) bits.push('breaks ' + hy.breaks.map(n => n || 'a new fusion').join(', '));
     if (hy.sees[slot.i] != null) bits.push('sees ' + hy.sees[slot.i]);
     if (e && e.length) bits.push(`fires ${ordinal(e[0].from)} of ${hy.order.total}${e[e.length - 1].to === hy.order.total ? ' · LAST' : ''}`);
     return bits.join(' · ');
@@ -9031,7 +9038,7 @@ const UI_PLAY = (() => {
         const sees = chips.some(c => c && c.sees != null) ? chips.map(c => (c ? c.sees : null)) : sky.sees;
         const keyOf = c => c && c.fusion ? (c.fusionKey || c.fusion) : null;
         const after = new Set(chips.map(keyOf).filter(Boolean));
-        const breaks = (view.chips || []).filter(c => keyOf(c) && !after.has(keyOf(c)) && c.fusion !== '?').map(c => c.fusion);
+        const breaks = (view.chips || []).filter(c => keyOf(c) && !after.has(keyOf(c))).map(c => (c.fusion === '?' ? '' : c.fusion));
         return { state: st2, chips, sees, breaks, order: fireOrder(st2.tubes, view.rules) };
       }, null);
     }
@@ -9753,7 +9760,7 @@ const UI_PLAY = (() => {
     });
     on('overlay', p => { if (p && p.name === 'inspect' && !p.open) { sellArmed = null; if (building()) render(); } });
     on('tip', p => { if (p && p.id) { tip = { id: p.id, own: false }; seenLocal.add(p.id); renderTip(); } });
-    on('tipDone', p => { if (tip && !tip.own && (!p || p.id === tip.id)) { tip = null; renderTip(); } });
+    on('tipDone', p => { if (p && p.again) seenLocal.delete(p.id); if (tip && !tip.own && (!p || p.id === tip.id)) { tip = null; renderTip(); } });
     if (fnIn(G, 'onKey')) G.onKey('play', onPlayKey);
     // the fit ladders measure text: measure again once the web fonts arrive (their widths differ from the fallbacks)
     const fonts = document.fonts;
@@ -9904,8 +9911,8 @@ const UI_PANELS = (() => {
     critic: 'M13 8a5 5 0 1 1-10 0 5 5 0 0 1 10 0zM11.6 11.6l5.4 6',
     shortfuse: 'M3 17V7M7 17V7M11 17V7M14.5 7l4 10M18.5 7l-4 10',
     fog: 'M2 6q4-3 8 0t8 0M2 10.5q4-3 8 0t8 0M2 15q4-3 8 0t8 0',
-    ordinance: 'M2.5 8h3l4.5-4v12l-4.5-4h-3zM13 7.5a3.5 3.5 0 0 1 0 5',
-    windshift: 'M18 10H3.5M8 5.5 3.5 10 8 14.5',
+    ordinance: 'M2.1 7.7h3.3l4.2-3.7v12l-4.2-3.7H2.1z',
+    windshift: 'M4.2 17.5v-5M8.3 17.5v-5M12.5 17.5v-5M16.7 17.5v-5M16.7 6.7H4.2M7.1 3.8 4.2 6.7l2.9 2.9',
     ferry: 'M2 12.5h16l-2.5 4h-11zM6 12.5V8h8v4.5M10 8V4.5',
     crossed: 'M2 5c6.5 0 9.5 10 16 10M2 15c6.5 0 9.5-10 16-10',
     streetlights: 'M6 18V4.5h6.5M12.5 4.5V7M9.5 7h6l-1 3h-4zM4 18h4',
@@ -9916,7 +9923,8 @@ const UI_PANELS = (() => {
     _: 'M7.5 7.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M10 14.5v.5'
   };
   IC.countdown3 = IC.countdown;
-  const icon = (id, cls) => `<svg class="${cls || 'pn-ic'}" viewBox="0 0 20 20" aria-hidden="true"><path d="${IC[id] || IC._}"/></svg>`;
+  const IC_TEXT = { ordinance: '<text x="10.8" y="14.6" font-size="9.2" font-weight="700" fill="currentColor" stroke="none">½</text>' }; // matches the HUD icon
+  const icon = (id, cls) => `<svg class="${cls || 'pn-ic'}" viewBox="0 0 20 20" aria-hidden="true"><path d="${IC[id] || IC._}"/>${IC_TEXT[id] || ''}</svg>`;
   const crowdIcon = '<svg class="pn-ic" viewBox="0 0 24 16" aria-hidden="true"><path d="M5 15v-3a2.5 2.5 0 0 1 5 0v3M14 15v-3a2.5 2.5 0 0 1 5 0v3M7.5 7.5a2 2 0 1 0 0-.1M16.5 7.5a2 2 0 1 0 0-.1M3 6l2 3M21 6l-2 3"/></svg>';
   // §4.1 colour shapes: ● Red, ▲ Gold, ■ Green, ◆ Blue, ✚ White, ✺ Rainbow (4 wedges).
   const wedge = (c, d) => `<path style="fill:var(--c-${c})" d="${d}"/>`;
@@ -12039,7 +12047,7 @@ const UI_MENUS = (() => {
     headwind: '<path d="M3 8h10a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h6"/>',
     drizzle: '<path d="M7 15a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8a3.5 3.5 0 0 1 .5 7zM8 18.5l-1 2.5M12.5 18.5l-1 2.5M17 18.5l-1 2.5"/>',
     critic: '<circle cx="10" cy="9" r="5"/><path d="M13.5 12.5L20 21"/>',
-    shortfuse: '<path d="M3 20c3 0 4-3 6-5s4-2 5-3M16 8l1.5-3M18 10.5l3-1M15 6.5l-2-2"/>',
+    shortfuse: '<path d="M4 19V7M8.5 19V7M13 19V7M16.5 8l4.5 10M21 8l-4.5 10"/>',
     fog: '<path d="M3 8c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0M3 13c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0M3 18c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>',
     ordinance: '<path d="M2.5 9.2h4l5-4.4v14.4l-5-4.4h-4z"/><text x="13" y="17.5" font-size="11" font-weight="700" fill="currentColor" stroke="none">½</text>',
     windshift: '<path d="M5 21v-6M10 21v-6M15 21v-6M20 21v-6M20 8H5M8.5 4.5 5 8l3.5 3.5"/>',

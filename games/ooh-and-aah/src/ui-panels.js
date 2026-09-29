@@ -127,8 +127,8 @@ const UI_PANELS = (() => {
     critic: 'M13 8a5 5 0 1 1-10 0 5 5 0 0 1 10 0zM11.6 11.6l5.4 6',
     shortfuse: 'M3 17V7M7 17V7M11 17V7M14.5 7l4 10M18.5 7l-4 10',
     fog: 'M2 6q4-3 8 0t8 0M2 10.5q4-3 8 0t8 0M2 15q4-3 8 0t8 0',
-    ordinance: 'M2.5 8h3l4.5-4v12l-4.5-4h-3zM13 7.5a3.5 3.5 0 0 1 0 5',
-    windshift: 'M18 10H3.5M8 5.5 3.5 10 8 14.5',
+    ordinance: 'M2.1 7.7h3.3l4.2-3.7v12l-4.2-3.7H2.1z',
+    windshift: 'M4.2 17.5v-5M8.3 17.5v-5M12.5 17.5v-5M16.7 17.5v-5M16.7 6.7H4.2M7.1 3.8 4.2 6.7l2.9 2.9',
     ferry: 'M2 12.5h16l-2.5 4h-11zM6 12.5V8h8v4.5M10 8V4.5',
     crossed: 'M2 5c6.5 0 9.5 10 16 10M2 15c6.5 0 9.5-10 16-10',
     streetlights: 'M6 18V4.5h6.5M12.5 4.5V7M9.5 7h6l-1 3h-4zM4 18h4',
@@ -139,7 +139,8 @@ const UI_PANELS = (() => {
     _: 'M7.5 7.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M10 14.5v.5'
   };
   IC.countdown3 = IC.countdown;
-  const icon = (id, cls) => `<svg class="${cls || 'pn-ic'}" viewBox="0 0 20 20" aria-hidden="true"><path d="${IC[id] || IC._}"/></svg>`;
+  const IC_TEXT = { ordinance: '<text x="10.8" y="14.6" font-size="9.2" font-weight="700" fill="currentColor" stroke="none">½</text>' }; // matches the HUD icon
+  const icon = (id, cls) => `<svg class="${cls || 'pn-ic'}" viewBox="0 0 20 20" aria-hidden="true"><path d="${IC[id] || IC._}"/>${IC_TEXT[id] || ''}</svg>`;
   const crowdIcon = '<svg class="pn-ic" viewBox="0 0 24 16" aria-hidden="true"><path d="M5 15v-3a2.5 2.5 0 0 1 5 0v3M14 15v-3a2.5 2.5 0 0 1 5 0v3M7.5 7.5a2 2 0 1 0 0-.1M16.5 7.5a2 2 0 1 0 0-.1M3 6l2 3M21 6l-2 3"/></svg>';
   // §4.1 colour shapes: ● Red, ▲ Gold, ■ Green, ◆ Blue, ✚ White, ✺ Rainbow (4 wedges).
   const wedge = (c, d) => `<path style="fill:var(--c-${c})" d="${d}"/>`;

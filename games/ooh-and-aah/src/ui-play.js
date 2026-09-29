@@ -851,7 +851,7 @@ const UI_PLAY = (() => {
         if (!partners && c.coin) chips += `<span class="chip c-coin">+$${fmtChip(c.coin)}</span>`;
         if (!partners && !c.ooh && !c.aah && !(c.x > 1) && !c.crowd && !c.coin && !fu) chips += '<span class="chip c-none">+0</span>';
       } else if (hy && !partners) chips += '<span class="chip c-none">+0</span>';
-      if (hy && hy.breaks && hy.breaks.length) chips += `<span class="chip chip-fusion c-break" title="Breaks ${esc(hy.breaks.join(', '))}">✦✕</span>`;
+      if (hy && hy.breaks && hy.breaks.length) chips += `<span class="chip chip-fusion c-break" title="Breaks ${esc(hy.breaks.map(n => n || 'a new fusion').join(', '))}">✦✕</span>`;
       if (sw) chips += sw.kind === 'swap' ? `<span class="chip c-swap" title="Swap in: ${esc(shellName(sw.out))} goes to the Crate">→${ICON.crate}</span>`
         : `<span class="chip c-swap sell" title="Replace: sells ${esc(shellName(sw.out))}">✕+$${sw.refund}</span>`;
       setHTML(T.chips, chips);
@@ -895,7 +895,8 @@ const UI_PLAY = (() => {
       if (sees != null) s += ', sees ' + sees;
       if (view.fav === i) s += ', Crowd Favourite';
       const vc = view.chips && view.chips[i];
-      if (vc && vc.fusion && vc.fusion !== '?') s += ', fuses: ' + vc.fusion;
+      if (vc && vc.fusion) s += vc.fusion !== '?' ? ', fuses: ' + vc.fusion : ', fuses';
+      else if (vc && vc.fusionNext) s += ', fuses with the next tube';
       if (o.half) s += ', half strength';
       if (o.washed) s += ', washed out';
     }
@@ -903,7 +904,7 @@ const UI_PLAY = (() => {
       const w = swaps.get('tube:' + i);
       s += !w ? ', drop here' : w.kind === 'swap' ? `, drop here to swap in: ${shellName(w.out)} goes to the Crate` : `, drop here to replace: sells ${shellName(w.out)} for ${w.refund} coins`;
       const hb = hypoFor('tube:' + i);
-      if (hb && hb.breaks && hb.breaks.length) s += `, breaks the ${hb.breaks.join(' and ')} fusion`;
+      if (hb && hb.breaks && hb.breaks.length) s += ', breaks ' + hb.breaks.map(n => n ? 'the ' + n + ' fusion' : 'a new fusion').join(' and ');
     }
     return s;
   }
@@ -1139,7 +1140,8 @@ const UI_PLAY = (() => {
       const partners = G.settings && G.settings.chips === 'partners';
       setHTML(E.legend, (partners ? '' : '<span class="chip c-ooh">+Ooh</span><span class="chip c-aah">+Aah</span><span class="chip c-x">×Aah</span>') +
         '<span class="chip chip-fusion">✦ fuse</span>' + (() => { const kinds = new Set([...swaps.values()].map(w => w.kind));
-          return (kinds.has('swap') ? `<span class="chip c-swap">→${ICON.crate} swap</span>` : '') + (kinds.has('replace') ? '<span class="chip c-swap sell">✕ sells old</span>' : ''); })());
+          return (kinds.has('swap') ? `<span class="chip c-swap">→${ICON.crate} swap</span>` : '') + (kinds.has('replace') ? '<span class="chip c-swap sell">✕ sells old</span>' : ''); })()
+        + ([...targets.keys()].some(k => { const h = hypoFor(k); return h && h.breaks && h.breaks.length; }) ? '<span class="chip chip-fusion c-break">✦✕ breaks</span>' : ''));
     }
     // result card (pinned until the first build action)
     const showRes = !!result && u !== 'RESOLVING' && !info;
@@ -1273,6 +1275,7 @@ const UI_PLAY = (() => {
     const e = hy.order.per[slot.i], w = swaps.get(key), bits = [`Tube ${slot.i + 1}`];
     if (w) bits.push(w.kind === 'swap' ? `Swap in · ${shellName(w.out)} → Crate` : `Replace · +$${w.refund}`);
     bits.push(...chipWords(hy.chips[slot.i]));
+    if (hy.breaks && hy.breaks.length) bits.push('breaks ' + hy.breaks.map(n => n || 'a new fusion').join(', '));
     if (hy.sees[slot.i] != null) bits.push('sees ' + hy.sees[slot.i]);
     if (e && e.length) bits.push(`fires ${ordinal(e[0].from)} of ${hy.order.total}${e[e.length - 1].to === hy.order.total ? ' · LAST' : ''}`);
     return bits.join(' · ');
@@ -1335,7 +1338,7 @@ const UI_PLAY = (() => {
         const sees = chips.some(c => c && c.sees != null) ? chips.map(c => (c ? c.sees : null)) : sky.sees;
         const keyOf = c => c && c.fusion ? (c.fusionKey || c.fusion) : null;
         const after = new Set(chips.map(keyOf).filter(Boolean));
-        const breaks = (view.chips || []).filter(c => keyOf(c) && !after.has(keyOf(c)) && c.fusion !== '?').map(c => c.fusion);
+        const breaks = (view.chips || []).filter(c => keyOf(c) && !after.has(keyOf(c))).map(c => (c.fusion === '?' ? '' : c.fusion));
         return { state: st2, chips, sees, breaks, order: fireOrder(st2.tubes, view.rules) };
       }, null);
     }
@@ -2057,7 +2060,7 @@ const UI_PLAY = (() => {
     });
     on('overlay', p => { if (p && p.name === 'inspect' && !p.open) { sellArmed = null; if (building()) render(); } });
     on('tip', p => { if (p && p.id) { tip = { id: p.id, own: false }; seenLocal.add(p.id); renderTip(); } });
-    on('tipDone', p => { if (tip && !tip.own && (!p || p.id === tip.id)) { tip = null; renderTip(); } });
+    on('tipDone', p => { if (p && p.again) seenLocal.delete(p.id); if (tip && !tip.own && (!p || p.id === tip.id)) { tip = null; renderTip(); } });
     if (fnIn(G, 'onKey')) G.onKey('play', onPlayKey);
     // the fit ladders measure text: measure again once the web fonts arrive (their widths differ from the fallbacks)
     const fonts = document.fonts;

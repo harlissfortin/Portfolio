@@ -1050,6 +1050,7 @@ const GAME = (() => {
      subject is not on screen right now (tipLive) waits in the queue until it is. */
   const TIP_ORDER = ['t_sky', 't_crate', 't_fuse', 't_rain', 't_head', 't_count', 't_match', 't_mood', 't_sponsor', 't_aah',
     't_fusion', 't_twin', 't_crowd', 't_interest', 't_rig', 't_tube'];
+  const TIP_AGAIN = new Set(); // gesture tips already given their one extra showing
   const TIP_NOW = ['t_sky'];   // tied to a gesture in progress: shown at once, and the tip it replaces goes back to the queue
   const tipRank = id => { const i = TIP_ORDER.indexOf(id); return i < 0 ? TIP_ORDER.length : i; };
   function tipText(id) {
@@ -1132,7 +1133,10 @@ const GAME = (() => {
     if (!S.tipShown) return;
     const id = S.tipShown;
     S.tipShown = null;
-    emit('tipDone', {id});
+    // A gesture tip ended by its own gesture in under 3 s was not read: show it once more on the next lift.
+    const again = TIP_NOW.includes(id) && now() - S.tipAt < 3000 && !TIP_AGAIN.has(id);
+    if (again) { TIP_AGAIN.add(id); S.meta.seenTips = S.meta.seenTips.filter(x => x !== id); }
+    emit('tipDone', {id, again});
   }
   function buildTips(st) {
     const s = st.show, f = Math.floor(s / 3) + 1, rules = rulesAt(st, s);
@@ -1156,7 +1160,7 @@ const GAME = (() => {
     if (shopFuses(st)) queueTip('t_fusion');
   }
   function actionTips(a) {
-    if ((a.type === 'buy' || a.type === 'move') && a.to && a.to.zone === 'crate') queueTip('t_crate');
+    if (((a.type === 'buy' || a.type === 'move') && a.to && a.to.zone === 'crate') || (a.type === 'buy' && a.displace === 'crate')) queueTip('t_crate');
   }
 
   /* ---------- aria-live (§13) and toasts ---------- */

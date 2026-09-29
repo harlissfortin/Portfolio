@@ -84,7 +84,7 @@ flowchart TB
 
 - **The lingering sky.** A burst stays up for its Hang, counted in later bursts, and every burst ages the sky by 1. Later shells score by what is still up: a Chrysanthemum adds 20 Ooh per burst up, a Crossette adds 4 Aah per burst up, and a Salute clears the sky for 3 Aah per burst it clears. Order is free depth. In the first run's second show, a Red Palm placed in the empty last tube scores 189; placed right after the Red Peony, it scores 378. Every tube shows a "sees N" chip and a fire-order numeral, so the player can see this before lighting.
 - **Ooh × Aah.** Ooh is the additive bucket and Aah is the multiplier. Aah starts at 1. Some shells add to it, and the × shells multiply it. A × shell multiplies only the Aah that has arrived before it, so order matters inside the multiplier too. Of the 34 shells, 8 multiply Aah, all of them rare and 6 of them Blue. Only 6 (Peony, Strobe, Willow, Roman Candle, Girandola and Smiley) have card text that does not depend on context; the other 28 read the sky, a colour, their position, the fire count or the Crowd, or change what later shells read.
-- **The Crowd.** The Crowd never goes home. It grows by 1 for every show you pass, by 2 more at each Headliner, and by 2 × the festival number on an Encore (Applause of at least twice the target). Some shells add Crowd directly. At the end of every show the Crowd adds its size to Ooh. Overkill therefore pays forward into every later show instead of being banked. In the reference simulation the Crowd supplies 18% of the Ooh at the Midnight Countdown for the human proxy (median). <!-- VERIFY -->
+- **The Crowd.** The Crowd never goes home. It grows by 1 for every show you pass, by 2 more at each Headliner, and by 2 × the festival number on an Encore (Applause of at least twice the target). Some shells add Crowd directly. At the end of every show the Crowd adds its size to Ooh. Overkill therefore pays forward into every later show instead of being banked. In the reference simulation the Crowd supplies 18% of the Ooh at the Midnight Countdown for the human proxy (median; DESIGN.md §12.2).
 - **Coins and interest.** A passed show pays $4 ($6 at a Headliner), plus $1 of interest for every $5 you hold, up to +$5. Every shop is a choice between spending now and holding for interest.
 - **Upgrades, fusions and rigs.** Dropping a shell on its twin makes it ★2, which doubles all its numbers (★3 quadruples them; a ×1.5 becomes ×2, then ×3). Twelve directional fusions fire when shell A fires immediately before shell B: Palm then Palm makes a Palm Grove (+3 Aah); Salute then Comet makes a Thunderclap Comet (×1.3 Aah). Rigs belong to the tube, not the shell: a Tall Tube adds Hang, a Brass Tube adds Aah, a Spotlight doubles Ooh, and a Mortar fires its tube twice.
 
@@ -111,23 +111,26 @@ Every role below was filled by an AI agent (Claude), run in parallel through Cla
 4. **Red team.** An independent team re-implemented the spec from its text alone and attacked it. Their most serious finding: v1.0 had been balanced against a bot with perfect information, which no player has. Other findings covered the Countdown's fire order, hard-counter Headliners, first-run onboarding, mobile height and unreadable Sponsors.
 5. **Revision (v1.1).** Every red-team item was either fixed, with its measured effect recorded ([DESIGN.md §0.1](DESIGN.md#01-v11-revision-red-team-changes-and-their-measured-effect)), or rejected or modified with a reason ([Appendix A](DESIGN.md#appendix-a-rejected-or-modified-red-team-items)). The ship gate moved to a human-like bot. The Crowd mood, the Match button and the Fair Weather assist were added, the Countdown's direction was redesigned, and the target curve was retuned. A new spec-literal simulator regenerated every number. The spec now carries 30 golden score tests (15 of them new in v1.1), a Match property test and 3 seed-level traces, which the shipped simulation must match exactly.
 6. **Parallel build.** Nine owners built the game at the same time, one per row of the ownership table in [src/CONTRACT.md](src/CONTRACT.md): the simulation, audio, effects, core, four UI modules, and tooling. The contract fixes file names, the one global each module may define, the cross-module APIs, the events and the DOM ids, so each module could be built and tested against the contract before the others existed.
-7. **Review rounds.** The assembled build was reviewed in rounds, each lens backed by its own tool (see [Tools](#tools)): rules fidelity against the spec's tables, golden tests and seed traces (`spec-audit.mjs`); balance against the §12.2 gates (`balance/analyze.mjs`); accessibility and layout in a real browser (`a11y.mjs`); performance on a throttled phone profile (`perf.mjs`); robustness under random input (`fuzz.mjs`); and first-run pacing through the real UI (`humanplay.mjs`). Findings went back to the module owners, and a finishing pass per module closed them. <!-- VERIFY: number of review rounds, and whether the fun-rubric re-score of the built game is recorded anywhere -->
+7. **Review rounds.** The assembled build was reviewed in rounds, each lens backed by its own tool (see [Tools](#tools)): rules fidelity against the spec's tables, golden tests and seed traces (`spec-audit.mjs`); balance against the §12.2 gates (`balance/analyze.mjs`); accessibility and layout in a real browser (`a11y.mjs`); performance on a throttled phone profile (`perf.mjs`); robustness under random input (`fuzz.mjs`); and first-run pacing through the real UI (`humanplay.mjs`). Findings went back to the module owners, and a finishing pass per module closed them. There were five rounds, and the loop stopped when a round's reviewers found nothing significant left:
+   - **Round 1:** design, balance and fix passes. The design reviewer re-scored the *built* game on the fun rubric at **3.89**, just under the 4.0 ship gate. The cause was that replacing a shell took five taps, so players who used only the easy gestures bought twins and almost never built fusions or × multipliers.
+   - **Round 2:** added a one-gesture swap-in, a first-run fusion, × chips that show the Aah they add, the Festival 1 reroll ban and the Renown 8 retune, then re-baselined balance at 1,000 seeds. A first-time-player copy review found that 14 of the 16 first-run tips never appeared.
+   - **Round 3:** fixed every tip, rewrote all player-facing text in plain words with one term per concept, and moved the mood out of the fire button.
+   - **Round 4:** the rubric re-score reached **4.06** (pass). A chip-reading player now fuses in 45 of 60 runs (was 11) and uses a multiplier in 25 of 60 (was 1). A code bug hunt with late-run fuzzing found only medium and low issues, and they were fixed.
+   - **Round 5:** a fresh holistic review and a correctness re-hunt. Their last findings were fixed and verified with the reviewers' own repro scripts.
 
 ### Balance results
 
 These are the reference results from DESIGN.md §12.2: v1.1 rules, 1,000 seeds (`1..1000`) unless noted. The ship gate sits on the `human` bot, a player who has learned the rules and uses the on-screen chips and the Crowd mood. The `oracle` bot has perfect information and searches every arrangement; it only checks that skilled play has headroom.
 
-<!-- VERIFY: re-run `node tools/test-sim.mjs --seeds=1000` and `node tools/balance/analyze.mjs --seeds=1000` against the shipped src/sim.js and confirm every number in this section, or replace it with the measured value. -->
-
 | Bot | What it models | Gate | Win rate |
 |---|---|---|---|
-| `novice` | Noisy valuation of every option, one rearranging pass, ignores the mood | 8–25% | **18.8%** |
-| `human` (ship gate) | Noise per offer, exact placement from the chips, rearranges until the mood reads Eager | 40–60% | **50.7%** |
-| `oracle` (headroom) | Perfect information, exhaustive search over up to 720 arrangements | 75–92% | **81.6%** |
+| `novice` | Noisy valuation of every option, one rearranging pass, ignores the mood | 8–25% | **18.6%** |
+| `human` (ship gate) | Noise per offer, exact placement from the chips, rearranges until the mood reads Eager | 40–60% | **52.7%** |
+| `oracle` (headroom) | Perfect information, exhaustive search over up to 720 arrangements | 75–92% | **83.2%** |
 
 On v1.0 rules the same three bots won 9.5%, 40.0% and 70.0%.
 
-The shipped simulation (`src/sim.js`), checked with `node tools/balance/analyze.mjs --seeds=200 --only=winrates`, gives 14.5% (novice), 51.5% (human) and 79.5% (oracle): all three inside their gates and within 200-seed sampling error of the reference. <!-- VERIFY: replace with the 1,000-seed figures after the final build -->
+These are the shipped simulation's figures (`src/sim.js`) at 1,000 seeds, after the round-2 balance patches: rerolls banned in Festival 1, Match-aware bots, and the Renown 8 Countdown target lowered to 900,000. The v1.1 design figures were 18.8%, 50.7% and 81.6%. The full `node tools/balance/analyze.mjs --seeds=1000` pass reports 133 gates OK and 0 failing, with 2 warnings inside sampling error.
 
 **Lazy and synergy-blind strategies win nothing:**
 
@@ -144,7 +147,7 @@ The shipped simulation (`src/sim.js`), checked with `node tools/balance/analyze.
 - **The final exam is passable.** The human proxy passes 76% of its Midnight Countdowns (oracle 89%, novice 64%).
 - **No Headliner is a run-killer.** The human proxy misses every Headliner at most 30% of the time (the hardest, Rival Crew, 28%). Drawing any given Headliner moves its win rate by at most 8 points.
 - **The risk offer is a real choice.** A bolder human proxy that takes Sponsors at Hopeful wins 49.4%, against 50.7% for the cautious one. Removing Sponsors costs 8 points (human) and 9 (oracle) over 400 seeds.
-- **Meta adds options, not power.** With only the starting pool, the human proxy wins 56.5% (200 seeds), against 50.7% with everything unlocked, so unlocks widen choice without making runs easier. Every starting kit stays inside the ±10-point gate: the human proxy wins 47.0% to 59.0% across the five kits, against 50.7% for the default (200 seeds). <!-- VERIFY: the spec asks for kit and Renown rows to be re-measured after the Saturn trim (§12.3) -->
+- **Meta adds options, not power.** With only the starting pool, the human proxy wins 56.5% (200 seeds), against 50.7% with everything unlocked, so unlocks widen choice without making runs easier. Every starting kit stays inside the ±10-point gate: the human proxy wins 47.0% to 59.0% across the five kits, against 50.7% for the default (200 seeds). The kit and Renown rows were re-measured after the Saturn trim (§12.3) and all stay inside their gates; DESIGN.md §12.2 holds the current table.
 - **Difficulty ladder.** Win rates fall across the eight Renown levels, within the spec's ±5-point tolerance, to 12% (oracle) and 5% (human) at Renown 8 (200 seeds).
 - **The assist works.** Fair Weather (targets ×0.75, one Countdown relight) takes the novice from 16.8% to 49.5% on the same 400 seeds.
 - **No degenerate loops.** The human proxy rerolls about 2.5 times per run, holds a median $3 at payout (no stalling for interest), and every shell's pick/win rate stays within 22 points of the base rate.
@@ -155,7 +158,7 @@ The spec's last gate is a cold stopwatch test with three people (DESIGN.md §12.
 
 ## Architecture
 
-The game is one HTML file, [`index.html`](index.html), assembled by `tools/build.mjs` from the sources in [`src/`](src/). The code is not minified. The spec's original size target (150 KB) was lifted during the build so that no feature tier would be cut: the build now warns above 800 KB and fails above 1,200 KB ([src/CONTRACT.md](src/CONTRACT.md), "Size"). The shipped file is about 705 KB, or about 212 KB gzipped. <!-- VERIFY: re-read both numbers from the `node tools/build.mjs` size table after the final build -->
+The game is one HTML file, [`index.html`](index.html), assembled by `tools/build.mjs` from the sources in [`src/`](src/). The code is not minified. The spec's original size target (150 KB) was lifted during the build so that no feature tier would be cut: the build now warns above 900 KB and fails above 1,200 KB ([src/CONTRACT.md](src/CONTRACT.md), "Size"). The shipped file is about 822 KB, or about 250 KB gzipped.
 
 The file has no `<!doctype>`, `<html>`, `<head>` or `<body>` tags, because the hosting page wraps it. Its first lines are the charset and viewport metas, so it is still correct when opened raw from the repo. The build concatenates, in this order:
 
@@ -212,7 +215,7 @@ Run these from `games/ooh-and-aah/` with Node.js 18 or later. `build.mjs`, `test
 
 A reasonable pre-release pass, in order: `build.mjs`, `test-sim.mjs --seeds=1000`, `audit/spec-audit.mjs`, `playtest.mjs`, `audit/a11y.mjs`, `audio-check.mjs`, `fuzz.mjs`, `perf.mjs`, then `humanplay.mjs --fast` and `balance/analyze.mjs --seeds=1000` for the numbers in [Balance results](#balance-results).
 
-`tools/dev/` holds the stub harnesses each module owner used to build and test a module before the others existed. <!-- VERIFY: link tools/README.md here if the tooling owner adds it (build.mjs and playtest.mjs already refer to it) -->
+`tools/dev/` held the stub harnesses each module owner used to build and test a module before the others existed; it is git-ignored. [tools/README.md](tools/README.md) documents every build check and playtest flow.
 
 ---
 
