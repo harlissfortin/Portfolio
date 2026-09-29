@@ -22,8 +22,10 @@ function wilson(k, n, z = 1.96) {
 // Standard error (percentage points) of a difference of two independent proportions.
 function seDiff(k1, n1, k2, n2) {
   if (!n1 || !n2) return NaN;
-  const p1 = k1 / n1, p2 = k2 / n2;
-  return 100 * Math.sqrt((p1 * (1 - p1)) / n1 + (p2 * (1 - p2)) / n2);
+  // Agresti–Caffo: one pseudo-success and one pseudo-failure per arm, so 0% / 100% arms (small n)
+  // still carry sampling error instead of reading as exact.
+  const p1 = (k1 + 1) / (n1 + 2), p2 = (k2 + 1) / (n2 + 2);
+  return 100 * Math.sqrt((p1 * (1 - p1)) / (n1 + 2) + (p2 * (1 - p2)) / (n2 + 2));
 }
 
 // Number formatting close to the spec's (§8.5): 1,272 · 12K · 1.07M.

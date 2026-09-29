@@ -150,11 +150,17 @@ const UI_PLAY = (() => {
   const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
   const overflows = el => !!el && el.getClientRects().length > 0 && el.scrollWidth > el.clientWidth + 0.5;
   // Progressive fitting: raise host[data-fit] one level at a time (CSS sheds detail per level) until over() is false.
-  function fitLadder(host, levels, over) {
+  // `key` names everything the fit depends on (markup, width, fonts): an unchanged key skips the climb, which
+  // would otherwise force a layout per level on every render.
+  let fitEpoch = 0; // bumped when web fonts arrive
+  function fitLadder(host, levels, over, key) {
     if (!host) return 0;
+    const k = key == null ? null : fitEpoch + '|' + mode + '|' + lastW + '|' + key;
+    if (k != null && host._fitKey === k) return +host.dataset.fit || 0;
     let lv = 0;
     host.dataset.fit = '0';
     while (lv < levels && safe(over, false)) host.dataset.fit = String(++lv);
+    host._fitKey = k;
     return lv;
   }
   // A soft hyphen in long words (a VC|CV or V|CV break nearest the middle), for engines without hyphenation dictionaries.
@@ -167,6 +173,9 @@ const UI_PLAY = (() => {
     }
     return best < 0 ? w : w.slice(0, best) + '\u00ad' + w.slice(best);
   });
+  // Write markup only when it changed: re-parsing tokens (SVG plates, pictogram data URLs) on every render is the
+  // costliest part of a render, and unchanged nodes keep their animations, hover and focus.
+  function setHTML(el, html) { if (el && el._html !== html) { el.innerHTML = html; el._html = html; } }
   const sfx = (name, opts) => { const a = audioApi(); if (fnIn(a, 'ui')) { try { a.ui(name, opts); } catch (e) { /* audio never blocks play */ } } };
   const announce = (text, o) => { if (G && fnIn(G, 'announce') && text) G.announce(text, o); };
   const haptic = p => { if (G && fnIn(G, 'haptic')) G.haptic(p); };
@@ -689,18 +698,18 @@ const UI_PLAY = (() => {
     const k = slotOf(s);
     let pips = '';
     for (let j = 0; j < 3; j++) pips += j === 2 ? `<i class="hl${k === 2 ? ' now' : ''}">${ICON.crown}</i>` : `<i class="${j < k ? 'done' : j === k ? 'now' : ''}"></i>`;
-    E.show.innerHTML = `<span class="hs-fest">${esc(festName(festOf(s)))}</span><span class="hs-slot"> · ${esc(showName(s))}</span>` +
-      `<span class="hs-pips" aria-hidden="true" title="${esc(showName(s))}">${pips}</span>`;
-    E.target.innerHTML = `Target <b class="display num">${fmt(targetOf(s))}</b>`;
+    setHTML(E.show, `<span class="hs-fest">${esc(festName(festOf(s)))}</span><span class="hs-slot"> · ${esc(showName(s))}</span>` +
+      `<span class="hs-pips" aria-hidden="true" title="${esc(showName(s))}">${pips}</span>`);
+    setHTML(E.target, `Target <b class="display num">${fmt(targetOf(s))}</b>`);
     const nx = [];
     for (let j = s + 1; j <= Math.min(lastShow(), s + 2); j++) nx.push(`<span class="nx${j - s}">${fmt(targetOf(j))}${slotOf(j) === 2 ? ICON.crown : ''}</span>`);
-    E.next.innerHTML = nx.length ? '<span aria-hidden="true">▸</span> ' + nx.join('<span class="nx2"> · </span>') : '';
+    setHTML(E.next, nx.length ? '<span aria-hidden="true">▸</span> ' + nx.join('<span class="nx2"> · </span>') : '');
     E.next.setAttribute('aria-label', 'Next targets: ' + [s + 1, s + 2].filter(j => j <= lastShow()).map(j => fmt(targetOf(j)) + (slotOf(j) === 2 ? ' (Headliner)' : '')).join(', '));
     const hid = view.hRules[0];
     E.head.hidden = !hid;
     if (hid) {
       const h = ruleInfo(hid), tonight = view.hs === s;
-      E.head.innerHTML = `<span class="hh-pill">${ruleIcon(hid)}<span class="hh-name">${esc(h.name)}</span></span>`;
+      setHTML(E.head, `<span class="hh-pill">${ruleIcon(hid)}<span class="hh-name">${esc(h.name)}</span></span>`);
       E.head.setAttribute('aria-label', `${tonight ? 'Tonight' : 'Headliner, show ' + (view.hs + 1)}: ${h.name}. ${h.text} Open the card.`);
       E.head.classList.toggle('now', tonight);
     }
@@ -709,7 +718,7 @@ const UI_PLAY = (() => {
     E.crowdHalf.hidden = !hasRule('ferry');
     const used = critical(), fw = !!st.fairWeather;
     const noRain = !used && (view.tonight.some(r => /^countdown/.test(r)) || st.renown >= 6 || st.rain === 0);
-    E.rain.innerHTML = ICON.umbrella.replace('</svg>', (used ? ICON.crack : '') + '</svg>') + (fw ? '<span class="fw">FW</span>' : '');
+    setHTML(E.rain, ICON.umbrella.replace('</svg>', (used ? ICON.crack : '') + '</svg>') + (fw ? '<span class="fw">FW</span>' : ''));
     E.rain.dataset.state = used ? 'used' : noRain ? 'none' : 'ok';
     E.rain.setAttribute('aria-label', (used ? 'Rain check used: last chance' : noRain ? 'No rain check tonight' : 'Rain check: unused') + (fw ? '. Fair Weather on' : ''));
     fitHud();
@@ -717,9 +726,10 @@ const UI_PLAY = (() => {
   // Nothing in the HUD clips at 360 px: each row sheds detail in a fixed order until it fits (fonts vary by device).
   function fitHud() {
     // Row A (Regular only; Compact shows the name in the sky): 1 pips · 2 Crowd to Row B · 3 both · 4 festival name only
-    if (mode === 'regular') fitLadder(E.hud, 4, () => overflows(E.show)); else E.hud.dataset.fit = '0';
+    const hk = E.show._html + E.coins.textContent + E.crowd.textContent + E.crowdHalf.hidden;
+    if (mode === 'regular') fitLadder(E.hud, 4, () => overflows(E.show), hk); else { E.hud.dataset.fit = '0'; E.hud._fitKey = null; }
     // Row B: 1 Headliner chip icon only · 2 one next target · 3 no next targets
-    fitLadder(E.hudTgt, 3, () => E.hudTgt.scrollWidth > E.hudTgt.clientWidth + 0.5);
+    fitLadder(E.hudTgt, 3, () => E.hudTgt.scrollWidth > E.hudTgt.clientWidth + 0.5, hk + E.hud.dataset.fit + E.target._html + E.next._html + E.head._html + E.head.hidden);
   }
   function ruleIcon(id) {
     const m = { headwind: ICON.gust, critic: ICON.monocle, streetlights: ICON.lamp, fog: ICON.fog, powercut: ICON.bolt, drizzle: ICON.drop,
@@ -739,11 +749,11 @@ const UI_PLAY = (() => {
     E.spBtn.setAttribute('aria-pressed', sp.accepted ? 'true' : 'false');
     const pay = String(k[1]).replace(/^pays /, '');
     const tx = E.spBtn.querySelector('.sp-text');
-    tx.innerHTML = `<span class="sp-l1"><b>Sponsor</b> <span class="sp-x">×1.5 </span>→ <b class="num">${fmt(t)}</b></span>` +
-      `<span class="sp-l2"><span class="sp-dot"> · </span><span class="sp-p">pays </span>${esc(pay)}</span>`;
+    setHTML(tx, `<span class="sp-l1"><b>Sponsor</b> <span class="sp-x">×1.5 </span>→ <b class="num">${fmt(t)}</b></span>` +
+      `<span class="sp-l2"><span class="sp-dot"> · </span><span class="sp-p">pays </span>${esc(pay)}</span>`);
     // 360 px: the reward moves to a second line, then "pays" goes, then "×1.5" (all stay in the aria-label and Inspect)
     const l1 = tx.firstElementChild, l2 = tx.lastElementChild;
-    fitLadder(E.sponsor, 3, () => overflows(tx) || overflows(l1) || overflows(l2));
+    fitLadder(E.sponsor, 3, () => overflows(tx) || overflows(l1) || overflows(l2), tx._html + sp.accepted);
     E.spBtn.querySelector('.sp-word').textContent = sp.accepted ? 'Accepted' : 'Accept';
     E.spBtn.setAttribute('aria-label', `Sponsor, ${k[0]}: target times 1.5, to ${fmt(t)}; ${k[2]} if you pass. ${sp.accepted ? 'Accepted' : 'Not accepted'}.`);
   }
@@ -783,11 +793,11 @@ const UI_PLAY = (() => {
         num += `<span class="n${last ? ' last' : ''}${ghost && e ? ' hyp' : ''}${!e ? ' none' : ''}">${lbl}</span>`;
       }
       if (rules.includes('shortfuse') && i >= 5) num = '<span class="n none">no fuse</span>';
-      T.num.innerHTML = num;
+      setHTML(T.num, num);
       // sees chip (hypothetical while this tube is a legal drop)
       const sees = hv ? hv.sees[i] : hy ? hy.sees[i] : v.sees[i];
       const showSees = (sh || hy || (hv && hovKey === key)) && sees != null;
-      T.sees.innerHTML = showSees ? `${ICON.eye}<span class="sw">sees\u00a0</span>${sees}` : '';
+      setHTML(T.sees, showSees ? `${ICON.eye}<span class="sw">sees\u00a0</span>${sees}` : '');
       T.sees.classList.toggle('local', !!(hy || hv) && showSees);
       T.sees.classList.toggle('fogged', rules.includes('fog') && sees != null);
       // token + telegraph badges
@@ -804,8 +814,8 @@ const UI_PLAY = (() => {
       if (sh && ch && ch.crowd > 0 && !can) badges += `<span class="b-crowd">${ICON.crowd}+${fmtChip(ch.crowd)}</span>`;
       // Hang pips; under Drizzle one pip is shown crossed out (§4.7 telegraph)
       const baseHang = sh ? hangOf(tb, []) : 0, drz = rules.includes('drizzle') && baseHang > 0;
-      T.tok.innerHTML = sh ? tokenHTML(sh, { size: 'lg', hang: drz ? baseHang - 1 : baseHang, drizzle: drz, cls: washed ? ' washed' : '', badges })
-        : `<span class="t-empty">${ICON.plus}</span>`;
+      setHTML(T.tok, sh ? tokenHTML(sh, { size: 'lg', hang: drz ? baseHang - 1 : baseHang, drizzle: drz, cls: washed ? ' washed' : '', badges })
+        : `<span class="t-empty">${ICON.plus}</span>`);
       // local chips on legal drops: +Ooh, +Aah, ×, ✦, Crowd, $ (never a total; §8.4)
       let chips = '';
       if (hy && hy.chips[i]) {
@@ -819,9 +829,9 @@ const UI_PLAY = (() => {
         if (!partners && c.crowd) chips += `<span class="chip c-crowd">${ICON.crowd}+${fmtChip(c.crowd)}</span>`;
         if (!partners && c.coin) chips += `<span class="chip c-coin">+$${fmtChip(c.coin)}</span>`;
       } else if (hy && !partners) chips = '<span class="chip c-none">+0</span>';
-      T.chips.innerHTML = chips;
+      setHTML(T.chips, chips);
       // rig plate
-      T.rig.innerHTML = tb.rig ? (ICON.rig[tb.rig] || '') : '';
+      setHTML(T.rig, tb.rig ? (ICON.rig[tb.rig] || '') : '');
       T.rig.className = 't-rig' + (tb.rig ? ' has' : '') + (held && held.kind === 'rig' && can ? ' can' : '');
       // state classes
       T.btn.dataset.soot = soot(tf[i]);
@@ -840,7 +850,8 @@ const UI_PLAY = (() => {
     E.fuse.dataset.dir = dir;
     E.fuse.style.width = Math.max(0, (n - 1) * (48 + gap)) + 'px';
     // "sees N" must never touch its neighbour: snug, then an eye glyph for the word (fonts vary by device)
-    fitLadder(E.rack, 2, () => E.tubes.some(t => !t.btn.hidden && t.sees.firstChild && t.sees.offsetWidth > 48 + gap - 3));
+    fitLadder(E.rack, 2, () => E.tubes.some(t => !t.btn.hidden && t.sees.firstChild && t.sees.offsetWidth > 48 + gap - 3),
+      gap + E.tubes.map(t => (t.btn.hidden ? '-' : t.sees._html + t.sees.className)).join('|'));
     renderArc();
   }
   function tubeLabel(i, ord, sees, o) {
@@ -892,7 +903,7 @@ const UI_PLAY = (() => {
     }
     const live = arcs.filter(a => a.tubes[a.src] && a.tubes[a.src].shell);
     E.skyWrap.classList.toggle('has-arc', live.length > 0);
-    if (!live.length) { E.arc.innerHTML = ''; E.arc.removeAttribute('data-on'); return; }
+    if (!live.length) { setHTML(E.arc, ''); E.arc.removeAttribute('data-on'); return; }
     const rr = E.rack.getBoundingClientRect(), x = j => { const r = E.tubes[j].btn.getBoundingClientRect(); return r.left + r.width / 2 - rr.left; };
     const H = 20; // the arcs rise from the brass rim into the sky
     E.arc.setAttribute('viewBox', `0 0 ${Math.round(rr.width)} ${H + 6}`);
@@ -909,7 +920,7 @@ const UI_PLAY = (() => {
       }
       svgOut += `<circle class="src${cls}" cx="${x(a.src)}" cy="${H}" r="${a.strong ? 5 : 4}"/>`;
     }
-    E.arc.innerHTML = svgOut;
+    setHTML(E.arc, svgOut);
   }
 
   /* ---------- Tools row: Crate ×2 · Undo · Match · Restore · Rehearse ---------- */
@@ -917,7 +928,7 @@ const UI_PLAY = (() => {
     const crate = S().crate || [null, null];
     E.crates.forEach((b, i) => {
       const sh = crate[i], key = 'crate:' + i, can = !!held && targets.has(key);
-      b.innerHTML = sh ? tokenHTML(sh, { size: 'mini' }) : ICON.crate;
+      setHTML(b, sh ? tokenHTML(sh, { size: 'mini' }) : ICON.crate);
       b.classList.toggle('empty', !sh);
       b.classList.toggle('sel', !!held && held.kind === 'shell' && sameSlot(held.slot, { zone: 'crate', i }));
       b.classList.toggle('can', can);
@@ -958,7 +969,7 @@ const UI_PLAY = (() => {
       b.classList.toggle('sold', !!c.sold);
       if (c.sold) {
         b.disabled = true;
-        b.innerHTML = '<span class="c-sold">Sold</span>';
+        setHTML(b, '<span class="c-sold">Sold</span>');
         b.setAttribute('aria-label', `Card ${i + 1}: sold`);
         return;
       }
@@ -977,14 +988,14 @@ const UI_PLAY = (() => {
       for (let k = 0; k < 3; k++) pips += `<i${k < rar[1] ? ' class="on"' : ''}></i>`;
       const size = four ? (mode === 'regular' ? 'md' : 'xs') : (mode === 'regular' ? 'lg' : 'md');
       b.classList.toggle('poor', poor);
-      b.innerHTML = tokenHTML(sh, { size, hang: r.hang || 0 }) +
+      setHTML(b, tokenHTML(sh, { size, hang: r.hang || 0 }) +
         `<span class="c-side"><span class="c-price num">$${c.cost}</span><span class="c-rar" aria-hidden="true">${pips}</span></span>` +
-        `<span class="c-name" lang="en">${shy(esc(r.name || cap(c.id)))}</span>` + badge;
+        `<span class="c-name" lang="en">${shy(esc(r.name || cap(c.id)))}</span>` + badge);
       b.setAttribute('aria-label', `Card ${i + 1}: ${r.name}, ${colName(sh.col)} ${colShape(sh.col)}, ${rar[0]}, new $${c.cost}${badgeLong ? '. ' + badgeLong : ''}. ${cardText(c.id, sh.col, 1)}`);
       b.classList.toggle('badged', !!badge);
       b.dataset.rar = rar[1];
       const bd = b.querySelector('.c-badge');
-      fitLadder(b, 2, () => overflows(bd)); // 1: badges shed their word ("Twin ★2 $5" → "⧉★2 $5", "✦ Fuses" → "✦") · 2: no badge
+      fitLadder(b, 2, () => overflows(bd), b._html + b.className); // 1: badges shed their word ("Twin ★2 $5" → "⧉★2 $5", "✦ Fuses" → "✦") · 2: no badge
     });
   }
 
@@ -996,27 +1007,27 @@ const UI_PLAY = (() => {
     const rc = st.shop && st.shop.rig;
     if (!rc) {
       E.rigBtn.disabled = true;
-      E.rigBtn.innerHTML = '<span class="ws-name">No rig today</span>';
+      setHTML(E.rigBtn, '<span class="ws-name">No rig today</span>');
       E.rigBtn.setAttribute('aria-label', 'No rig card this show');
     } else {
       const ri = rigInfo(rc.id);
       E.rigBtn.disabled = !!rc.sold;
-      E.rigBtn.innerHTML = `<span class="ws-glyph">${ICON.rig[rc.id] || ''}</span><span class="ws-name ws-rigname">${esc(ri.name)}</span>` +
-        (rc.sold ? '<span class="ws-price">Sold</span>' : `<span class="ws-price num">$${rc.cost != null ? rc.cost : ri.cost}</span>`);
+      setHTML(E.rigBtn, `<span class="ws-glyph">${ICON.rig[rc.id] || ''}</span><span class="ws-name ws-rigname">${esc(ri.name)}</span>` +
+        (rc.sold ? '<span class="ws-price">Sold</span>' : `<span class="ws-price num">$${rc.cost != null ? rc.cost : ri.cost}</span>`));
       E.rigBtn.setAttribute('aria-label', rc.sold ? `Rig ${ri.name}: sold` : `Rig card: ${ri.name}, $${rc.cost != null ? rc.cost : ri.cost}. ${ri.text} Pick it, then choose a tube (G).`);
       E.rigBtn.classList.toggle('sel', !!held && held.kind === 'rig');
       E.rigBtn.classList.toggle('poor', !rc.sold && (rc.cost || ri.cost) > st.coins);
     }
     const n = st.tubes.length, tc = tubeCost();
     E.tubeBtn.hidden = n >= 6; // a full rack frees the room for the rig's name
-    E.tubeBtn.innerHTML = n >= 6 ? '<span class="ws-name">6 tubes</span>' : `${ICON.addTube}<span class="ws-name ws-word">Tube</span><span class="ws-price num">$${tc}</span>`;
+    setHTML(E.tubeBtn, n >= 6 ? '<span class="ws-name">6 tubes</span>' : `${ICON.addTube}<span class="ws-name ws-word">Tube</span><span class="ws-price num">$${tc}</span>`);
     E.tubeBtn.disabled = n >= 6;
     E.tubeBtn.classList.toggle('poor', n < 6 && tc > st.coins);
     E.tubeBtn.setAttribute('aria-label', n >= 6 ? 'The rack is full: 6 tubes' : `Add tube ${n + 1} for $${tc} (T)`);
     const rc$ = rerollCost();
-    E.rerollBtn.innerHTML = `${ICON.reroll}<span class="ws-name ws-word">Reroll</span><span class="ws-price num">$${rc$}</span>`;
+    setHTML(E.rerollBtn, `${ICON.reroll}<span class="ws-name ws-word">Reroll</span><span class="ws-price num">$${rc$}</span>`);
     // 360 px: tighten, then Tube / Reroll keep only their icons, then the rig keeps only its glyph (names stay in aria-labels)
-    fitLadder(E.workshop, 3, () => [...E.workshop.querySelectorAll('.ws-name')].some(overflows));
+    fitLadder(E.workshop, 3, () => [...E.workshop.querySelectorAll('.ws-name')].some(overflows), E.rigBtn._html + E.tubeBtn._html + E.tubeBtn.hidden + E.rerollBtn._html);
     E.rerollBtn.disabled = !(st.shop && st.shop.cards && st.shop.cards.length);
     E.rerollBtn.classList.toggle('poor', rc$ > st.coins);
     E.rerollBtn.setAttribute('aria-label', `Reroll the shop for $${rc$} (X)`);
@@ -1033,7 +1044,7 @@ const UI_PLAY = (() => {
     E.mood.hidden = !mv;
     if (mv) {
       E.mood.dataset.mood = view.mood;
-      E.mood.innerHTML = moodIcon(view.mood) + `<span class="mood-w">${MOODS[view.mood] || cap(view.mood)}</span>`;
+      setHTML(E.mood, moodIcon(view.mood) + `<span class="mood-w">${MOODS[view.mood] || cap(view.mood)}</span>`);
     }
     E.fire.setAttribute('aria-label', resolving ? 'Skip to the result (Space twice)' : 'Light the fuse (F)' + (mv ? '. Crowd mood: ' + (MOODS[view.mood] || view.mood) : ''));
     E.fire.classList.toggle('glow', !resolving && !!S().firstRun && view.s === 0);
@@ -1051,7 +1062,7 @@ const UI_PLAY = (() => {
     if (showPill) {
       const r = ruleInfo(rid), extra = view.rules.slice(1).map(x => ruleInfo(x).name);
       const moodTxt = view.rehearsing && moodVisible() && view.pmood ? `: ${MOODS[view.pmood] || view.pmood}` : '';
-      E.rhPill.innerHTML = ruleIcon(rid) + `<span>${view.rehearsing ? 'Rehearsing ' : 'Tonight: '}${esc(r.name)}${extra.length ? ' + ' + esc(extra.join(' + ')) : ''}${esc(moodTxt)}</span>`;
+      setHTML(E.rhPill, ruleIcon(rid) + `<span>${view.rehearsing ? 'Rehearsing ' : 'Tonight: '}${esc(r.name)}${extra.length ? ' + ' + esc(extra.join(' + ')) : ''}${esc(moodTxt)}</span>`);
       E.rhPill.dataset.mood = view.rehearsing ? view.pmood || '' : '';
       E.rhPill.setAttribute('aria-label', `${view.rehearsing ? 'Rehearsing' : 'Tonight'}: ${r.name}. ${r.text}${moodTxt ? ' Crowd mood ' + moodTxt.slice(2) : ''}. Open the card.`);
     }
@@ -1064,11 +1075,11 @@ const UI_PLAY = (() => {
     const info = u === 'RESOLVING' ? null : infoHTML();
     E.info.hidden = !info;
     if (info) {
-      E.info.innerHTML = info;
+      setHTML(E.info, info);
       // the hover line (a drop's local chips) replaces the card text; a card with nowhere to go says why
       E.info.classList.toggle('hovering', !flash && !!held && !!hover && targets.has(slotKey(hover)));
       E.info.classList.toggle('blocked', !flash && !!held && held.kind !== 'shell' && !targets.size);
-      const t = E.info.querySelector('.info-t'); fitLadder(E.info, 2, () => overflows(t));
+      const t = E.info.querySelector('.info-t'); fitLadder(E.info, 2, () => overflows(t), info);
     }
     E.skyWrap.classList.toggle('has-info', !!info);
     // result card (pinned until the first build action)
@@ -1747,14 +1758,18 @@ const UI_PLAY = (() => {
   }
   function dismissTip() { if (tip) { const own = tip.own; tip = null; if (own) nextTip(); else renderTip(); } }
   function renderTip() {
-    document.querySelectorAll('#play .tip-anchor').forEach(el => el.classList.remove('tip-anchor'));
     const show = !!tip && ui() !== 'RESOLVING';
     E.tip.hidden = !(show && tip.own);
-    if (!show) return;
-    if (tip.own) E.tip.textContent = tipText(tip.id);
-    const sel = TIP_ANCHOR[tip.id], a = sel && $(sel.split(', ').map(x => '#play ' + x).join(', '));
-    const el = a && (a.closest('button, .hud-crowd, .hud-coins, .crate, #rack, .readout, .result') || a);
-    if (el && el.getClientRects().length) el.classList.add('tip-anchor');
+    let el = null;
+    if (show) {
+      if (tip.own) E.tip.textContent = tipText(tip.id);
+      const sel = TIP_ANCHOR[tip.id], a = sel && $(sel.split(', ').map(x => '#play ' + x).join(', '));
+      el = a && (a.closest('button, .hud-crowd, .hud-coins, .crate, #rack, .readout, .result') || a);
+      if (el && !el.getClientRects().length) el = null;
+    }
+    // touch the classes only when the lit element changes (no restyle on every render)
+    document.querySelectorAll('#play .tip-anchor').forEach(x => { if (x !== el) x.classList.remove('tip-anchor'); });
+    if (el && !el.classList.contains('tip-anchor')) el.classList.add('tip-anchor');
   }
   function checkTips() {
     if (!building() || !view) return;
@@ -1861,7 +1876,8 @@ const UI_PLAY = (() => {
     if (fnIn(G, 'onKey')) G.onKey('play', onPlayKey);
     // the fit ladders measure text: measure again once the web fonts arrive (their widths differ from the fallbacks)
     const fonts = document.fonts;
-    if (fonts) { safe(() => fonts.ready.then(() => render())); if (fnIn(fonts, 'addEventListener')) fonts.addEventListener('loadingdone', () => render()); }
+    const refit = () => { fitEpoch++; render(); };
+    if (fonts) { safe(() => fonts.ready.then(refit)); if (fnIn(fonts, 'addEventListener')) fonts.addEventListener('loadingdone', refit); }
     measure();
     render();
   }
