@@ -4,3 +4,4 @@ tools/reports/
 tools/dev/
 *.report.json
 report.json
+tools/audit/out/

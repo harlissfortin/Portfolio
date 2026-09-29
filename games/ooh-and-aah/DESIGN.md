@@ -55,7 +55,7 @@ All figures come from the v11 sim, 1,000 seeds unless noted. The bots are define
 | First-ever run onboarding (high) | Show 3 target 150. t_head rewritten. F2 override fixed. Mood appears at show 3. Heartbeat rationed. | The Comet opener the chips suggest passes (162 / 150). The crowd-aware novice's first run: median 3.4 min. |
 | Mobile height and page contract (high) | charset and viewport metas. Compact layout below 700 px. Scroll fallback below 520 px. | Compact fixed rows total 424 px; at 375 × 548 the sky gets 124 px. |
 | Sponsors were unreadable (medium) | ×1.5 kept, now readable through the mood with Accept on. | Cautious human: 0 sponsored misses. Bold human: 3.7% sponsored misses and 49.4% wins vs 50.7%. Removing Sponsors costs 8–9 points. |
-| Renown 8 easier than 7; assist did nothing (medium) | R8: three passes at 1,000,000. The assist becomes **Fair Weather**. | R8 wins 12% (oracle) / 5% (human). Fair Weather takes the novice from 16.8% to 49.5% (400 seeds). |
+| Renown 8 easier than 7; assist did nothing (medium) | R8: three passes at 900,000 (1,000,000 until round 1). The assist becomes **Fair Weather**. | R8 wins 11.2% (oracle) / 3.1% (human) at 1,000 seeds, below R7's 12.2 / 3.4 (at 1,000,000 they read 9.3 / 2.7, under both floors). Fair Weather takes the novice from 16.8% to 49.5% (400 seeds). |
 | Milestones unreachable (medium) | Busy Sky needs 8+ bursts. Full Spectrum needs 3 colours up at once, or 4 colours fired. | Novice reaches them in 32% and 17% of runs. |
 | Reference sim diverged from the spec (medium) | New spec-literal sim; F1 tube rule; canonical RNG order; seed-level golden traces. | Every number regenerated. |
 | Target curve shape (medium) | New bases. | Oracle median Applause/target: 2.70 / 2.67 / 2.61 through F5–F7, then 3.58 in F8. |
@@ -806,7 +806,7 @@ There are exactly 4: Ooh and Aah (per show), and Coins and Crowd (per run). The 
 - **Headliners combine two distinct twists** from {drizzle, critic, fog, ordinance, ferry, streetlights, powercut, rival}. On `endless`, for n = 9..12, draw `pool[floor(rng() × 8)]`, then a second twist from the remaining 7.
 - There is a shop every show, but no rain check, no Sponsors and no relight.
 - The run ends at the first miss, or with a victory card after show 36. Record the shows cleared and the best Applause.
-- Every run ends: at the first miss, or at the hard stop after show 36. Hand-built all-★3 racks clear 2–7 of the 12 Afterparty shows. A full clear is a rare, aspirational victory: gate "every run ends; full clears ≤ 2% of oracle wins" (round 1: oracle wins on seeds 1–400 cleared p50 2, p90 6 shows; seed 309 cleared all 12).
+- Every run ends: at the first miss, or at the hard stop after show 36. Hand-built all-★3 racks clear 2–7 of the 12 Afterparty shows. A full clear is a rare, aspirational victory: gate "every run ends; full clears ≤ 2% of oracle wins". Round 1: with the v1.1 bots, oracle wins on seeds 1–400 cleared p50 2, p90 6 shows and seed 309 cleared all 12; after the round-1 changes, 330 oracle wins cleared p50 2, p90 8, max 11, with no full clear.
 
 ---
 
@@ -1457,7 +1457,7 @@ All bots drive the SIM only through `step` / `legalActions`; they may also call 
   - With the Chemist, each wild card is also tried in R, A, G and B.
   - `value = ΔU − 0.004 × net cost − (comfortable ? 0.04 × [an interest bracket is lost] : 0)`.
   - `comfortable` = `b ≥ 1.3 × target(s)` and `g ≥ 1.2 × max(target(s..s+2))` (base targets with Renown and Fair Weather applied).
-  - Buy the best if it clears the bot's margin. Otherwise reroll if not comfortable, `coins ≥ rerollCost + 5` and under the bot's reroll cap. Otherwise stop.
+  - Buy the best if it clears the bot's margin. Otherwise reroll if not comfortable, `f ≥ 2` (rerolls are illegal in F1), `coins ≥ rerollCost + 5` and under the bot's reroll cap. Otherwise stop.
   - At most 6 purchase steps.
 
 **The bots:**
@@ -1501,26 +1501,28 @@ All bots drive the SIM only through `step` / `legalActions`; they may also call 
 
 Real players are slower: at 30–45 s per show, a 24-show win takes 12–18 minutes.
 
-| Metric | Gate | v1.1 reference |
+**Round-1 re-baseline** (F1 reroll ban, Match-aware human and oracle purchase value, Renown 8 Countdown at 900,000; seeds 1..1000, `analyze.mjs --seeds=1000 --sweep-seeds=200`, plus `--only=renown --seeds=1000`): rows marked † were re-measured; the v1.1 value follows in brackets.
+
+| Metric | Gate | Reference |
 |---|---|---|
 | Random: win % / deaths | 0–5%; dies in F1–F2 | 0% (400 seeds); F1 17%, F2 76%, F3 8% |
 | Do-nothing | Dies by F2 | 100% die in F2 (200 seeds) |
 | Greedy: win % / deaths | 0–5%; ≥ 70% of deaths in F2–F4 | 0%; F2 27%, F3 36%, F4 30%, F5 6% (93% in F2–F4); median 8 shows, 2.7 min |
 | Greedy-mood (first run) | Median first run 3–5 min | 0%; median 10 shows = 3.4 min (p10 2.0, p90 4.5). Curated seed: show 9, 3.0 min. |
-| **Novice** win % | **8–25%** | **18.8%** |
-| **Human** win % (ship gate) | **40–60%** | **50.7%** |
-| Oracle win % (headroom) | 75–92% | 81.6% |
-| Human losses by festival | ≥ 75% in F6–F8 | 91% (F5 8%, F6 21%, F7 23%, F8 48% of 493 losses) |
-| Countdown arrivals that pass | Human ≥ 70% | Human 76% (665 arrivals), oracle 89%, novice 64% |
+| **Novice** win % | **8–25%** | † **18.6%** [18.8%] |
+| **Human** win % (ship gate) | **40–60%** | † **52.7%** [50.7%] |
+| Oracle win % (headroom) | 75–92% | † 83.2% [81.6%] |
+| Human losses by festival | ≥ 75% in F6–F8 | † 92% (F5 7%, F6 21%, F7 24%, F8 48% of 473 losses) [91% of 493] |
+| Countdown arrivals that pass | Human ≥ 70% | † Human 77% (682 arrivals), oracle 89%, novice 63% [76% of 665, 89%, 64%] |
 | Countdown natural order | Informational | The rack as lit at show 23 passes 78% of oracle arrivals vs 89% for the best order (v1.0 palindrome: 60% vs 88%) |
-| No-Sponsor penalty | 5–18 points | Human −8 (50.5 → 42.5), oracle −9 (81.5 → 72.5); 400 seeds |
-| Sponsor gamble (human-bold) | Sponsored-miss rate 3–10%; win rate within ±5 of the cautious human | 3.7% (0.35 per run); 49.4% vs 50.7%; 9.3 vs 8.2 Sponsor passes per run |
+| No-Sponsor penalty | 5–18 points | † Human −8.0 (52.7 → 44.7), oracle −4.6 (83.2 → 78.6; WARN: under the floor, inside the 95% sampling interval); 1,000 seeds, paired [human −8, oracle −9 at 400 seeds] |
+| Sponsor gamble (human-bold) | Sponsored-miss rate 3–10%; win rate within ±5 of the cautious human | † 3.6% (0.35 per run); 51.1% vs 52.7%; 9.4 vs 8.3 Sponsor passes per run [3.7%; 49.4% vs 50.7%] |
 | Oracle median Applause/target by festival | F5→F8 non-decreasing (±0.1) | 2.64, 3.94, 3.62, 3.04, **2.70, 2.67, 2.61, 3.58** |
 | Human median Applause/target by festival | Informational | 2.56, 3.63, 3.15, 2.52, 2.11, 1.99, 1.90, 2.33; Headliner p10 ≈ 0.8–0.9 in F5–F7 |
-| Headliner miss rate when played (human) | Every Headliner ≤ 30% | Rival 28, Crossed 22, Power Cut 17, Wind Shift 14, Streetlights 14, Ordinance 11, Ferry 7, Fog 3, Short Fuse 3, Critic 1, Headwind 0, Drizzle 0 |
-| Headliner miss rate when played (oracle) | Every Headliner ≤ 15% | Rival 11, Power Cut 8, all others ≤ 5 |
+| Headliner miss rate when played (human) | Every Headliner ≤ 30% | † Rival 26, Crossed 21, Power Cut 19, Streetlights 15, Wind Shift 12, Ordinance 11, Ferry 6, Fog 4, Short Fuse 3, Critic 0, Headwind 0, Drizzle 0 [Rival 28, Crossed 22, Wind Shift 14] |
+| Headliner miss rate when played (oracle) | Every Headliner ≤ 15% | † Rival 9, Power Cut 8, all others ≤ 5 [Rival 11] |
 | Headliner cost (oracle; best-arranged score ÷ best with no rule) | p10 ≥ 0.4 | p50 0.70 (Headwind) to 1.00 (Drizzle, Short Fuse, Fog); lowest p10 0.51 (Power Cut). With the plain order kept: Wind Shift 0.25, Crossed 0.29; with Match: 0.75 / 0.68. |
-| Draw luck (human) | P(win \| drawn) − P(win \| not drawn) within ±10 for every Headliner | Worst: Wind Shift −7, Late Ferry +8 |
+| Draw luck (human) | P(win \| drawn) − P(win \| not drawn) within ±10 for every Headliner | † Worst: Late Ferry +9, Crossed −6, Drizzle +6; Wind Shift −3 [Wind Shift −7, Late Ferry +8]. Human wins by hard late Headliners drawn (1/2/3/4): 60/53/48/45% [63/50/48/32%]. |
 | Rain check used in wins | Novice 10–40% | Novice 17%, human 8%, oracle 2% |
 | Crowd share of Ooh at the Countdown | p50 15–25% | Human 18%, oracle 20%, novice 21%; Crowd at the Countdown p50 152 (human) |
 | Pick/win outliers (show-18 snapshot, n ≥ 15) | \|Δ\| ≤ 25 points vs P(win \| alive) | Human (base 56%): Nishiki +22 (n=51), Pure Sky +20 (127), Brocade +16 … Strobe −19 (173), Peony −21 (72). Oracle (base 82%): Saturn +18 (18) … Strobe −22 (173). |
@@ -1528,14 +1530,14 @@ Real players are slower: at 30–45 s per show, a 24-show win takes 12–18 minu
 | Decision point (single-threshold accuracy) | The first show at ≥ 90% is show 18 or later | Oracle: show 19 (base rate 82%). Human: 86% at show 23, ≥ 90% only at the Countdown. Novice: ≤ 85% before the Countdown. |
 | Starting pool vs full pool | Within ±10 points (meta = options, not power) | Oracle 85.0 vs 81.6; human 56.5 vs 50.7 (200 seeds for the starting pool) |
 | Kits (200 seeds; oracle / human) | Human within ±10 of Apprentice; oracle 70–92 | Apprentice 81.6 / 50.7 · Salvo Crew 82.0 / 59.0 · Chemist 78.0 / 47.0 · Night Market 78.5 / 47.0 · Showman 84.5 / 56.5 |
-| Renown (200 seeds, cumulative; oracle / human) | Non-increasing within ±5; R8 oracle ≥ 10%, human ≥ 3% | R1 66.5 / 35.5 · R2 52.5 / 23.0 · R3 52.5 / 18.5 · R4 37.5 / 23.5 · R5 25.5 / 9.0 · R6 17.0 / 6.5 · R7 14.0 / 5.5 · R8 12.0 / 5.0 |
+| Renown (1,000 seeds, cumulative; oracle / human) | Non-increasing within ±5; R8 oracle ≥ 10%, human ≥ 3% | † R1 72.4 / 37.9 · R2 52.6 / 25.9 · R3 50.5 / 22.8 · R4 40.8 / 17.9 · R5 23.0 / 7.3 · R6 16.5 / 5.0 · R7 12.2 / 3.4 · R8 11.2 / 3.1 (Countdown 900,000). At 1,000,000 and v1.1 bots, R8 read 9.3 / 2.7, under both floors. [200 seeds: R8 12.0 / 5.0] |
 | Fair Weather | At least doubles the novice's win rate | Novice 16.8% → 49.5% (same 400 seeds); human 87.3% |
 | Archetype spread (200 seeds each) | All within ±10 of the mean | Human-based: Canopy 19.5, Mono 10.0, Rainbow 19.5, Salvo 19.5, Thunder 20.5, Crowd 9.0 (mean 16.3; −7.3 / +4.2). Oracle-based: 22.0, 26.0, 36.5, 22.0, 36.5, 18.0 (mean 26.8; −8.8 / +9.7). |
 | Milestones reachable in runs 2–4 | Each ≥ 12% per run for the novice | First Fusion 84, Busy Sky 32, Monochrome Night 30, Full Spectrum 17, Packed House 96, Triple-break 81, Headliner Hunter 87, Rigger 97 (%) |
 | Crowd mood buckets at lighting (human) | Hopeful must straddle pass/fail | Restless 2% of shows (0% pass), Hopeful 6% (68% pass), Eager 92% (100% pass) |
 | Applause p10 / p50 / p90 at shows 6, 12, 18, 24 | — | Human: 1,272 / 1,990 / 3,024 · 6,009 / 9,823 / 17K · 14K / 25K / 47K · 127K / 320K / 1.07M. Oracle: 1,537 / 2,235 / 3,367 · 7,788 / 12K / 20K · 20K / 34K / 60K · 173K / 572K / 2.66M. |
 | Median bursts per show (human) | — | 3 (show 1), 4 (F1), 5 (F2–F3), 6 (F4–F6), 7 (F7–F8), 14 (Countdown) |
-| Degenerate loops | None | Rerolls 2.5 per run and pity 1.1 per run (human). Coins held at payout: p50 $3, p90 $9 (no stalling for interest). Selling always loses 25%. The Afterparty ends by itself (§5.10). |
+| Degenerate loops | None | † Rerolls 2.5 per run (none in F1) and pity 1.2 per run (human). Coins held at payout: p50 $3, p90 $9 (no stalling for interest). Selling always loses 25%. Every Afterparty run ends; the oracle fully cleared it in 0 of 330 wins (seeds 1–400; p50 2, p90 8, max 11 shows) (§5.10). |
 
 ### 12.3 Sim simplifications and watch-list levers
 
@@ -1663,7 +1665,7 @@ Retuning targets alone cannot put the red team's proxy at 25–40% without pushi
 
 **A7. Medium: turn Sponsors into rule-twist offers at an unchanged target (rejected).** With the mood, the ×1.5 bet is readable: Eager with Accept on is safe, and Hopeful is a real gamble that is roughly neutral in expected value (49.4% vs 50.7%). Twist offers would add arrangement puzzles on non-Headliner shows, which is the very burden the red team found hurts human-like players most, and would blunt the Headliners. The gate "oracle sponsored-miss rate 3–10%" is also replaced with the human-bold measurement, because a perfect-information bot never loses a bet it can see.
 
-**A8. Medium: Renown 8 target 1.5M (modified to 1,000,000).** The Countdown changed direction, so the number was re-derived. At 1,000,000, Renown 8 passes 70% of oracle arrivals and 57% of human arrivals, below Renown 7's 80% and 63%.
+**A8. Medium: Renown 8 target 1.5M (modified to 1,000,000, then 900,000).** The Countdown changed direction, so the number was re-derived. At 1,000,000, Renown 8 passes 70% of oracle arrivals and 57% of human arrivals, below Renown 7's 80% and 63%. Round 1 re-measured it at 1,000 seeds: R8 wins were 9.3% (oracle) and 2.7% (human), under both floors (10% / 3%). The sweep read 2.7 / 9.3 at 1,000,000, 3.0 / 10.4 at 900,000, 3.1 / 11.6 at 850,000 and 3.3 / 12.0 at 800,000 (human / oracle). 900,000 is the smallest change that meets both floors and keeps R8 harder than R7 (800,000 would put the oracle's R8 above its R7). With the round-1 bots (oracle / human): R8 11.2 / 3.1 vs R7 12.2 / 3.4. The human floor has almost no margin; consider a ≥ 2% human floor.
 
 **A9. Low: Encore pays Crowd +f (modified to +2f).** Measured: +f left the Crowd at about 12% of Countdown Ooh, below the red team's own 15–25% gate. +2f gives 18–20% and makes overkill matter late.
 
