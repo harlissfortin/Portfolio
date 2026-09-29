@@ -5,7 +5,8 @@
 // step(state, action), so an illegal action is caught and counted by the runner.
 //
 // The port keeps the reference's evaluation order and RNG call order, so on the reference
-// adapter it reproduces the v1.1 per-seed results (see tools/balance --selftest).
+// adapter it reproduced the v1.1 per-seed results. Round-1 changes depart from v1.1 on purpose: no rerolls in F1
+// (§2.5; the reroll branch checks show >= 3) and a Match-aware Headliner value for the human and oracle (§12.1).
 //
 // ctx passed to every bot: {state, rnd, act(action) → events|null, opts, last, relight, regret}
 const { fest } = require('./util.cjs');
@@ -132,9 +133,13 @@ function makeSpecBots(api) {
     const head = headRules(st);
     const isCD = head.includes('countdown') || head.includes('countdown3');
     const noise = o.noise || 0, rnd = ctx.rnd;
+    // o.matchAware (human, oracle; §12.1): under Wind Shift or Crossed Wires the Headliner value also tries the
+    // Match re-seat, which those bots press on the night (pairwise hill swaps never find that permutation).
+    const mAware = !!o.matchAware && (head.includes('windshift') || head.includes('crossed'));
     const Uraw = tubes => {
       const g = hill(tubes, [], st.crowd, H).score;
-      const b = head.length ? hill(tubes, head, st.crowd, H).score : g;
+      let b = head.length ? hill(tubes, head, st.crowd, H).score : g;
+      if (mAware) b = Math.max(b, hill(refit(tubes, head), head, st.crowd, H).score);
       const bw = isCD ? b / 10 : b;
       return { g, b, u: Math.log(1 + 0.5 * Math.min(g, bw) + 0.5 * g) };
     };
@@ -172,7 +177,7 @@ function makeSpecBots(api) {
         if (step === 0 && o.regret && marg === margin) { const vv = [...vals, 0].sort((a, b) => b - a); o.regret.push({ s, gap: vv[0] - vv[1] }); }
         if (!best) {
           const rc = (st.renown >= 3 ? 2 : 1) + st.shop.rerolls;
-          if (rer < (o.maxRerolls ?? 2) && st.coins >= rc + 5 && !comfy) { if (!ctx.act({ type: 'reroll' })) break; rer++; step--; continue; }
+          if (rer < (o.maxRerolls ?? 2) && st.coins >= rc + 5 && !comfy && st.show >= 3) { if (!ctx.act({ type: 'reroll' })) break; rer++; step--; continue; }
           break;
         }
         if (!commit(ctx, best.c)) break;
@@ -252,9 +257,9 @@ function makeSpecBots(api) {
       const st = ctx.state; const rules = api.rulesFor(st, st.show); const tgt = api.baseTarget(st, st.show);
       if (scoreRack(st.tubes, rules, st.crowd, 0) < 0.85 * tgt) arrange(ctx, hill(st.tubes, rules, st.crowd, 0, 1).sh);
     },
-    oracle(ctx) { const o = { ...(ctx.opts || {}), regret: ctx.regret || null }; if (shopOpen(ctx)) planner(ctx, o); arrangeOracle(ctx); },
+    oracle(ctx) { const o = { matchAware: true, ...(ctx.opts || {}), regret: ctx.regret || null }; if (shopOpen(ctx)) planner(ctx, o); arrangeOracle(ctx); },
     human(ctx) {
-      const o = { noise: 0.10, noiseMode: 'card', buyMargin: 0.03, maxRerolls: 1, ...(ctx.opts || {}) };
+      const o = { noise: 0.10, noiseMode: 'card', buyMargin: 0.03, maxRerolls: 1, matchAware: true, ...(ctx.opts || {}) };
       let bl = null; if (shopOpen(ctx)) bl = planner(ctx, o).buyLoop;
       arrangeHuman(ctx, o, bl);
     },

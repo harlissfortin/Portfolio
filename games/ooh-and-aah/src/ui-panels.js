@@ -498,18 +498,25 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
       if (!st || st.phase !== 'build') return '';
       return `<p class="sl-sub">Next up: <span class="num">Show ${(st.show | 0) + 1}</span> · ${esc(showName(st.show | 0))}</p>`;
     }
-    const rules = (sn.rules || []).map(id => { const h = hl(id); return `<span class="sl-rule" title="${esc(h.rule)}">${icon(id)}${esc(h.name)}</span>`; }).join('');
+    // each Headliner / twist as its chip followed by its rule, in plain sight (no hover tooltip)
+    const rules = (sn.rules || []).map(id => { const h = hl(id); return `<p class="sl-rx"><span class="sl-rule">${icon(id)}${esc(h.name)}</span>${h.rule ? ` <span class="sl-rt">${esc(h.rule)}</span>` : ''}</p>`; }).join('');
     return `<p class="sl-sub"><span class="num">Show ${sn.s + 1}</span> · ${esc(showName(sn.s))}</p>
-<p class="sl-tg"><span>Target <b class="num">${fmt(sn.target || 0)}</b></span>${sn.sponsored ? '<span class="sl-sp">Sponsored ×1.5</span>' : ''}${rules}</p>`;
+<p class="sl-tg"><span>Target <b class="num">${fmt(sn.target || 0)}</b></span>${sn.sponsored ? '<span class="sl-sp">Sponsored ×1.5</span>' : ''}</p>${rules}`;
   }
 
-  // "sees Willow, Peony" (names of the bursts up, §3.2); counts beyond two.
+  // "sees Willow, Peony" (names of the bursts up, §3.2). Beyond two: the count, then every name,
+  // repeats grouped ("sees 5: Peony ×3, Willow, Palm"), so nothing hides in a hover tooltip.
   function seesText(ln, L) {
     if (ln.dud) return '';
     if (!ln.sees) return 'empty sky';
     const names = ln.up ? ln.up.map(n => L.byN[n] && shellName(L.byN[n].id)).filter(Boolean) : [];
     if (names.length === ln.sees && names.length <= 2) return 'sees ' + names.join(', ');
-    return `sees ${ln.sees}`;
+    if (!names.length) return `sees ${ln.sees}`;
+    const cnt = new Map();
+    for (const n of names) cnt.set(n, (cnt.get(n) || 0) + 1);
+    const list = [...cnt].map(([n, k]) => (k > 1 ? `${n} ×${k}` : n)).join(', ');
+    const more = ln.sees - names.length;
+    return `sees ${ln.sees}: ${list}${more > 0 ? ` +${more}` : ''}`;
   }
   function seesFull(ln, L) {
     if (!ln.up || !ln.up.length) return '';
@@ -551,10 +558,10 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
     const col = ln.col || 'W';
     const isFav = L.fav != null && ln.tube === L.fav;
     const cn = ln.washed ? 'washed out' : ln.wild || col === 'X' ? 'Rainbow' : col !== 'W' ? CNAME[col] || '' : '';
-    const star = ln.star > 1 ? `<span class="sl-star" title="star ${ln.star}">${'•'.repeat(Math.min(3, ln.star))}</span>` : '';
+    const star = ln.star > 1 ? `<span class="sl-star num">★${Math.min(3, ln.star)}</span>` : '';   // spelled out, not pips + tooltip
     const flags = (ln.shot > 0 ? `<span class="sl-flag is-shot">burst ${ln.shot + 1}</span>` : '') + (ln.dud ? '<span class="sl-flag is-dud">dud</span>' : '') + (ln.half ? '<span class="sl-flag">½ strength</span>' : '') + (ln.last ? '<span class="sl-flag">last</span>' : '');
-    const sees = seesText(ln, L), full = seesFull(ln, L);
-    const chips = flags + (sees ? `<span class="sl-sees"${full && sees.indexOf(full) < 0 ? ` title="${esc(full)}"` : ''}>${esc(sees)}</span>` : '') + chipsHTML(ln);
+    const sees = seesText(ln, L);
+    const chips = flags + (sees ? `<span class="sl-sees">${esc(sees)}</span>` : '') + chipsHTML(ln);
     const tot = `<span class="sl-run num">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
     return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}</span>${isFav ? '<span class="sl-fav">♛ Favourite</span>' : ''}</div>
 <div class="sl-chips">${chips}${tot}</div>`;
@@ -574,7 +581,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
       else if (it.k === 'crowd') gains.push(`Crowd plus ${fmt(it.v)}`);
       else if (it.k === 'coin') gains.push(`plus ${it.v} dollars`);
     }
-    return `Tube ${ln.tube + 1}${ln.shot > 0 ? ', burst ' + (ln.shot + 1) : ''}: ${shellName(ln.id)}${ln.col && ln.col !== 'W' ? ', ' + (CNAME[ln.col] || '') : ''}` +
+    return `Tube ${ln.tube + 1}${ln.shot > 0 ? ', burst ' + (ln.shot + 1) : ''}: ${shellName(ln.id)}${ln.star > 1 ? ', star ' + Math.min(3, ln.star) : ''}${ln.col && ln.col !== 'W' ? ', ' + (CNAME[ln.col] || '') : ''}` +
       `${ln.dud ? ', dud' : ''}${ln.half ? ', half strength' : ''}${ln.last ? ', last' : ''}${L.fav === ln.tube ? ', crowd favourite' : ''}. ` +
       `${ln.dud ? '' : ln.sees ? 'Sees ' + ln.sees + (full ? ': ' + full : '') + '. ' : 'Empty sky. '}` +
       `${gains.length ? gains.join(', ') + '. ' : ''}Running total Ooh ${fmt(Math.floor(ln.ooh))} times Aah ${fmtA(ln.aah)}.`;
@@ -593,7 +600,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
         ? `<span class="sl-ok">✓ Pass ×${(Math.floor(ratio * 10) / 10).toFixed(1)}</span>${a.encore ? '<span class="sl-encore">Encore!</span>' : ''}`
         : `<span class="sl-bad">✗ ${fmt(a.short != null ? a.short : Math.max(0, t - a.score))} short</span>`;
       h += `<div class="sl-app ${a.pass ? 'is-pass' : 'is-miss'}">
-<div class="sl-app-row"><span class="sl-app-lbl">Applause<span class="sl-app-tg num">target ${fmt(t)}</span></span><span class="sl-app-n num"${a.score >= 1e4 ? ` title="${Math.floor(a.score).toLocaleString('en-US')}"` : ''}>${fmt(a.score)}</span></div>
+<div class="sl-app-row"><span class="sl-app-lbl">Applause<span class="sl-app-tg num">target ${fmt(t)}</span></span><span class="sl-app-v"><span class="sl-app-n num">${fmt(a.score)}</span>${a.score >= 1e4 ? `<span class="sl-app-x num">${Math.floor(a.score).toLocaleString('en-US')}</span>` : ''}</span></div>
 <div class="sl-app-eq num">= <span class="chip">Ooh ${fmt(Math.floor(a.ooh != null ? a.ooh : L.ooh))}</span> × <span class="chip chip-aah">Aah ${fmtA(a.aah != null ? a.aah : L.aah)}</span></div>
 <div class="sl-verdict">${verdict}</div>${payHTML(L.pay, a)}</div>`;
     } else if (L.live) {

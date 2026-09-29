@@ -626,7 +626,7 @@ function specChecks(S, designText) {
     ['spec.parse.sponsors', '§4.9', 'Sponsors table', S.sponsors.length, 3],
     ['spec.parse.renown', '§4.10', 'Renown table', S.renown.length, 8],
     ['spec.parse.milestones', '§4.11', 'milestones table', S.milestones.length, 10],
-    ['spec.parse.lessons', '§4.12', 'lessons table', S.lessons.length, 13],
+    ['spec.parse.lessons', '§4.12', 'lessons table', S.lessons.length, 14],
     ['spec.parse.tooltips', '§4.13', 'tooltips table', S.tooltips.length, 16],
     ['spec.parse.colours', '§4.1', 'colour table (6 + fusion accent)', S.colours.length, 7],
     ['spec.parse.targets', '§5.1', 'targets table', S.targets.length, 24],
@@ -888,7 +888,7 @@ function dataChecks(S, L) {
       if (normText(r.modifier).startsWith(normText(got))) w.push(`level ${r.level}: DATA text is a truncation of the spec: ${short(got, 120)}   ⟵ DESIGN.md:${ref}`);
       else f.push(`level ${r.level}.text: spec ${short(r.modifier, 140)} ≠ DATA ${short(got, 140)}   ⟵ DESIGN.md:${ref}`);
     }
-    fieldCmp(f, w, 'COUNTDOWN_R8', 'target', 1000000, D.COUNTDOWN_R8 ?? 1000000, '§4.10 level 8');
+    fieldCmp(f, w, 'COUNTDOWN_R8', 'target', 900000, D.COUNTDOWN_R8 ?? 900000, '§4.10 level 8');
     return verdict(f, w, '8 levels match');
   });
 
@@ -911,7 +911,7 @@ function dataChecks(S, L) {
     return verdict(f, w, '10 milestones match');
   });
 
-  check(C('data.lessons', '§4.12', '13 lessons (order = priority): predicate and text'), () => {
+  check(C('data.lessons', '§4.12', '14 lessons (order = priority): predicate and text'), () => {
     const f = [], w = []; const Ls = asList(D.LESSONS);
     if (Ls.length !== S.lessons.length) f.push(`count: spec ${S.lessons.length} vs DATA ${Ls.length}`);
     S.lessons.forEach((l, i) => {
@@ -922,7 +922,7 @@ function dataChecks(S, L) {
       if (normText(l.text) !== normText(d.text)) { if (ph(l.text) === ph(d.text)) w.push(`#${l.n}.text: same text, different {placeholders}: spec ${short(l.text, 120)} vs DATA ${short(d.text, 120)}   ⟵ DESIGN.md:${ref}`); else fieldCmp(f, w, `#${l.n}`, 'text', l.text, d.text, ref, 'text'); }
       fieldCmp(f, w, `#${l.n}`, 'predicate', l.predicate, d.when ?? d.predicate, ref, 'textloose');
     });
-    return verdict(f, w, '13 lessons match');
+    return verdict(f, w, '14 lessons match');
   });
 
   check(C('data.tooltips', '§4.13', '16 one-line tooltips: id, trigger, text'), () => {
@@ -1210,10 +1210,10 @@ function simChecks(spec, L) {
     return verdict(f, [], '72 show/renown combinations');
   });
 
-  gated(C('sim.target', '§5.1', 'target(): Renown 1 Headliners ×1.25, Renown 8 Countdown 1,000,000, Fair Weather ×0.75, Sponsor ×1.5 (rounded, in order)'), () => {
+  gated(C('sim.target', '§5.1', 'target(): Renown 1 Headliners ×1.25, Renown 8 Countdown 900,000, Fair Weather ×0.75, Sponsor ×1.5 (rounded, in order)'), () => {
     need(typeof O.target === 'function', 'OOH.target missing');
     const f = [];
-    const cases = [[{}, (b, s) => b], [{ renown: 1 }, (b, s) => (s % 3 === 2 && s !== 23 ? Math.round(b * 1.25) : b)], [{ renown: 8 }, (b, s) => (s === 23 ? 1000000 : s % 3 === 2 ? Math.round(b * 1.25) : b)], [{ fairWeather: true }, (b) => Math.round(b * 0.75)], [{ renown: 1, fairWeather: true }, (b, s) => Math.round((s % 3 === 2 && s !== 23 ? Math.round(b * 1.25) : b) * 0.75)]];
+    const cases = [[{}, (b, s) => b], [{ renown: 1 }, (b, s) => (s % 3 === 2 && s !== 23 ? Math.round(b * 1.25) : b)], [{ renown: 8 }, (b, s) => (s === 23 ? 900000 : s % 3 === 2 ? Math.round(b * 1.25) : b)], [{ fairWeather: true }, (b) => Math.round(b * 0.75)], [{ renown: 1, fairWeather: true }, (b, s) => Math.round((s % 3 === 2 && s !== 23 ? Math.round(b * 1.25) : b) * 0.75)]];
     for (const [opts, fn] of cases) { const S = fresh('target-audit', opts); for (let s = 0; s < 24; s++) { const want = fn(spec.targets[s], s); const got = O.target(S, s); if (got !== want) f.push(`${JSON.stringify(opts)} show ${s + 1}: target ${got}, expected ${want}`); } }
     // Sponsor: find a sponsored show via random play.
     const S = fresh('sponsor-audit', {}); for (let i = 0; i < 40 && S.phase === 'build' && !S.sponsor; i++) { S.coins = 0; O.step(S, { type: 'light' }); }
@@ -1268,12 +1268,12 @@ function simChecks(spec, L) {
     return c && c.id === 'palm' && c.col === 'R' && c.star === 1 ? { status: 'PASS', summary: 'crate[0] = palm:R ★1' } : { status: 'FAIL', summary: `crate[0] = ${short(c)}` };
   });
 
-  gated(C('sim.firstRun', '§4.7, §5.6, §6', 'first-ever run: Headwind at F1; show-2 shop = Chrysanthemum (Green), Palm (Red), Comet (Green) at $3; F2 override'), () => {
+  gated(C('sim.firstRun', '§4.7, §5.6, §6', 'first-ever run: Headwind at F1; show-2 shop = Crossette (Green) $5, Palm (Red) $3, Comet (Green) $3; F2 override'), () => {
     const f = []; const S = O.createState('first-show', { firstRun: true, unlocked: [] });
     if (S.headliners[0] !== 'headwind') f.push(`headliners[0] = ${S.headliners[0]} (spec: always Headwind in the first-ever run)`);
     O.step(S, { type: 'light' });
     const cards = S.shop ? S.shop.cards.map((c) => `${c.id}:${c.col}:$${c.cost}`) : [];
-    if (!deepEq(cards, ['chrys:G:$3', 'palm:R:$3', 'comet:G:$3'])) f.push(`shop before show 2: ${cards.join(' ')} (spec chrys:G palm:R comet:G at $3)`);
+    if (!deepEq(cards, ['crossette:G:$5', 'palm:R:$3', 'comet:G:$3'])) f.push(`shop before show 2: ${cards.join(' ')} (spec crossette:G:$5 palm:R:$3 comet:G:$3)`);
     // Show 2 → buy Comet; the first F2 shop (before show 4) then offers Salute as card 1.
     const ci = S.shop ? S.shop.cards.findIndex((c) => c.id === 'comet') : -1;
     if (ci >= 0) { O.step(S, { type: 'buy', card: ci, to: { zone: 'tube', i: 3 } }); playTo(O, S, 3); if (S.phase === 'build' && S.show === 3) { const c1 = S.shop && S.shop.cards[0]; if (!c1 || c1.id !== 'salute') f.push(`first F2 shop, owning a Comet: card 1 = ${c1 && c1.id} (spec Salute)`); } }
@@ -1282,7 +1282,7 @@ function simChecks(spec, L) {
     return verdict(f, [], 'curated shops match');
   });
 
-  gated(C('sim.mood', '§3.3, §6', 'mood buckets (0.85 / 1.25) and the §6 show-3 Headwind examples (276 Eager, 162 Hopeful, 126/132 Restless)'), () => {
+  gated(C('sim.mood', '§3.3, §6', 'mood buckets (0.85 / 1.25) and the §6 show-3 Headwind examples (276 Eager, 162 Hopeful, 126 Restless, 132 Hopeful)'), () => {
     need(typeof O.mood === 'function', 'mood missing');
     const f = []; const S = O.createState('first-show', { firstRun: true, unlocked: [] }); S.show = 2;
     const rk = (list) => { S.tubes = list.map((x, i) => ({ shell: x ? { uid: 100 + i, id: x[0], col: x[1], star: 1, paid: 3 } : null, rig: null })); };
@@ -1293,7 +1293,7 @@ function simChecks(spec, L) {
       [[['willow', 'A'], ['peony', 'R'], ['palm', 'R'], ['strobe', 'W']], 'eager', 276, 4],
       [[['comet', 'G'], ['willow', 'A'], ['peony', 'R'], ['strobe', 'W']], 'hopeful', 162, 4],
       [[['willow', 'A'], ['peony', 'R'], ['strobe', 'W'], ['comet', 'G']], 'restless', 126, 2],
-      [[['willow', 'A'], ['peony', 'R'], ['strobe', 'W'], ['palm', 'R']], 'restless', 132, 2],
+      [[['willow', 'A'], ['peony', 'R'], ['strobe', 'W'], ['palm', 'R']], 'hopeful', 132, 2],   // §6: ratio 0.88, Hopeful
     ];
     for (const [r, want, score, crowd] of cases) {
       S.crowd = crowd; rk(r); const rules = O.rulesFor(S, 2); const a = O.resolveShow(S.tubes, { rules, crowd: S.crowd }).applause; const m = O.mood(S);

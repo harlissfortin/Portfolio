@@ -111,7 +111,7 @@ A river town hires you, a junior pyrotechnician, to fire its festival year. Ther
 | Headliner | The 3rd show of each festival, with a rule twist. It is posted a festival ahead. |
 | Match | Re-seats your shells so that tonight's fuse fires them in their usual order. |
 | ♛ Crowd Favourite | The shell whose removal would cost the most Applause right now. |
-| Fair Weather | The labelled assist (§7.4). |
+| Fair Weather | The labelled assist: all targets ×0.75, and the Countdown may be relit once (§7.4). |
 | Afterparty | The optional endless mode after a win (§5.10). |
 
 ---
@@ -174,13 +174,14 @@ Actions are plain JSON. Pointer input, keyboard input and bots all emit exactly 
 | Action | Legal when | Effect |
 |---|---|---|
 | `{type:'buy', card:i, to:slot}` | Card `i` is an unsold shell card, its `cost ≤ coins`, and the slot is empty. | Pay `cost`. Place a new ★1 copy with `paid = cost`. |
+| `{type:'buy', card:i, to:{zone:'tube', i:j}, displace:'crate'\|'sell'}` (one-gesture swap-in) | Card `i` is an unsold shell card and tube `j` holds a shell that is not its twin (a twin is an `upgrade`). `'crate'`: a Crate slot is empty and `cost ≤ coins`. `'sell'`: `cost ≤ coins + max(1, floor(0.75 × paid))` of the old shell (the refund counts first). | `'crate'`: the old shell moves to the first empty Crate slot. `'sell'`: the old shell is sold (as `sell`). Then as `buy`. One action, so one Undo step. Events: `moved` or `sold` (with `displaced: true`), then `bought`. `legalActions` never lists it; bots use `sell` then `buy`. |
 | `{type:'upgrade', card:i, to:slot}` | Card `i`'s id equals that of the shell at `slot`, the shell is below ★3, and `upCost ≤ coins`. | Pay `upCost`: ceil(1.5 × row cost) for ★1→★2, 2 × row cost for ★2→★3. Then `star += 1` and `paid += upCost`. The card's colour is discarded; the twin keeps its colour. |
 | `{type:'setColour', card:i, col}` | Chemist kit only. Card `i` is a wild shell (row colour `*`) and `col ∈ {R, A, G, B}`. | Free. Sets the card's colour. |
 | `{type:'buyRig', tube:j}` | The rig card is unsold, its `cost ≤ coins`, and tube `j`'s rig is not this rig. A Mortar also requires that no tube has one. | Pay. Set `tubes[j].rig = id`. Any old rig is destroyed with no refund. |
 | `{type:'buyTube'}` | `f ≥ 2`, fewer than 6 tubes, and `tubeCost ≤ coins`. | Pay $6 for the 5th tube or $10 for the 6th (Renown 4: +$4 each). Append an empty tube with no rig on the right. |
 | `{type:'move', from:slot, to:slot}` | `from` is occupied and `from ≠ to`. | Free. Moves the shell, or swaps if `to` is occupied. |
 | `{type:'sell', from:slot}` | `from` is occupied. | `coins += max(1, floor(0.75 × paid))`. The shell is removed. |
-| `{type:'reroll'}` | A shop exists and `rerollCost ≤ coins`. | Pay `rerollCost`, then `rerolls += 1`. Regenerate the shell cards (not a Collector card) and the rig card (§5.6). |
+| `{type:'reroll'}` | A shop exists, the show is in F2 or later (the workshop row is hidden in F1), and `rerollCost ≤ coins`. | Pay `rerollCost`, then `rerolls += 1`. Regenerate the shell cards (not a Collector card) and the rig card (§5.6). |
 | `{type:'sponsor', accept:bool}` | A Sponsor is offered this show and `accept ≠ sponsor.accepted`. | `sponsor.accepted = accept`. The effective target becomes `round(target × 1.5)` while accepted. |
 | `{type:'match'}` | Tonight's rules include `windshift` or `crossed`, and at least 2 shells are in tubes. | Re-seat the tube contents so tonight's fuse fires them in their plain order (§3.3 `matchPerm`). Rigs stay put. Pressing it again applies the permutation again. |
 | `{type:'restore'}` | `lastOrder` exists. | Shells you still own return to the tubes they held at the last lit show, matched by `uid`. Displaced shells fill the remaining empty tubes left to right, then the Crate. |
@@ -303,7 +304,8 @@ After all shots of a tube, set `prevTubeShell` = that tube's shell.
 
 **`previewChips(state, rules, held?, slot?)`**
 - Runs `resolveShow` with a trace on a hypothetical rack.
-- Returns local facts per tube only: `sees`, +Ooh, +Aah, ×, the fusion name (or `?` if not yet discovered), Crowd and coin gains, and "fires Nth of M" / "LAST".
+- Returns local facts per tube only: `sees`, +Ooh, +Aah, ×, `xAah` (the Aah this tube's × terms add: the Aah in the sky before each × times (× − 1), summed over its bursts), the fusion name (or `?` if not yet discovered), `fusionNext` on a fusion's first piece (`{key, name, tube}` when the next tube to fire holds its partner and the fusion fires), Crowd and coin gains, and "fires Nth of M" / "LAST".
+- With a held card over a tube it also returns the drop: `kind` (`buy`, `upgrade`, `swap` = old shell to the Crate, or `replace` = old shell sold when the Crate is full), `displace`, `out` (the displaced shell), `crate` or `refund`, and `action` (the exact §2.5 action for that drop).
 - **It never returns the total.**
 
 **`favourite(tubes, crowd)`**
@@ -591,18 +593,18 @@ A fusion needs A's tube to fire immediately before B's tube. It applies to B's f
 
 ### 4.10 Renown (the Heat ladder)
 
-Renown is opt-in and stacks. Level n+1 unlocks when you win at level n, and a loss never resets it. Select it on the end screen or before a run.
+Renown is opt-in and stacks. Level n+1 unlocks when you win at level n, and a loss never resets it. Select it on the end screen or before a run. Renown 2's twists are rolled at `createState` and posted a festival ahead.
 
 | Level | Modifier |
 |---|---|
 | 1 | Headliner targets +25% (not the Countdown). |
-| 2 | Every Twilight from Festival 2 on gets a mild twist: Headwind, Drizzle or The Critic. It is rolled at `createState` and posted a festival ahead. |
+| 2 | Every Twilight from Festival 2 on gets a mild twist: Headwind, Drizzle or The Critic. |
 | 3 | Rerolls start at $2 (+$1 each). |
 | 4 | Tubes cost +$4 ($10 / $14). |
 | 5 | Shell cards cost +$1. Upgrade prices still come from the row cost. |
 | 6 | No rain check. |
 | 7 | The Countdown also halves your ♛ Crowd Favourite, as Rival Crew does. |
-| 8 | The Countdown fires three passes (1→N, N→1, 1→N) and its target is 1,000,000. |
+| 8 | The Countdown fires three passes (1→N, N→1, 1→N) and its target is 900,000. |
 
 ### 4.11 Milestones (teaching achievements)
 
@@ -623,7 +625,7 @@ Milestones progress in lost runs too. Progress bars show the best value ever rea
 
 ### 4.12 Lessons
 
-The end screen shows one lesson. Evaluate the predicates top to bottom; the first match wins. `{}` fields come from the run log.
+The end screen shows one lesson. Evaluate the predicates top to bottom; the first match wins. `{}` fields come from the run log; numbers print without a trailing ".0", and "1 bursts" reads "1 burst". Lessons 1 and 4 reuse the near-miss search's best order (§8.6) when the end screen has it.
 
 | # | Predicate | Text |
 |---|---|---|
@@ -636,10 +638,11 @@ The end screen shows one lesson. Evaluate the predicates top to bottom; the firs
 | 7 | Lost on a sponsored show | "Sponsors raise the target ×1.5. Take one when the crowd stays Eager with Accept on." |
 | 8 | An empty tube fired in 2+ shows while you held ≥ $3 | "An empty tube fired nothing in {n} shows. Even a Peony adds 20 Ooh." |
 | 9 | Never held ≥ $5 at a payout after show 4 | "Holding $5 or more pays +$1 per $5 every show (up to +$5)." |
-| 10 | Never upgraded | "Drop a shell on its twin: all its numbers double." |
-| 11 | Crowd < 25 at the end of F4 | "Girandola and Smiley pay into every future show through the Crowd." |
-| 12 | Won | "Next: Renown {n+1}: {modifier}." |
-| 13 | Default | "Bursts hang for their Hang; readers count what's still up. Build a canopy before you cash it in." |
+| 10 | Lost with no fusion all run and 3+ upgrades | "Upgrades double; ✦ fusions and × shells multiply. Drop a card on a full tube next to its partner: the old shell moves to the Crate." |
+| 11 | Never upgraded | "Drop a shell on its twin: all its numbers double." |
+| 12 | Crowd < 25 at the end of F4 | "Girandola and Smiley pay into every future show through the Crowd." |
+| 13 | Won | "Next: Renown {n+1}: {modifier}." |
+| 14 | Default | "Bursts hang for their Hang; readers count what's still up. Build a canopy before you cash it in." |
 
 ### 4.13 One-line tooltips
 
@@ -688,7 +691,7 @@ Each tooltip is shown once, on first encounter. Tooltips never block play and ar
 
 **Target modifiers**, in this order:
 1. Renown 1: Headliners ×1.25, rounded (not the Countdown).
-2. Renown 8: the Countdown is 1,000,000.
+2. Renown 8: the Countdown is 900,000.
 3. Fair Weather: ×0.75, rounded.
 4. An accepted Sponsor: ×1.5, rounded.
 
@@ -803,24 +806,24 @@ There are exactly 4: Ooh and Aah (per show), and Coins and Crowd (per run). The 
 - **Headliners combine two distinct twists** from {drizzle, critic, fog, ordinance, ferry, streetlights, powercut, rival}. On `endless`, for n = 9..12, draw `pool[floor(rng() × 8)]`, then a second twist from the remaining 7.
 - There is a shop every show, but no rain check, no Sponsors and no relight.
 - The run ends at the first miss, or with a victory card after show 36. Record the shows cleared and the best Applause.
-- Hand-built all-★3 racks clear 2–7 of the 12 Afterparty shows, so it always ends.
+- Every run ends: at the first miss, or at the hard stop after show 36. Hand-built all-★3 racks clear 2–7 of the 12 Afterparty shows. A full clear is a rare, aspirational victory: gate "every run ends; full clears ≤ 2% of oracle wins" (round 1: oracle wins on seeds 1–400 cleared p50 2, p90 6 shows; seed 309 cleared all 12).
 
 ---
 
 ## 6. Reveal schedule
 
-The first-ever run is detected when there is no meta save, or `meta.runs == 0`. It uses seed `first-show`, the Apprentice kit, and the overrides in §4.7 and §5.6. The Crowd mood is hidden in shows 1–2 of the first-ever run only; with the starting rack, those shows cannot fail whatever you buy or move.
+The first-ever run is detected when there is no meta save, or `meta.runs == 0`. It uses seed `first-show`, the Apprentice kit, and the overrides in §4.7 and §5.6. The Crowd mood is hidden in shows 1–2 of the first-ever run only; with the starting rack, those shows cannot fail whatever you buy into an empty tube or a twin, or however you order the tubes. Only emptying a tube can fail one: parking a shell in the Crate, or a swap-in drop (§2.5) that parks the Strobe (Comet dropped on the Strobe at show 2 scores 51 vs 130).
 
 | Clock (novice) | What happens | New element (one at a time) |
 |---|---|---|
 | 0:00 | Load opens straight into the show 1 build: skyline, riverbank, the 3-shell rack, a glowing **Light the fuse**, "Target 100", and the Headwind poster chip for show 3. There is no menu. The first tap anywhere starts audio. | Fuse and order |
 | 0:04–0:08 | Show 1: Willow +20 → Peony +20 (sees 1) → Strobe +10 Ooh, +2 Aah (sees 2). **50 × 3 = 150** vs 100: pass. +$4 → $8. Crowd +1 (t_crowd). | Ooh × Aah |
-| 0:10 | The shop before show 2 is curated: Chrysanthemum (Green), Palm (Red), Comet (Green), $3 each. Lifting a card shows canopy arcs and local chips on every tube (t_sky). | The sky (Hang / sees) |
-| 0:10–0:30 | The chips make order matter from minute one; every card's naive placement (the empty T4) is its worst:<br>• Chrysanthemum: T4 = 243; before the Strobe = 303.<br>• Palm: T4 = 189; right after the Red Peony = **378** (+3 Aah).<br>• Comet: T4 = 183; moved to T1 (empty sky) = 273. | Order matters |
+| 0:10 | The shop before show 2 is curated: Crossette (Green, $5), Palm (Red, $3), Comet (Green, $3). Lifting a card shows canopy arcs and local chips on every tube (t_sky). | The sky (Hang / sees) |
+| 0:10–0:30 | The chips make order matter from minute one:<br>• Crossette: the naive T4 drop sits right after the starting Strobe and fuses: **Strobing Crossette** ✦ on T3 and T4 (408, show 2's first fusion at about 0:42). Before the Strobe (T3) it scores more, 561, without the fusion; T2 357, T1 153. The show-2 choice is ✦ versus sees.<br>• Palm: T4 = 189 (its worst); right after the Red Peony = **378** (+3 Aah).<br>• Comet: T4 = 183 (its worst); moved to T1 (empty sky) = 273. | Order matters; first fusion (the sky and ✦ arrive together) |
 | ~0:35 | Show 2 (target 130): the Palm build scores **378** (×2.9). **Encore!** Crowd +1 +2 → 4. Coins: $5 + $1 interest + $4 = $10 (t_interest). | First compounding; ×6 Aah (t_aah) |
 | ~1:00 | Show 3, **Headwind** (the Goomba; target 150), posted since load. The crowd's mood appears (t_head, t_mood).<br>• A Willow-first rack loses only the Willow's 20 Ooh (the dud still hangs): **276**, Eager.<br>• The chip-suggested Comet opener scores **162**: Hopeful, passes.<br>• Naive T4 racks read low: Comet in T4 scores 126 (ratio 0.84, Restless) and Palm in T4 scores 132 (ratio 0.88, Hopeful, under the §3.3 thresholds). One swap fixes them (216 / 264). | Rearranging; the Crowd mood |
 | ~1:30 | First F2 shop: the workshop row appears (rig card and tube button; t_rig, t_tube). Salute, Roman Candle, Heart and Girandola enter the pool. The first-run override always offers a fusion partner: Palm for Palm owners, Salute for Comet owners, and Salute + Comet otherwise. | Workshop; clearers; multi-burst |
-| 1:45–2:30 | Likely first fusion (Thunderclap Comet or Palm Grove): braid banner, "Logbook: Fusions 1/12", milestone First Fusion. | Fusion |
+| 0:42–2:30 | First fusion: Strobing Crossette at show 2 when the Crossette goes in T4; otherwise Thunderclap Comet or Palm Grove, now reachable with the one-gesture swap-in (§2.5). Braid banner, "Logbook: Fusions 1/12", milestone First Fusion. | Fusion |
 | ~2:30 | Shows 5–6. The F2 Headliner (Drizzle or The Critic) has been drawn on the rack since show 1. | Posted counter |
 | ~3:00 | F3: Uncommons (Crossette, Echo, Waterfall, Kamuro, Dahlia, Smiley, Glitter) and the first **Sponsor** (t_sponsor). | Risk offer |
 | 3:00–5:00 | A typical first run ends here. The end screen shows one lesson (§4.12), 2 unlock bars (e.g. "Packed House 22/40", "Busy Sky 6/8") and 1 silhouette ("Salute → ?"). | — |
@@ -1023,7 +1026,9 @@ Milestones are checked on SIM events during a run. Unlocks apply to the **next**
 - **Fire-order numerals:** above each tube, the burst order under the preview rule. Multi-shot tubes show a range ("3–5"). The last burst gets a ★ "LAST". The Countdown shows a countdown row (N…1) above a celebration row (N+1…2N).
 - **"Sees N" chips:** always on during the build, computed with `previewChips` under the preview rule.
 - **Holding a shell** (dragging it, or with a card selected):
-  - Every legal target shows local chips: "+60 Ooh · sees 3", "+9 Aah", "×1.8", "✦ ?", "Crowd +4", "fires 6th of 6 · LAST".
+  - Every legal target shows local chips: "+60 Ooh · sees 3", "+9 Aah", "×1.8 (+6 Aah)", "✦ ?", "Crowd +4", "fires 6th of 6 · LAST". A × chip adds the Aah its × terms add at that burst (`xAah`), so it compares with a +Aah chip.
+  - ✦ shows on both pieces of a fusion: on the second piece (`fusion`) and on the first piece's tube when the next tube to fire holds its partner (`fusionNext`).
+  - An occupied tube that is not the card's twin is a legal target too (one-gesture swap-in, §2.5): "Swap in · old shell → Crate", or "Replace +$n" when the Crate is full (the old shell is sold). Its chips preview the rack with the new shell in that tube.
   - A canopy arc is drawn over the tubes that will see this burst.
   - **No totals.** With Chips set to "Partners only", only the fusion and direction badges show.
 - **Crowd mood** (`mood()`):
@@ -1445,7 +1450,7 @@ All bots drive the SIM only through `step` / `legalActions`; they may also call 
 - **`hill(rack, rules, H, passes)`:** pairwise swaps over tubes `i < j`, accepting any improvement immediately. Up to `passes` passes; stop early after a pass with no improvement.
 - **`U(rack) = ln(1 + 0.5·min(g, b′) + 0.5·g)`:**
   - `g` = `hill` (6 passes) Applause under no rule, with the Crowd projected as `(ooh + crowdGain × H) × aah`, where `H = min(4, max(0, 22 − s))`.
-  - `b` = the same under tonight's rules if there are any, else under the current festival's Headliner.
+  - `b` = the same under tonight's rules if there are any, else under the current festival's Headliner. **Match-aware (human and oracle only; the novice has no Match):** when that rule is Wind Shift or Crossed Wires, `b = max(b, the same on the Match re-seat of the rack)`, because pairwise `hill` swaps never find the Match permutation that these bots press on the night.
   - `b′ = b / 10` if that rule is the Countdown, else `b`.
 - **Purchase step:**
   - Enumerate every affordable (offer, placement): upgrade the twin (the first tube with that id below ★3); place into each tube, selling any occupant (net cost = cost − sell value); add a tube and place into it (when all tubes are full, `f ≥ 2` and there are fewer than 6 tubes); and the rig on each tube.
@@ -1548,7 +1553,7 @@ Real players are slower: at 30–45 s per show, a 24-show win takes 12–18 minu
 - Late near-ties above 35% → the F6+ rig card becomes "either a rig or a twin card".
 - Any shell's pick/win above +25 (n ≥ 15) → cut its per-unit number by 20% (e.g. Pure Sky 0.5 → 0.4, Nishiki 0.1 → 0.08, Saturn 0.05 → 0.04).
 - An archetype below the mean − 10 → Heart +4, Prism 0.45, or Girandola Crowd +4 for Mono, Rainbow and Crowd respectively.
-- Human miss rate on a Headliner above 30% → soften it. For Rival Crew: "halves the ♛'s + numbers but not its × terms".
+- Human miss rate on a Headliner above 30% → soften it. For Rival Crew: "♛ fires at ⅔ strength" (round 1, 1,000 seeds: human miss 27.7 → 21.9%, novice 48.7 → 38.3%, win rates within ±0.9; the older "halves the ♛'s + numbers but not its × terms" moved it only 27.7 → 26.7%).
 - Crowd share above 25% → Encore pays Crowd +f.
 - Human-proxy Countdown pass rate below 70% → Countdown target 160,000.
 

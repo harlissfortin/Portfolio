@@ -31,7 +31,7 @@ The parser must read every content table before anything can be compared, so the
 
 | § | Requirement | Method |
 |---|---|---|
-| §4.1–§4.13, §5.1, §1, §11.8 | Every content table parses with the expected row count (34 shells, 25 patterns, 12 fusions, 5 rigs, 13 Headliners, 5 kits, 3 Sponsors, 8 Renown, 10 milestones, 13 lessons, 16 tooltips, 7 colours, 24 targets, 19 glossary terms, 3 rules-card lines, 8 festivals, 30 goldens, 3 traces) | AUTO `spec.parse.*` |
+| §4.1–§4.13, §5.1, §1, §11.8 | Every content table parses with the expected row count (34 shells, 25 patterns, 12 fusions, 5 rigs, 13 Headliners, 5 kits, 3 Sponsors, 8 Renown, 10 milestones, 14 lessons, 16 tooltips, 7 colours, 24 targets, 19 glossary terms, 3 rules-card lines, 8 festivals, 30 goldens, 3 traces) | AUTO `spec.parse.*` |
 | §4, §11.8 | Every shell name, unlock name, kit rack cell and golden tube token resolves to an id | AUTO `spec.parse.integrity` |
 | §4.3 | 22 shells have Unlock = start | AUTO `spec.self.startpool` |
 | §4.2 | Every ★1 card text is ≤ 64 characters | AUTO `spec.self.cardtext64` |
@@ -60,9 +60,9 @@ The parser must read every content table before anything can be compared, so the
 | §4.10, §5.10 | Twist pools: Renown 2 Twilight {headwind, drizzle, critic}; Afterparty 8 twists in listed order | AUTO `data.twists` |
 | §4.8 | 5 kits: name, starting rack with colours, coins, Crowd, constraint text, unlock; salvo 2 cards, chemist no rigs, market interest cap 2 + shop before show 1, showman no Sponsors | AUTO `data.kits` |
 | §4.9 | Sponsor kinds (order = rng index), flavour names, rewards | AUTO `data.sponsors` |
-| §4.10 | Renown 1–8 modifier text; Countdown target 1,000,000 at Renown 8 | AUTO `data.renown` |
+| §4.10 | Renown 1–8 modifier text; Countdown target 900,000 at Renown 8 | AUTO `data.renown` |
 | §4.11 | 10 milestones: name, condition, goal, unlocked shells and kits; every locked row points at its milestone | AUTO `data.milestones` |
-| §4.12 | 13 lessons in priority order: predicate and text | AUTO `data.lessons` |
+| §4.12 | 14 lessons in priority order: predicate and text | AUTO `data.lessons` |
 | §4.13 | 16 tooltips: id, trigger, text | AUTO `data.tooltips` |
 | §4.1 | Colour table: name, chemical, glyph, shape, role, default and high-contrast hex; Rainbow wedges | AUTO `data.colours` |
 | §5.1, §5.10 | TARGETS (24), bases, show multipliers, Afterparty targets (12) | AUTO `data.targets` |
@@ -82,12 +82,12 @@ The parser must read every content table before anything can be compared, so the
 | §3.3 | `previewChips` returns local facts only, never the total | AUTO `sim.helpers`, `hooks.preview-mood-shapley` |
 | §3.3, §8.4 | `fireOrder` follows the rule (windshift reverses) | AUTO `sim.helpers` |
 | §2, §4.7, §4.10 | `rulesFor`: the posted Headliner on k = 2, the Countdown at show 24, `countdown3` at Renown 8, `rival` at Renown 7–8, Renown 2 Twilight twists from F2 | AUTO `sim.rulesFor` |
-| §5.1 | `target`: Renown 1 Headliners ×1.25 (not the Countdown), Renown 8 Countdown 1,000,000, Fair Weather ×0.75, Sponsor ×1.5, rounded, in that order | AUTO `sim.target` |
+| §5.1 | `target`: Renown 1 Headliners ×1.25 (not the Countdown), Renown 8 Countdown 900,000, Fair Weather ×0.75, Sponsor ×1.5, rounded, in that order | AUTO `sim.target` |
 | §5.2 | Payout: shell coins and Crowd always; on a pass interest min(cap, floor(coins/5)), base $4/$6, Sponsor reward, Crowd +1, +2 at a Headliner, +2f on an Encore; nothing else on a miss | AUTO `trace.*` (every show line compares coins and Crowd after payout) |
 | §5.3, §4.10 | Prices: tubes $6/$10 (+$4 at Renown 4), max 6; reroll $1 +$1 (Renown 3 from $2); sell max(1, floor(0.75 × paid)); upgrade ceil(1.5c) / 2c from the row cost; cards +$1 at Renown 5 | AUTO `sim.prices` |
 | §5.4, §4.10, §7.4 | First miss spends the rain check; second miss loses; Renown 6 has no rain check; a Countdown miss loses; Fair Weather relights the Countdown once | AUTO `sim.losing` |
 | §5.5, §5.6, §5.7 | Shop generation: RNG order, card count, distinct ids, unlocked rows with fest ≤ f, rarity weights, wild colour rolls, pity, Collector card, rig card from F2, Sponsor roll only F3+ Twilight/Evening | AUTO `trace.*` (exact RNG order), `sim.shop` (properties over 40 seeds) |
-| §5.6, §6 | First-ever-run overrides: show-2 shop Chrysanthemum (G) / Palm (R) / Comet (G) at $3; first F2 shop Salute / Palm / Salute + Comet | AUTO `sim.firstRun` |
+| §5.6, §6 | First-ever-run overrides: show-2 shop Crossette (G) $5 / Palm (R) $3 / Comet (G) $3; first F2 shop Salute / Palm / Salute + Comet | AUTO `sim.firstRun` |
 | §4.7, §6 | First-ever run uses seed `first-show`, Apprentice, Headwind at F1 | AUTO `sim.firstRun`, `page.rest` |
 | §4.8 | Kits at createState (rack, coins, Crowd); the best show-1 arrangement scores 150 / 270 / 220 / 192; salvo shops show 2 cards; chemist never sees a rig; showman never sees a Sponsor; market has a show-0 shop | AUTO `sim.kits` |
 | §4.8 | Night Market passes show 1 after buying any one card (0 failures in 1,000 seeds, min 210) | HARNESS `tools/test-sim.mjs` |

@@ -142,8 +142,8 @@ async function main() {
   check('12 locked shells', D.SHELL_IDS.filter(id => D.SHELLS[id].lock).length === 12);
   check('12 fusions', D.FUSION_KEYS.length === 12);
   check('13 Headliners (12 drawn + Countdown)', D.HEADLINER_IDS.length === 13);
-  check('5 rigs, 5 kits, 8 Renown levels, 10 milestones, 13 lessons, 16 tooltips',
-    D.RIG_IDS.length === 5 && D.KIT_IDS.length === 5 && D.RENOWN.length === 9 && D.MILESTONE_IDS.length === 10 && D.LESSONS.length === 13 && D.TOOLTIP_IDS.length === 16);
+  check('5 rigs, 5 kits, 8 Renown levels, 10 milestones, 14 lessons, 16 tooltips',
+    D.RIG_IDS.length === 5 && D.KIT_IDS.length === 5 && D.RENOWN.length === 9 && D.MILESTONE_IDS.length === 10 && D.LESSONS.length === 14 && D.TOOLTIP_IDS.length === 16);
   check('rules card has 3 lines', D.RULES_CARD.length === 3);
   { const T = []; for (let f = 0; f < 8; f++) for (const m of [1, 1.3, 1.8]) T.push(Number((D.BASES[f] * m).toPrecision(2))); T[1] = 130; T[2] = 150; T[23] = 180000;
     check('TARGETS equals the §5.1 formula', JSON.stringify(T) === JSON.stringify(D.TARGETS), JSON.stringify(D.TARGETS)); }
@@ -284,13 +284,17 @@ async function main() {
     check('first run: mood hidden in shows 1–2', !OOH.moodVisible(S));
     let ev = OOH.step(S, { type: 'light' }); const ap = ev.find(e => e.type === 'applause');
     check('first run show 1: 50 × 3 = 150, pass, $8, Crowd 1', ap.score === 150 && ap.pass && S.coins === 8 && S.crowd === 1);
-    check('first run shop before show 2 is Chrysanthemum (Green), Palm (Red), Comet (Green) at $3', S.shop.cards.map(c => c.id + ':' + c.col + ':' + c.cost).join(' ') === 'chrys:G:3 palm:R:3 comet:G:3', S.shop.cards.map(c => c.id + ':' + c.col).join(' '));
+    check('first run shop before show 2 is Crossette (Green) $5, Palm (Red) $3, Comet (Green) $3', S.shop.cards.map(c => c.id + ':' + c.col + ':' + c.cost).join(' ') === 'crossette:G:5 palm:R:3 comet:G:3', S.shop.cards.map(c => c.id + ':' + c.col).join(' '));
     const chip = (card, order) => { const T = OOH.clone(S); OOH.step(T, { type: 'buy', card, to: { zone: 'tube', i: 3 } });
       const byId = {}; for (const t of T.tubes) byId[t.shell.id] = t.shell; T.tubes.forEach((t, i) => { t.shell = byId[order[i]]; });
       return OOH.resolveShow(T.tubes, { rules: [], crowd: T.crowd }).applause; };
-    const cases = [[0, ['willow', 'peony', 'strobe', 'chrys'], 243], [0, ['willow', 'peony', 'chrys', 'strobe'], 303], [1, ['willow', 'peony', 'strobe', 'palm'], 189],
+    const cases = [[0, ['willow', 'peony', 'strobe', 'crossette'], 408], [0, ['willow', 'peony', 'crossette', 'strobe'], 561], [1, ['willow', 'peony', 'strobe', 'palm'], 189],
       [1, ['willow', 'peony', 'palm', 'strobe'], 378], [2, ['willow', 'peony', 'strobe', 'comet'], 183], [2, ['comet', 'willow', 'peony', 'strobe'], 273]];
     for (const [c, o, want] of cases) { const got = chip(c, o); check(`§6 chips: ${o.join(',')} = ${want}`, got === want, got); }
+    { // §6 Crossette: the naive T4 drop right after the starting Strobe fuses (Strobing Crossette), and both chips show ✦.
+      const ch = OOH.previewChips(S, [], { card: 0 }, { zone: 'tube', i: 3 });
+      check('§6 Crossette in T4: ✦ Strobing Crossette on T4, first-piece ✦ on the Strobe (T3)', ch && ch[3].fusion && ch[3].fusion.key === 'strobe>crossette' && ch[2].fusionNext && ch[2].fusionNext.key === 'strobe>crossette' && ch[2].fusionNext.tube === 3 && !ch[3].fusionNext,
+        ch && JSON.stringify([ch[2].fusionNext, ch[3].fusion])); }
     // Show 3 Headwind with the Palm build (Crowd 4 after the Encore).
     const T = OOH.clone(S); OOH.step(T, { type: 'buy', card: 1, to: { zone: 'tube', i: 3 } }); OOH.step(T, { type: 'move', from: { zone: 'tube', i: 3 }, to: { zone: 'tube', i: 2 } });
     ev = OOH.step(T, { type: 'light' });
@@ -319,12 +323,13 @@ async function main() {
     const R = lvl => OOH.createState('renown', { renown: lvl });
     check('Renown 1: Headliner targets ×1.25 (not the Countdown)', OOH.target(R(1), 2) === Math.round(150 * 1.25) && OOH.target(R(1), 23) === 180000);
     check('Renown 2: Twilight twists from F2', R(2).twilightTwists[0] === null && R(2).twilightTwists.slice(1).every(x => ['headwind', 'drizzle', 'critic'].includes(x)) && OOH.rulesFor(R(2), 3).length === 1 && OOH.rulesFor(R(2), 0).length === 0);
-    { const S = R(3); OOH.step(S, { type: 'light' }); check('Renown 3: rerolls start at $2 (+$1 each)', OOH.rerollCost(S) === 2 && (S.coins = 99, OOH.step(S, { type: 'reroll' }), OOH.rerollCost(S) === 3)); }
+    { const S = R(3); for (let i = 0; i < 3; i++) OOH.step(S, { type: 'light' }); check('Renown 3: rerolls start at $2 (+$1 each)', OOH.rerollCost(S) === 2 && (S.coins = 99, OOH.step(S, { type: 'reroll' }), OOH.rerollCost(S) === 3)); }
+    { const S = R(0); OOH.step(S, { type: 'light' }); S.coins = 99; check('Rerolls are illegal in Festival 1 (the workshop is hidden)', !OOH.isLegal(S, { type: 'reroll' }) && !OOH.legalActions(S).some(a => a.type === 'reroll') && OOH.illegalReason(S, { type: 'reroll' }) === 'rerolls open in Festival 2'); }
     { const S = R(4); check('Renown 4: tubes cost $10 / $14', OOH.tubeCost(S) === 10 && (S.tubes.push({ shell: null, rig: null }), OOH.tubeCost(S) === 14)); }
     { const S = R(5); OOH.step(S, { type: 'light' }); check('Renown 5: shell cards +$1', S.shop.cards.every(c => c.cost === SH[c.id].cost + 1)); }
     check('Renown 6: no rain check', R(6).rain === 0 && R(5).rain === 1);
     check('Renown 7: Countdown + rival', OOH.rulesFor(R(7), 23).join('+') === 'countdown+rival');
-    check('Renown 8: three passes and 1,000,000', OOH.rulesFor(R(8), 23).join('+') === 'countdown3+rival' && OOH.target(R(8), 23) === 1000000);
+    check('Renown 8: three passes and 900,000', OOH.rulesFor(R(8), 23).join('+') === 'countdown3+rival' && OOH.target(R(8), 23) === 900000);
     const F = OOH.createState('fw', { fairWeather: true });
     check('Fair Weather: targets ×0.75 and one relight', OOH.target(F, 0) === 75 && OOH.target(F, 23) === 135000 && F.relight === 1);
     check('Sponsor: effective target round(×1.5)', (() => { const S = OOH.createState('sp'); S.show = 6; S.sponsor = { kind: 'coin', accepted: true }; return OOH.target(S, 6) === 1500 && OOH.baseTarget(S, 6) === 1000; })());
@@ -387,7 +392,37 @@ async function main() {
     const Kb = OOH.clone(K); OOH.step(Kb, { type: 'light' });
     const held = OOH.previewChips(Kb, null, { card: 0 }); check('previewChips(held) marks legal targets', held && held.length === Kb.tubes.length && held.some(c => c && c.held && c.tube === 3));
     const hs = OOH.previewChips(Kb, null, { card: 0 }, { zone: 'tube', i: 3 }); check('previewChips(held, slot) returns the hypothetical rack', hs && hs.length === Kb.tubes.length && hs[3].held && hs[3].id === Kb.shop.cards[0].id);
-    check('previewChips(held on an occupied non-twin) is null', OOH.previewChips(Kb, null, { card: 0 }, { zone: 'tube', i: 0 }) === null || Kb.tubes[0].shell.id === Kb.shop.cards[0].id);
+    { // §2.5 one-gesture swap-in: a card over an occupied non-twin tube previews 'swap' (old shell → Crate) or 'replace' (sold).
+      const ci = Kb.shop.cards.findIndex(c => c.id !== Kb.tubes[0].shell.id && c.id !== 'palm'), c0 = Kb.shop.cards[ci], old = Kb.tubes[0].shell; Kb.coins = Math.max(Kb.coins, c0.cost);
+      const sw = OOH.previewChips(Kb, null, { card: ci }, { zone: 'tube', i: 0 });
+      check('previewChips(card on an occupied non-twin): kind swap, old shell → Crate slot 2, exact action', sw && sw[0].kind === 'swap' && sw[0].id === c0.id && sw[0].displace === 'crate' && sw[0].crate === 1 && sw[0].out.uid === old.uid
+        && JSON.stringify(sw[0].action) === JSON.stringify({ type: 'buy', card: ci, to: { zone: 'tube', i: 0 }, displace: 'crate' }), sw && JSON.stringify(sw[0]));
+      const la = OOH.legalActions(Kb); check('legalActions never lists a displace buy (bots unchanged)', !la.some(a => a.displace));
+      const B = OOH.clone(Kb), coins0 = B.coins, ev = OOH.step(B, sw[0].action);
+      check('buy displace:crate is one action: moved (Crate) then bought; old shell in Crate slot 2', ev.map(e => e.type).slice(0, 2).join() === 'moved,bought' && B.tubes[0].shell.id === c0.id && B.crate[1].uid === old.uid && B.coins === coins0 - c0.cost,
+        ev.map(e => e.type).join());
+      const F = OOH.clone(Kb); F.crate[1] = { uid: 999, id: 'peony', col: 'R', star: 1, paid: 3 };
+      const rp = OOH.previewChips(F, null, { card: ci }, { zone: 'tube', i: 0 });
+      check('Crate full: the drop previews replace with the refund', rp && rp[0].kind === 'replace' && rp[0].displace === 'sell' && rp[0].refund === OOH.sellValue(old) && rp[0].action.displace === 'sell', rp && JSON.stringify(rp[0]));
+      check('buy displace:crate is illegal with a full Crate', OOH.illegalReason(F, { type: 'buy', card: ci, to: { zone: 'tube', i: 0 }, displace: 'crate' }) === 'the Crate is full');
+      F.coins = c0.cost - OOH.sellValue(old); const cf = F.coins;
+      check('buy displace:sell counts the refund before the price', OOH.isLegal(F, rp[0].action) && (OOH.step(F, rp[0].action), F.tubes[0].shell.id === c0.id && F.coins === cf + OOH.sellValue(old) - c0.cost && F.crate[1].uid === 999));
+      const G = OOH.clone(Kb); G.coins = c0.cost - 1; check('buy displace:crate still needs the price in hand', OOH.illegalReason(G, sw[0].action) === 'not enough coins');
+      check('displace needs an occupied tube, not a twin, not the Crate', OOH.illegalReason(Kb, { type: 'buy', card: ci, to: { zone: 'tube', i: 3 }, displace: 'crate' }) === 'nothing to displace'
+        && OOH.illegalReason(Kb, { type: 'buy', card: ci, to: { zone: 'crate', i: 1 }, displace: 'crate' }) === 'displace needs a tube'
+        && OOH.illegalReason(Kb, { type: 'buy', card: ci, to: { zone: 'tube', i: 0 }, displace: 'bin' }) === 'displace must be crate or sell');
+      const tw = OOH.clone(Kb); tw.tubes[0].shell = { uid: 998, id: c0.id, col: c0.col, star: 1, paid: c0.cost };
+      check('a twin tube is an upgrade, never a displace', OOH.illegalReason(tw, { type: 'buy', card: ci, to: { zone: 'tube', i: 0 }, displace: 'crate' }) === 'a twin: upgrade it instead' && OOH.previewChips(tw, null, { card: ci }, { zone: 'tube', i: 0 })[0].kind === 'upgrade');
+    }
+    { // × readability: xAah is the Aah the × terms added at that tube (Aah before × (x − 1)).
+      const rk = { tubes: [{ shell: { uid: 1, id: 'peony', col: 'R', star: 1 }, rig: null }, { shell: { uid: 2, id: 'strobe', col: 'W', star: 1 }, rig: null }, { shell: { uid: 3, id: 'salute', col: 'W', star: 1 }, rig: null }, { shell: { uid: 4, id: 'comet', col: 'G', star: 1 }, rig: null }] };
+      const Z = OOH.clone(Kb); Z.tubes = rk.tubes; Z.crowd = 0; const ch = OOH.previewChips(Z, []);
+      const tr = OOH.resolveShow(Z.tubes, { rules: [], crowd: 0, trace: true }).trace.filter(e => e.type === 'multAah');
+      const want = [0, 1, 2, 3].map(i => tr.filter(e => e.tube === i).reduce((a, e) => a + e.aah - e.aah / e.factor, 0));
+      check('chips: xAah = Aah added by × terms per tube; 0 without ×', ch.every((c, i) => Math.abs(c.xAah - want[i]) < 1e-9) && ch[3].x > 1 && ch[3].xAah > 0 && ch[0].xAah === 0, JSON.stringify(ch.map(c => [c.x, c.xAah])));
+      check('chips: Salute → Comet shows ✦ on both (fusion on T4, fusionNext on T3)', ch[3].fusion && ch[3].fusion.key === 'salute>comet' && ch[2].fusionNext && ch[2].fusionNext.tube === 3 && !ch[1].fusionNext);
+      const ws = OOH.previewChips(Z, ['windshift']); check('fusionNext follows the fire order (Wind Shift: no Salute → Comet)', ws.every(c => !c.fusionNext && !c.fusion));
+    }
     check('mood is a bucket word', ['restless', 'hopeful', 'eager'].includes(OOH.mood(K)));
     const fo = OOH.fireOrder(K, ['countdown']); check('fireOrder: Countdown numerals out and back', fo.total === 6 && fo.tubes[2].ordinals.join(',') === '1,6' && fo.tubes[2].last);
     check('seesPerTube: starting rack sees 0/1/2, empty tube null; Wind Shift reverses', OOH.seesPerTube(K).join() === '0,1,2,' && OOH.seesPerTube(K, ['windshift']).join() === '1,0,0,',
@@ -400,13 +435,20 @@ async function main() {
     const nm = OOH.nearMiss(S.runStats.lastLostPreLight);
     check('nearMiss on golden-1 (show 7)', nm && nm.show === 6 && nm.applause === 805 && nm.target === 1000 && nm.lines[0].startsWith('195 short (80%) at Midsummer'), nm && nm.text);
     const ls = OOH.lessonFor({ won: false, state: S });
-    check('lessonFor returns a §4.12 lesson', ls && ls.id >= 1 && ls.id <= 13 && typeof ls.text === 'string' && !/\{/.test(ls.text), JSON.stringify(ls));
+    check('lessonFor returns a §4.12 lesson', ls && ls.id >= 1 && ls.id <= 14 && typeof ls.text === 'string' && !/\{/.test(ls.text), JSON.stringify(ls));
     const mp = OOH.milestoneProgress(S.runStats, { unlocked: [], progress: { m_crowd: 22 } });
     check('milestoneProgress covers 10 milestones with best/goal', mp.length === 10 && mp.find(r => r.id === 'm_crowd').best === 22 && mp.find(r => r.id === 'm_triple').value === 3);
     const pr = OOH.paretoRun(S); const tot = pr.reduce((a, r) => a + r.share, 0);
     check('Pareto shares sum to 100%', Math.abs(tot - 1) < 1e-9 && pr.some(r => r.id === 'Crowd'), tot);
     const won = OOH.playRun(3, 'oracle', {}).state; const lw = OOH.lessonFor({ won: true, state: won });
     check('lessonFor on a win', lw && lw.id >= 5, JSON.stringify(lw));
+    const lost = (seed, bot) => { const st = OOH.playRun(seed, bot, {}).state; return { st, l: OOH.lessonFor({ won: false, state: st }) }; };
+    { const { l } = lost(78, 'greedyMood'); check('lesson 10: lost with no fusion and 3+ upgrades (greedyMood seed 78)', l.id === 10 && l.text === OOH.DATA.LESSONS[9].text && /Crate/.test(l.text), JSON.stringify(l)); }
+    { const { l } = lost(35, 'greedy'); check('lesson text: "1 burst", never "1 bursts" (greedy seed 35)', l.id === 5 && /saw 1 burst on average/.test(l.text), l.text); }
+    { const { l } = lost(97, 'novice'); check('lesson text: "2 Aah", never "2.0 Aah" (novice seed 97)', l.id === 3 && /multiplied 2 Aah, then 46 more Aah/.test(l.text), l.text); }
+    { const { st, l } = lost(55, 'greedy'); const nm = OOH.nearMiss(st.runStats.lastLostPreLight);
+      const viaNm = OOH.lessonFor({ won: false, state: st, nearMiss: nm }), viaReo = OOH.lessonFor({ won: false, state: st, bestReorder: { applause: 0, pass: false } });
+      check('lessonFor reuses the near-miss best order (sum.bestReorder / sum.nearMiss.bestArrangement)', l.id === 4 && viaNm.text === l.text && viaReo.id !== 4 && /Rearranging for Drizzle would have scored 2,340\. Try Rehearse \(H\) before/.test(l.text), [l.text, viaReo.id].join(' | ')); }
   }
 
   /* ---------------------------------------------------------- 4. timing */

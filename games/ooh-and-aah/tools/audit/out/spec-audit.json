@@ -1,73 +1,61 @@
 {
  "meta": {
-  "when": "2026-09-29T00:43:14.575Z",
+  "when": "2026-09-29T03:10:05.761Z",
   "design": "/home/user/Portfolio/games/ooh-and-aah/DESIGN.md",
-  "designSha": "da3951b5527c",
+  "designSha": "20f07ac725a9",
   "sim": "/home/user/Portfolio/games/ooh-and-aah/src/sim.js",
   "html": "/home/user/Portfolio/games/ooh-and-aah/index.html",
-  "htmlBytes": 755077,
-  "argv": []
+  "htmlBytes": 813549,
+  "argv": [
+   "--no-browser"
+  ]
  },
  "summary": {
-  "PASS": 118,
-  "FAIL": 6,
-  "WARN": 10,
+  "PASS": 85,
+  "FAIL": 1,
+  "WARN": 2,
   "SKIP": 0
  },
  "byOwner": {
   "spec": {
    "PASS": 28,
    "FAIL": 0,
+   "WARN": 0,
+   "SKIP": 0,
+   "failing": []
+  },
+  "sim": {
+   "PASS": 45,
+   "FAIL": 0,
    "WARN": 1,
    "SKIP": 0,
    "failing": [
-    "WARN spec.self.mood6"
-   ]
-  },
-  "sim": {
-   "PASS": 40,
-   "FAIL": 0,
-   "WARN": 6,
-   "SKIP": 0,
-   "failing": [
-    "WARN data.patterns",
-    "WARN data.renown",
-    "WARN data.lessons",
-    "WARN data.glossary",
-    "WARN sim.events",
     "WARN sim.invariants"
    ]
   },
   "tooling": {
-   "PASS": 7,
+   "PASS": 6,
    "FAIL": 0,
    "WARN": 0,
    "SKIP": 0,
    "failing": []
   },
   "lead": {
-   "PASS": 3,
+   "PASS": 2,
    "FAIL": 1,
-   "WARN": 2,
+   "WARN": 1,
    "SKIP": 0,
    "failing": [
-    "FAIL static.fonts",
     "WARN static.css-base",
-    "WARN static.tokens"
+    "FAIL static.tokens"
    ]
   },
   "play": {
-   "PASS": 9,
-   "FAIL": 5,
+   "PASS": 1,
+   "FAIL": 0,
    "WARN": 0,
    "SKIP": 0,
-   "failing": [
-    "FAIL layout.360x740",
-    "FAIL layout.360x640",
-    "FAIL layout.375x548",
-    "FAIL layout.360x500",
-    "FAIL layout.1440x900"
-   ]
+   "failing": []
   },
   "fx": {
    "PASS": 1,
@@ -77,30 +65,7 @@
    "failing": []
   },
   "core": {
-   "PASS": 25,
-   "FAIL": 0,
-   "WARN": 1,
-   "SKIP": 0,
-   "failing": [
-    "WARN hooks.preview-mood-shapley"
-   ]
-  },
-  "menus": {
-   "PASS": 3,
-   "FAIL": 0,
-   "WARN": 0,
-   "SKIP": 0,
-   "failing": []
-  },
-  "audio": {
-   "PASS": 1,
-   "FAIL": 0,
-   "WARN": 0,
-   "SKIP": 0,
-   "failing": []
-  },
-  "end": {
-   "PASS": 1,
+   "PASS": 2,
    "FAIL": 0,
    "WARN": 0,
    "SKIP": 0,
@@ -205,7 +170,7 @@
    "spec": "§4.12",
    "title": "lessons table",
    "status": "PASS",
-   "summary": "13 rows parsed (expected 13)",
+   "summary": "14 rows parsed (expected 14)",
    "details": []
   },
   {
@@ -385,7 +350,7 @@
    "spec": "",
    "title": "DESIGN.md fingerprint",
    "status": "PASS",
-   "summary": "sha1 da3951b5527c, 126363 bytes, 74 headings",
+   "summary": "sha1 20f07ac725a9, 130425 bytes, 74 headings",
    "details": []
   },
   {
@@ -414,11 +379,9 @@
    "owner": "sim",
    "spec": "§4.4",
    "title": "burst-pattern parameters (n, speed, gravity, drag, life, trail, twinkle, special)",
-   "status": "WARN",
-   "summary": "1 warning(s)",
-   "details": [
-    "triple.special: spec \"Each shot rises from the tube and pops\" ≠ DATA \"Each shot rises from the tube and pops (16 per shot)\"   ⟵ DESIGN.md:479 | triple | Roman Candle | 16 per shot | 150 | 40 | .97 | 1.0 | .3 | 0 | Each shot rises from the tube and pops"
-   ]
+   "status": "PASS",
+   "summary": "25 patterns match",
+   "details": []
   },
   {
    "id": "data.fusions",
@@ -486,11 +449,9 @@
    "owner": "sim",
    "spec": "§4.10",
    "title": "Renown ladder 1–8 text",
-   "status": "WARN",
-   "summary": "1 warning(s)",
-   "details": [
-    "level 2: DATA text is a truncation of the spec: \"Every Twilight from Festival 2 on gets a mild twist: Headwind, Drizzle or The Critic.\"   ⟵ DESIGN.md:599 | 2 | Every Twilight from Festival 2 on gets a mild twist: Headwind, Drizzle or The Critic. It is rolled at `c"
-   ]
+   "status": "PASS",
+   "summary": "8 levels match",
+   "details": []
   },
   {
    "id": "data.milestones",
@@ -507,13 +468,10 @@
    "group": "data",
    "owner": "sim",
    "spec": "§4.12",
-   "title": "13 lessons (order = priority): predicate and text",
-   "status": "WARN",
-   "summary": "2 warning(s)",
-   "details": [
-    "#4.text: same text, different {placeholders}: spec \"Rearranging for {Headliner} would have scored {n}. Try Rehearse (H){ and Match (M)} before Headliners.\" vs DATA \"Rearranging for {headliner} would have scored {n}. Try Rehearse (H){match} before Headliners.\"   ⟵ DESIGN.md:633 | 4 | Lost on a Headliner, and the best reorder passes | \"Rearranging for {Headliner} would have scored {n}. T",
-    "#12.text: same text, different {placeholders}: spec \"Next: Renown {n+1}: {modifier}.\" vs DATA \"Next: Renown {n}: {modifier}.\"   ⟵ DESIGN.md:641 | 12 | Won | \"Next: Renown {n+1}: {modifier}.\" |"
-   ]
+   "title": "14 lessons (order = priority): predicate and text",
+   "status": "PASS",
+   "summary": "14 lessons match",
+   "details": []
   },
   {
    "id": "data.tooltips",
@@ -561,11 +519,9 @@
    "owner": "sim",
    "spec": "§1 Glossary",
    "title": "19 glossary terms and meanings (help card, Logbook)",
-   "status": "WARN",
-   "summary": "1 warning(s)",
-   "details": [
-    "Fair Weather.meaning: spec \"The labelled assist (§7.4).\" (a cross-reference) expanded in DATA to \"The labelled assist: all targets ×0.75, and the Countdown may be relit once.\"   ⟵ DESIGN.md:114 | Fair Weather | The labelled assist (§7.4). |"
-   ]
+   "status": "PASS",
+   "summary": "19 terms match",
+   "details": []
   },
   {
    "id": "data.rulescard",
@@ -664,7 +620,7 @@
    "spec": "§11.3, §11.7",
    "title": "no Math.random / Date.now in the SIM; same seed + actions → same hash; clone/hashState",
    "status": "PASS",
-   "summary": "22 random actions replayed; hash 304f4e96f1ecdcdc4db2d359c3620e82",
+   "summary": "33 random actions replayed; hash 74922261267c0ad6712610f7a6da623f",
    "details": []
   },
   {
@@ -702,7 +658,7 @@
    "group": "sim",
    "owner": "sim",
    "spec": "§5.1",
-   "title": "target(): Renown 1 Headliners ×1.25, Renown 8 Countdown 1,000,000, Fair Weather ×0.75, Sponsor ×1.5 (rounded, in order)",
+   "title": "target(): Renown 1 Headliners ×1.25, Renown 8 Countdown 900,000, Fair Weather ×0.75, Sponsor ×1.5 (rounded, in order)",
    "status": "PASS",
    "summary": "5 option sets × 24 shows + Sponsor",
    "details": []
@@ -752,29 +708,17 @@
    "group": "sim",
    "owner": "sim",
    "spec": "§4.7, §5.6, §6",
-   "title": "first-ever run: Headwind at F1; show-2 shop = Chrysanthemum (Green), Palm (Red), Comet (Green) at $3; F2 override",
+   "title": "first-ever run: Headwind at F1; show-2 shop = Crossette (Green) $5, Palm (Red) $3, Comet (Green) $3; F2 override",
    "status": "PASS",
    "summary": "curated shops match",
    "details": []
-  },
-  {
-   "id": "spec.self.mood6",
-   "group": "spec",
-   "owner": "spec",
-   "spec": "§6 vs §3.3",
-   "title": "§6 mood examples agree with the §3.3 bucket thresholds",
-   "status": "WARN",
-   "summary": "1 example(s) contradict §3.3",
-   "details": [
-    "§6 calls the willow,peony,strobe,palm rack (132 vs target 150, ratio 0.880) restless, but §3.3's thresholds (0.85 / 1.25) make it hopeful"
-   ]
   },
   {
    "id": "sim.mood",
    "group": "sim",
    "owner": "sim",
    "spec": "§3.3, §6",
-   "title": "mood buckets (0.85 / 1.25) and the §6 show-3 Headwind examples (276 Eager, 162 Hopeful, 126/132 Restless)",
+   "title": "mood buckets (0.85 / 1.25) and the §6 show-3 Headwind examples (276 Eager, 162 Hopeful, 126 Restless, 132 Hopeful)",
    "status": "PASS",
    "summary": "4 examples: scores match §6, moods follow §3.3",
    "details": []
@@ -806,7 +750,7 @@
    "spec": "§5.3, §5.6, §5.7",
    "title": "shop generation over 40 seeds: card count, distinct ids, unlocked + fest ≤ f, rarity by festival, rig from F2, Sponsor only F3+ Twilight/Evening, rerolls reset",
    "status": "PASS",
-   "summary": "52 shops checked",
+   "summary": "51 shops checked",
    "details": []
   },
   {
@@ -815,11 +759,9 @@
    "owner": "sim",
    "spec": "§9, §11.4",
    "title": "events: names from the §9 table, fields present, seq strictly increasing",
-   "status": "WARN",
-   "summary": "1 warning(s)",
-   "details": [
-    "event \"restored\" (from restore) is not a §9 name — §9 lists no event for this action"
-   ]
+   "status": "PASS",
+   "summary": "603 events, 21 types (not reached by the random runs: tubeAdded, rerolled, multAah, crowdGain, coinGain)",
+   "details": []
   },
   {
    "id": "sim.invariants",
@@ -830,7 +772,7 @@
    "status": "WARN",
    "summary": "1 warning(s)",
    "details": [
-    "shapley() returns shares summing to 1 in 15/19 shows (§11.4 \"share\"); §11.7 asks that results sum to the show's Applause within 1e-6 — the spec is ambiguous, the API cannot satisfy both"
+    "shapley() returns shares summing to 1 in 15/18 shows (§11.4 \"share\"); §11.7 asks that results sum to the show's Applause within 1e-6 — the spec is ambiguous, the API cannot satisfy both"
    ]
   },
   {
@@ -870,7 +812,7 @@
    "spec": "§11.1 (CONTRACT override)",
    "title": "built file ≤ 1,200 KB (warn > 800 KB); spec target 150/190 KB lifted by CONTRACT",
    "status": "PASS",
-   "summary": "737.4 KB (above the §11.1 190 KB ceiling, allowed by CONTRACT)",
+   "summary": "794.5 KB (above the §11.1 190 KB ceiling, allowed by CONTRACT)",
    "details": []
   },
   {
@@ -899,11 +841,9 @@
    "owner": "lead",
    "spec": "§11.2, §8.5",
    "title": "Google Fonts @import (Fraunces + Atkinson Hyperlegible) exactly as specified; fallbacks; tabular-nums",
-   "status": "FAIL",
-   "summary": "1 problem(s)",
-   "details": [
-    "@import URL differs from §11.2 — Atkinson+Hyperlegible: spec \"wght@400;700\" vs build \"ital,wght@0,400;0,700;1,400\""
-   ]
+   "status": "PASS",
+   "summary": "import + fallbacks present",
+   "details": []
   },
   {
    "id": "static.external",
@@ -943,19 +883,10 @@
    "owner": "lead",
    "spec": "§8.5, §4.1",
    "title": "tokens on :root, repeated for the dark-scheme selectors, high contrast under :root[data-contrast=\"high\"]",
-   "status": "WARN",
-   "summary": "10 warning(s)",
+   "status": "FAIL",
+   "summary": "1 problem(s)",
    "details": [
-    "--ooh not repeated under dark-scheme @media",
-    "--ooh not repeated under [data-theme=\"dark\"]",
-    "--aah not repeated under dark-scheme @media",
-    "--aah not repeated under [data-theme=\"dark\"]",
-    "--danger not repeated under dark-scheme @media",
-    "--danger not repeated under [data-theme=\"dark\"]",
-    "--ok not repeated under dark-scheme @media",
-    "--ok not repeated under [data-theme=\"dark\"]",
-    "--focus not repeated under dark-scheme @media",
-    "--focus not repeated under [data-theme=\"dark\"]"
+    "--danger: :root #F07560, §8.5 #E0533D"
    ]
   },
   {
@@ -1026,468 +957,6 @@
    "title": "sim.js source: Math.random / Date.now / new Date occurrences (runtime trap in sim.determinism is authoritative)",
    "status": "PASS",
    "summary": "none",
-   "details": []
-  },
-  {
-   "id": "page.boot",
-   "group": "page",
-   "owner": "core",
-   "spec": "§6, §11.2",
-   "title": "first load opens straight into the show 1 build (#app[data-ui=BUILD], window.__game) with no page errors",
-   "status": "PASS",
-   "summary": "BUILD in 464 ms",
-   "details": []
-  },
-  {
-   "id": "page.globals",
-   "group": "page",
-   "owner": "lead",
-   "spec": "CONTRACT",
-   "title": "one global per module with the contracted API (OohSim, OOH, AUDIO, FX, GAME, UI_*)",
-   "status": "PASS",
-   "summary": "all globals and methods present",
-   "details": []
-  },
-  {
-   "id": "page.requests",
-   "group": "page",
-   "owner": "lead",
-   "spec": "§11.2",
-   "title": "no network requests other than Google Fonts",
-   "status": "PASS",
-   "summary": "fonts requested: yes",
-   "details": []
-  },
-  {
-   "id": "page.rest",
-   "group": "page",
-   "owner": "play",
-   "spec": "§6, §11.2",
-   "title": "at rest: show 1 build fully drawn (target 100, 3-shell rack, Light the fuse, Headwind poster, sky painted)",
-   "status": "PASS",
-   "summary": "target \"Target 100\", 4 tubes, sky 44 colours",
-   "details": []
-  },
-  {
-   "id": "page.dom",
-   "group": "page",
-   "owner": "play",
-   "spec": "CONTRACT",
-   "title": "contracted DOM hooks in the live page (data-tube, data-crate, data-act, HUD ids, overlays)",
-   "status": "PASS",
-   "summary": "all present (#run-it-back appear later: see page.dom-f2 / end.screen)",
-   "details": []
-  },
-  {
-   "id": "hooks.present",
-   "group": "hooks",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "window.__game exposes every §11.6 hook with the right type",
-   "status": "PASS",
-   "summary": "17 hooks",
-   "details": []
-  },
-  {
-   "id": "hooks.config",
-   "group": "hooks",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "__game.config = {version, TARGETS, SHELLS, FUSIONS, RIGS, HEADLINERS, KITS, RENOWN, MILESTONES} matching the spec",
-   "status": "PASS",
-   "summary": "version 1.1.0",
-   "details": []
-  },
-  {
-   "id": "hooks.reset-state",
-   "group": "hooks",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "reset(seed) starts a fresh run; state() returns an independent clone; legalActions() lists light first",
-   "status": "PASS",
-   "summary": "19 legal actions",
-   "details": []
-  },
-  {
-   "id": "hooks.act-events",
-   "group": "hooks",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "act(action) returns the §9 events; illegal → [{type:\"illegal\"}]; events() drains the queue; step(n) advances in test mode",
-   "status": "PASS",
-   "summary": "20 events; ui RESULT",
-   "details": []
-  },
-  {
-   "id": "hooks.determinism",
-   "group": "hooks",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "hash(): same seed + same actions → same hash; reset(seed) reproduces",
-   "status": "PASS",
-   "summary": "final hash 1240b4bf1d792b4eee9067bcb06b2da4",
-   "details": []
-  },
-  {
-   "id": "hooks.resolve",
-   "group": "hooks",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "resolve(tubes, ctx) reproduces §11.8 goldens in the page",
-   "status": "PASS",
-   "summary": "7 cases",
-   "details": []
-  },
-  {
-   "id": "hooks.preview-mood-shapley",
-   "group": "hooks",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "preview() chips, mood() bucket, shapley(i) sums to that show's Applause, skipAnimations, setPaused",
-   "status": "WARN",
-   "summary": "1 warning(s)",
-   "details": [
-    "shapley(0) returns shares summing to 1 (Applause 150); §11.7 says results sum to the Applause — see sim.invariants"
-   ]
-  },
-  {
-   "id": "hooks.meta",
-   "group": "hooks",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "meta() returns the §7.5 meta; setMeta(obj) merges",
-   "status": "PASS",
-   "summary": "runs,wins,unlocked,progress,renown,kit,keepsake,seenTips,codex,records,posters",
-   "details": []
-  },
-  {
-   "id": "hooks.runBots",
-   "group": "hooks",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "runBots({bot, n}) resolves with a summary (Worker)",
-   "status": "PASS",
-   "summary": "{\"bot\":\"greedy\",\"opts\":{},\"n\":3,\"wins\":0,\"winPct\":0,\"deaths\":{\"2\":1,\"3\":1,\"4\":1},\"deathPct\":{\"2\":33.333333333333336,\"3\"…",
-   "details": []
-  },
-  {
-   "id": "ui.tube-labels",
-   "group": "ui",
-   "owner": "play",
-   "spec": "§13",
-   "title": "tube aria-labels: \"Tube 1: Willow, Gold triangle, star 1, Hang 3, …, fires 1st of 3, sees 0\"",
-   "status": "PASS",
-   "summary": "\"Tube 1: Willow, Gold triangle, star 1, Hang 3, fires 1st of 3, sees 0\"",
-   "details": []
-  },
-  {
-   "id": "ui.tools",
-   "group": "ui",
-   "owner": "play",
-   "spec": "§8.1, §2.5, §13",
-   "title": "show 1 build: Match disabled (no permuting rule), Restore disabled (no last order), Undo disabled; tools have aria-labels; #live-polite build line",
-   "status": "PASS",
-   "summary": "tool states ok",
-   "details": []
-  },
-  {
-   "id": "ui.fire",
-   "group": "ui",
-   "owner": "play",
-   "spec": "§6, §8.1",
-   "title": "Light the fuse → resolution → next build: $8, Crowd 1, show-2 shop = Chrysanthemum, Palm, Comet at $3",
-   "status": "PASS",
-   "summary": "ui RESULT, $8, cards 4",
-   "details": []
-  },
-  {
-   "id": "ui.buy-undo",
-   "group": "ui",
-   "owner": "play",
-   "spec": "CONTRACT, §2.5, §8.3",
-   "title": "tap card then tap tube buys into that tube; Undo reverts",
-   "status": "PASS",
-   "summary": "buy + undo ok",
-   "details": []
-  },
-  {
-   "id": "ui.keys",
-   "group": "ui",
-   "owner": "menus",
-   "spec": "§13",
-   "title": "keys: P pause, Esc closes, L Logbook, ? Help, F lights the fuse, 1 selects card 1",
-   "status": "PASS",
-   "summary": "P, Esc, L, ?, 1, F",
-   "details": []
-  },
-  {
-   "id": "ui.help",
-   "group": "ui",
-   "owner": "menus",
-   "spec": "§8.3, §1",
-   "title": "Help holds the 3-line rules card, the glossary (19 terms) and the key map",
-   "status": "PASS",
-   "summary": "rules card + glossary present",
-   "details": []
-  },
-  {
-   "id": "ui.settings",
-   "group": "ui",
-   "owner": "menus",
-   "spec": "§8.3, §7.5",
-   "title": "Settings lists every §8.3 control; Export/Import use an in-page text field; Reset is a 2-tap",
-   "status": "PASS",
-   "summary": "all controls present",
-   "details": []
-  },
-  {
-   "id": "ui.no-dialogs",
-   "group": "ui",
-   "owner": "core",
-   "spec": "§11.2",
-   "title": "no alert/confirm/prompt called during the UI run",
-   "status": "PASS",
-   "summary": "none",
-   "details": []
-  },
-  {
-   "id": "a11y.basics",
-   "group": "a11y",
-   "owner": "play",
-   "spec": "§13",
-   "title": "live regions announce build/result; buttons have names; focus ring visible; high contrast sets data-contrast and tokens",
-   "status": "PASS",
-   "summary": "live regions, names, focus, contrast",
-   "details": []
-  },
-  {
-   "id": "flags.test",
-   "group": "flags",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "?test=1: no rAF loop (instant, deterministic)",
-   "status": "PASS",
-   "summary": "test: 0 rAF / 600 ms; normal: 37",
-   "details": []
-  },
-  {
-   "id": "flags.seed",
-   "group": "flags",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "?seed=abc fixes the run seed",
-   "status": "PASS",
-   "summary": "seed abc",
-   "details": []
-  },
-  {
-   "id": "flags.kit",
-   "group": "flags",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "?kit= sets the starting kit",
-   "status": "PASS",
-   "summary": "salvo → salvo",
-   "details": []
-  },
-  {
-   "id": "flags.renown",
-   "group": "flags",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "?renown= sets the Renown level",
-   "status": "PASS",
-   "summary": "renown 3",
-   "details": []
-  },
-  {
-   "id": "flags.unlock",
-   "group": "flags",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "?unlock=all unlocks every milestone reward (all 34 shells in the pool)",
-   "status": "PASS",
-   "summary": "10 unlocked",
-   "details": []
-  },
-  {
-   "id": "flags.debug",
-   "group": "flags",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "?debug=1 overlay: frame ms, SIM ms, particle + entity counts, hash",
-   "status": "PASS",
-   "summary": "\"frame 17.3 ms · sim 0.00 ms\\nparticles 0 · entities 0\\nBUILD · show 1 · build\\nhash fa364abd78ef1f…",
-   "details": []
-  },
-  {
-   "id": "flags.sim",
-   "group": "flags",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "?sim=N&bot=greedy runs bots headless and prints a JSON summary to the console and a <pre>",
-   "status": "PASS",
-   "summary": "\"{\\n  \\\"bot\\\": \\\"greedy\\\",\\n  \\\"opts\\\": {},\\n  \\\"n\\\": 4,\\n  \\\"wins\\\": 0,\\n  \\\"winPct\\\": 0,\\n  \\\"dea…",
-   "details": []
-  },
-  {
-   "id": "persist.save",
-   "group": "persist",
-   "owner": "core",
-   "spec": "§7.5",
-   "title": "after a light: localStorage['oohxaah.v1'] = {v:1, settings, meta, run:{state, uiSeed}} with the §7.5 fields",
-   "status": "PASS",
-   "summary": "5059 bytes",
-   "details": []
-  },
-  {
-   "id": "persist.restore",
-   "group": "persist",
-   "owner": "core",
-   "spec": "§7.5",
-   "title": "reload restores the saved run directly into its build (one tap from load)",
-   "status": "PASS",
-   "summary": "restored first-show show 2",
-   "details": []
-  },
-  {
-   "id": "persist.fresh",
-   "group": "persist",
-   "owner": "core",
-   "spec": "§11.6",
-   "title": "?fresh=1 ignores the stored run and meta",
-   "status": "PASS",
-   "summary": "seed first-show, show 1",
-   "details": []
-  },
-  {
-   "id": "persist.lifecycle",
-   "group": "persist",
-   "owner": "core",
-   "spec": "§11.5",
-   "title": "visibilitychange → hidden pauses, saves, suspends audio; resume only through \"Tap to continue\" (normal mode; ?test=1 skips it)",
-   "status": "PASS",
-   "summary": "pause + save + tap to continue",
-   "details": []
-  },
-  {
-   "id": "persist.corrupt",
-   "group": "persist",
-   "owner": "core",
-   "spec": "§7.5",
-   "title": "corrupt or wrong-version storage boots to BUILD with defaults and no errors",
-   "status": "PASS",
-   "summary": "3 bad saves handled",
-   "details": []
-  },
-  {
-   "id": "persist.no-storage",
-   "group": "persist",
-   "owner": "core",
-   "spec": "§7.5, §11.2",
-   "title": "boots and plays with no storage at all (localStorage throws)",
-   "status": "PASS",
-   "summary": "runs without storage",
-   "details": []
-  },
-  {
-   "id": "persist.audio-gesture",
-   "group": "persist",
-   "owner": "audio",
-   "spec": "§11.2, §10",
-   "title": "audio starts only after a user gesture (no AudioContext before the first pointerdown/keydown)",
-   "status": "PASS",
-   "summary": "before: 0 ctx; after tap: 1 ctx, 0 resume",
-   "details": []
-  },
-  {
-   "id": "end.screen",
-   "group": "end",
-   "owner": "end",
-   "spec": "§8.2, §4.12, §13",
-   "title": "losing a run opens #end: header \"The crowd went home: <festival>, show N\", lesson, focus on Run it back; R restarts in < 1 s",
-   "status": "PASS",
-   "summary": "restart 209 ms",
-   "details": []
-  },
-  {
-   "id": "layout.360x740",
-   "group": "layout",
-   "owner": "play",
-   "spec": "§8.1, §13",
-   "title": "360×740: regular mode, no overflow, Fire visible, play column ≤ 480, targets ≥ 44 px, text ≥ 16 px",
-   "status": "FAIL",
-   "summary": "1 problem(s)",
-   "details": [
-    "tap target 36×26 < 44: button.hud-head \"Headliner, show 3: Headwind. T\"; its 44 × 44 square hits span#hud-show \"Spring Lanterns · Twiligh / canvas#sky / div.hud-tgt \"Target 100▸ 130 · 150Headwi instead"
-   ]
-  },
-  {
-   "id": "layout.360x640",
-   "group": "layout",
-   "owner": "play",
-   "spec": "§8.1, §13",
-   "title": "360×640: compact mode, no overflow, Fire visible, play column ≤ 480, targets ≥ 44 px, text ≥ 16 px",
-   "status": "FAIL",
-   "summary": "1 problem(s)",
-   "details": [
-    "tap target 36×24 < 44: button.hud-head \"Headliner, show 3: Headwind. T\"; its 44 × 44 square hits header#hud \"Target 100▸ 130 · 150Headwin / div.hud-tgt \"Target 100▸ 130 · 150Headwi instead"
-   ]
-  },
-  {
-   "id": "layout.375x548",
-   "group": "layout",
-   "owner": "play",
-   "spec": "§8.1, §13",
-   "title": "375×548: compact mode, no overflow, Fire visible, play column ≤ 480, targets ≥ 44 px, text ≥ 16 px",
-   "status": "FAIL",
-   "summary": "1 problem(s)",
-   "details": [
-    "tap target 36×24 < 44: button.hud-head \"Headliner, show 3: Headwind. T\"; its 44 × 44 square hits header#hud \"Target 100▸ 130 · 150Headwin / div.hud-tgt \"Target 100▸ 130 · 150Headwi instead"
-   ]
-  },
-  {
-   "id": "layout.360x500",
-   "group": "layout",
-   "owner": "play",
-   "spec": "§8.1, §13",
-   "title": "360×500: scroll mode, no overflow, Fire visible, play column ≤ 480, targets ≥ 44 px, text ≥ 16 px",
-   "status": "FAIL",
-   "summary": "1 problem(s)",
-   "details": [
-    "tap target 36×24 < 44: button.hud-head \"Headliner, show 3: Headwind. T\"; its 44 × 44 square hits header#hud \"Target 100▸ 130 · 150Headwin / div.hud-tgt \"Target 100▸ 130 · 150Headwi instead"
-   ]
-  },
-  {
-   "id": "layout.1440x900",
-   "group": "layout",
-   "owner": "play",
-   "spec": "§8.1, §13",
-   "title": "1440×900: desktop mode, no overflow, Fire visible, play column ≤ 480, targets ≥ 44 px, text ≥ 16 px",
-   "status": "FAIL",
-   "summary": "1 problem(s)",
-   "details": [
-    "tap target 128×26 < 44: button.hud-head \"Headliner, show 3: Headwind. T\"; its 44 × 44 square hits span#hud-show \"Spring Lanterns · Twiligh / header#hud \"Spring Lanterns · TwilightTa / canvas#sky instead"
-   ]
-  },
-  {
-   "id": "page.dom-f2",
-   "group": "page",
-   "owner": "play",
-   "spec": "CONTRACT, §8.1",
-   "title": "F2 build: workshop row with [data-act=reroll|buyTube|buyRig] visible; hidden in F1",
-   "status": "PASS",
-   "summary": "workshop row present",
-   "details": []
-  },
-  {
-   "id": "meta.checklist",
-   "group": "meta",
-   "owner": "tooling",
-   "spec": "",
-   "title": "spec-checklist.md AUTO ids all exist in this tool",
-   "status": "PASS",
-   "summary": "112 ids referenced",
    "details": []
   }
  ]

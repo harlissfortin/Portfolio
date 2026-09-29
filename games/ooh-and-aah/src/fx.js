@@ -25,7 +25,8 @@
  *        crowdCheer applause payout rainCheck critical relight milestone runLost runWon (+ buildOpen moodChanged via event()).
  *        Any other event is passed to onPresent with no visual.
  *  event(ev)             present one out-of-chain event now (buildOpen, moodChanged, crowdGain, critical, relight, runLost …)
- *  update(dtSec), render()   called by the core's fixed-timestep rAF loop
+ *  update(dtSec, speed?), render()   called by the core's fixed-timestep rAF loop (dtSec is wall time, clamped to
+ *        0.1 s, then scaled by speed, default 1)
  *  pictogram(shellId, col, star, sizePx, opts?) → HTMLCanvasElement (CSS sizePx, backing × DPR). The burst pattern frozen at
  *        45% of its life. opts {token (plate + pictogram + monogram + star pips; height = 1.25 × size), plate, mono, pips,
  *        hang (n Hang pips under the token), washed, highContrast, dpr}
@@ -123,11 +124,11 @@ const FX = (() => {
   function mkPool(n) {
     const f = () => new Float32Array(n);
     const P = {n, x: f(), y: f(), vx: f(), vy: f(), g: f(), dr: f(), life: f(), age: f(), tr: f(), tw: f(), sz: f(), al: f(), cx: f(), cy: f(), ph: f(), fs: f(), hx: f(), hy: f(),
-      ci: new Uint8Array(n), fl: new Uint16Array(n), pr: new Uint8Array(n), on: new Uint8Array(n), bid: new Int32Array(n), free: new Int16Array(n), top: 0, count: 0, peak: 0};
+      ci: new Uint8Array(n), fl: new Uint16Array(n), pr: new Uint8Array(n), on: new Uint8Array(n), bid: new Int32Array(n), free: new Int16Array(n), top: 0, count: 0, peak: 0, sc: 0};
     resetPool(P);
     return P;
   }
-  function resetPool(P) { P.on.fill(0); P.top = 0; for (let i = P.n - 1; i >= 0; i--) P.free[P.top++] = i; P.count = 0; }
+  function resetPool(P) { P.on.fill(0); P.top = 0; for (let i = P.n - 1; i >= 0; i--) P.free[P.top++] = i; P.count = 0; P.sc = 0; }
   const M = mkPool(400);
   // Allocation-free canvas calls (§11.7): a fractional number handed to a canvas method or setter is boxed into a
   // fresh heap number on every call. Hot loops pass integer 1/8-px coordinates (Smis; the context is scaled by QI
@@ -138,9 +139,16 @@ const FX = (() => {
   const qa = a => AQ[a <= 0 ? 0 : a >= 1 ? 255 : (a * 255 + 0.5) | 0];
   let curBid = -1;
   function kill(P, i) { if (!P.on[i]) return; P.on[i] = 0; P.free[P.top++] = i; P.count--; }
+  // Pool full (the free list is empty): a clock sweep. Score only a short window of slots from a rotating cursor
+  // (O(1) per spawn, not all 400): a decoration first, then the most-aged star of an earlier burst, an ember (the
+  // lingering sky) last; the burst being emitted is never robbed. Only a window holding nothing but that burst's
+  // stars sweeps on (at most once round the pool).
+  const STEAL_WIN = 16;
   function steal(P) {
-    let best = -1, bs = 9;
-    for (let i = 0; i < P.n; i++) {
+    const n = P.n;
+    let best = -1, bs = 9, k = 0, i = P.sc;
+    for (; k < n; k++, i = i + 1 === n ? 0 : i + 1) {
+      if (k >= STEAL_WIN && best >= 0) break;
       if (!P.on[i]) continue;
       const pr = P.pr[i];
       let s;
@@ -148,6 +156,7 @@ const FX = (() => {
       if (pr !== 1) s += 1 - clamp(P.age[i] / (P.life[i] || 1), 0, 0.99);
       if (s < bs) { bs = s; best = i; }
     }
+    P.sc = i;
     if (best >= 0) kill(P, best);
     return best;
   }
@@ -1553,9 +1562,11 @@ const FX = (() => {
       }
     }
   }
-  function update(dt) {
+  // speed: the caller's time scale. The 0.1 s clamp caps one frame's wall time, so it comes first (clamping the
+  // scaled dt would play every slow frame at ×2 at half speed).
+  function update(dt, speed) {
     if (!(dt > 0)) return;
-    dt = Math.min(dt, 0.1);
+    dt = Math.min(dt, 0.1) * (speed > 0 ? speed : 1);
     T += dt;
     tickPlay(dt);
     for (let i = LATER.length - 1; i >= 0; i--) if (LATER[i].at <= T) { const f = LATER[i].fn; LATER.splice(i, 1); f(); }

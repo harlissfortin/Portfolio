@@ -15,6 +15,8 @@
 //   --seeds=N          seeds 1..N for the base bot runs (default 200)
 //   --sweep-seeds=N    seeds for the sweeps: kits, Renown, archetypes, pools, Fair Weather,
 //                      no-Sponsor, bold (default = --seeds). Paired metrics use common seeds.
+//                      Unless --seeds or --sweep-seeds is given, `headliners` and `sponsor` read seeds
+//                      1..1000 of the runs they need (the other analyses still read 1..N).
 //   --bots=a,b         restrict to these bot families (random, donothing, greedy, greedyMood,
 //                      novice, human, oracle; sweeps follow their base bot)
 //   --only=a,b         run only these analyses (see --list);  --skip=a,b  drop some
@@ -150,7 +152,7 @@ function simDriverUsable() {
 // ------------------------------------------------------------------ plan
 let recordsSimHash = null, driftNote = null; // --load-records: the SIM that played the loaded records (from the file header)
 const planOpts = {
-  only: onlyA, skip: skipA, bots: botsF, seeds: SEEDS, sweepSeeds: SWEEP,
+  only: onlyA, skip: skipA, bots: botsF, seeds: SEEDS, sweepSeeds: SWEEP, explicitSeeds: args.seeds !== undefined || args['sweep-seeds'] !== undefined,
   shapleyRuns: intArg('shapley-runs', 30), endlessRuns: intArg('endless-runs', 25), replayRuns: 5,
   xcheckRuns: intArg('xcheck-seeds', 50), xcheck: altAvailable && driver === 'sim', native: !!api.playRun && !args['no-native'],
 };
@@ -279,9 +281,13 @@ function analyse() {
     } catch (e) { ctx.benchError = String(e.message); }
   }
   const out = [];
+  const CFG = AN.configs();
   for (const a of analyses) {
     let res;
-    try { res = a.run(ctx); } catch (e) { res = { rows: [{ metric: 'analysis crashed', bot: '—', value: String(e && e.message), gate: '—', ref: '—', status: 'FAIL' }], details: [String(e && e.stack).split('\n').slice(0, 3).join(' | ')] }; }
+    // Each analysis reads seeds 1..its own limit of every plain seed-range config (runs are shared across analyses).
+    const view = {};
+    for (const [k, rs] of Object.entries(R)) { const c = CFG[k]; const lim = c && !c.seeds ? AN.seedLimit(a, c, planOpts) : Infinity; view[k] = rs.filter(r => typeof r.seed !== 'number' || r.seed <= lim); }
+    try { res = a.run({ ...ctx, R: view }); } catch (e) { res = { rows: [{ metric: 'analysis crashed', bot: '—', value: String(e && e.message), gate: '—', ref: '—', status: 'FAIL' }], details: [String(e && e.stack).split('\n').slice(0, 3).join(' | ')] }; }
     out.push({ id: a.id, title: a.title, rows: res.rows || [], details: res.details || [] });
   }
   return out;
@@ -294,7 +300,7 @@ function render(results, meta) {
   L.push('OOH × AAH — BALANCE REPORT (spec §12)');
   L.push(`date ${meta.date} · SIM ${meta.sim} (${meta.simKind}, sha1 ${meta.simHash}) · driver ${meta.driver}` + (meta.records ? ` · records ${meta.records}` : ''));
   if (meta.drift) L.push(`drift check: ${meta.drift}`);
-  L.push(`seeds 1..${meta.seeds} (sweeps 1..${meta.sweepSeeds}) · ${meta.runs} runs · ${meta.errors} errors · ` + (meta.records ? `analysed in ${meta.seconds} s (no runs played)` : `${meta.seconds} s on ${meta.workers} workers`));
+  L.push(`seeds 1..${meta.seeds} (sweeps 1..${meta.sweepSeeds}${meta.wide ? '; ' + meta.wide : ''}) · ${meta.runs} runs · ${meta.errors} errors · ` + (meta.records ? `analysed in ${meta.seconds} s (no runs played)` : `${meta.seconds} s on ${meta.workers} workers`));
   L.push(`gates: ${counts.OK} OK · ${counts.FAIL} FAIL · ${counts.WARN} WARN · ${counts.INFO} INFO · ${counts['N/A']} N/A`);
   L.push('OK inside the gate · FAIL outside · WARN outside but within 95% sampling error at this seed count · INFO no gate · N/A not run');
   L.push('Reference = spec v1.1 values (1,000 seeds unless noted).');
@@ -322,11 +328,13 @@ function render(results, meta) {
 
 await runAll();
 const results = analyse();
+const wideA = analyses.filter(a => a.defaultSeeds && !planOpts.explicitSeeds); // analyses reading more seeds than --seeds
 const meta = {
   date: new Date().toISOString().replace('T', ' ').slice(0, 16), sim: path.relative(GAME, simFile).startsWith('..') ? simFile : path.relative(GAME, simFile),
   simKind: api.kind, simHash, driver: driverNote || driver,
   drift: driftNote,
   records: typeof args['load-records'] === 'string' ? `loaded from ${path.basename(args['load-records'])} (played by SIM sha1 ${recordsSimHash || 'unknown: file has no header'})` : null, seeds: SEEDS, sweepSeeds: SWEEP, workers: WORKERS,
+    wide: wideA.length ? `${wideA.map(a => a.id).join(', ')} 1..${Math.max(...wideA.map(a => Math.max(SEEDS, a.defaultSeeds)))}` : '',
   runs: records.length, errors: errors.length, seconds: ((Date.now() - t0) / 1000).toFixed(0), analyses: analyses.map(a => a.id), node: process.version,
 };
 const { text, counts, flagged } = render(results, meta);

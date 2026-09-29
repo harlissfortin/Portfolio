@@ -711,7 +711,7 @@ const GAME = (() => {
     const imm = r.instant || !S.loopOn;
     if (S.state.phase !== 'build') {
       if (S.state.phase === 'lost' && !r.dimmed) callFX('dim');
-      after(imm ? 0 : ticks(S.state.phase === 'lost' ? 0.9 : 1.6), () => { if (S.res === r) { S.res = null; goEnd(); } });
+      after(imm ? 0 : ticks(S.state.phase === 'lost' ? 0.9 : 1.0), () => { if (S.res === r) { S.res = null; goEnd(); } });   // a win: the finale (~2.2 s) already played out before onDone
     } else {
       after(imm ? 0 : Math.max(0, ticks(0.6) - (S.tick - r.slamTick)), () => { if (S.res === r) { S.res = null; toResult(r.buffer); } });
     }
@@ -1240,6 +1240,17 @@ const GAME = (() => {
     S.gestured = true;
     if (!S.unlocked) { S.unlocked = true; callAudio('unlock'); }
   }
+  // Older iOS does not count pointerdown (and before iOS 13 has none) as a gesture that may start audio: the
+  // first touchend / click also tries, synchronously inside its handler (AUDIO.unlock(true) resumes the
+  // context, or creates it if pointerdown has not already queued it). Once per page; later resumes after a
+  // hidden page are AUDIO's own touchend / click listener.
+  function onTapEnd() {
+    window.removeEventListener('touchend', onTapEnd, true);
+    window.removeEventListener('click', onTapEnd, true);
+    S.gestured = true;
+    S.unlocked = true;
+    callAudio('unlock', true);
+  }
   function trapTab(e) {
     const t = topEntry();
     const f = focusables(t.el);
@@ -1342,7 +1353,7 @@ const GAME = (() => {
   }
   function tickOnce() {
     tick();
-    callFX('update', DT * S.gameSpeed);
+    callFX('update', DT, S.gameSpeed);
   }
   function frame(t) {
     S.raf = requestAnimationFrame(frame);
@@ -1356,8 +1367,8 @@ const GAME = (() => {
     while (S.acc >= DT && n < MAX_STEPS) { tick(); S.acc -= DT; n++; }
     if (n >= MAX_STEPS) S.acc = 0;
     // A slow frame must not buy extra FX work (the old catch-up ran FX.update up to 8× per rAF and fed the
-    // stall): one update per rAF for the ticks just run, clamped to 0.1 s of show time before speed.
-    if (n) callFX('update', Math.min(FX_MAX_DT, n * DT) * S.gameSpeed);
+    // stall): one update per rAF for the ticks just run, clamped to 0.1 s of wall time; FX scales by the speed after.
+    if (n) callFX('update', Math.min(FX_MAX_DT, n * DT), S.gameSpeed);
     callFX('render');
     if (S.flags.debug) debugFrame();
   }
@@ -1571,6 +1582,8 @@ const GAME = (() => {
     // Input and lifecycle.
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('pointerdown', onPointerDown, true);
+    window.addEventListener('touchend', onTapEnd, {capture: true, passive: true});
+    window.addEventListener('click', onTapEnd, true);
     document.addEventListener('focusin', onFocusIn);
     document.addEventListener('contextmenu', e => { if (e.target instanceof Element && e.target.closest('#app') && !isTyping(e.target)) e.preventDefault(); });
     // Only a page that is really hidden pauses (§11.5 Lifecycle): focus leaving the page (Tab past the last

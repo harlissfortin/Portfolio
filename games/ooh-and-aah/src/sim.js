@@ -34,7 +34,7 @@ function OohSim() {
   // §5.10 Afterparty: base9 = 80,000, base_n = base_{n−1} × (n − 6); multipliers ×1 / ×1.3 / ×1.8 to 2 s.f.
   const AFTERPARTY_TARGETS = (() => { const out = []; let b = 80000;
     for (let n = 9; n <= 12; n++) { if (n > 9) b = b * (n - 6); for (const m of [1, 1.3, 1.8]) out.push(sig2(b * m)); } return out; })();
-  const COUNTDOWN_R8 = 1000000;
+  const COUNTDOWN_R8 = 900000;
   const SHOW_MULTS = [1, 1.3, 1.8];
 
   const FESTIVALS = ['Spring Lanterns', 'May Fair', 'Midsummer', 'Regatta', 'Harvest Moon', 'Bonfire Night', 'Winter Lights', "New Year's Eve",
@@ -125,7 +125,7 @@ function OohSim() {
     droop: { n: 60, speed: 120, gravity: 90, drag: .99, life: 2.8, trail: .95, twinkle: .2 },
     fan: { n: 36, speed: 260, gravity: 120, drag: .98, life: 1.2, trail: .5, twinkle: 0, special: 'Upward fan ±40° from the ground' },
     ring: { n: 32, speed: 220, gravity: 0, drag: .95, life: .6, trail: 0, twinkle: 0, special: 'White flash disc, 120 ms, subject to the flash limits' },
-    triple: { n: 16, speed: 150, gravity: 40, drag: .97, life: 1.0, trail: .3, twinkle: 0, special: 'Each shot rises from the tube and pops (16 per shot)' },
+    triple: { n: 16, speed: 150, gravity: 40, drag: .97, life: 1.0, trail: .3, twinkle: 0, special: 'Each shot rises from the tube and pops' },
     heart: { n: 40, speed: 150, gravity: 25, drag: .97, life: 1.5, trail: .3, twinkle: 0, special: 'Parametric outline' },
     spiral: { n: 16, speed: 90, gravity: 10, drag: .99, life: 1.8, trail: .6, twinkle: .3, special: 'Rotates at 6 rad/s' },
     split: { n: 8, nAfter: 32, speed: 160, gravity: 40, drag: .975, life: 1.6, trail: .4, twinkle: 0, special: 'Each star splits into 4 at 45% of its life' },
@@ -204,7 +204,7 @@ function OohSim() {
   const DRAW_ROWS = HEADLINER_ROWS.filter(r => r[0] !== 'countdown').map(r => ({ id: r[0], min: r[2], max: r[3] }));
   // Every rule id the resolver understands, for labels (Headliners plus the Renown 8 three-pass Countdown).
   const RULE_INFO = Object.assign({}, HEADLINERS, {
-    countdown3: { id: 'countdown3', name: 'Midnight Countdown', min: 8, max: 8, text: 'Renown 8: the fuse fires three passes (1→N, N→1, 1→N) and the target is 1,000,000.', counters: 'Everything', telegraph: 'Three numeral rows' },
+    countdown3: { id: 'countdown3', name: 'Midnight Countdown', min: 8, max: 8, text: 'Renown 8: the fuse fires three passes (1→N, N→1, 1→N) and the target is 900,000.', counters: 'Everything', telegraph: 'Three numeral rows' },
   });
   const TWISTS = {
     twilight: ['headwind', 'drizzle', 'critic'],                                                          // Renown 2 (§4.10)
@@ -239,7 +239,7 @@ function OohSim() {
     { level: 5, text: 'Shell cards cost +$1. Upgrade prices still come from the row cost.' },
     { level: 6, text: 'No rain check.' },
     { level: 7, text: 'The Countdown also halves your ♛ Crowd Favourite, as Rival Crew does.' },
-    { level: 8, text: 'The Countdown fires three passes (1→N, N→1, 1→N) and its target is 1,000,000.' },
+    { level: 8, text: 'The Countdown fires three passes (1→N, N→1, 1→N) and its target is 900,000.' },
   ];
 
   // §4.11 milestones. `goal` is the progress-bar goal for the run value described in `metric`.
@@ -267,16 +267,17 @@ function OohSim() {
     { n: 1, when: 'Lost at the Countdown, and the best reorder of the final rack would have passed', text: 'The Countdown fires your last tube first and last. Rearranging would have scored {n}.' },
     { n: 2, when: 'Lost on a show lit while the crowd was Restless', text: 'The crowd was Restless when you lit {show}. Keep building until it reads Hopeful or Eager.' },
     { n: 3, when: 'The losing show had a × shell with more +Aah after it than before it', text: 'Your {shell} multiplied {a} Aah, then {b} more Aah arrived after it. Fire +Aah shells first.' },
-    { n: 4, when: 'Lost on a Headliner, and the best reorder passes', text: 'Rearranging for {headliner} would have scored {n}. Try Rehearse (H){match} before Headliners.' },
+    { n: 4, when: 'Lost on a Headliner, and the best reorder passes', text: 'Rearranging for {Headliner} would have scored {n}. Try Rehearse (H){ and Match (M)} before Headliners.' },
     { n: 5, when: 'A sky reader averaged fewer than 1.5 bursts seen over the last 3 shows', text: 'Your {shell} saw {x} bursts on average. Put it after your long-hanging shells.' },
     { n: 6, when: 'A clearer averaged ≤ 1 burst cleared', text: 'Your {shell} cleared {x} bursts on average. Fire it after the sky fills up.' },
     { n: 7, when: 'Lost on a sponsored show', text: 'Sponsors raise the target ×1.5. Take one when the crowd stays Eager with Accept on.' },
     { n: 8, when: 'An empty tube fired in 2+ shows while you held ≥ $3', text: 'An empty tube fired nothing in {n} shows. Even a Peony adds 20 Ooh.' },
     { n: 9, when: 'Never held ≥ $5 at a payout after show 4', text: 'Holding $5 or more pays +$1 per $5 every show (up to +$5).' },
-    { n: 10, when: 'Never upgraded', text: 'Drop a shell on its twin: all its numbers double.' },
-    { n: 11, when: 'Crowd < 25 at the end of F4', text: 'Girandola and Smiley pay into every future show through the Crowd.' },
-    { n: 12, when: 'Won', text: 'Next: Renown {n}: {modifier}.' },
-    { n: 13, when: 'Default', text: "Bursts hang for their Hang; readers count what's still up. Build a canopy before you cash it in." },
+    { n: 10, when: 'Lost with no fusion all run and 3+ upgrades', text: 'Upgrades double; ✦ fusions and × shells multiply. Drop a card on a full tube next to its partner: the old shell moves to the Crate.' },
+    { n: 11, when: 'Never upgraded', text: 'Drop a shell on its twin: all its numbers double.' },
+    { n: 12, when: 'Crowd < 25 at the end of F4', text: 'Girandola and Smiley pay into every future show through the Crowd.' },
+    { n: 13, when: 'Won', text: 'Next: Renown {n+1}: {modifier}.' },
+    { n: 14, when: 'Default', text: "Bursts hang for their Hang; readers count what's still up. Build a canopy before you cash it in." },
   ];
 
   // §4.13 one-line tooltips (shown once each; triggers are evaluated by the UI).
@@ -445,9 +446,9 @@ function OohSim() {
       if (P) P.aah += got;
     }
     if (x > 1) {
-      st.aah *= x; st.xs++;
+      const aah0 = st.aah; st.aah *= x; st.xs++;
       if (T) T.push({ type: 'multAah', factor: x, tube, fusion: isFusion || undefined, ooh: st.ooh, aah: st.aah });
-      if (P) { P.x *= x; if (!isFusion) P.xAt = P.xAt === null ? st.addAah : P.xAt; }
+      if (P) { P.x *= x; P.xAah += st.aah - aah0; if (!isFusion) P.xAt = P.xAt === null ? st.addAah : P.xAt; }
     }
     if (p.extend) {
       const by = Math.ceil(p.extend * m);
@@ -469,7 +470,7 @@ function OohSim() {
   const shotsOf = t => (SH[t.shell.id].shots || 1) * (t.rig === 'mortar' ? 2 : 1);
 
   const NO_TRACE = Object.freeze([]);
-  function newTubeStat(i) { return { tube: i, fires: false, sees: null, ooh: 0, aah: 0, x: 1, xAt: null, coins: 0, crowd: 0, cleared: 0, fusion: null, ordinals: [], passes: [], dud: false, half: false, washed: false, last: false }; }
+  function newTubeStat(i) { return { tube: i, fires: false, sees: null, ooh: 0, aah: 0, x: 1, xAt: null, xAah: 0, coins: 0, crowd: 0, cleared: 0, fusion: null, partner: null, ordinals: [], passes: [], dud: false, half: false, washed: false, last: false }; }
 
   // resolveShow(tubes, {rules, crowd, fav, trace, perTube}) — pure. `trace` returns the §9 resolution events
   // (without seq); `perTube` returns per-tube local facts (used by previewChips, history and lessons).
@@ -485,7 +486,7 @@ function OohSim() {
     const seq = base.filter(i => tubes[i] && tubes[i].shell);
     const passLen = R.countdown3 ? base.length / 3 : R.countdown ? base.length / 2 : base.length;
     let total = 0; for (const i of seq) total += shotsOf(tubes[i]);
-    let sky = []; let fired = 0; let prevTubeShell = null, prevBurst = null; const colFired = {}; const lucky = {};
+    let sky = []; let fired = 0; let prevTubeShell = null, prevTube = -1, prevBurst = null; const colFired = {}; const lucky = {};
     let pos = -1;
     for (let q = 0; q < base.length; q++) {
       const i = base[q]; const t = tubes[i]; if (!t || !t.shell) continue;
@@ -517,6 +518,7 @@ function OohSim() {
               st.fusions.push(fu.name); st.fusionKeys.push(key);
               if (T) T.push({ type: 'fusion', key, name: fu.name, tube: i, from: prevTubeShell.id });
               if (P && !P.fusion) P.fusion = key;
+              if (PT && prevTube >= 0 && !PT[prevTube].partner) PT[prevTube].partner = { key, tube: i };
               applyBlock(fu.p, 1, cx, col, wild, false, 1, true);
             }
           }
@@ -535,7 +537,7 @@ function OohSim() {
           const cu = Math.min(4, ((set & 1) + ((set >> 1) & 1) + ((set >> 2) & 1) + ((set >> 3) & 1)) + w); if (cu > st.colsUp) st.colsUp = cu; }
         fired++; colFired[col] = (colFired[col] || 0) + 1; prevBurst = { id: s.id, col, wild, star: s.star, n: fired - 1 };
       }
-      prevTubeShell = s;
+      prevTubeShell = s; prevTube = i;
     }
     st.bursts = fired;
     st.colsFired = COL_IDS.filter(c => colFired[c]).length;
@@ -657,7 +659,7 @@ function OohSim() {
     const s = S.show;
     if (!S.firstRun || !S.shop) return;
     const card = (id, col) => ({ kind: 'shell', id, col, cost: SH[id].cost, tag: null, sold: false });
-    if (s === 1) S.shop.cards = [card('chrys', 'G'), card('palm', 'R'), card('comet', 'G')];
+    if (s === 1) S.shop.cards = [card('crossette', 'G'), card('palm', 'R'), card('comet', 'G')];
     if (s === 3) {
       const own = ownedShells(S);
       if (own.some(x => x.id === 'comet')) S.shop.cards[0] = card('salute', 'W');
@@ -763,7 +765,13 @@ function OohSim() {
       case 'light': return null;
       case 'buy': {
         const c = cardAt(S, a.card); if (!c) return 'no such card'; if (c.sold) return 'card already bought';
-        if (c.cost > S.coins) return 'not enough coins'; if (!slotOk(S, a.to)) return 'bad slot'; if (getSlot(S, a.to)) return 'slot is occupied'; return null;
+        if (a.displace == null) { if (c.cost > S.coins) return 'not enough coins'; if (!slotOk(S, a.to)) return 'bad slot'; if (getSlot(S, a.to)) return 'slot is occupied'; return null; }
+        // One-gesture swap-in (§2.5): the tube's shell goes to the first empty Crate slot, or is sold (refund counts first).
+        if (a.displace !== 'crate' && a.displace !== 'sell') return 'displace must be crate or sell';
+        if (!slotOk(S, a.to) || a.to.zone !== 'tube') return 'displace needs a tube';
+        const old = getSlot(S, a.to); if (!old) return 'nothing to displace'; if (old.id === c.id) return 'a twin: upgrade it instead';
+        if (a.displace === 'crate') { if (S.crate.indexOf(null) < 0) return 'the Crate is full'; if (c.cost > S.coins) return 'not enough coins'; return null; }
+        if (c.cost > S.coins + sellValue(old)) return 'not enough coins'; return null;
       }
       case 'upgrade': {
         const c = cardAt(S, a.card); if (!c) return 'no such card'; if (c.sold) return 'card already bought'; if (!slotOk(S, a.to)) return 'bad slot';
@@ -790,7 +798,7 @@ function OohSim() {
         if (sameSlot(a.from, a.to)) return 'same slot'; return null;
       }
       case 'sell': { if (!slotOk(S, a.from)) return 'bad slot'; if (!getSlot(S, a.from)) return 'nothing to sell'; return null; }
-      case 'reroll': { if (!S.shop) return 'no shop'; if (rerollCost(S) > S.coins) return 'not enough coins'; return null; }
+      case 'reroll': { if (!S.shop) return 'no shop'; if (fest(S.show) < 2) return 'rerolls open in Festival 2'; if (rerollCost(S) > S.coins) return 'not enough coins'; return null; }
       case 'sponsor': {
         if (!S.sponsor) return 'no Sponsor tonight'; if (typeof a.accept !== 'boolean') return 'accept must be true or false';
         if (a.accept === S.sponsor.accepted) return 'no change'; return null;
@@ -834,9 +842,15 @@ function OohSim() {
     const ev = emit || (() => null);
     switch (a.type) {
       case 'buy': {
+        if (a.displace) {
+          const old = getSlot(S, a.to);
+          if (a.displace === 'crate') { const k = S.crate.indexOf(null); S.crate[k] = old; setSlot(S, a.to, null);
+            ev('moved', { from: a.to, to: { zone: 'crate', i: k }, uid: old.uid, id: old.id, swapped: false, other: null, displaced: true }); }
+          else { const v = sellValue(old); S.coins += v; setSlot(S, a.to, null); ev('sold', { from: a.to, uid: old.uid, id: old.id, value: v, coins: S.coins, displaced: true }); }
+        }
         const c = S.shop.cards[a.card]; S.coins -= c.cost; c.sold = true;
         const sh = { uid: S.nextUid++, id: c.id, col: c.col, star: 1, paid: c.cost }; setSlot(S, a.to, sh); purchased(S);
-        ev('bought', { card: a.card, to: a.to, id: sh.id, col: sh.col, star: 1, cost: c.cost, uid: sh.uid, tag: c.tag, coins: S.coins }); break;
+        ev('bought', { card: a.card, to: a.to, id: sh.id, col: sh.col, star: 1, cost: c.cost, uid: sh.uid, tag: c.tag, coins: S.coins, displace: a.displace || undefined }); break;
       }
       case 'upgrade': {
         const c = S.shop.cards[a.card], sh = getSlot(S, a.to); const uc = upCost(sh.id, sh.star);
@@ -1080,11 +1094,21 @@ function OohSim() {
     if (from) {
       if (from.zone === 'tube' && from.i === j) return null;
       if (from.zone === 'tube') tubes[from.i].shell = cur;
-      tubes[j].shell = sh; return { tubes, kind: cur ? 'swap' : 'move' };
+      tubes[j].shell = sh; return { tubes, kind: cur ? 'swap' : 'move', action: { type: 'move', from, to: { zone: 'tube', i: j } } };
     }
-    if (cur && held.card != null && cur.id === sh.id && cur.star < 3) { tubes[j].shell = Object.assign({}, cur, { star: cur.star + 1 }); return { tubes, kind: 'upgrade' }; }
-    if (cur) return null;
-    tubes[j].shell = sh; return { tubes, kind: 'buy' };
+    const T = { zone: 'tube', i: j }, card = held.card != null ? held.card : null;
+    const act = x => card == null ? undefined : Object.assign({ type: 'buy', card, to: T }, x);
+    if (cur && card != null && cur.id === sh.id && cur.star < 3) { tubes[j].shell = Object.assign({}, cur, { star: cur.star + 1 }); return { tubes, kind: 'upgrade', cost: upCost(cur.id, cur.star), action: { type: 'upgrade', card, to: T } }; }
+    if (cur) {
+      // §2.5 one-gesture swap-in: a card over an occupied non-twin tube. The old shell goes to the Crate ('swap'), or,
+      // with the Crate full, is sold for its refund ('replace'). `action` is the exact step() action for the drop.
+      if (card == null || cur.id === sh.id) return null;
+      const out = { uid: cur.uid, id: cur.id, col: cur.col, star: cur.star }, k = S.crate.indexOf(null);
+      tubes[j].shell = sh;
+      if (k >= 0) return { tubes, kind: 'swap', displace: 'crate', out, crate: k, cost: sh.paid, action: act({ displace: 'crate' }) };
+      return { tubes, kind: 'replace', displace: 'sell', out, refund: sellValue(cur), cost: sh.paid, action: act({ displace: 'sell' }) };
+    }
+    tubes[j].shell = sh; return { tubes, kind: 'buy', cost: card != null ? sh.paid : undefined, action: act() };
   }
   function chipsFor(S, tubes, rules, opts) {
     rules = ruleList(rules);
@@ -1097,11 +1121,13 @@ function OohSim() {
         tube: i, empty: !t.shell, id: t.shell ? t.shell.id : null, col: t.shell ? t.shell.col : null, star: t.shell ? t.shell.star : null, rig: t.rig,
         fires: p.fires, sees: p.sees, ooh: p.ooh, aah: p.aah, x: p.x, crowd: p.crowd, coins: p.coins, cleared: p.cleared,
         fusion: p.fusion ? { key: p.fusion, name: known[p.fusion] ? FU[p.fusion].name : '?' } : null,
+        fusionNext: p.partner ? { key: p.partner.key, name: known[p.partner.key] ? FU[p.partner.key].name : '?', tube: p.partner.tube } : null, xAah: p.xAah,
         ordinals: p.ordinals, first: p.ordinals.length ? p.ordinals[0] : null, of: r.bursts, last: p.last,
         dud: p.dud, half: p.half, washed: p.washed, fav: fav === i,
       };
     });
   }
+  function heldInfo(c, h) { c.held = true; c.kind = h.kind; for (const k of ['displace', 'out', 'crate', 'refund', 'cost', 'action']) if (h[k] !== undefined) c[k] = h[k]; }
   // §3.3 local facts per tube only; never the total.
   function previewChips(S, rules, held, slot, opts) {
     if (rules == null) rules = rulesFor(S, S.show);
@@ -1109,9 +1135,9 @@ function OohSim() {
     const idx = s => s == null ? null : typeof s === 'number' ? s : s.zone === 'tube' ? s.i : null;
     if (slot !== undefined) {
       const j = idx(slot); const h = placeHeld(S, held, j); if (!h) return null;
-      const chips = chipsFor(S, h.tubes, rules, opts); chips[j].held = true; chips[j].kind = h.kind; return chips;
+      const chips = chipsFor(S, h.tubes, rules, opts); heldInfo(chips[j], h); return chips;
     }
-    return S.tubes.map((t, j) => { const h = placeHeld(S, held, j); if (!h) return null; const c = chipsFor(S, h.tubes, rules, opts)[j]; c.held = true; c.kind = h.kind; return c; });
+    return S.tubes.map((t, j) => { const h = placeHeld(S, held, j); if (!h) return null; const c = chipsFor(S, h.tubes, rules, opts)[j]; heldInfo(c, h); return c; });
   }
   function seesPerTube(S, rules) {
     if (rules == null) rules = rulesFor(S, S.show);
@@ -1278,14 +1304,21 @@ function OohSim() {
     const hist = sum.history || (rs ? rs.history : []) || [];
     const won = sum.won !== undefined ? !!sum.won : !!(S && S.phase === 'won');
     const pre = sum.finalPreLight || (rs ? rs.lastLostPreLight : null);
-    const L = (n, f) => { let t = LESSONS[n - 1].text; if (f) for (const k in f) t = t.split('{' + k + '}').join(f[k]); return { id: n, n, text: t }; };
+    // Fields fill {name}; an optional clause {…} is a field named by its own text ('' drops it). One burst, not "1 bursts".
+    const L = (n, f) => { let t = LESSONS[n - 1].text; if (f) for (const k in f) t = t.split('{' + k + '}').join(f[k]); t = t.replace(/\b1 bursts\b/g, '1 burst'); return { id: n, n, text: t }; };
+    const num = x => x < 100 ? String(Math.floor(x * 10) / 10) : fmt(x);   // 2 Aah, 2.4 Aah (never "2.0")
+    // The end screen's near-miss already searched every order of the losing rack: reuse it (sum.bestReorder or
+    // sum.nearMiss.bestArrangement, {applause}) rather than resolve up to 720 orders again.
+    const nmShow = sum.nearMiss && sum.nearMiss.show;
+    const reo = [sum.bestReorder, sum.nearMiss && sum.nearMiss.bestArrangement].find(x => x && Number.isFinite(x.applause)) || null;
     const last = hist[hist.length - 1];
     const lastRack = h => pre && pre.show === h.show ? pre.tubes : h.rack;
     const lastCrowd = h => pre && pre.show === h.show ? pre.crowd : h.crowdAtLight;
     if (!won && last && !last.pass) {
       const rules = last.rules || [], s = last.show;
       const isCD = rules.includes('countdown') || rules.includes('countdown3');
-      if (isCD && lastRack(last)) { const b = bestArrangement(lastRack(last), rules, lastCrowd(last)); if (b.applause >= last.target) return L(1, { n: fmt(b.applause) }); }
+      const bestApplause = () => reo && (nmShow == null || nmShow === s) ? reo.applause : bestArrangement(lastRack(last), rules, lastCrowd(last)).applause;
+      if (isCD && lastRack(last)) { const b = bestApplause(); if (b >= last.target) return L(1, { n: fmt(b) }); }
       if (last.moodAtLight === 'restless') return L(2, { show: showName(s) });
       if (lastRack(last)) {
         const r = scoreFull(lastRack(last), rules, lastCrowd(last), { trace: true });
@@ -1296,11 +1329,11 @@ function OohSim() {
           if (e.type === 'multAah' && !e.fusion && burst && SH[burst.shell].isX) xs.push({ shell: burst.shell, before: added, aah: e.aah / e.factor, after: 0 });
         }
         const bad = xs.find(c => c.after > c.before);
-        if (bad) return L(3, { shell: SH[bad.shell].name, a: fmtAah(bad.aah), b: fmtAah(bad.after) });
+        if (bad) return L(3, { shell: SH[bad.shell].name, a: num(bad.aah), b: num(bad.after) });
       }
       if (s % 3 === 2 && s !== 23 && rules.length && lastRack(last)) {
-        const b = bestArrangement(lastRack(last), rules, lastCrowd(last));
-        if (b.applause >= last.target) { const nm = rules.map(x => RULE_INFO[x] ? RULE_INFO[x].name : x).join(' + '); return L(4, { headliner: nm, n: fmt(b.applause), match: rules.some(x => x === 'windshift' || x === 'crossed') ? ' and Match (M)' : '' }); }
+        const b = bestApplause();
+        if (b >= last.target) { const nm = rules.map(x => RULE_INFO[x] ? RULE_INFO[x].name : x).join(' + '); return L(4, { Headliner: nm, n: fmt(b), ' and Match (M)': rules.some(x => x === 'windshift' || x === 'crossed') ? ' and Match (M)' : '' }); }
       }
     }
     const recent = hist.filter(h => h.rack && h.sees).slice(-3);
@@ -1318,14 +1351,15 @@ function OohSim() {
     if (emptyShows >= 2) return L(8, { n: String(emptyShows) });
     const late = hist.filter(h => h.show >= 4 && h.pass);
     if (late.length && !late.some(h => h.coinsAtPayout >= 5)) return L(9);
-    if (rs && rs.upgrades === 0) return L(10);
+    if (!won && rs && rs.upgrades >= 3 && !Object.keys(rs.fusions || {}).length) return L(10);
+    if (rs && rs.upgrades === 0) return L(11);
     const f4 = hist.find(h => h.show === 11);
-    if (f4 && f4.crowdAfter < 25) return L(11);
+    if (f4 && f4.crowdAfter < 25) return L(12);
     if (won) {
       const lvl = (S ? S.renown : (sum.renown | 0)) + 1;
-      if (lvl <= 8) return L(12, { n: String(lvl), modifier: RENOWN[lvl].text.replace(/\.$/, '') });
+      if (lvl <= 8) return L(13, { 'n+1': String(lvl), modifier: RENOWN[lvl].text.replace(/\.$/, '') });
     }
-    return L(13);
+    return L(14);
   }
 
   // milestoneProgress(runStats, meta) → one row per milestone: run value, best ever, goal, done, newly done.
@@ -1532,7 +1566,11 @@ function OohSim() {
     const H = Math.min(4, Math.max(0, 23 - s - 1));
     const head = headRules(S); const isCD = head.includes('countdown') || head.includes('countdown3');
     const noise = o.noise || 0, rnd = o.rnd;
-    const Uraw = tubes => { const g = hill(tubes, [], S.crowd, H).score; const b = head.length ? hill(tubes, head, S.crowd, H).score : g; const bw = isCD ? b / 10 : b; return { g, b, u: Math.log(1 + 0.5 * Math.min(g, bw) + 0.5 * g) }; };
+    // o.matchAware (human, oracle): under Wind Shift or Crossed Wires the Headliner value also tries the Match re-seat,
+    // since those bots press Match on the night (pairwise hill swaps never find that permutation).
+    const mAware = !!o.matchAware && (head.includes('windshift') || head.includes('crossed'));
+    const Uraw = tubes => { const g = hill(tubes, [], S.crowd, H).score; let b = head.length ? hill(tubes, head, S.crowd, H).score : g;
+      if (mAware) b = Math.max(b, hill(applyMatch(tubes, head), head, S.crowd, H).score); const bw = isCD ? b / 10 : b; return { g, b, u: Math.log(1 + 0.5 * Math.min(g, bw) + 0.5 * g) }; };
     let rer = 0; const cardNoise = {};
     const nz = key => { if (!noise) return 0; if (o.noiseMode === 'card') { if (!(key in cardNoise)) cardNoise[key] = noise * gauss(rnd); return cardNoise[key]; } return noise * gauss(rnd); };
     const margin = o.buyMargin || 0;
@@ -1559,7 +1597,7 @@ function OohSim() {
         }
         if (!best) {
           const rc = rerollCost(S);
-          if (rer < (o.maxRerolls !== undefined ? o.maxRerolls : 2) && S.coins >= rc + 5 && !comfy) { act(S, { type: 'reroll' }, ctx); rer++; stp--; continue; }
+          if (rer < (o.maxRerolls !== undefined ? o.maxRerolls : 2) && S.coins >= rc + 5 && !comfy && fest(S.show) >= 2) { act(S, { type: 'reroll' }, ctx); rer++; stp--; continue; }
           break;
         }
         commitCand(S, best.c, ctx);
@@ -1623,9 +1661,9 @@ function OohSim() {
     if (scoreRack(S.tubes, rules, S.crowd, 0) < 0.85 * tgt) arrangeTo(S, hill(S.tubes, rules, S.crowd, 0, 1).sh, ctx);
   }, null);
   bots.greedymood = bots.greedyMood;
-  bots.oracle = mkBot('oracle', function (S, o, ctx) { if (S.shop) planner(S, o, ctx); arrangeOracle(S, ctx); }, 'oracle', 'oracle');
+  bots.oracle = mkBot('oracle', function (S, o, ctx) { if (S.shop) planner(S, Object.assign({ matchAware: true }, o), ctx); arrangeOracle(S, ctx); }, 'oracle', 'oracle');
   bots.human = mkBot('human', function (S, o, ctx) {
-    const oo = Object.assign({ noise: 0.10, noiseMode: 'card', buyMargin: 0.03, maxRerolls: 1 }, o);
+    const oo = Object.assign({ noise: 0.10, noiseMode: 'card', buyMargin: 0.03, maxRerolls: 1, matchAware: true }, o);
     let bl = null; if (S.shop) bl = planner(S, oo, ctx).buyLoop; arrangeHuman(S, oo, bl, ctx);
   }, 'human');
   bots.novice = mkBot('novice', function (S, o, ctx) {
@@ -1770,7 +1808,7 @@ function OohSim() {
     target, baseTarget, fireOrder, seesPerTube, payoutPreview, nearMiss, nearMissAsync, lessonFor, milestoneProgress, nearestMilestones,
     fmt, fmtAah, describeShell, describeFusion, describeRule, inspectShell, shellLabel, colourName, showName, dailySeed,
     // extra helpers
-    isLegal, illegalReason, describeBuild, moodVisible, keepsakeOptions, kitUnlocked, shellPool, scoreFull, applyMatch, bestArrangement, paretoRun,
+    isLegal, illegalReason, placeHeld, describeBuild, moodVisible, keepsakeOptions, kitUnlocked, shellPool, scoreFull, applyMatch, bestArrangement, paretoRun,
     tubeCost, upCost, sellValue, rerollCost, interestCap, festivalOf: fest, nextHeadlinerShow, fxRng,
     clearCaches() { APPLAUSE_MEMO.clear(); },   // benchmarks: time step() without the mood memo (results never depend on it)
     rng: { cyrb128, rngNext, seedRng, xorshift32 },

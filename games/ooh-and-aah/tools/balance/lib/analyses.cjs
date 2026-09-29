@@ -179,7 +179,10 @@ def('countdown', 'Countdown arrivals and natural order', {
   },
 });
 
+// defaultSeeds: at the default --seeds these analyses play seeds 1..1000 of what they need: at 200 seeds the 95% half-width
+// of a draw-luck or paired no-Sponsor difference (about ±14 points) is wider than its gate (round-1 balance review).
 def('sponsor', 'Sponsors: no-Sponsor penalty and the bold gamble', {
+  defaultSeeds: 1000,
   needs: ['human', 'human.noSponsor', 'oracle', 'oracle.noSponsor', 'human.bold'],
   run(ctx) {
     const rows = [], details = [];
@@ -252,6 +255,7 @@ const HREF = {
 const LUCKREF = { rival: -2, powercut: -2, crossed: -5, streetlights: 3, windshift: -7, ordinance: 1, ferry: 8, fog: 2, shortfuse: 1, critic: 3, drizzle: 2, headwind: -1 };
 function missRates(Rs) { const m = {}; for (const r of Rs) for (const x of r.shows) if (x.s % 3 === 2 && x.s < 23 && x.r && !x.relit) { (m[x.r] = m[x.r] || [0, 0])[1]++; if (!x.pass) m[x.r][0]++; } return m; }
 def('headliners', 'Headliner miss rates and draw luck', {
+  defaultSeeds: 1000,
   needs: ['human', 'oracle'], optional: ['novice'],
   run(ctx) {
     const rows = [], details = [];
@@ -607,7 +611,10 @@ def('loops', 'Degenerate loops and the Afterparty', {
         else {
           const cleared = entered.map(r => r.after.shows.filter(x => x.pass).length);
           const endless = entered.filter(r => r.after.phase === 'build').length;
-          rows.push(row('oracle Afterparty shows cleared', 'oracle', `p50 ${q(cleared, 0.5)} · max ${Math.max(...cleared)} (n=${entered.length})`, 'max < 12; every run ends', '2–7 (hand-built)', Math.max(...cleared) < 12 && !endless ? 'OK' : 'FAIL'));
+          // §5.10: every run ends (the hard stop at show 36); a full clear of all 12 is a rare aspirational goal.
+          const full = cleared.filter(c => c >= 12).length, fullPct = 100 * full / entered.length;
+          rows.push(row('oracle Afterparty shows cleared', 'oracle', `p50 ${q(cleared, 0.5)} · p90 ${q(cleared, 0.9)} · max ${Math.max(...cleared)} · full clears ${full} (${f1(fullPct)}%) · still running ${endless} (n=${entered.length})`,
+            'every run ends; full clears ≤ 2% of oracle wins', '2–7 (hand-built)', !endless && fullPct <= 2 ? 'OK' : 'FAIL'));
         }
       }
     }
@@ -772,15 +779,22 @@ def('crosscheck', 'Driver cross-check (SIM bots vs the spec §12.1 port)', {
 });
 
 // ---------------------------------------------------------------- planning
-function plan({ only, skip, bots, seeds, sweepSeeds, shapleyRuns, endlessRuns, replayRuns, xcheckRuns = 50, xcheck = false, native = false }) {
+// Seeds 1..n an analysis reads from a plain seed-range config: its defaultSeeds unless the seed counts were given explicitly.
+function seedLimit(a, c, { seeds, sweepSeeds, explicitSeeds = false }) {
+  const base = c.sweep ? sweepSeeds : seeds;
+  return a && a.defaultSeeds && !explicitSeeds ? Math.max(base, a.defaultSeeds) : base;
+}
+function plan({ only, skip, bots, seeds, sweepSeeds, explicitSeeds = false, shapleyRuns, endlessRuns, replayRuns, xcheckRuns = 50, xcheck = false, native = false }) {
   const C = configs();
   const sel = A.filter(a => (!only || only.includes(a.id)) && !(skip && skip.includes(a.id)) && (a.id !== 'crosscheck' || xcheck));
   const fam = c => !bots || bots.includes(c.family) || bots.includes(c.bot);
   const want = new Map(); // cfgId → probes
+  const nSeeds = new Map(); // cfgId → seeds 1..n to play (plain seed-range configs)
   for (const a of sel) {
     for (const id of [...(a.needs || []), ...(a.optional || [])]) {
       const c = C[id]; if (!c || !fam(c)) continue;
       if (c.driver === 'native' && !native) continue;
+      nSeeds.set(id, Math.max(nSeeds.get(id) || 0, seedLimit(a, c, { seeds, sweepSeeds, explicitSeeds })));
       if (!want.has(id)) want.set(id, new Set());
       for (const p of (a.probes && a.probes[id]) || []) want.get(id).add(p);
     }
@@ -794,7 +808,7 @@ function plan({ only, skip, bots, seeds, sweepSeeds, shapleyRuns, endlessRuns, r
     else if (c.seeds === 'xcheck') list = [...Array(Math.min(xcheckRuns, seeds)).keys()].map(i => ({ seed: i + 1 }));
     else if (c.seeds === 'replay') list = [...Array(Math.min(replayRuns, seeds)).keys()].map(i => ({ seed: i + 1 }));
     else if (Array.isArray(c.seeds)) list = c.seeds.map(s => ({ seed: s }));
-    else list = [...Array(c.sweep ? sweepSeeds : seeds).keys()].map(i => ({ seed: i + 1 }));
+    else list = [...Array(nSeeds.get(id) || (c.sweep ? sweepSeeds : seeds)).keys()].map(i => ({ seed: i + 1 }));
     for (const { seed, rndSeed } of list) {
       const pr = {};
       for (const p of probes) {
@@ -809,4 +823,4 @@ function plan({ only, skip, bots, seeds, sweepSeeds, shapleyRuns, endlessRuns, r
   return { analyses: sel, jobs, configs: C };
 }
 
-module.exports = { A, plan, configs, ceiling, CORE, KITS, ARCHS, HEADLINERS, afterpartyTargets };
+module.exports = { A, plan, seedLimit, configs, ceiling, CORE, KITS, ARCHS, HEADLINERS, afterpartyTargets };

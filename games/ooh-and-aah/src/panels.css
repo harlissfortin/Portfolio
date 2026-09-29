@@ -17,7 +17,9 @@
 #showlog .pn-shape[data-col="X"]{stroke:none}
 #board .num,#showlog .num{font-variant-numeric:tabular-nums}
 
-/* the wood-and-brass card both columns sit in (translucent so the backdrop glows through) */
+/* the wood-and-brass card both columns sit in. Near-opaque with no backdrop-filter: a blur over the
+   live #backdrop canvas re-rasterised both columns every frame (the main desktop frame-time cost);
+   a faint tint of the backdrop still reads through the 8% left over. */
 #board .bd,#showlog .sl-panel{
   --pn-edge:color-mix(in srgb,var(--brass) 34%,var(--line));
   --pn-soft:color-mix(in srgb,var(--paper) 5%,transparent);
@@ -30,9 +32,8 @@
     border:1px solid var(--pn-edge);
     background:
       linear-gradient(180deg,color-mix(in srgb,var(--wood) 46%,transparent) 0,color-mix(in srgb,var(--wood) 14%,transparent) 132px,transparent 260px),
-      color-mix(in srgb,var(--sky-top) 74%,transparent);
-    box-shadow:inset 0 1px 0 color-mix(in srgb,var(--brass) 42%,transparent),0 12px 32px color-mix(in srgb,var(--ink) 60%,transparent);
-    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+      color-mix(in srgb,var(--sky-top) 92%,transparent);
+    box-shadow:inset 0 1px 0 color-mix(in srgb,var(--brass) 42%,transparent),0 12px 32px color-mix(in srgb,var(--ink) 60%,transparent)}
 }
 
 /* =================== FESTIVAL BOARD =================== */
@@ -167,6 +168,8 @@
 #showlog .sl-rule,#showlog .sl-sp{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;
   font-size:var(--t-xs);line-height:1.2;color:var(--paper)}
 #showlog .sl-rule{border:1px solid color-mix(in srgb,var(--brass) 60%,transparent)}
+#showlog .sl-rx{margin:6px 0 0;color:var(--paper-dim);font-size:var(--t-xs);line-height:1.35}
+#showlog .sl-rx .sl-rule{margin-right:2px;vertical-align:1px}
 #showlog .sl-rule .pn-ic{color:var(--brass);width:16px;height:16px;vertical-align:0}
 #showlog .sl-sp{box-shadow:inset 0 0 0 2px var(--x-ring)}
 
@@ -185,7 +188,7 @@
 #showlog .sl-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   font:700 var(--t-s)/1.3 var(--f-ui);color:var(--paper)}
 #showlog .sl-col{font-weight:400;color:var(--paper-dim)}
-#showlog .sl-star{margin-left:5px;color:var(--aah);letter-spacing:-1px}
+#showlog .sl-star{margin-left:5px;color:var(--aah);font-size:var(--t-xs)}
 #showlog .sl-fav{flex:none;color:var(--brass);font-weight:700;white-space:nowrap}   /* beside the name, which truncates first */
 #showlog .sl-key{flex:none;display:flex;justify-content:space-between;gap:8px;margin:0;padding:2px 0 4px;white-space:nowrap;color:var(--paper-dim);font:400 var(--t-xs)/1.3 var(--f-ui)}
 #showlog .sl-panel:has(.sl-empty) .sl-key{display:none}
@@ -196,7 +199,7 @@
 #showlog .sl-chips .sl-flag{margin-left:0}
 #showlog .sl-flag.is-shot{border-color:transparent;background:var(--pn-soft);color:var(--paper)}
 #showlog .sl-run{flex:none;margin-left:auto;padding-left:6px;color:var(--paper-dim);font:400 var(--t-xs)/1.3 var(--f-ui);white-space:nowrap}
-#showlog .sl-run i{font-style:normal;margin:0 3px;opacity:.7}
+#showlog .sl-run i{font-style:normal;margin:0 3px}   /* no dimming: paper-dim is already at the 4.5:1 floor on the wood-tinted top */
 #showlog .sl-chips{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:5px 0 0 40px}
 #showlog .sl-sees{color:var(--paper-dim);font-size:var(--t-xs);margin-right:2px}
 #showlog .sl-c{min-height:24px;font-size:var(--t-xs)}
@@ -225,7 +228,9 @@
 #showlog .sl-app-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 #showlog .sl-app-lbl{display:flex;flex-direction:column;gap:2px;font:600 var(--t-m)/1.2 var(--f-display);color:var(--paper-dim)}
 #showlog .sl-app-tg{font:400 var(--t-xs)/1.2 var(--f-ui);color:var(--paper-dim)}
+#showlog .sl-app-v{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:0}
 #showlog .sl-app-n{font:italic 700 var(--t-xxl)/1 var(--f-display);color:var(--paper);letter-spacing:-.01em}
+#showlog .sl-app-x{font:400 var(--t-xs)/1.2 var(--f-ui);color:var(--paper-dim)}
 #showlog .is-pending .sl-app-n{color:var(--paper-dim)}
 #showlog .sl-app-eq{margin-top:8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:var(--paper-dim)}
 #showlog .sl-app-eq .chip{font-size:var(--t-s)}
@@ -276,8 +281,7 @@
 }
 
 /* ---------- high contrast: no glows, solid rims ---------- */
-:root[data-contrast="high"] #board .bd,:root[data-contrast="high"] #showlog .sl-panel{background:var(--surface);box-shadow:none;
-  -webkit-backdrop-filter:none;backdrop-filter:none;border-color:var(--line)}
+:root[data-contrast="high"] #board .bd,:root[data-contrast="high"] #showlog .sl-panel{background:var(--surface);box-shadow:none;border-color:var(--line)}
 :root[data-contrast="high"] #board .bd-row.is-now{box-shadow:inset 4px 0 0 var(--brass);border-color:var(--brass)}
 :root[data-contrast="high"] #board .bd-cell.is-todo{box-shadow:inset 0 0 0 1px var(--paper-dim)}
 :root[data-contrast="high"] #board .sp-band{fill:none}

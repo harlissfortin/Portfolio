@@ -1,11 +1,13 @@
 // AUDIO: procedural WebAudio for Ooh × Aah (spec §10) and the audio column of the §9 juice map.
 //
-// API (CONTRACT.md): unlock() · onEvent(ev) · ui(name, {col}) · setSettings({sound, soundVol, music, musicVol})
+// API (CONTRACT.md): unlock(now?) · onEvent(ev) · ui(name, {col}) · setSettings({sound, soundVol, music, musicVol})
 //                    setPhase('build'|'resolve'|'paused'|'off') · setCrowd(n) · suspend() · resume()
 // Every call is wrapped so it never throws; without WebAudio everything is a silent no-op.
 // The AudioContext is created (or resumed) only through unlock() / resume(), which the core calls from a gesture.
 // Both defer the work to a short timer (still inside the gesture's activation window, which WebKit forwards to
 // timers ≤ 1 s), so the ~30 ms context start never lands in the task that starts a run or handles the tap.
+// Older iOS honours neither pointerdown nor a timer, so the first touchend / click calls unlock(true), which
+// resumes (or, if nothing is queued yet, creates) the context synchronously inside that handler.
 //
 // Graph: one-shot voices → sfx ─┐
 //        music bus       → mus ─┴→ master 0.9 → compressor (−18 dB, knee 12, 4:1, 3 ms, 250 ms) → destination
@@ -261,25 +263,37 @@ const AUDIO = (() => {
   'bought upgraded sold rigInstalled tubeAdded moved matched'.split(' ').forEach((k, i) =>
     ON[k] = e => { const col = colOf(e); if (e.uid != null && col) UC[e.uid] = col; play('drop', {col, coin: i < 5, up: i == 1}); });
 
-  // The deferred half of unlock() / resume(): create the context once, then resume it unless suspend() came since.
+  // The body of unlock() / resume(): create the context once, then resume it unless suspend() came since.
+  // From pointerdown / keydown it runs a frame later (keeps the input handler light); unlock(true) (touchend /
+  // click) runs it inside the handler, because older iOS only lets a context start there, and a one-sample
+  // silent buffer is played too (the WebKit unlock). The noise-buffer copy is always deferred.
   let pend = 0;
   const start = safe(() => {
-    pend = 0;
+    if (pend) { clearTimeout(pend); pend = 0; }
     if (!ctx) {
       ctx = new AC();
       const comp = ctx.createDynamicsCompressor(), m = G({c: ctx}, .9, comp);
       Object.entries({threshold: -18, knee: 12, ratio: 4, attack: .003, release: .25}).forEach(([k, v]) => comp[k].value = v);
       comp.connect(ctx.destination); sfx = G({c: ctx}, 0, m); mus = G({c: ctx}, 0, m);
-      buf(ctx, 'w'); NZ = null; setInterval(tick, 200); gains();
+      setTimeout(safe(() => { buf(ctx, 'w'); NZ = null; }), 0); setInterval(tick, 200); gains();
     }
-    if (held) ctx.suspend(); else ctx.state == 'running' || ctx.resume().then(tick, () => {});
+    if (held) { ctx.suspend(); return; }
+    if (ctx.state == 'running') return;
+    const p = ctx.resume && ctx.resume();
+    if (p && p.then) p.then(tick, () => {});
+    const s = ctx.createBufferSource();
+    s.buffer = ctx.createBuffer(1, 1, ctx.sampleRate); s.connect(ctx.destination);
+    (s.start || s.noteOn).call(s, 0);
   });
   const later = () => { if (!pend) pend = setTimeout(start, 16); };
   const api = {
-    unlock() {
+    unlock(now) {
       if (!AC) return;
       held = 0;
-      if (!ctx || ctx.state != 'running') later();
+      if (ctx && ctx.state == 'running') return;
+      // now: resume at once; create at once only if no deferred start is already queued (never two contexts,
+      // and a keyboard Enter's click does not pull the context start into the task it handles)
+      if (now && (ctx || !pend)) start(); else later();
     },
     onEvent(e) { e && ON[e.type] && ON[e.type](e); },
     ui(n, o) { play(n == 'chime' ? 'page' : n, o, 'ui-' + n); },
@@ -291,10 +305,10 @@ const AUDIO = (() => {
   };
   for (const k in api) api[k] = safe(api[k]);
   // Suspend when hidden; the next gesture (tap to continue) resumes unless suspend() was called explicitly.
-  const D = W.document, wake = () => ctx && !held && !D.hidden && ctx.state != 'running' && api.unlock();
+  const D = W.document, wake = e => ctx && !held && !D.hidden && ctx.state != 'running' && api.unlock(e.type == 'click' || e.type == 'touchend');
   if (D) {
     D.addEventListener('visibilitychange', () => D.hidden && ctx && ctx.suspend());
-    // click / touchend too: some mobile browsers only count those (not pointerdown) as the activating gesture.
+    // click / touchend too, synchronously: some mobile browsers only count those (not pointerdown) as the activating gesture.
     for (const t of ['pointerdown', 'keydown', 'click', 'touchend']) W.addEventListener(t, wake, true);
     // Precompute the noise samples while the page is idle after load.
     if (AC) (W.requestIdleCallback ? f => W.requestIdleCallback(f, {timeout: 4000}) : f => setTimeout(f, 1500))(safe(() => ctx || noiseData(96000)));

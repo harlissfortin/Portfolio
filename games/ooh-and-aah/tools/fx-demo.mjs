@@ -72,7 +72,8 @@ for (const v of VIEWS) {
   for (const [scene, o, shots] of PLAN) {
     process.stderr.write(`${v.id} ${scene}${o.rm ? '-rm' : ''}${o.hc ? '-hc' : ''} `);
     const tag = scene + (o.rm ? '-rm' : '') + (o.hc ? '-hc' : '');
-    const info = await page.evaluate(([s, o]) => { const r = DEMO.load(s, o); DEMO.step(100); DEMO.timing(true); return r; }, [scene, o]);
+    // resetMax after load(): the peak counts this scene only, not the previous scene's sky that load() clears
+    const info = await page.evaluate(([s, o]) => { const r = DEMO.load(s, o); DEMO.step(100); DEMO.timing(true); FX.stats().resetMax(); return r; }, [scene, o]);
     let played = false, t = 0;
     for (const [label, how, ms] of shots) {
       if (how === 'idle') await page.evaluate(ms => DEMO.step(ms), ms);
