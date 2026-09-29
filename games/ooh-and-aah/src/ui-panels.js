@@ -199,7 +199,9 @@ const UI_PANELS = (() => {
     if (list) edges(list);
   }
 
-  /* One festival. Once it is over it collapses to a stamped line (✓ ✓ ✗); otherwise it
+  /* No title tooltips (no hover-only information, §13): each row's aria-label carries every show's
+     target and Applause and the Headliner; sighted readers get the same as text from "Scores".
+     One festival. Once it is over it collapses to a stamped line (✓ ✓ ✗); otherwise it
      shows its three targets, and the current and next festival show their posted
      Headliner card (Headliners are posted a festival ahead, §4.7). */
   function festivalRow(c, f) {
@@ -212,7 +214,7 @@ const UI_PANELS = (() => {
     const hlIds = Array.isArray(hr) && hr.length ? hr : f <= 8 ? [st.headliners && st.headliners[f - 1]] : ((st.endlessTwists && st.endlessTwists[f]) || []);
     const hls = hlIds.filter(Boolean).map(hl);
     const tw = f > 1 && f <= 8 && st.twilightTwists ? st.twilightTwists[f - 1] : null;   // Renown 2
-    const say = [];
+    const say = [], det = [];
     let cells = '', stamps = '';
     for (let k = 0; k < 3; k++) {
       const si = (f - 1) * 3 + k, e = lastOf(hm[si]);
@@ -223,23 +225,36 @@ const UI_PANELS = (() => {
       const lbl = `${SLOT[k]} ${fmt(t)}${sp ? ', sponsored' : ''}` +
         `${e ? (e.pass ? ', passed with ' : ', missed with ') + fmt(e.applause || 0) : ''}${isNow ? ', tonight' : ''}${twist ? ', twist: ' + twist.name : ''}`;
       say.push(lbl);
+      det.push({t, e, isNow, sp, twist, slot: SLOT[k]});
       const state = e ? (e.pass ? 'is-pass' : 'is-miss') : '';
       if (past) {
-        stamps += `<span class="bd-stamp ${state || 'is-skip'}${sp ? ' is-sp' : ''}" title="${esc(lbl)}">${e ? (e.pass ? '✓' : '✗') : '–'}</span>`;
+        stamps += `<span class="bd-stamp ${state || 'is-skip'}${sp ? ' is-sp' : ''}">${e ? (e.pass ? '✓' : '✗') : '–'}</span>`;
       } else {
         const cls = ['bd-cell', state, isNow ? 'is-now' : '', sp ? 'is-sp' : '', !e && !isNow ? 'is-todo' : ''].filter(Boolean).join(' ');
         const mark = isNow ? '▸' : e ? (e.pass ? '✓' : '✗') : '';
-        cells += `<div class="${cls}" title="${esc(lbl)}"><span class="bd-mk">${mark}</span><span class="bd-t num">${fmt(t)}</span>${twist ? icon(tw, 'pn-ic bd-tw') : ''}</div>`;
+        cells += `<div class="${cls}"><span class="bd-mk">${mark}</span><span class="bd-t num">${fmt(t)}</span>${twist ? icon(tw, 'pn-ic bd-tw') : ''}</div>`;
       }
     }
     const names = hls.map(h => h.name).join(' + ');
     let mini = '', card = '';
-    if (!hls.length || !posted) mini = `<span class="bd-hlmini is-sealed" title="Headliner not posted yet">${icon('_')}<span>Unposted</span></span>`;
-    else if (past) mini = `<span class="bd-hlmini" title="${esc(names)}">${hls.map(h => icon(h.id)).join('')}</span>`;
+    if (!hls.length || !posted) mini = `<span class="bd-hlmini is-sealed">${icon('_')}<span>Unposted</span></span>`;
+    else if (past) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}</span>`;
     else if (f > curF + 1) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}<span>${esc(names)}</span></span>`;
     else card = hls.map(h => `<p class="bd-hl">${icon(h.id, 'pn-ic bd-hl-ic')}<b>${esc(h.name)}</b>${h.rule ? ' ' + esc(h.rule) : ''}</p>`).join('');
     const aria = `Festival ${f}, ${festName(f)}${now ? ', tonight' : ''}. ${say.join('. ')}. Headliner: ${posted && hls.length ? names : 'not posted yet'}.`;
-    const more = past || now ? `<ul class="bd-more" aria-hidden="true">${say.map(t => `<li>${esc(t)}</li>`).join('')}${past && hls.length ? `<li>Headliner: ${esc(names)}</li>` : ''}</ul>` : '';
+    // "Scores": under the column heads, each show's Applause (✓ / ✗) over its target, then the notes
+    // the stamps, rings and icons only mark: sponsored shows, a twist, a past festival's Headliner.
+    let more = '';
+    if (past || now) {
+      const g = det.map(d => `<span class="${d.e ? (d.e.pass ? 'is-pass' : 'is-miss') : ''}"><b>${d.e ? (d.e.pass ? '✓ ' : '✗ ') + fmt(d.e.applause || 0) : d.isNow ? '▸ tonight' : '–'}</b><i>of ${fmt(d.t)}</i></span>`).join('');
+      const notes = [];
+      const sps = det.filter(d => d.sp).map(d => d.slot);
+      if (sps.length) notes.push('Sponsored: ' + sps.join(', '));
+      const tw1 = det.find(d => d.twist);
+      if (tw1) notes.push('Twist: ' + tw1.twist.name);
+      if (past && hls.length) notes.push('Headliner: ' + names);
+      more = `<div class="bd-more" aria-hidden="true"><div class="bd-more-g">${g}</div>${notes.map(n => `<p>${esc(n)}</p>`).join('')}</div>`;
+    }
     const far = !past && !now && (f > curF + 1 || !building);    // a festival further ahead: a light two-line row
     return `<li class="bd-row ${past ? 'is-past' : now ? 'is-now' : 'is-future'}${far ? ' is-far' : ''}" aria-label="${esc(aria)}"${now ? ' aria-current="step"' : ''}>
 <div class="bd-name" aria-hidden="true"><span class="bd-num num">${f}</span><span class="bd-fest">${esc(festName(f))}</span>${mini}${stamps ? `<span class="bd-stamps">${stamps}</span>` : ''}</div>
@@ -452,8 +467,8 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
       <button type="button" class="btn sl-close" data-sl="close" aria-label="Close the show log">✕</button></div>
     <div class="sl-meta"></div>
   </header>
+  <p class="sl-key" aria-hidden="true"><span>Bursts</span><span>Running Ooh × Aah</span></p>
   <div class="sl-body">
-    <p class="sl-key" aria-hidden="true"><span>Burst · what it added</span><span>Running Ooh × Aah</span></p>
     <ol class="sl-lines" aria-label="Bursts, in firing order"></ol>
     <div class="sl-sum"></div>
   </div>
@@ -540,8 +555,8 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
     const flags = (ln.shot > 0 ? `<span class="sl-flag is-shot">burst ${ln.shot + 1}</span>` : '') + (ln.dud ? '<span class="sl-flag is-dud">dud</span>' : '') + (ln.half ? '<span class="sl-flag">½ strength</span>' : '') + (ln.last ? '<span class="sl-flag">last</span>' : '');
     const sees = seesText(ln, L), full = seesFull(ln, L);
     const chips = flags + (sees ? `<span class="sl-sees"${full && sees.indexOf(full) < 0 ? ` title="${esc(full)}"` : ''}>${esc(sees)}</span>` : '') + chipsHTML(ln);
-    const tot = `<span class="sl-run num" title="Running Ooh × Aah">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
-    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛ Favourite</span>' : ''}</span></div>
+    const tot = `<span class="sl-run num">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
+    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}</span>${isFav ? '<span class="sl-fav">♛ Favourite</span>' : ''}</div>
 <div class="sl-chips">${chips}${tot}</div>`;
   }
   function lineLabel(ln, L) {

@@ -55,6 +55,7 @@
 /* keyboard focus on a scroll list: an inset ring, and no edge fade hiding part of it */
 #board .bd-list:focus-visible,#showlog .sl-body:focus-visible{outline:2px solid var(--focus);outline-offset:-2px;border-radius:8px;-webkit-mask-image:none;mask-image:none}
 /* "Scores": each played festival's shows and Headliner as text (what its stamps, cells and icons mark) */
+#board .bd-sub{flex:1 1 auto}
 #board .bd-scores{position:relative;z-index:0;margin:-9px 0 -9px auto;padding:12px 12px;border:0;border-radius:999px;background:transparent;
   color:var(--paper-dim);font:700 var(--t-xs)/1.3 var(--f-ui);cursor:pointer}   /* a 44px-tall hit area around a small pill */
 #board .bd-scores::after{content:"";position:absolute;z-index:-1;inset:9px 0;border-radius:999px;border:1px solid var(--line)}
@@ -64,8 +65,15 @@
 #board .bd-scores[aria-pressed="true"]::after{border:2px solid var(--brass)}
 #board .bd-scores:focus-visible{outline:0}
 #board .bd-scores:focus-visible::after{outline:2px solid var(--focus);outline-offset:2px}
-#board .bd-more{display:none;list-style:none;margin:3px 0 0;padding:0 0 0 32px;color:var(--paper-dim);font:400 var(--t-xs)/1.35 var(--f-ui);font-variant-numeric:tabular-nums}
+#board .bd-more{display:none;margin:4px 0 0;color:var(--paper-dim);font:400 var(--t-xs)/1.3 var(--f-ui);font-variant-numeric:tabular-nums}
 #board .is-scores .bd-more{display:block}
+#board .bd-more-g{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+#board .bd-more-g span{min-width:0;padding-left:7px;white-space:nowrap}
+#board .bd-more-g b{display:block;color:var(--paper)}
+#board .bd-more-g .is-pass b{color:var(--ok)}
+#board .bd-more-g .is-miss b{color:var(--danger)}
+#board .bd-more-g i{display:block;font-style:normal}
+#board .bd-more p{margin:2px 0 0 7px}
 #board .bd-list{list-style:none;margin:0 -6px 0 0;padding:0 6px 26px 0;flex:1 1 auto;min-height:0;overflow:auto;
   display:flex;flex-direction:column;gap:3px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 #board .bd-row{position:relative;padding:5px 8px 6px;border-radius:9px;border:1px solid transparent}
@@ -178,9 +186,9 @@
   font:700 var(--t-s)/1.3 var(--f-ui);color:var(--paper)}
 #showlog .sl-col{font-weight:400;color:var(--paper-dim)}
 #showlog .sl-star{margin-left:5px;color:var(--aah);letter-spacing:-1px}
-#showlog .sl-fav{color:var(--brass);white-space:nowrap}
-#showlog .sl-key{display:flex;justify-content:space-between;gap:8px;margin:0 0 6px;color:var(--paper-dim);font:400 var(--t-xs)/1.3 var(--f-ui)}
-#showlog .sl-body:has(.sl-empty) .sl-key{display:none}
+#showlog .sl-fav{flex:none;color:var(--brass);font-weight:700;white-space:nowrap}   /* beside the name, which truncates first */
+#showlog .sl-key{flex:none;display:flex;justify-content:space-between;gap:8px;margin:0;padding:2px 0 4px;white-space:nowrap;color:var(--paper-dim);font:400 var(--t-xs)/1.3 var(--f-ui)}
+#showlog .sl-panel:has(.sl-empty) .sl-key{display:none}
 #showlog .sl-dim{color:var(--paper-dim);font-weight:400}
 #showlog .sl-flag{display:inline-block;margin-left:6px;padding:0 7px;border-radius:999px;border:1px solid var(--paper-dim);
   font-weight:400;font-size:var(--t-xs);line-height:1.3;color:var(--paper-dim)}

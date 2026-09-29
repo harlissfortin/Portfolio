@@ -768,6 +768,7 @@ button{cursor:pointer;touch-action:manipulation}
 /* keyboard focus on a scroll list: an inset ring, and no edge fade hiding part of it */
 #board .bd-list:focus-visible,#showlog .sl-body:focus-visible{outline:2px solid var(--focus);outline-offset:-2px;border-radius:8px;-webkit-mask-image:none;mask-image:none}
 /* "Scores": each played festival's shows and Headliner as text (what its stamps, cells and icons mark) */
+#board .bd-sub{flex:1 1 auto}
 #board .bd-scores{position:relative;z-index:0;margin:-9px 0 -9px auto;padding:12px 12px;border:0;border-radius:999px;background:transparent;
   color:var(--paper-dim);font:700 var(--t-xs)/1.3 var(--f-ui);cursor:pointer}   /* a 44px-tall hit area around a small pill */
 #board .bd-scores::after{content:"";position:absolute;z-index:-1;inset:9px 0;border-radius:999px;border:1px solid var(--line)}
@@ -777,8 +778,15 @@ button{cursor:pointer;touch-action:manipulation}
 #board .bd-scores[aria-pressed="true"]::after{border:2px solid var(--brass)}
 #board .bd-scores:focus-visible{outline:0}
 #board .bd-scores:focus-visible::after{outline:2px solid var(--focus);outline-offset:2px}
-#board .bd-more{display:none;list-style:none;margin:3px 0 0;padding:0 0 0 32px;color:var(--paper-dim);font:400 var(--t-xs)/1.35 var(--f-ui);font-variant-numeric:tabular-nums}
+#board .bd-more{display:none;margin:4px 0 0;color:var(--paper-dim);font:400 var(--t-xs)/1.3 var(--f-ui);font-variant-numeric:tabular-nums}
 #board .is-scores .bd-more{display:block}
+#board .bd-more-g{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+#board .bd-more-g span{min-width:0;padding-left:7px;white-space:nowrap}
+#board .bd-more-g b{display:block;color:var(--paper)}
+#board .bd-more-g .is-pass b{color:var(--ok)}
+#board .bd-more-g .is-miss b{color:var(--danger)}
+#board .bd-more-g i{display:block;font-style:normal}
+#board .bd-more p{margin:2px 0 0 7px}
 #board .bd-list{list-style:none;margin:0 -6px 0 0;padding:0 6px 26px 0;flex:1 1 auto;min-height:0;overflow:auto;
   display:flex;flex-direction:column;gap:3px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 #board .bd-row{position:relative;padding:5px 8px 6px;border-radius:9px;border:1px solid transparent}
@@ -891,9 +899,9 @@ button{cursor:pointer;touch-action:manipulation}
   font:700 var(--t-s)/1.3 var(--f-ui);color:var(--paper)}
 #showlog .sl-col{font-weight:400;color:var(--paper-dim)}
 #showlog .sl-star{margin-left:5px;color:var(--aah);letter-spacing:-1px}
-#showlog .sl-fav{color:var(--brass);white-space:nowrap}
-#showlog .sl-key{display:flex;justify-content:space-between;gap:8px;margin:0 0 6px;color:var(--paper-dim);font:400 var(--t-xs)/1.3 var(--f-ui)}
-#showlog .sl-body:has(.sl-empty) .sl-key{display:none}
+#showlog .sl-fav{flex:none;color:var(--brass);font-weight:700;white-space:nowrap}   /* beside the name, which truncates first */
+#showlog .sl-key{flex:none;display:flex;justify-content:space-between;gap:8px;margin:0;padding:2px 0 4px;white-space:nowrap;color:var(--paper-dim);font:400 var(--t-xs)/1.3 var(--f-ui)}
+#showlog .sl-panel:has(.sl-empty) .sl-key{display:none}
 #showlog .sl-dim{color:var(--paper-dim);font-weight:400}
 #showlog .sl-flag{display:inline-block;margin-left:6px;padding:0 7px;border-radius:999px;border:1px solid var(--paper-dim);
   font-weight:400;font-size:var(--t-xs);line-height:1.3;color:var(--paper-dim)}
@@ -4316,9 +4324,9 @@ const FX = (() => {
   const RINGS = [];
   for (let i = 0; i < 14; i++) RINGS.push({on: false, x: 0, y: 0, r0: 0, r1: 0, t0: 0, dur: 0, col: '#FFF', lw: 2, a: 1, disc: false, line: false});
   const THR = [];
-  for (let i = 0; i < 8; i++) THR.push({on: false, x: 0, y: 0, t0: 0, n: 0, pts: new Float32Array(32), col: '#FFF'});
+  for (let i = 0; i < 8; i++) THR.push({on: false, x: 0, y: 0, t0: 0, n: 0, pts: new Float32Array(32), col: '#FFF', path: null});
   const BRAIDS = [];
-  for (let i = 0; i < 4; i++) BRAIDS.push({on: false, x0: 0, y0: 0, x1: 0, y1: 0, t0: 0});
+  for (let i = 0; i < 4; i++) BRAIDS.push({on: false, x0: 0, y0: 0, x1: 0, y1: 0, t0: 0, path: null, len: 1});
   const BAN = [];
   for (let i = 0; i < 4; i++) BAN.push({on: false, cv: null, g: null, cw: 0, w: 0, h: 0, y: 0, t0: 0, dur: 0.9, cdpr: 0, kind: '', text: ''});
   const GLOWS = [];
@@ -4392,7 +4400,13 @@ const FX = (() => {
   // Candidates are searched nearest-first from its natural place: just above what it hits (both rise at the same rate
   // and the newer never falls behind) or just below (measured from where the other one will end its rise).
   const PC = [];
-  const popBox = (p, y, q, pad) => { const qy = q.y + popDy(q); return Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(y - qy) < (p.h + q.h) / 2 + pad; };
+  // Does a popup starting its rise at y (now) ever overlap q? Both rise on the same curve, q further along it, so their
+  // vertical gap s moves from its value now (s0) to its value when both have risen (s0 + popDy(q)): test that span.
+  const popBox = (p, y, q, pad) => {
+    if (Math.abs(p.x - q.x) >= (p.w + q.w) / 2 + pad) return false;
+    const D = (p.h + q.h) / 2 + pad, dq = popDy(q), s0 = y - (q.y + dq);
+    return s0 > -D && s0 + dq < D;
+  };
   function popHit(p, y, pad) {
     for (let k = 0; k < POPN; k++) { const q = POPS[k]; if (q.on && q !== p && q.die < 0 && popBox(p, y, q, pad)) return q; }
     for (let k = 0; k < BAN.length; k++) { const b = BAN[k]; if (b.on && banHit(p, y, b, pad)) return b; }
@@ -4892,7 +4906,7 @@ const FX = (() => {
       if (!p.beatHasBurst && p.next) { p.pendFusion = e; return; }   // a fusion emitted before its burst
       if (silent) return;
       const a = p.prev, b = p.cur;
-      if (a && b) { const br = BRAIDS.find(q => !q.on) || BRAIDS[0]; br.on = true; br.x0 = a.x; br.y0 = a.y; br.x1 = b.x; br.y1 = b.y; br.t0 = T; }
+      if (a && b) { const br = BRAIDS.find(q => !q.on) || BRAIDS[0]; br.on = true; br.x0 = a.x; br.y0 = a.y; br.x1 = b.x; br.y1 = b.y; br.t0 = T; braidPath(br); }
       const nm = e.name || (e.key ? String(e.key).replace('>', ' → ') : 'Fusion');
       banner(nm + (e.first ? ' · new!' : ''), 'fusion', 0.9, clamp(rTop * 0.2, 34, 90));
       addHitStop(100, b ? b.x : W / 2, b ? b.y : rTop * 0.4);
@@ -5020,6 +5034,13 @@ const FX = (() => {
     const th = THR.find(q => !q.on) || THR[0];
     th.on = true; th.x = b.x; th.y = b.y; th.t0 = T; th.col = COLS[b.ci]; th.n = Math.min(16, read.length);
     for (let k = 0; k < th.n; k++) { th.pts[k * 2] = read[read.length - th.n + k].x; th.pts[k * 2 + 1] = read[read.length - th.n + k].y; }
+    th.path = null;
+    if (typeof Path2D !== 'function') return;
+    const P2 = th.path = new Path2D();
+    for (let k = 0; k < th.n; k++) {
+      const x1 = th.pts[k * 2], y1 = th.pts[k * 2 + 1], mx = (th.x + x1) / 2, my = Math.min(th.y, y1) - 18 - Math.abs(th.x - x1) * 0.12;
+      P2.moveTo(th.x, th.y); P2.quadraticCurveTo(mx, my, x1, y1);
+    }
   }
   function burstVisual(b, e, tr, p) {
     const rm = opt.reducedMotion;
@@ -5330,7 +5351,6 @@ const FX = (() => {
     c.globalAlpha = 1;
   }
   function drawWaves(c) {
-    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
     // clear wave: a white band sweeping the sky
     for (let _w = 0; _w < WAVES.length; _w++) { const w = WAVES[_w];
       if (!w.on) continue;
@@ -5342,7 +5362,7 @@ const FX = (() => {
     c.globalAlpha = 1;
   }
   function drawThreads(c) {
-    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
+    const hc = opt.highContrast, rm = opt.reducedMotion;
     // reader threads (1.5 px, burst colour at 60%, pulsing 250 ms)
     for (let _th = 0; _th < THR.length; _th++) { const th = THR[_th];
       if (!th.on) continue;
@@ -5350,43 +5370,51 @@ const FX = (() => {
       if (e > 0.62) { th.on = false; continue; }
       // reduced motion (§9): the threads hold still (no pulse, no shrinking end dots) and only fade
       const a = e < 0.25 ? (rm ? 0.6 : 0.6 * (0.72 + 0.28 * Math.sin(e / 0.25 * TAU * 2))) : 0.6 * (1 - (e - 0.25) / 0.37);
-      c.globalAlpha = clamp(a, 0, 0.6); c.strokeStyle = th.col; c.lineWidth = hc ? 2 : 1.5; c.beginPath();
-      for (let k = 0; k < th.n; k++) {
-        const x1 = th.pts[k * 2], y1 = th.pts[k * 2 + 1], mx = (th.x + x1) / 2, my = Math.min(th.y, y1) - 18 - Math.abs(th.x - x1) * 0.12;
-        c.moveTo(th.x, th.y); c.quadraticCurveTo(mx, my, x1, y1);
-      }
-      c.stroke();
+      c.globalAlpha = qa(clamp(a, 0, 0.6)); c.strokeStyle = th.col; c.lineWidth = hc ? 2 : 1.5;
+      if (th.path) c.stroke(th.path);   // the arcs are built once, in threads()
       c.fillStyle = th.col;
-      const dr = rm ? 3.5 : 3 + 2 * Math.max(0, 1 - e / 0.25);
-      c.beginPath();
-      for (let k = 0; k < th.n; k++) { const px = th.pts[k * 2], py = th.pts[k * 2 + 1]; c.moveTo(px + dr, py); c.arc(px, py, dr, 0, TAU); }
-      c.fill();
+      const dr = qx(rm ? 3.5 : 3 + 2 * Math.max(0, 1 - e / 0.25));
+      c.beginPath(); c.save(); c.scale(QI, QI);
+      for (let k = 0; k < th.n; k++) { const px = qx(th.pts[k * 2]), py = qx(th.pts[k * 2 + 1]); c.moveTo(px + dr, py); c.arc(px, py, dr, 0, QS); }
+      c.restore(); c.fill();
     }
     c.globalAlpha = 1;
   }
+  // A fusion braid: two strands of a bezier spiral, built once as a Path2D; it grows by a dash reveal (per subpath)
+  const DASH = [0, 0], NODASH = [];
+  function braidPath(br) {
+    br.path = null;
+    if (typeof Path2D !== 'function') return;
+    const P2 = br.path = new Path2D(), dx = br.x1 - br.x0, dy = br.y1 - br.y0, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+    let len = 1;
+    for (let sgn = 0; sgn < 2; sgn++) {
+      let lx = 0, ly = 0, sl = 0;
+      for (let k = 0; k <= 28; k++) {
+        const u = k / 28, bow = Math.sin(u * Math.PI) * L * 0.18, wav = Math.sin(u * Math.PI * 4 + sgn * Math.PI) * 7 * Math.sin(u * Math.PI);
+        const px = br.x0 + dx * u + nx * (bow + wav), py = br.y0 + dy * u + ny * (bow + wav) - Math.sin(u * Math.PI) * 20;
+        if (k === 0) P2.moveTo(px, py); else { P2.lineTo(px, py); sl += Math.hypot(px - lx, py - ly); }
+        lx = px; ly = py;
+      }
+      len = Math.max(len, sl);
+    }
+    br.len = len;
+  }
   function drawBraids(c) {
-    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
+    const hc = opt.highContrast;
     // fusion braids (bezier spiral, fusion pink)
     for (let _br = 0; _br < BRAIDS.length; _br++) { const br = BRAIDS[_br];
       if (!br.on) continue;
       const e = T - br.t0;
-      if (e > 0.9) { br.on = false; continue; }
-      const grow = opt.reducedMotion ? 1 : Math.min(1, e / 0.3), a = e > 0.6 ? 1 - (e - 0.6) / 0.3 : 1, dx = br.x1 - br.x0, dy = br.y1 - br.y0, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
-      c.globalAlpha = a * 0.95; c.strokeStyle = hc ? PAL_HC.F : PAL.F; c.lineWidth = hc ? 2.5 : 2.2; c.lineCap = 'round';
-      for (let sgn = 0; sgn < 2; sgn++) {
-        c.beginPath();
-        for (let k = 0; k <= 28; k++) {
-          const u = k / 28 * grow, bow = Math.sin(u * Math.PI) * L * 0.18, wav = Math.sin(u * Math.PI * 4 + sgn * Math.PI) * 7 * Math.sin(u * Math.PI);
-          const px = br.x0 + dx * u + nx * (bow + wav), py = br.y0 + dy * u + ny * (bow + wav) - Math.sin(u * Math.PI) * 20;
-          if (k === 0) c.moveTo(px, py); else c.lineTo(px, py);
-        }
-        c.stroke();
-      }
+      if (e > 0.9 || !br.path) { br.on = false; continue; }
+      const grow = opt.reducedMotion ? 1 : Math.min(1, e / 0.3), a = e > 0.6 ? 1 - (e - 0.6) / 0.3 : 1;
+      c.globalAlpha = qa(a * 0.95); c.strokeStyle = hc ? PAL_HC.F : PAL.F; c.lineWidth = hc ? 2.5 : 2.2; c.lineCap = 'round';
+      if (grow < 1) { DASH[0] = br.len * grow; DASH[1] = br.len * 2; c.setLineDash(DASH); }
+      c.stroke(br.path);
+      if (grow < 1) c.setLineDash(NODASH);
     }
     c.globalAlpha = 1; c.lineCap = 'butt';
   }
   function drawPips(c) {
-    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
     // Hang pips beside each lingering burst: the colour's own shape (greyscale-safe), from cached sprites
     c.save(); c.scale(QI, QI);
     for (let _b = 0; _b < NB; _b++) { const b = BUR[_b];
@@ -5406,7 +5434,7 @@ const FX = (() => {
     c.globalAlpha = 1;
   }
   function drawSparks(c) {
-    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
+    const t = tok(), rm = opt.reducedMotion;
     for (let _sp = 0; _sp < SPARK.length; _sp++) { const sp = SPARK[_sp];
       if (!sp.on) continue;
       const u = (T - sp.t0) / 0.5;
@@ -9575,7 +9603,9 @@ const UI_PANELS = (() => {
     if (list) edges(list);
   }
 
-  /* One festival. Once it is over it collapses to a stamped line (✓ ✓ ✗); otherwise it
+  /* No title tooltips (no hover-only information, §13): each row's aria-label carries every show's
+     target and Applause and the Headliner; sighted readers get the same as text from "Scores".
+     One festival. Once it is over it collapses to a stamped line (✓ ✓ ✗); otherwise it
      shows its three targets, and the current and next festival show their posted
      Headliner card (Headliners are posted a festival ahead, §4.7). */
   function festivalRow(c, f) {
@@ -9588,7 +9618,7 @@ const UI_PANELS = (() => {
     const hlIds = Array.isArray(hr) && hr.length ? hr : f <= 8 ? [st.headliners && st.headliners[f - 1]] : ((st.endlessTwists && st.endlessTwists[f]) || []);
     const hls = hlIds.filter(Boolean).map(hl);
     const tw = f > 1 && f <= 8 && st.twilightTwists ? st.twilightTwists[f - 1] : null;   // Renown 2
-    const say = [];
+    const say = [], det = [];
     let cells = '', stamps = '';
     for (let k = 0; k < 3; k++) {
       const si = (f - 1) * 3 + k, e = lastOf(hm[si]);
@@ -9599,23 +9629,36 @@ const UI_PANELS = (() => {
       const lbl = `${SLOT[k]} ${fmt(t)}${sp ? ', sponsored' : ''}` +
         `${e ? (e.pass ? ', passed with ' : ', missed with ') + fmt(e.applause || 0) : ''}${isNow ? ', tonight' : ''}${twist ? ', twist: ' + twist.name : ''}`;
       say.push(lbl);
+      det.push({t, e, isNow, sp, twist, slot: SLOT[k]});
       const state = e ? (e.pass ? 'is-pass' : 'is-miss') : '';
       if (past) {
-        stamps += `<span class="bd-stamp ${state || 'is-skip'}${sp ? ' is-sp' : ''}" title="${esc(lbl)}">${e ? (e.pass ? '✓' : '✗') : '–'}</span>`;
+        stamps += `<span class="bd-stamp ${state || 'is-skip'}${sp ? ' is-sp' : ''}">${e ? (e.pass ? '✓' : '✗') : '–'}</span>`;
       } else {
         const cls = ['bd-cell', state, isNow ? 'is-now' : '', sp ? 'is-sp' : '', !e && !isNow ? 'is-todo' : ''].filter(Boolean).join(' ');
         const mark = isNow ? '▸' : e ? (e.pass ? '✓' : '✗') : '';
-        cells += `<div class="${cls}" title="${esc(lbl)}"><span class="bd-mk">${mark}</span><span class="bd-t num">${fmt(t)}</span>${twist ? icon(tw, 'pn-ic bd-tw') : ''}</div>`;
+        cells += `<div class="${cls}"><span class="bd-mk">${mark}</span><span class="bd-t num">${fmt(t)}</span>${twist ? icon(tw, 'pn-ic bd-tw') : ''}</div>`;
       }
     }
     const names = hls.map(h => h.name).join(' + ');
     let mini = '', card = '';
-    if (!hls.length || !posted) mini = `<span class="bd-hlmini is-sealed" title="Headliner not posted yet">${icon('_')}<span>Unposted</span></span>`;
-    else if (past) mini = `<span class="bd-hlmini" title="${esc(names)}">${hls.map(h => icon(h.id)).join('')}</span>`;
+    if (!hls.length || !posted) mini = `<span class="bd-hlmini is-sealed">${icon('_')}<span>Unposted</span></span>`;
+    else if (past) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}</span>`;
     else if (f > curF + 1) mini = `<span class="bd-hlmini">${hls.map(h => icon(h.id)).join('')}<span>${esc(names)}</span></span>`;
     else card = hls.map(h => `<p class="bd-hl">${icon(h.id, 'pn-ic bd-hl-ic')}<b>${esc(h.name)}</b>${h.rule ? ' ' + esc(h.rule) : ''}</p>`).join('');
     const aria = `Festival ${f}, ${festName(f)}${now ? ', tonight' : ''}. ${say.join('. ')}. Headliner: ${posted && hls.length ? names : 'not posted yet'}.`;
-    const more = past || now ? `<ul class="bd-more" aria-hidden="true">${say.map(t => `<li>${esc(t)}</li>`).join('')}${past && hls.length ? `<li>Headliner: ${esc(names)}</li>` : ''}</ul>` : '';
+    // "Scores": under the column heads, each show's Applause (✓ / ✗) over its target, then the notes
+    // the stamps, rings and icons only mark: sponsored shows, a twist, a past festival's Headliner.
+    let more = '';
+    if (past || now) {
+      const g = det.map(d => `<span class="${d.e ? (d.e.pass ? 'is-pass' : 'is-miss') : ''}"><b>${d.e ? (d.e.pass ? '✓ ' : '✗ ') + fmt(d.e.applause || 0) : d.isNow ? '▸ tonight' : '–'}</b><i>of ${fmt(d.t)}</i></span>`).join('');
+      const notes = [];
+      const sps = det.filter(d => d.sp).map(d => d.slot);
+      if (sps.length) notes.push('Sponsored: ' + sps.join(', '));
+      const tw1 = det.find(d => d.twist);
+      if (tw1) notes.push('Twist: ' + tw1.twist.name);
+      if (past && hls.length) notes.push('Headliner: ' + names);
+      more = `<div class="bd-more" aria-hidden="true"><div class="bd-more-g">${g}</div>${notes.map(n => `<p>${esc(n)}</p>`).join('')}</div>`;
+    }
     const far = !past && !now && (f > curF + 1 || !building);    // a festival further ahead: a light two-line row
     return `<li class="bd-row ${past ? 'is-past' : now ? 'is-now' : 'is-future'}${far ? ' is-far' : ''}" aria-label="${esc(aria)}"${now ? ' aria-current="step"' : ''}>
 <div class="bd-name" aria-hidden="true"><span class="bd-num num">${f}</span><span class="bd-fest">${esc(festName(f))}</span>${mini}${stamps ? `<span class="bd-stamps">${stamps}</span>` : ''}</div>
@@ -9828,8 +9871,8 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
       <button type="button" class="btn sl-close" data-sl="close" aria-label="Close the show log">✕</button></div>
     <div class="sl-meta"></div>
   </header>
+  <p class="sl-key" aria-hidden="true"><span>Bursts</span><span>Running Ooh × Aah</span></p>
   <div class="sl-body">
-    <p class="sl-key" aria-hidden="true"><span>Burst · what it added</span><span>Running Ooh × Aah</span></p>
     <ol class="sl-lines" aria-label="Bursts, in firing order"></ol>
     <div class="sl-sum"></div>
   </div>
@@ -9916,8 +9959,8 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
     const flags = (ln.shot > 0 ? `<span class="sl-flag is-shot">burst ${ln.shot + 1}</span>` : '') + (ln.dud ? '<span class="sl-flag is-dud">dud</span>' : '') + (ln.half ? '<span class="sl-flag">½ strength</span>' : '') + (ln.last ? '<span class="sl-flag">last</span>' : '');
     const sees = seesText(ln, L), full = seesFull(ln, L);
     const chips = flags + (sees ? `<span class="sl-sees"${full && sees.indexOf(full) < 0 ? ` title="${esc(full)}"` : ''}>${esc(sees)}</span>` : '') + chipsHTML(ln);
-    const tot = `<span class="sl-run num" title="Running Ooh × Aah">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
-    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}${isFav ? ' <span class="sl-fav" title="Crowd Favourite">♛ Favourite</span>' : ''}</span></div>
+    const tot = `<span class="sl-run num">${fmt(Math.floor(ln.ooh))}<i>×</i>${fmtA(ln.aah)}</span>`;
+    return `<div class="sl-l1"><span class="sl-tube num">T${ln.tube != null ? ln.tube + 1 : '?'}</span>${shape(ln.wild ? 'X' : col)}<span class="sl-name">${esc(shellName(ln.id))}${cn ? ` <span class="sl-col">(${esc(cn)})</span>` : ''}${star}</span>${isFav ? '<span class="sl-fav">♛ Favourite</span>' : ''}</div>
 <div class="sl-chips">${chips}${tot}</div>`;
   }
   function lineLabel(ln, L) {

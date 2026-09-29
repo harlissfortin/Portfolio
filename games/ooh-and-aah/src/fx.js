@@ -705,9 +705,9 @@ const FX = (() => {
   const RINGS = [];
   for (let i = 0; i < 14; i++) RINGS.push({on: false, x: 0, y: 0, r0: 0, r1: 0, t0: 0, dur: 0, col: '#FFF', lw: 2, a: 1, disc: false, line: false});
   const THR = [];
-  for (let i = 0; i < 8; i++) THR.push({on: false, x: 0, y: 0, t0: 0, n: 0, pts: new Float32Array(32), col: '#FFF'});
+  for (let i = 0; i < 8; i++) THR.push({on: false, x: 0, y: 0, t0: 0, n: 0, pts: new Float32Array(32), col: '#FFF', path: null});
   const BRAIDS = [];
-  for (let i = 0; i < 4; i++) BRAIDS.push({on: false, x0: 0, y0: 0, x1: 0, y1: 0, t0: 0});
+  for (let i = 0; i < 4; i++) BRAIDS.push({on: false, x0: 0, y0: 0, x1: 0, y1: 0, t0: 0, path: null, len: 1});
   const BAN = [];
   for (let i = 0; i < 4; i++) BAN.push({on: false, cv: null, g: null, cw: 0, w: 0, h: 0, y: 0, t0: 0, dur: 0.9, cdpr: 0, kind: '', text: ''});
   const GLOWS = [];
@@ -781,7 +781,13 @@ const FX = (() => {
   // Candidates are searched nearest-first from its natural place: just above what it hits (both rise at the same rate
   // and the newer never falls behind) or just below (measured from where the other one will end its rise).
   const PC = [];
-  const popBox = (p, y, q, pad) => { const qy = q.y + popDy(q); return Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(y - qy) < (p.h + q.h) / 2 + pad; };
+  // Does a popup starting its rise at y (now) ever overlap q? Both rise on the same curve, q further along it, so their
+  // vertical gap s moves from its value now (s0) to its value when both have risen (s0 + popDy(q)): test that span.
+  const popBox = (p, y, q, pad) => {
+    if (Math.abs(p.x - q.x) >= (p.w + q.w) / 2 + pad) return false;
+    const D = (p.h + q.h) / 2 + pad, dq = popDy(q), s0 = y - (q.y + dq);
+    return s0 > -D && s0 + dq < D;
+  };
   function popHit(p, y, pad) {
     for (let k = 0; k < POPN; k++) { const q = POPS[k]; if (q.on && q !== p && q.die < 0 && popBox(p, y, q, pad)) return q; }
     for (let k = 0; k < BAN.length; k++) { const b = BAN[k]; if (b.on && banHit(p, y, b, pad)) return b; }
@@ -1281,7 +1287,7 @@ const FX = (() => {
       if (!p.beatHasBurst && p.next) { p.pendFusion = e; return; }   // a fusion emitted before its burst
       if (silent) return;
       const a = p.prev, b = p.cur;
-      if (a && b) { const br = BRAIDS.find(q => !q.on) || BRAIDS[0]; br.on = true; br.x0 = a.x; br.y0 = a.y; br.x1 = b.x; br.y1 = b.y; br.t0 = T; }
+      if (a && b) { const br = BRAIDS.find(q => !q.on) || BRAIDS[0]; br.on = true; br.x0 = a.x; br.y0 = a.y; br.x1 = b.x; br.y1 = b.y; br.t0 = T; braidPath(br); }
       const nm = e.name || (e.key ? String(e.key).replace('>', ' → ') : 'Fusion');
       banner(nm + (e.first ? ' · new!' : ''), 'fusion', 0.9, clamp(rTop * 0.2, 34, 90));
       addHitStop(100, b ? b.x : W / 2, b ? b.y : rTop * 0.4);
@@ -1409,6 +1415,13 @@ const FX = (() => {
     const th = THR.find(q => !q.on) || THR[0];
     th.on = true; th.x = b.x; th.y = b.y; th.t0 = T; th.col = COLS[b.ci]; th.n = Math.min(16, read.length);
     for (let k = 0; k < th.n; k++) { th.pts[k * 2] = read[read.length - th.n + k].x; th.pts[k * 2 + 1] = read[read.length - th.n + k].y; }
+    th.path = null;
+    if (typeof Path2D !== 'function') return;
+    const P2 = th.path = new Path2D();
+    for (let k = 0; k < th.n; k++) {
+      const x1 = th.pts[k * 2], y1 = th.pts[k * 2 + 1], mx = (th.x + x1) / 2, my = Math.min(th.y, y1) - 18 - Math.abs(th.x - x1) * 0.12;
+      P2.moveTo(th.x, th.y); P2.quadraticCurveTo(mx, my, x1, y1);
+    }
   }
   function burstVisual(b, e, tr, p) {
     const rm = opt.reducedMotion;
@@ -1719,7 +1732,6 @@ const FX = (() => {
     c.globalAlpha = 1;
   }
   function drawWaves(c) {
-    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
     // clear wave: a white band sweeping the sky
     for (let _w = 0; _w < WAVES.length; _w++) { const w = WAVES[_w];
       if (!w.on) continue;
@@ -1731,7 +1743,7 @@ const FX = (() => {
     c.globalAlpha = 1;
   }
   function drawThreads(c) {
-    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
+    const hc = opt.highContrast, rm = opt.reducedMotion;
     // reader threads (1.5 px, burst colour at 60%, pulsing 250 ms)
     for (let _th = 0; _th < THR.length; _th++) { const th = THR[_th];
       if (!th.on) continue;
@@ -1739,43 +1751,51 @@ const FX = (() => {
       if (e > 0.62) { th.on = false; continue; }
       // reduced motion (§9): the threads hold still (no pulse, no shrinking end dots) and only fade
       const a = e < 0.25 ? (rm ? 0.6 : 0.6 * (0.72 + 0.28 * Math.sin(e / 0.25 * TAU * 2))) : 0.6 * (1 - (e - 0.25) / 0.37);
-      c.globalAlpha = clamp(a, 0, 0.6); c.strokeStyle = th.col; c.lineWidth = hc ? 2 : 1.5; c.beginPath();
-      for (let k = 0; k < th.n; k++) {
-        const x1 = th.pts[k * 2], y1 = th.pts[k * 2 + 1], mx = (th.x + x1) / 2, my = Math.min(th.y, y1) - 18 - Math.abs(th.x - x1) * 0.12;
-        c.moveTo(th.x, th.y); c.quadraticCurveTo(mx, my, x1, y1);
-      }
-      c.stroke();
+      c.globalAlpha = qa(clamp(a, 0, 0.6)); c.strokeStyle = th.col; c.lineWidth = hc ? 2 : 1.5;
+      if (th.path) c.stroke(th.path);   // the arcs are built once, in threads()
       c.fillStyle = th.col;
-      const dr = rm ? 3.5 : 3 + 2 * Math.max(0, 1 - e / 0.25);
-      c.beginPath();
-      for (let k = 0; k < th.n; k++) { const px = th.pts[k * 2], py = th.pts[k * 2 + 1]; c.moveTo(px + dr, py); c.arc(px, py, dr, 0, TAU); }
-      c.fill();
+      const dr = qx(rm ? 3.5 : 3 + 2 * Math.max(0, 1 - e / 0.25));
+      c.beginPath(); c.save(); c.scale(QI, QI);
+      for (let k = 0; k < th.n; k++) { const px = qx(th.pts[k * 2]), py = qx(th.pts[k * 2 + 1]); c.moveTo(px + dr, py); c.arc(px, py, dr, 0, QS); }
+      c.restore(); c.fill();
     }
     c.globalAlpha = 1;
   }
+  // A fusion braid: two strands of a bezier spiral, built once as a Path2D; it grows by a dash reveal (per subpath)
+  const DASH = [0, 0], NODASH = [];
+  function braidPath(br) {
+    br.path = null;
+    if (typeof Path2D !== 'function') return;
+    const P2 = br.path = new Path2D(), dx = br.x1 - br.x0, dy = br.y1 - br.y0, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+    let len = 1;
+    for (let sgn = 0; sgn < 2; sgn++) {
+      let lx = 0, ly = 0, sl = 0;
+      for (let k = 0; k <= 28; k++) {
+        const u = k / 28, bow = Math.sin(u * Math.PI) * L * 0.18, wav = Math.sin(u * Math.PI * 4 + sgn * Math.PI) * 7 * Math.sin(u * Math.PI);
+        const px = br.x0 + dx * u + nx * (bow + wav), py = br.y0 + dy * u + ny * (bow + wav) - Math.sin(u * Math.PI) * 20;
+        if (k === 0) P2.moveTo(px, py); else { P2.lineTo(px, py); sl += Math.hypot(px - lx, py - ly); }
+        lx = px; ly = py;
+      }
+      len = Math.max(len, sl);
+    }
+    br.len = len;
+  }
   function drawBraids(c) {
-    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
+    const hc = opt.highContrast;
     // fusion braids (bezier spiral, fusion pink)
     for (let _br = 0; _br < BRAIDS.length; _br++) { const br = BRAIDS[_br];
       if (!br.on) continue;
       const e = T - br.t0;
-      if (e > 0.9) { br.on = false; continue; }
-      const grow = opt.reducedMotion ? 1 : Math.min(1, e / 0.3), a = e > 0.6 ? 1 - (e - 0.6) / 0.3 : 1, dx = br.x1 - br.x0, dy = br.y1 - br.y0, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
-      c.globalAlpha = a * 0.95; c.strokeStyle = hc ? PAL_HC.F : PAL.F; c.lineWidth = hc ? 2.5 : 2.2; c.lineCap = 'round';
-      for (let sgn = 0; sgn < 2; sgn++) {
-        c.beginPath();
-        for (let k = 0; k <= 28; k++) {
-          const u = k / 28 * grow, bow = Math.sin(u * Math.PI) * L * 0.18, wav = Math.sin(u * Math.PI * 4 + sgn * Math.PI) * 7 * Math.sin(u * Math.PI);
-          const px = br.x0 + dx * u + nx * (bow + wav), py = br.y0 + dy * u + ny * (bow + wav) - Math.sin(u * Math.PI) * 20;
-          if (k === 0) c.moveTo(px, py); else c.lineTo(px, py);
-        }
-        c.stroke();
-      }
+      if (e > 0.9 || !br.path) { br.on = false; continue; }
+      const grow = opt.reducedMotion ? 1 : Math.min(1, e / 0.3), a = e > 0.6 ? 1 - (e - 0.6) / 0.3 : 1;
+      c.globalAlpha = qa(a * 0.95); c.strokeStyle = hc ? PAL_HC.F : PAL.F; c.lineWidth = hc ? 2.5 : 2.2; c.lineCap = 'round';
+      if (grow < 1) { DASH[0] = br.len * grow; DASH[1] = br.len * 2; c.setLineDash(DASH); }
+      c.stroke(br.path);
+      if (grow < 1) c.setLineDash(NODASH);
     }
     c.globalAlpha = 1; c.lineCap = 'butt';
   }
   function drawPips(c) {
-    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
     // Hang pips beside each lingering burst: the colour's own shape (greyscale-safe), from cached sprites
     c.save(); c.scale(QI, QI);
     for (let _b = 0; _b < NB; _b++) { const b = BUR[_b];
@@ -1795,7 +1815,7 @@ const FX = (() => {
     c.globalAlpha = 1;
   }
   function drawSparks(c) {
-    const t = tok(), hc = opt.highContrast, rm = opt.reducedMotion, cols = COLS;
+    const t = tok(), rm = opt.reducedMotion;
     for (let _sp = 0; _sp < SPARK.length; _sp++) { const sp = SPARK[_sp];
       if (!sp.on) continue;
       const u = (T - sp.t0) / 0.5;
