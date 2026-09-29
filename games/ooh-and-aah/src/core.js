@@ -265,7 +265,9 @@ const GAME = (() => {
     const st = r.state;
     if (st.v !== 1 || st.phase !== 'build' || !Array.isArray(st.tubes) || !Array.isArray(st.rng) || st.rng.length !== 4) return false;
     const la = safe(() => sim().legalActions(st), null);
-    return Array.isArray(la) && la.length > 0;
+    if (!Array.isArray(la) || !la.length) return false;
+    // A hand-edited save can pass the shape checks and still be unplayable: light a copy to be sure.
+    return safe(() => { const c = sim().clone(st); const ev = sim().step(c, {type: 'light'}); return Array.isArray(ev) && !(ev[0] && ev[0].type === 'illegal') && isObj(c.runStats); }, false);
   }
   function exportSave() {
     try { return btoa(unescape(encodeURIComponent(JSON.stringify(snapshot())))); } catch (e) { return ''; }
@@ -484,6 +486,7 @@ const GAME = (() => {
     callFX('critical', crit);
     callAudio('onEvent', {type: 'critical', on: crit, lastChance: S.lastChance});
     emit('critical', {on: crit, lastChance: S.lastChance});
+    S.rehearse = false; // every build opens on tonight's rules; Rehearse is a per-build preview
     refreshPreview();
     announce(buildOpenText(st));
     buildTips(st);
@@ -588,12 +591,13 @@ const GAME = (() => {
     return t || null;
   }
   const coinsText = n => 'You have ' + n + (n === 1 ? ' coin.' : ' coins.');
-  const shellText = sh => (sh ? shellName(sh.id) + (sh.col && sh.col !== 'W' && sh.col !== 'X' ? ', ' + colName(sh.col) : '') : 'a shell');
+  const shellText = sh => (sh ? shellName(sh.id) + (sh.col && sh.col !== 'W' && sh.col !== 'X' ? ' (' + colName(sh.col) + ')' : '') : 'a shell');
   function actionText(a, pre, st) {
     const card = pre.shop && pre.shop.cards && pre.shop.cards[a.card];
     const tail = ' ' + coinsText(st.coins) + (moodVisible() ? ' Crowd mood: ' + moodWord(st) + '.' : '');
     switch (a.type) {
-      case 'buy': return 'Bought ' + shellText(card) + ', into ' + slotText(a.to) + '.' + tail;
+      case 'buy': { const old = a.displace ? shellAt(pre, a.to) : null;
+        return 'Bought ' + shellText(card) + ' into ' + slotText(a.to) + '.' + (old ? ' ' + shellText(old) + (a.displace === 'crate' ? ' moved to the Crate.' : ' sold for ' + Math.max(1, Math.floor(0.75 * (old.paid || 0))) + ' coins.') : '') + tail; }
       case 'upgrade': { const sh = shellAt(st, a.to); return 'Upgraded ' + shellText(sh) + ' to star ' + (sh ? sh.star : 2) + ' in ' + slotText(a.to) + '.' + tail; }
       case 'move': return 'Moved ' + shellText(shellAt(pre, a.from)) + ' to ' + slotText(a.to) + (shellAt(pre, a.to) ? ', swapping with ' + shellText(shellAt(pre, a.to)) : '') + '.' + tail;
       case 'sell': return 'Sold ' + shellText(shellAt(pre, a.from)) + ' for ' + Math.max(0, st.coins - pre.coins) + ' coins.' + tail;
@@ -1136,7 +1140,7 @@ const GAME = (() => {
     if (last) {
       if ((last.aah || 0) > 1) queueTip('t_aah');
       if (st.crowd > 0) queueTip('t_crowd');
-      if (last.pass === false) queueTip('t_rain');
+      if (last.pass === false && last.rain) queueTip('t_rain'); // a Fair Weather relight is not a spent rain check
     }
     const pay = last && S.lastPay;   // the payout of the show just played (set at the light)
     if (pay && (pay.interest || 0) > 0) queueTip('t_interest');

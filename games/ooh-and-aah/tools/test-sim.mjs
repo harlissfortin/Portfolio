@@ -404,6 +404,14 @@ async function main() {
       const F = OOH.clone(Kb); F.crate[1] = { uid: 999, id: 'peony', col: 'R', star: 1, paid: 3 };
       const rp = OOH.previewChips(F, null, { card: ci }, { zone: 'tube', i: 0 });
       check('Crate full: the drop previews replace with the refund', rp && rp[0].kind === 'replace' && rp[0].displace === 'sell' && rp[0].refund === OOH.sellValue(old) && rp[0].action.displace === 'sell', rp && JSON.stringify(rp[0]));
+      { // round 4: a drop that ends a live fusion says so (seed 3, all unlocks: Palm Grove lives on T3→T4 at show 4)
+        const P = OOH.createState('3', { kit: 'apprentice', renown: 0, unlocked: Object.keys(OOH.DATA.SHELLS) });
+        OOH.step(P, { type: 'light' }); OOH.step(P, { type: 'buy', card: 0, to: { zone: 'tube', i: 2 }, displace: 'crate' }); OOH.step(P, { type: 'light' });
+        OOH.step(P, { type: 'buy', card: 0, to: { zone: 'tube', i: 3 } }); OOH.step(P, { type: 'light' });
+        const k = P.shop.cards.findIndex(c => c.id !== 'palm'), pc = k >= 0 ? OOH.previewChips(P, undefined, { card: k }) : null;
+        const brk = j => !!(pc && pc[j] && pc[j].breaks && pc[j].breaks.some(b => b.name === 'Palm Grove'));
+        check('previewChips flags a drop that breaks a live fusion (T3/T4), and not one that keeps it (T1/T2)', pc && !brk(0) && !brk(1) && brk(2) && brk(3), pc && JSON.stringify(pc.map(c => c && c.breaks)));
+      }
       check('buy displace:crate is illegal with a full Crate', OOH.illegalReason(F, { type: 'buy', card: ci, to: { zone: 'tube', i: 0 }, displace: 'crate' }) === 'the Crate is full');
       F.coins = c0.cost - OOH.sellValue(old); const cf = F.coins;
       check('buy displace:sell counts the refund before the price', OOH.isLegal(F, rp[0].action) && (OOH.step(F, rp[0].action), F.tubes[0].shell.id === c0.id && F.coins === cf + OOH.sellValue(old) - c0.cost && F.crate[1].uid === 999));

@@ -60,8 +60,8 @@ const UI_MENUS = (() => {
     critic: '<circle cx="10" cy="9" r="5"/><path d="M13.5 12.5L20 21"/>',
     shortfuse: '<path d="M3 20c3 0 4-3 6-5s4-2 5-3M16 8l1.5-3M18 10.5l3-1M15 6.5l-2-2"/>',
     fog: '<path d="M3 8c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0M3 13c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0M3 18c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>',
-    ordinance: '<path d="M4 9h4l5-4v14l-5-4H4zM17 9l4 6M21 9l-4 6"/>',
-    windshift: '<path d="M20 8H5M8 5L5 8l3 3M4 16h15M16 13l3 3-3 3"/>',
+    ordinance: '<path d="M2.5 9.2h4l5-4.4v14.4l-5-4.4h-4z"/><text x="13" y="17.5" font-size="11" font-weight="700" fill="currentColor" stroke="none">½</text>',
+    windshift: '<path d="M5 21v-6M10 21v-6M15 21v-6M20 21v-6M20 8H5M8.5 4.5 5 8l3.5 3.5"/>',
     ferry: '<path d="M3 16l2 4h14l2-4zM6 16v-5h12v5M9 11V7h6v4M12 3v4"/>',
     crossed: '<path d="M4 5c8 0 8 14 16 14M4 19c8 0 8-14 16-14"/>',
     streetlights: '<path d="M9 21h6M12 21V8c0-3 3-4 6-4M16 4h5l-1 3h-3z"/>',
@@ -877,7 +877,7 @@ const UI_MENUS = (() => {
     };
     add($('hud')); add($('sponsor'));
     const over = $('sky-overlay');
-    if (over) for (const c of over.children) add(c);
+    if (over) for (const c of over.children) add(c.classList.contains('result') ? (c.querySelector('.res-card') || c) : c); // the result wrapper fills the sky; only its card is occupied
     let free = [[sr.top - ar.top + EDGE, sr.bottom - ar.top - EDGE]];
     for (const r of obs) {
       if (r.right - ar.left <= left || r.left - ar.left >= right) continue;
@@ -1089,7 +1089,7 @@ const UI_MENUS = (() => {
     const noteBuild = () => { if (G.ui === 'BUILD' && G.state) P.lastBuild = Number(G.state.show) || 0; };
     noteBuild();
     call(G, 'on', 'ui', (p) => { if (p && p.to === 'BUILD') noteBuild(); if (isOpen('pause-menu')) renderPause(true); });
-    call(G, 'on', 'runStart', () => { P.lastBuild = null; noteBuild(); });
+    call(G, 'on', 'runStart', () => { P.lastBuild = null; noteBuild(); T.q = []; if (T.cur) retire(T.cur, true); }); // a new run never inherits the last run's waiting tips
     call(G, 'onKey', 'global', globalKey);
     call(G, 'onKey', 'pause', scoped());
     call(G, 'onKey', 'settings', scoped());

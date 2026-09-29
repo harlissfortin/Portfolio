@@ -322,7 +322,10 @@
 #play .tok-xs .tok-mono,#play .tok-xs .tok-hang,#play .tok-mini .tok-hang{display:none}
 #play .tok-mini .tok-mono{top:auto;bottom:-3px}
 .tok.washed .tok-plate,.tok.washed .tok-pic{filter:grayscale(1) brightness(1.2)}
-.tok .b-fav,.tok .b-half,.tok .b-lamp,.tok .b-dud,.tok .b-critic,.tok .b-crowd{position:absolute;display:flex;align-items:center;z-index:1}
+.tok .b-fav,.tok .b-half,.tok .b-lamp,.tok .b-dud,.tok .b-critic,.tok .b-crowd,.tok .b-fuse{position:absolute;display:flex;align-items:center;z-index:1}
+.tok .b-fuse{left:-6px;bottom:10px;padding:0 3px;border-radius:4px;background:var(--ink);font:700 16px/16px var(--f-ui);color:var(--c-fusion)} /* bottom-left: the monogram owns bottom-right */
+.tok .b-crowd:has(~ .b-fuse){bottom:28px}
+#rack .chip.c-break{box-shadow:inset 0 0 0 2px var(--danger)}
 .tok .b-fav{left:-7px;top:-8px}
 #play .tok .b-fav .ic{width:18px;height:18px;fill:var(--aah);stroke:var(--ink);stroke-width:1.5;paint-order:stroke}
 .tok .b-half{right:-6px;top:15px;font:700 16px/16px var(--f-ui);color:var(--paper);background:var(--danger);border-radius:4px;padding:0 3px}

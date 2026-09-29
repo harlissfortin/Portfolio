@@ -49,16 +49,16 @@ const UI_PLAY = (() => {
     gust: svg(S_('M3 8.5h10.5a2.8 2.8 0 1 0-2.8-2.8M3 12.5h14.5a2.8 2.8 0 1 1-2.8 2.8M3 16.5h6')),
     monocle: svg('<circle cx="10" cy="10" r="5.5"/>' + S_('M14 14l6 6.5')),
     lamp: svg(S_('M12 21V10M8 10h8l-1.8-5h-4.4zM9 21h6')),
-    fog: svg(S_('M3 8.5h18M5 12.5h14M3 16.5h18')),
+    fog: svg(S_('M3 8c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0M3 12.5c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0M3 17c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0')),
     bolt: svg(F_('M13.5 2 5 13.5h5.6L9.5 22 19 9.8h-5.8z')),
     drop: svg(S_('M12 3.5c3.2 4.6 5.6 7.8 5.6 10.8a5.6 5.6 0 0 1-11.2 0c0-3 2.4-6.2 5.6-10.8z')),
-    hush: svg(F_('M3.5 9.2h4l5-4.4v14.4l-5-4.4h-4z') + S_('M16 9.5l4.5 5M20.5 9.5 16 14.5')),
-    wind: svg(S_('M20.5 12H4.5M10 6.5 4.5 12l5.5 5.5')),
+    hush: svg(F_('M2.5 9.2h4l5-4.4v14.4l-5-4.4h-4z') + '<text x="13" y="17.5" font-size="11" font-weight="700" fill="currentColor" stroke="none">½</text>'),
+    wind: svg(S_('M5 21v-6M10 21v-6M15 21v-6M20 21v-6M20 8H5M8.5 4.5 5 8l3.5 3.5')),
     ferry: svg(S_('M3 15.5h18l-2.6 4.5H5.6zM6 15.5v-4.2h12v4.2M9.5 11.3V7.5h5v3.8')),
     wires: svg(S_('M3.5 6.5c7 0 10 11 17 11M3.5 17.5c7 0 10-11 17-11')),
     rival: svg(S_('M5.5 21V3.5M5.5 4.5h12l-2.5 4 2.5 4h-12')),
     clock: svg('<circle cx="12" cy="12" r="8.6"/>' + S_('M12 7v5.2l3.4 2')),
-    cut: svg(S_('M2.5 12h8M14.5 12h7M11 7.5l2.6 9')),
+    cut: svg(S_('M4 19V7M8.5 19V7M13 19V7M16.5 8l4.5 10M21 8l-4.5 10')),
     half: '<b class="half-b" aria-hidden="true">½</b>',
     rig: {
       tall: svg(S_('M8 21V6.5l4-3.5 4 3.5V21M12 16V9M9.6 11.2 12 8.8l2.4 2.4')),
@@ -827,6 +827,7 @@ const UI_PLAY = (() => {
       if (critic.has(i) && sh) badges += `<span class="b-critic">${ICON.monocle}</span>`;
       const ch = v.chips[i];
       if (sh && ch && ch.crowd > 0 && !can) badges += `<span class="b-crowd">${ICON.crowd}+${fmtChip(ch.crowd)}</span>`;
+      if (sh && ch && (ch.fusion || ch.fusionNext) && !held) badges += '<span class="b-fuse" title="Fuses">✦</span>';
       // Hang pips; under Drizzle one pip is shown crossed out (§4.7 telegraph)
       const baseHang = sh ? hangOf(tb, []) : 0, drz = rules.includes('drizzle') && baseHang > 0;
       setHTML(T.tok, sh ? tokenHTML(sh, { size: 'lg', hang: drz ? baseHang - 1 : baseHang, drizzle: drz, cls: washed ? ' washed' : '', badges })
@@ -850,6 +851,7 @@ const UI_PLAY = (() => {
         if (!partners && c.coin) chips += `<span class="chip c-coin">+$${fmtChip(c.coin)}</span>`;
         if (!partners && !c.ooh && !c.aah && !(c.x > 1) && !c.crowd && !c.coin && !fu) chips += '<span class="chip c-none">+0</span>';
       } else if (hy && !partners) chips += '<span class="chip c-none">+0</span>';
+      if (hy && hy.breaks && hy.breaks.length) chips += `<span class="chip chip-fusion c-break" title="Breaks ${esc(hy.breaks.join(', '))}">✦✕</span>`;
       if (sw) chips += sw.kind === 'swap' ? `<span class="chip c-swap" title="Swap in: ${esc(shellName(sw.out))} goes to the Crate">→${ICON.crate}</span>`
         : `<span class="chip c-swap sell" title="Replace: sells ${esc(shellName(sw.out))}">✕+$${sw.refund}</span>`;
       setHTML(T.chips, chips);
@@ -892,12 +894,16 @@ const UI_PLAY = (() => {
       else s += ', does not fire';
       if (sees != null) s += ', sees ' + sees;
       if (view.fav === i) s += ', Crowd Favourite';
+      const vc = view.chips && view.chips[i];
+      if (vc && vc.fusion && vc.fusion !== '?') s += ', fuses: ' + vc.fusion;
       if (o.half) s += ', half strength';
       if (o.washed) s += ', washed out';
     }
     if (held && targets.has('tube:' + i)) {
       const w = swaps.get('tube:' + i);
       s += !w ? ', drop here' : w.kind === 'swap' ? `, drop here to swap in: ${shellName(w.out)} goes to the Crate` : `, drop here to replace: sells ${shellName(w.out)} for ${w.refund} coins`;
+      const hb = hypoFor('tube:' + i);
+      if (hb && hb.breaks && hb.breaks.length) s += `, breaks the ${hb.breaks.join(' and ')} fusion`;
     }
     return s;
   }
@@ -1132,7 +1138,8 @@ const UI_PLAY = (() => {
     if (lg) {
       const partners = G.settings && G.settings.chips === 'partners';
       setHTML(E.legend, (partners ? '' : '<span class="chip c-ooh">+Ooh</span><span class="chip c-aah">+Aah</span><span class="chip c-x">×Aah</span>') +
-        '<span class="chip chip-fusion">✦ fuse</span>' + (swaps.size ? `<span class="chip c-swap">→${ICON.crate} swap</span>` : ''));
+        '<span class="chip chip-fusion">✦ fuse</span>' + (() => { const kinds = new Set([...swaps.values()].map(w => w.kind));
+          return (kinds.has('swap') ? `<span class="chip c-swap">→${ICON.crate} swap</span>` : '') + (kinds.has('replace') ? '<span class="chip c-swap sell">✕ sells old</span>' : ''); })());
     }
     // result card (pinned until the first build action)
     const showRes = !!result && u !== 'RESOLVING' && !info;
@@ -1326,7 +1333,10 @@ const UI_PLAY = (() => {
         if (Array.isArray(ev) && ev[0] && ev[0].type === 'illegal') return null;
         const chips = chipsOf(st2, view.rules), sky = skyRun(st2.tubes, view.rules);
         const sees = chips.some(c => c && c.sees != null) ? chips.map(c => (c ? c.sees : null)) : sky.sees;
-        return { state: st2, chips, sees, order: fireOrder(st2.tubes, view.rules) };
+        const keyOf = c => c && c.fusion ? (c.fusionKey || c.fusion) : null;
+        const after = new Set(chips.map(keyOf).filter(Boolean));
+        const breaks = (view.chips || []).filter(c => keyOf(c) && !after.has(keyOf(c)) && c.fusion !== '?').map(c => c.fusion);
+        return { state: st2, chips, sees, breaks, order: fireOrder(st2.tubes, view.rules) };
       }, null);
     }
     hypo.set(key, res);
@@ -1408,10 +1418,13 @@ const UI_PLAY = (() => {
     if (!building() || !fnIn(G, 'light')) return; // RESULT is a build too: the card stays pinned until the next action
     clearHeld(true); disarmSell(); flash = null; dismissTip();
     litTarget = targetOf(S().show | 0);
+    litAt = performance.now();
     G.light();
   }
+  let litAt = 0;
   function fireClick() {
-    if (ui() === 'RESOLVING') { if (fnIn(G, 'skip')) G.skip(); return; }
+    // A double tap on Light the fuse must not also skip the show: ignore Skip for 400 ms after lighting.
+    if (ui() === 'RESOLVING') { if (performance.now() - litAt < 400) return; if (fnIn(G, 'skip')) G.skip(); return; }
     light();
   }
   function toggleSponsor() {

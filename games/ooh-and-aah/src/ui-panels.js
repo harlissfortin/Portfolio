@@ -751,7 +751,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
       if (topIsLog()) { try { G.close('showlog'); } catch (e) { /* ignore */ } }
       setOpen(false);
       attachBackdrop();
-      renderBoard();
+      if (!inFlight) renderBoard();
     } else setOpen(topIsLog());
   }
   // GAME.boot() attaches canvas#backdrop when the page opens at desktop width; this covers a
@@ -835,7 +835,7 @@ ${cells ? `<div class="bd-cells" aria-hidden="true">${cells}</div>` : ''}${more}
     on('runStart', onRunStart);
     on('runEnd', renderBoard);
     on('overlay', p => { if (p && p.name === 'showlog') setOpen(!!p.open); });
-    on('resize', () => { if (isDesk()) renderBoard(); });
+    on('resize', () => { if (isDesk() && !inFlight) renderBoard(); }); // mid-show the state is already post-show: wait for the slam
     if (typeof G.onKey === 'function') {
       G.onKey('showlog', e => {
         const k = e && (e.key || e);

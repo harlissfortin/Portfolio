@@ -741,7 +741,7 @@ const UI_END = (() => {
     const u = ms.m.unlocks;
     if (typeof u === 'string') return u;
     if (u && typeof u === 'object' && !Array.isArray(u)) {
-      const nm = (u.shells || []).map(id => shellRow(id).name).concat((u.kits || []).map(id => 'the ' + kitRow(id).name + ' kit'), (u.other || []).map(x => /^every fusion shows its/i.test(x) ? 'the first shell of every fusion in the Logbook' : String(x)));
+      const nm = (u.shells || []).map(id => shellRow(id).name).concat((u.kits || []).map(id => 'the ' + kitRow(id).name + ' kit'), (u.other || []).map(x => /^every (unfound )?fusion shows its/i.test(x) ? 'the first shell of every unfound fusion in the Logbook' : String(x)));
       return andList(nm.map(x => ({Afterparty: 'the Afterparty', 'Daily Show': 'the Daily Show'})[x] || x));
     }
     const names = Array.isArray(u) ? u.map(id => (row(D().SHELLS, id) || row(D().KITS, id) || {name: cap(id)}).name)

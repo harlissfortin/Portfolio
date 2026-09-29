@@ -197,14 +197,14 @@ function OohSim() {
     ['streetlights', 'Sodium Streetlights', 5, 7, 'The embankment lamps wash out tubes 2, 4 and 6: their bursts count as White.', 'one-colour and Rainbow skies', 'tubes 2, 4 and 6 greyed, with a lamp icon'],
     ['powercut', 'Power Cut', 6, 7, '+Aah is capped at 30 per show (× still works).', 'big +Aah stacks', 'a cap mark at 30 on the Aah meter'],
     ['rival', 'Rival Crew', 6, 7, 'Your ♛ Crowd Favourite (as of lighting) fires at half strength.', 'a rack that leans on one shell', 'a ½ on the ♛ tube'],
-    ['countdown', 'Midnight Countdown', 8, 8, 'The fuse fires your tubes last to first, then first to last. The sky carries over, and there is no rain check.', 'no single build. Every shell fires twice', 'an out-and-back fuse path, with two rows of tube numbers'],
+    ['countdown', 'Midnight Countdown', 8, 8, 'The fuse fires your tubes last to first, then first to last. The sky carries over, and there is no rain check.', 'Every shell fires twice', 'an out-and-back fuse path, with two rows of tube numbers'],
   ];
   const HEADLINERS = {}; const HEADLINER_IDS = [];
   for (const [id, name, min, max, text, counters, telegraph] of HEADLINER_ROWS) { HEADLINERS[id] = { id, name, min, max, text, counters, telegraph }; HEADLINER_IDS.push(id); }
   const DRAW_ROWS = HEADLINER_ROWS.filter(r => r[0] !== 'countdown').map(r => ({ id: r[0], min: r[2], max: r[3] }));
   // Every rule id the resolver understands, for labels (Headliners plus the Renown 8 three-pass Countdown).
   const RULE_INFO = Object.assign({}, HEADLINERS, {
-    countdown3: { id: 'countdown3', name: 'Midnight Countdown', min: 8, max: 8, text: 'Renown 8: the fuse fires your tubes first to last, last to first, then first to last again. The target is 900,000.', counters: 'no single build', telegraph: 'three rows of tube numbers' },
+    countdown3: { id: 'countdown3', name: 'Midnight Countdown', min: 8, max: 8, text: 'Renown 8: the fuse fires your tubes first to last, last to first, then first to last again. The target is 900,000.', counters: 'Every shell fires three times', telegraph: 'three rows of tube numbers' },
   });
   const TWISTS = {
     twilight: ['headwind', 'drizzle', 'critic'],                                                          // Renown 2 (§4.10)
@@ -297,7 +297,7 @@ function OohSim() {
     ['t_tube', 'First tube button', 'More tubes, more bursts. 6 at most.'],
     ['t_sponsor', 'First Sponsor', "A sponsor raises tonight's target ×1.5 and pays if you make it. Check the crowd with Accept on."],
     ['t_match', 'First Wind Shift or Crossed Wires build', "Match re-seats your shells so tonight's fuse fires them in their usual order."],
-    ['t_rain', 'First miss', 'Rain check used. One more miss ends the run.'],
+    ['t_rain', 'First miss', 'Your umbrella is red now: the rain check is used for this run.'],
     ['t_count', 'F8 build', 'Midnight Countdown: the fuse fires your tubes last to first, then first to last. Your last tube opens and closes the show.'],
   ];
   const TOOLTIPS = {}; const TOOLTIP_IDS = [];
@@ -1144,11 +1144,15 @@ function OohSim() {
     if (rules == null) rules = rulesFor(S, S.show);
     if (held == null) return chipsFor(S, S.tubes, rules, opts);
     const idx = s => s == null ? null : typeof s === 'number' ? s : s.zone === 'tube' ? s.i : null;
+    // Fusions live on the rack now; a drop that ends any of them reports it as c.breaks = [{key, name}].
+    const live = {}; for (const c of chipsFor(S, S.tubes, rules, opts)) if (c.fusion) live[c.fusion.key] = c.fusion.name;
+    const withBreaks = (c, all) => { const now = {}; for (const x of all) if (x.fusion) now[x.fusion.key] = 1;
+      const br = Object.keys(live).filter(k => !now[k]).map(k => ({ key: k, name: live[k] })); if (br.length) c.breaks = br; return c; };
     if (slot !== undefined) {
       const j = idx(slot); const h = placeHeld(S, held, j); if (!h) return null;
-      const chips = chipsFor(S, h.tubes, rules, opts); heldInfo(chips[j], h); return chips;
+      const chips = chipsFor(S, h.tubes, rules, opts); heldInfo(chips[j], h); withBreaks(chips[j], chips); return chips;
     }
-    return S.tubes.map((t, j) => { const h = placeHeld(S, held, j); if (!h) return null; const c = chipsFor(S, h.tubes, rules, opts)[j]; heldInfo(c, h); return c; });
+    return S.tubes.map((t, j) => { const h = placeHeld(S, held, j); if (!h) return null; const all = chipsFor(S, h.tubes, rules, opts); const c = all[j]; heldInfo(c, h); return withBreaks(c, all); });
   }
   function seesPerTube(S, rules) {
     if (rules == null) rules = rulesFor(S, S.show);

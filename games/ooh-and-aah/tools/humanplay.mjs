@@ -130,7 +130,7 @@ const fmtNum = n => (n == null ? '—' : n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' :
  * "+60" (Ooh), "+9" (Aah), "×1.8", "✦" / "✦ ?" (a fusion), crowd "+4", "+$2", "+0" (nothing).
  */
 function parseChips(list) {
-  const c = { ooh: 0, aah: 0, x: 1, xAah: 0, fusion: false, crowd: 0, coin: 0, none: false, swap: null, refund: 0, n: 0 };
+  const c = { ooh: 0, aah: 0, x: 1, xAah: 0, fusion: false, breaks: false, crowd: 0, coin: 0, none: false, swap: null, refund: 0, n: 0 };
   for (const { k, t } of list || []) {
     const v = parseFmt(String(t).replace(/−/g, '-').replace(/^[^\d-]*/, '')) || 0;
     c.n++;
@@ -138,6 +138,7 @@ function parseChips(list) {
     else if (k === 'x') { const m = /×\s*(\d+(?:\.\d+)?)/.exec(t); if (m && +m[1] > 1) c.x *= +m[1]; }
     else if (k === 'xaah') c.xAah += v;
     else if (k === 'fusion') c.fusion = true;
+    else if (k === 'break') { c.breaks = true; c.n--; }
     else if (k === 'none') c.none = true;
     else if (k === 'swap') { c.n--; if (/\+\$/.test(t)) { c.swap = 'replace'; c.refund = v; } else c.swap = 'swap'; }
     else if (k === 'ord') c.n--;
@@ -153,6 +154,7 @@ function scorePlacement(d, { twin, fuses, sees }) {
   // a × chip with its "(+n)" Aah equivalent reads like +Aah; without it, ×1.4 counts as 6
   let v = d.ooh / 10 + d.aah * 1.5 + (d.x > 1 ? (d.xAah > 0 ? d.xAah * 1.5 : (d.x - 1) * 15) : 0) + d.crowd * 0.4 + d.coin;
   if (d.fusion) v += 6;
+  if (d.breaks) v -= 6; // the ✦✕ chip: this drop ends a live fusion
   if (twin) v += 4;
   v += Math.min(sees || 0, 6) * 0.5;
   if (fuses) v += 3;   // the "✦ Fuses" badge: it fuses with a shell I own (reposition() then seats it by its partner)
@@ -224,7 +226,7 @@ function pageRead() {
   // "sees N" (.t-sees) and the fire-order label (.t-num: "1", "2", "LAST") sit on top. A legal drop is marked
   // with the class "can" and ", drop here" in the aria-label.
   const chipKind = c => { const k = cls(c);
-    return /\bc-ooh\b/.test(k) ? 'ooh' : /\bc-aah\b|chip-aah/.test(k) ? 'aah' : /\bc-x\b|chip-x/.test(k) ? 'x' : /chip-fusion/.test(k) ? 'fusion'
+    return /\bc-break\b/.test(k) ? 'break' : /\bc-ooh\b/.test(k) ? 'ooh' : /\bc-aah\b|chip-aah/.test(k) ? 'aah' : /\bc-x\b|chip-x/.test(k) ? 'x' : /chip-fusion/.test(k) ? 'fusion'
       : /\bc-crowd\b/.test(k) ? 'crowd' : /\bc-coin\b/.test(k) ? 'coin' : /\bc-none\b/.test(k) ? 'none'
       : /\bc-xaah\b/.test(k) ? 'xaah' : /\bc-swap\b/.test(k) ? 'swap' : /\bc-ord\b/.test(k) ? 'ord' : 'other'; };
   out.tubes = qa('button[data-tube]').filter(vis).map(el => {
@@ -893,11 +895,11 @@ function gatesFor(run) {
   const g = [];
   const mins = run.modelSeconds / 60;
   if (run.firstRun && run.ended && run.ended.outcome === 'cap') g.push({ id: 'first-run length', want: '3–5 min', got: `${mins.toFixed(1)} min (stopped by --max-shows)`, status: 'INFO' });
-  else if (run.firstRun) g.push({ id: 'first-run length', want: '3–5 min', got: `${mins.toFixed(1)} min`, status: mins >= 3 && mins <= 5 ? 'PASS' : 'FAIL' });
+  else if (run.firstRun) g.push({ id: 'first-run length', want: 'informational (spec §12.4: the 3–5 min gate is on the greedy-mood proxy)', got: `${mins.toFixed(1)} min`, status: 'INFO' });
   else g.push({ id: 'run length', want: 'informational (not a first-ever run)', got: `${mins.toFixed(1)} min`, status: 'INFO' });
   g.push({ id: 'first 1-of-3 choice shown', want: '< 0:30', got: mmss(run.firstChoiceShown), status: run.firstChoiceShown != null && run.firstChoiceShown < 30 ? 'PASS' : 'FAIL' });
   g.push({ id: 'first choice made', want: 'informational', got: mmss(run.firstChoiceMade), status: 'INFO' });
-  g.push({ id: 'first fusion', want: 'spec §6: ~1:45–2:30', got: run.firstFusion ? `${mmss(run.firstFusion.at)} (show ${run.firstFusion.show}, ${run.firstFusion.name})` : 'none', status: 'INFO' });
+  g.push({ id: 'first fusion', want: run.firstRun ? '≤ 2:30 (spec §12.4)' : 'informational', got: run.firstFusion ? `${mmss(run.firstFusion.at)} (show ${run.firstFusion.show}, ${run.firstFusion.name})` : 'none', status: !run.firstRun ? 'INFO' : run.firstFusion && run.firstFusion.at <= 150 ? 'PASS' : 'FAIL' });
   g.push({ id: 'first multiplier', want: 'informational', got: run.firstMult ? `${mmss(run.firstMult.at)} (show ${run.firstMult.show}, ×${run.firstMult.factor})` : 'none', status: 'INFO' });
   g.push({ id: 'console/page errors', want: '0', got: String(run.errors.length), status: run.errors.length ? 'FAIL' : 'PASS', hard: true });
   g.push({ id: 'local chips readable', want: 'chips parsed from the DOM', got: run.chipsRead ? 'yes' : 'no (fell back to badges)', status: run.chipsRead ? 'PASS' : 'WARN' });

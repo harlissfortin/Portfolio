@@ -567,7 +567,7 @@ The Counters and Rack telegraph cells are player text: the Logbook shows them as
 | streetlights | Sodium Streetlights | F5–7 | The embankment lamps wash out tubes 2, 4 and 6: their bursts count as White. | one-colour and Rainbow skies | tubes 2, 4 and 6 greyed, with a lamp icon |
 | powercut | Power Cut | F6–7 | +Aah is capped at 30 per show (× still works). | big +Aah stacks | a cap mark at 30 on the Aah meter |
 | rival | Rival Crew | F6–7 | Your ♛ Crowd Favourite (as of lighting) fires at half strength. | a rack that leans on one shell | a ½ on the ♛ tube |
-| countdown | **Midnight Countdown** | F8 (fixed) | The fuse fires your tubes last to first, then first to last. The sky carries over, and there is **no rain check**. | no single build. Every shell fires twice | an out-and-back fuse path, with two rows of tube numbers |
+| countdown | **Midnight Countdown** | F8 (fixed) | The fuse fires your tubes last to first, then first to last. The sky carries over, and there is **no rain check**. | Every shell fires twice | an out-and-back fuse path, with two rows of tube numbers |
 
 **Drawing:**
 - At `createState`, for f = 1..7 in order: `eligible` = the rows (in table order) with `min ≤ f ≤ max` that have not been drawn yet; pick `eligible[floor(rng() × len)]`. F8 is always `countdown`.
@@ -681,7 +681,7 @@ Each tooltip is shown once, on first encounter. Tooltips never block play and ar
 | t_tube | First tube button | "More tubes, more bursts. 6 at most." |
 | t_sponsor | First Sponsor | "A sponsor raises tonight's target ×1.5 and pays if you make it. Check the crowd with Accept on." |
 | t_match | First Wind Shift or Crossed Wires build | "Match re-seats your shells so tonight's fuse fires them in their usual order." |
-| t_rain | First miss | "Rain check used. One more miss ends the run." |
+| t_rain | First miss | "Your umbrella is red now: the rain check is used for this run." (the miss card itself says "Rain check used. One more miss ends the run.") |
 | t_count | F8 build | "Midnight Countdown: the fuse fires your tubes last to first, then first to last. Your last tube opens and closes the show." |
 
 ---
@@ -1058,6 +1058,8 @@ Milestones are checked on SIM events during a run. Unlocks apply to the **next**
   - It turns on automatically during a Headliner's own build (tonight's rule).
   - The overlays are those in the telegraph column of §4.7.
 - **Match (M)** and **Restore (B):** see §2.5.
+
+- **Fusions at rest and fusions at risk** *(round-4 review)*: a live fusion (or a first piece whose partner fires next) carries a ✦ badge on its token at rest. While holding a card or shell, a drop target whose drop would end a live fusion shows a `✦✕` chip, and its label says which fusion it breaks. `previewChips` reports this as `breaks: [{key, name}]`.
 
 ### 8.5 Visual identity
 
