@@ -47,7 +47,7 @@ const GAME = (() => {
     // per run (saved with the run)
     lit: [], lastPreLight: null, runBest: {}, startProgress: {}, runUnlocks: [], counted: false,
     buildMs: 0, missPending: false, recordAtStart: 0, recordHit: false, posterAdded: false,
-    lastChance: false, pendingToasts: [], tipQueue: [], tipShown: null,
+    lastChance: false, pendingToasts: [], tipQueue: [], tipShown: null, tipAt: 0, lastPay: null,
     layout: 'regular', gestured: false, unlocked: false, audioHeld: false, kickQueued: false, resizeQueued: false, ann: {polite: [], assertive: [], queued: false}, cache: {},
   };
 
@@ -75,7 +75,6 @@ const GAME = (() => {
   const simClone = st => (can(sim(), 'clone') ? sim().clone(st) : cloneJSON(st));
   const hist = st => (st && st.runStats && Array.isArray(st.runStats.history) ? st.runStats.history : []);
   const cur = () => S.state;
-  const playUI = () => typeof UI_PLAY !== 'undefined' && !!UI_PLAY;   // UI_PLAY shows the §4.13 tips itself
   const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   const randomSeed = () => Math.random().toString(36).slice(2, 7);
   const fmt = n => { const r = safe(() => sim().fmt(n)); return r != null ? String(r) : Math.floor(Number(n) || 0).toLocaleString('en-US'); };
@@ -358,7 +357,7 @@ const GAME = (() => {
     S.undo = []; S.rehearse = false; S.lit = []; S.lastPreLight = null; S.runBest = {};
     S.startProgress = {...S.meta.progress}; S.runUnlocks = []; S.counted = false; S.buildMs = 0; S.missPending = false;
     S.recordAtStart = (S.meta.records.bestShow && S.meta.records.bestShow.score) || 0; S.recordHit = false;
-    S.posterAdded = false; S.lastChance = false; S.pendingToasts = []; S.tipQueue = []; S.tipShown = null;
+    S.posterAdded = false; S.lastChance = false; S.pendingToasts = []; S.tipQueue = []; S.tipShown = null; S.lastPay = null;
   }
   function restoreRun(saved) {
     resetRunFields();
@@ -790,6 +789,7 @@ const GAME = (() => {
     const h = hist(st), entry = h[h.length - 1] || null;
     const app = events.find(e => e && e.type === 'applause') || {};
     const pay = events.find(e => e && e.type === 'payout') || null;
+    S.lastPay = pay;
     const target = isNum(app.target) ? app.target : entry && isNum(entry.target) ? entry.target : targetAt(pre, pre.show);
     const score = isNum(app.score) ? app.score : entry && isNum(entry.applause) ? entry.applause : 0;
     const pass = app.pass != null ? !!app.pass : entry && entry.pass != null ? !!entry.pass : score >= target;
@@ -1015,26 +1015,87 @@ const GAME = (() => {
     codexScan(S.state);
   }
 
-  /* ---------- one-line tooltips (§4.13): shown once, as 'tip' toasts, dismissed by the next action ---------- */
+  /* ---------- one-line tooltips (§4.13): shown once, as 'tip' toasts, dismissed by the next action ----------
+     Core is the one place that queues tips (buildTips at each build open, actionTips after each action);
+     UI_PLAY adds the triggers only it can see through tip(id): t_sky when a shell is lifted, t_fusion when
+     a ✦ badge is drawn. One tip shows at a time. The queue is kept in TIP_ORDER (what the player is doing
+     right now, tonight's rules and offer, the result card's Aah, the shop's ✦ and twin cards, then the rest), and a tip whose
+     subject is not on screen right now (tipLive) waits in the queue until it is. */
+  const TIP_ORDER = ['t_sky', 't_crate', 't_fuse', 't_rain', 't_head', 't_count', 't_match', 't_mood', 't_sponsor', 't_aah',
+    't_fusion', 't_twin', 't_crowd', 't_interest', 't_rig', 't_tube'];
+  const TIP_NOW = ['t_sky'];   // tied to a gesture in progress: shown at once, and the tip it replaces goes back to the queue
+  const tipRank = id => { const i = TIP_ORDER.indexOf(id); return i < 0 ? TIP_ORDER.length : i; };
   function tipText(id) {
     const t = data().TOOLTIPS;
     const r = Array.isArray(t) ? t.find(x => x && x.id === id) : isObj(t) ? t[id] : null;
     return typeof r === 'string' ? r : r && (r.text || r.value) || null;
   }
-  function queueTip(id) {
-    if (playUI() || S.meta.seenTips.includes(id) || S.tipQueue.includes(id) || S.tipShown === id || !tipText(id)) return;
-    S.tipQueue.push(id);
+  function ownedShells(st) { return [...(st.tubes || []).map(t => t && t.shell), ...(st.crate || [])].filter(Boolean); }
+  function shopFuses(st) {   // a shop card (not a twin) that fuses with a shell you own: the card shows "✦ Fuses"
+    const own = ownedShells(st), cards = (st.shop && st.shop.cards) || [];
+    return cards.some(cd => cd && !cd.sold && !own.some(sh => sh.id === cd.id && (sh.star || 1) < 3) &&
+      fusionList().some(f => (f.a === cd.id && own.some(sh => sh.id === f.b)) || (f.b === cd.id && own.some(sh => sh.id === f.a))));
   }
+  function shopTwin(st) {
+    const own = ownedShells(st);
+    return ((st.shop && st.shop.cards) || []).some(cd => cd && !cd.sold && own.some(sh => sh.id === cd.id && (sh.star || 1) < 3));
+  }
+  // Is the thing this tip talks about on screen right now?
+  function tipLive(id, st) {
+    if (!st || st.phase !== 'build') return false;
+    const rules = rulesAt(st, st.show), shop = st.shop;
+    switch (id) {
+      case 't_fuse': return !rules.some(r => r === 'windshift' || r === 'crossed' || /^countdown/.test(r));
+      case 't_head': return rules.includes('headwind');
+      case 't_count': return !st.endless && st.show >= 21;
+      case 't_match': return rules.includes('windshift') || rules.includes('crossed');
+      case 't_mood': return moodVisible();
+      case 't_sponsor': return !!st.sponsor;
+      case 't_fusion': return shopFuses(st);
+      case 't_twin': return shopTwin(st);
+      case 't_rig': return !!(shop && shop.rig && !shop.rig.sold);
+      case 't_tube': return !!shop && !st.endless && st.tubes.length < 6;
+      default: return true;
+    }
+  }
+  function enqueueTip(id, front) {
+    const q = S.tipQueue;
+    if (front) { q.unshift(id); return; }
+    let i = q.findIndex(x => tipRank(x) > tipRank(id));
+    if (i < 0) i = q.length;
+    q.splice(i, 0, id);
+  }
+  function queueTip(id) {
+    if (S.meta.seenTips.includes(id) || S.tipQueue.includes(id) || S.tipShown === id || !tipText(id)) return;
+    enqueueTip(id);
+  }
+  // UI_PLAY's triggers. Returns true if the tip is now shown or queued.
   function tip(id) {
-    if (S.meta.seenTips.includes(id) || S.tipQueue.includes(id) || !tipText(id)) return false;
-    S.tipQueue.push(id);
-    showNextTip();
+    if (S.tipShown === id) return true;
+    if (S.meta.seenTips.includes(id) || !tipText(id)) return false;
+    S.tipQueue = S.tipQueue.filter(x => x !== id);
+    if (TIP_NOW.includes(id) && S.tipShown && S.ui !== 'RESOLVING' && S.ui !== 'END') {
+      // The tip on screen gives way. Up for 3 s or more, it counts as read; otherwise it goes back to the
+      // head of the queue, unseen, and returns after the next action.
+      const back = S.tipShown;
+      dismissTip();
+      if (now() - S.tipAt < 3000) { S.meta.seenTips = S.meta.seenTips.filter(x => x !== back); enqueueTip(back, true); }
+      enqueueTip(id, true);
+      showNextTip();
+    } else {
+      // A badge drawn while a build opens: let the build's own tips queue first (priority order), then show.
+      enqueueTip(id);
+      Promise.resolve().then(showNextTip);
+    }
     return true;
   }
   function showNextTip() {
     if (S.tipShown || !S.tipQueue.length || S.ui === 'RESOLVING' || S.ui === 'END') return;
-    const id = S.tipQueue.shift();
+    const st = S.state, k = S.tipQueue.findIndex(x => tipLive(x, st));
+    if (k < 0) return;
+    const id = S.tipQueue.splice(k, 1)[0];
     S.tipShown = id;
+    S.tipAt = now();
     S.meta.seenTips.push(id);
     const text = tipText(id);
     emit('tip', {id, text});
@@ -1047,25 +1108,25 @@ const GAME = (() => {
     emit('tipDone', {id});
   }
   function buildTips(st) {
-    const s = st.show, f = Math.floor(s / 3) + 1, rules = rulesAt(st, s), sm = S.res && S.res.info && S.res.info.summary;
+    const s = st.show, f = Math.floor(s / 3) + 1, rules = rulesAt(st, s);
     const last = hist(st)[hist(st).length - 1];
     if (last) {
       if ((last.aah || 0) > 1) queueTip('t_aah');
       if (st.crowd > 0) queueTip('t_crowd');
       if (last.pass === false) queueTip('t_rain');
     }
-    const pay = sm && sm.payout;
+    const pay = last && S.lastPay;   // the payout of the show just played (set at the light)
     if (pay && (pay.interest || 0) > 0) queueTip('t_interest');
     if (s === 0) queueTip('t_fuse');
     if (s === 2 && rules.includes('headwind')) { queueTip('t_head'); if (st.firstRun) queueTip('t_mood'); }
-    if (s === 21 || s === 23) queueTip('t_count');
+    if (!st.endless && (s === 21 || s === 23)) queueTip('t_count');
     if (rules.includes('windshift') || rules.includes('crossed')) queueTip('t_match');
     if (st.sponsor) queueTip('t_sponsor');
     const shop = st.shop || {};
     if (shop.rig) queueTip('t_rig');
-    if (f >= 2 && !st.endless && st.tubes.length < 6) queueTip('t_tube');
-    const owned = [...st.tubes.map(t => t && t.shell), ...(st.crate || [])].filter(Boolean);
-    if ((shop.cards || []).some(cd => cd && owned.some(sh => sh.id === cd.id && sh.star < 3))) queueTip('t_twin');
+    if (f >= 2 && !st.endless && st.shop && st.tubes.length < 6) queueTip('t_tube');
+    if (shopTwin(st)) queueTip('t_twin');
+    if (shopFuses(st)) queueTip('t_fusion');
   }
   function actionTips(a) {
     if ((a.type === 'buy' || a.type === 'move') && a.to && a.to.zone === 'crate') queueTip('t_crate');
