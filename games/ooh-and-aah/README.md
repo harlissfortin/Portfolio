@@ -12,7 +12,7 @@ Ooh × Aah is a turn-based engine-builder roguelite for the browser. A river tow
 
 ## Play it
 
-- **Hosted:** TODO(lead): add the link to the hosted page here. <!-- TODO(lead): hosted page URL -->
+- **Hosted:** [claude.ai/artifact/KyGfV5nDSmHM4h7DuA69D8](https://claude.ai/artifact/KyGfV5nDSmHM4h7DuA69D8). The page is private to its owner until it is shared.
 - **Locally:** open [`index.html`](index.html) in any current desktop or mobile browser. It is a single file: there is nothing to install, no server and no build step. Google Fonts is the only network request, and the game falls back to system fonts offline.
 
 The page opens straight into the first show's build, with no menu in front of it. Sound starts on your first tap or key press. Progress is saved in `localStorage` under the key `oohxaah.v1`, and the game also runs with storage blocked.
@@ -103,7 +103,7 @@ The player can raise their own stakes. From Festival 3, a **Sponsor** offers a r
 
 The game was designed before it was built, and every balance number in the spec was produced by simulation, not by estimate.
 
-<!-- TODO(lead): if you want to say who or what filled the researcher, judge, red-team and engineer roles below, add it here. -->
+Every role below was filled by an AI agent (Claude), run in parallel through Claude Code: the researchers, the pitch writers and judges, the red team, the engineers and the reviewers. A lead session wrote the module contract, made the design calls, integrated the modules and ran the verification.
 
 1. **Research brief.** [what-makes-games-fun.md](../what-makes-games-fun.md) combines seven research angles: theory of fun, incremental loops, roguelite synergy, systems and emergence, game feel and onboarding, feedback loops and balance, and single-file browser engineering. It turns them into eight design principles, loop anatomy, checkable feel and onboarding rules, a ranked list of pitfalls, implementation rules, and a **14-criterion fun rubric**. Four criteria count double: depth of compounding, meaningful decisions per minute, pressure scaling, and resistance to degenerate strategies. The ship gate is a weighted mean of at least 4.0 with no criterion below 3. The brief states its own limits: most primary sources could not be fetched, so its numbers are treated as starting values to tune by simulation.
 2. **Five competing pitches.** Five concepts (Ooh × Aah, Everpot, Bottleneck, Quickmatch and Foxfire) were each scored by a panel of three judges against the rubric, using the rubric's concept-stage method: the rules, a data-table sketch and a paper walkthrough of round 1, round 12 and the final boss. Ooh × Aah had the top weighted mean (4.50), and two of the three judges ranked it first. The runner-up, Everpot (4.45), had structural flaws: in two judges' probes one resource carried about 99% of the final score, and with no verb for moving pieces, late rounds thinned out to rerolling. Ooh × Aah then took the best idea from each of the other pitches: the Crowd and the Crowd Favourite from Everpot, Sponsors and the near-miss readout from Bottleneck, fire-order ordinals and soot marks from Quickmatch, and Headliners posted a festival ahead plus the pity rule from Foxfire. [DESIGN.md §0](DESIGN.md#0-decision-record) records every judge's objection and the fix for it.
@@ -149,7 +149,7 @@ The shipped simulation (`src/sim.js`), checked with `node tools/balance/analyze.
 - **The assist works.** Fair Weather (targets ×0.75, one Countdown relight) takes the novice from 16.8% to 49.5% on the same 400 seeds.
 - **No degenerate loops.** The human proxy rerolls about 2.5 times per run, holds a median $3 at payout (no stalling for interest), and every shell's pick/win rate stays within 22 points of the base rate.
 
-The spec's last gate is a cold stopwatch test with three people (DESIGN.md §12.4): the first run should last 3–5 minutes, and at least 2 of 3 testers should predict Applause within 2× by show 6. <!-- TODO(lead): add the playtest results here once run. -->
+The spec's last gate is a cold stopwatch test with three people (DESIGN.md §12.4): the first run should last 3–5 minutes, and at least 2 of 3 testers should predict Applause within 2× by show 6. This human test has not been run yet. Until it is, `tools/humanplay.mjs` is the stand-in: it plays the real interface at the spec's modelled human pacing and measures the same onboarding gates.
 
 ---
 
