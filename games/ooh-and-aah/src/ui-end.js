@@ -1225,7 +1225,7 @@ const UI_END = (() => {
     focusRIB();
     requestAnimationFrame(() => { focusRIB(); paintCharts(false); });
     const hd = headline();
-    call(G, 'announce', `${hd.eyebrow ? hd.eyebrow + ' ' : ''}${hd.main}. ${v.best ? 'Best show ' + fmt(v.best.applause) + '.' : ''}`, {assertive: false});
+    call(G, 'announce', `${hd.eyebrow ? hd.eyebrow + ' ' : ''}${hd.main}. ${v.best ? 'Best show ' + fmt(v.best.applause) + '.' : ''}`, {assertive: true});
   }
 
   function init(game) {
