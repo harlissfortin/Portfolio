@@ -768,7 +768,7 @@ const UI_PLAY = (() => {
         const e = ord.per[i].find(x => x.pass === p);
         const last = e && e.to === ord.total && !ghost;
         const lbl = !e ? '' : last && e.from === e.to ? 'LAST' : e.from === e.to ? String(e.from) : e.from + '–' + e.to;
-        num += `<span class="n${last ? ' last' : ''}${ghost && e ? ' ghost' : ''}${!e ? ' none' : ''}">${lbl}</span>`;
+        num += `<span class="n${last ? ' last' : ''}${ghost && e ? ' hyp' : ''}${!e ? ' none' : ''}">${lbl}</span>`;
       }
       if (rules.includes('shortfuse') && i >= 5) num = '<span class="n none">no fuse</span>';
       T.num.innerHTML = num;
@@ -1451,7 +1451,7 @@ const UI_PLAY = (() => {
     if (ui() === 'RESOLVING') {
       if (k === ' ' || k === 'Spacebar' || k === 'Enter') {
         if (!ffOnce && fnIn(G, 'fastForward')) { ffOnce = true; G.fastForward(); } else if (fnIn(G, 'skip')) G.skip();
-        swallowKeyClick = performance.now() + 1000;
+        swallowKeyClick = performance.now() + 600; // cleared right after this key's keyup (Space clicks on keyup)
         return done();
       }
       return false;
@@ -1798,9 +1798,12 @@ const UI_PLAY = (() => {
       if (!E.inspect.hidden && !(t.closest && t.closest('#inspect')) && (!fnIn(G, 'top') || G.top() === 'inspect')) {
         suppressUntil = performance.now() + 450; e.stopPropagation(); closeInspect(); return;
       }
+      suppressUntil = 0; // a new gesture: only the click that ends a drag or long-press is swallowed
       if (sellArmed && !(t.closest && t.closest('[data-info="sell"],[data-insp="sell"]'))) { sellArmed = null; if (!itemEl(t)) render(); }
       if (flash && !(t.closest && t.closest('.info'))) { flash = null; if (!itemEl(t)) render(); }
     }, true);
+    // the click a handled Space / Enter would synthesise lands during its keyup; after that, key clicks count again
+    window.addEventListener('keyup', () => { if (swallowKeyClick) setTimeout(() => { swallowKeyClick = 0; }, 0); }, true);
     window.addEventListener('keydown', e => {
       if (/^(Shift|Control|Alt|Meta|Tab)$/.test(e.key)) return;
       let dirty = false;

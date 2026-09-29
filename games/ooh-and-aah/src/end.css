@@ -82,6 +82,8 @@
 #end .end-key li.dim{color:var(--paper-dim)}
 #end .end-key b{display:inline-block;min-width:2.2ch;color:var(--aah)}
 #end .end-key li.dim b{color:var(--paper-dim)}
+#end .end-key-ico{vertical-align:-2px}
+#end .end-key b .ep-crowd{fill:currentColor}
 
 /* ---------- 4. best show ---------- */
 #end .end-stat{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}

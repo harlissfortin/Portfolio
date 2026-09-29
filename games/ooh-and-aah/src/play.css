@@ -315,7 +315,7 @@
 #rack .t-num .n{height:16px;font:600 16px/16px var(--f-display);font-variant-numeric:tabular-nums;color:var(--paper);white-space:nowrap}
 #rack .t-num .n.last{color:var(--aah);font-family:var(--f-ui);font-weight:700;letter-spacing:.02em}
 #rack .t-num .n.none{color:transparent}
-#rack .t-num .n.ghost{color:var(--aah);opacity:.75}
+#rack .t-num .n.hyp{color:var(--aah);opacity:.8} /* where a held card would fire (not the drag ghost) */
 #rack[data-rows="2"] .t-num .n:first-child,#rack[data-rows="3"] .t-num .n:nth-child(2){color:var(--paper-dim)}
 #rack .t-sees{display:inline-flex;align-items:center;justify-content:center;height:18px;min-width:0;padding:0 5px;border-radius:9px;
   background:rgba(5,7,15,.55);font:700 16px/18px var(--f-ui);letter-spacing:-.01em;color:var(--paper-dim);white-space:nowrap;

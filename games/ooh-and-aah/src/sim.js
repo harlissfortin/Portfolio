@@ -1705,7 +1705,9 @@ function OohSim() {
   }
   const quant = (a, p) => { if (!a.length) return NaN; const s = a.slice().sort((x, y) => x - y); return s[Math.floor(p * (s.length - 1))]; };
   // §12.2 time model: show 1 = 10 s; later shows 12 s + 6 s per purchase + 3 s if the order changed; + 0.4 s per burst + 4 s.
-  function runMinutes(rec) { let t = 0, prev = null; for (const h of rec.hist) { const moved = prev !== null && h.rack4 !== prev ? 1 : 0; t += h.s === 0 ? 10 : 12 + 6 * (h.buys || 0) + 3 * moved; t += 0.4 * h.b + 4; prev = h.rack4; } return t / 60; }
+  // opts.noBuys drops the 6 s per purchase: the model behind the §6 / §12.2 greedy and greedy-mood minutes.
+  function runMinutes(rec, opts) { const pb = opts && opts.noBuys ? 0 : 6; let t = 0, prev = null;
+    for (const h of rec.hist) { const moved = prev !== null && h.rack4 !== prev ? 1 : 0; t += h.s === 0 ? 10 : 12 + pb * (h.buys || 0) + 3 * moved; t += 0.4 * h.b + 4; prev = h.rack4; } return t / 60; }
   function summarizeRuns(R, info) {
     info = info || {}; const N = R.length; const pct = (a, b) => b ? 100 * a / b : NaN;
     const wins = R.filter(r => r.won).length;
@@ -1728,7 +1730,7 @@ function OohSim() {
     const ms = { busy8: 0, crowd40: 0, spectrum: 0, fusion: 0, headF4: 0, star3: 0, mono: 0, rigger: 0 };
     R.forEach(r => { const st = r.stats; if (st.maxBurstsPre >= 8) ms.busy8++; if (st.maxCrowd >= 40) ms.crowd40++; if (st.maxColsUp >= 3 || st.maxColsFired >= 4) ms.spectrum++; if (st.fusions) ms.fusion++;
       if (st.headF4) ms.headF4++; if (st.maxStar >= 3) ms.star3++; if (st.maxMono >= 5) ms.mono++; if (st.maxRigs >= 3) ms.rigger++; });
-    const mins = R.map(runMinutes);
+    const mins = R.map(r => runMinutes(r)), minsNB = R.map(r => runMinutes(r, { noBuys: true }));
     const bursts = {}; for (const r of R) for (const h of r.hist) { const k = h.s === 0 ? 's1' : h.s === 23 ? 'CD' : 'F' + fest(h.s); (bursts[k] = bursts[k] || []).push(h.b); }
     const medB = {}; for (const k in bursts) medB[k] = quant(bursts[k], 0.5);
     const firstMissGap = R.filter(r => !r.won).map(r => { const i = r.hist.findIndex(h => !h.pass); return r.hist.length - 1 - i; });
@@ -1744,7 +1746,8 @@ function OohSim() {
       crowdShareCD: quant(cdShare, 0.5), crowdAtCD: quant(crowdCD, 0.5),
       milestonePct: Object.fromEntries(Object.entries(ms).map(([k, v]) => [k, pct(v, N)])),
       reroll: N ? R.reduce((a, r) => a + r.stats.rerolls, 0) / N : NaN, pity: N ? R.reduce((a, r) => a + r.stats.pity, 0) / N : NaN,
-      minutesP10: quant(mins, 0.1), minutesP50: quant(mins, 0.5), minutesP90: quant(mins, 0.9), medianBursts: medB,
+      minutesP10: quant(mins, 0.1), minutesP50: quant(mins, 0.5), minutesP90: quant(mins, 0.9),
+      minutesNoBuysP10: quant(minsNB, 0.1), minutesNoBuysP50: quant(minsNB, 0.5), minutesNoBuysP90: quant(minsNB, 0.9), medianBursts: medB,
       missToEndP50: quant(firstMissGap, 0.5), missToEndP90: quant(firstMissGap, 0.9),
     };
   }

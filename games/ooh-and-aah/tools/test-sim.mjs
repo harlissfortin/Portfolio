@@ -499,8 +499,8 @@ async function main() {
       donothing: s => [['Win %', s.winPct, 0, 'win', '0'], ['Deaths in F2 %', s.deathPct[2] || 0, 100, 'p', '100% by F2', s.n]],
       greedy: s => [['Win %', s.winPct, 0, 'win', '0–5'], ['Deaths F2 %', s.deathPct[2] || 0, 27, 'p', null, s.n], ['Deaths F3 %', s.deathPct[3] || 0, 36, 'p', null, s.n], ['Deaths F4 %', s.deathPct[4] || 0, 30, 'p', null, s.n], ['Deaths F5 %', s.deathPct[5] || 0, 6, 'p', null, s.n],
         ['Losses in F2–F4 %', s.lossesF2F4Pct, 93, 'p', '≥ 70', s.n - s.wins, v => v >= 70], ['Median shows', s.showsP50, 8, 'n', null, 1],
-        ['Minutes p50 *', s.minutesP50, 2.7, 'min'], ...MS.slice(0, 7).map(([nm, k], i) => ['Milestone ' + nm + ' %', s.milestonePct[k], [1, 18, 4, 2, 16, 33, 2][i], 'p', null, s.n])],
-      greedyMood: s => [['Win %', s.winPct, 0, 'win', '0–5'], ['Median shows', s.showsP50, 10, 'n', null, 1], ['Minutes p10 *', s.minutesP10, 2.0, 'min'], ['Minutes p50 *', s.minutesP50, 3.4, 'min', '3–5', null, v => v >= 3 && v <= 5], ['Minutes p90 *', s.minutesP90, 4.5, 'min']],
+        ['Minutes p50 *', s.minutesNoBuysP50, 2.7, 'min'], ...MS.slice(0, 7).map(([nm, k], i) => ['Milestone ' + nm + ' %', s.milestonePct[k], [1, 18, 4, 2, 16, 33, 2][i], 'p', null, s.n])],
+      greedyMood: s => [['Win %', s.winPct, 0, 'win', '0–5'], ['Median shows', s.showsP50, 10, 'n', null, 1], ['Minutes p10 *', s.minutesNoBuysP10, 2.0, 'min'], ['Minutes p50 *', s.minutesNoBuysP50, 3.4, 'min', '3–5', null, v => v >= 3 && v <= 5], ['Minutes p90 *', s.minutesNoBuysP90, 4.5, 'min']],
       novice: s => [['Win %', s.winPct, 18.8, 'win', '8–25', null, v => v >= 8 && v <= 25], ['Countdown pass %', s.cdPassPct, 64, 'p', null, s.cdArrivals], ['Rain check used in wins %', s.rainInWinsPct, 17, 'p', '10–40', s.wins, v => v >= 10 && v <= 40],
         ['Crowd share of Countdown Ooh p50 %', 100 * s.crowdShareCD, 21, 'p', '15–25', s.cdArrivals], ...MS.map(([nm, k], i) => ['Milestone ' + nm + ' %', s.milestonePct[k], [84, 32, 30, 17, 96, 81, 87, 97][i], 'p', '≥ 12', s.n, v => v >= 12])],
       human: s => [['Win %', s.winPct, 50.7, 'win', '40–60', null, v => v >= 40 && v <= 60], ['Losses in F6–F8 %', s.lossesF6F8Pct, 91, 'p', '≥ 75', s.n - s.wins, v => v >= 75], ['Countdown pass %', s.cdPassPct, 76, 'p', '≥ 70', s.cdArrivals, v => v >= 70],
@@ -537,7 +537,8 @@ async function main() {
     }
     const w = rows[0].map((_, i) => Math.max(...rows.map(r => String(r[i]).length)));
     rows.forEach((r, i) => { log('  ' + r.map((c, j) => j >= 2 && j <= 4 ? String(c).padStart(w[j]) : String(c).padEnd(w[j])).join('  ')); if (i === 0) log('  ' + w.map(x => '-'.repeat(x)).join('  ')); });
-    log('  * minutes use the §12.2 time model with every purchase counted; the reference counted no purchases for the greedy bots.');
+    log('  * greedy minutes use the §12.2 time model without the 6 s per purchase, as the §6 / §12.2 reference did; with purchases counted:');
+    for (const bot of ['greedy', 'greedyMood']) { const s = summaries[bot]; if (s) log(`    ${bot}: p10 / p50 / p90 ${[s.minutesP10, s.minutesP50, s.minutesP90].map(v => v.toFixed(1)).join(' / ')} min`); }
     for (const bot of BOT_LIST) { const s = summaries[bot]; if (s) log(`  ${bot}: wins ${s.wins}/${s.n} (${s.winPct.toFixed(1)}%), deaths by festival ${JSON.stringify(s.deaths)}, Countdown ${s.cdArrivals} arrivals, shows p10/p50/p90 ${s.showsP10}/${s.showsP50}/${s.showsP90}`); }
     if (args.json) fs.writeFileSync(String(args.json), JSON.stringify({ seeds: N, summaries }, null, 1));
   }

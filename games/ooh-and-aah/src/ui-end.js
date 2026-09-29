@@ -675,7 +675,7 @@ const UI_END = (() => {
       return L1.text.split('{n}').join(fmt(reo0.applause));
     let r = call(sim(), 'lessonFor', sum);
     if (r && typeof r === 'object') r = r.text || r.line || '';
-    if (typeof r === 'string' && r) return r.replace(/\b1 bursts\b/g, '1 burst');
+    if (typeof r === 'string' && r) return r.replace(/\b1 bursts\b/g, '1 burst').replace(/\b(\d+)\.0\b/g, '$1');
     const L = v.last, reo = nm && nm.bestReorder;
     if (v.won && v.renown < 8) return `Next: Renown ${v.renown + 1}: ${renownText(v.renown + 1).replace(/\.$/, '')}.`;
     if (L.rules.some(x => /^countdown/.test(x)) && reo && reo.pass) return `The Countdown fires your last tube first and last. Rearranging would have scored ${fmt(reo.applause)}.`;
@@ -852,9 +852,12 @@ const UI_END = (() => {
         `<path class="${cls}" d="M${x},${Y(0)}V${y + r}Q${x},${y} ${x + r},${y}H${x + bw - r}Q${x + bw},${y} ${x + bw},${y + r}V${Y(0)}Z"/>` +
         `<rect class="ec-hit" x="${cx - slot / 2}" y="${Tp}" width="${slot}" height="${ph}"/></g>`;
       const ly = Y(0) + 14;                                            // x label: colour shape + monogram
-      if (b.key === 'crowd') s += `<g class="ep-crowd"><circle cx="${cx - 6}" cy="${ly - 3}" r="3"/><circle cx="${cx + 6}" cy="${ly - 3}" r="3"/><circle cx="${cx}" cy="${ly - 5}" r="3.4"/><path d="M${cx - 11},${ly + 6}q5,-8 11,-8q6,0 11,8z"/></g>`;
+      // The Crowd gets its people glyph; where "Crowd" will not fit, the glyph alone (bigger, in the text row),
+      // since "Cr" would read as Crossette.
+      const wide = slot >= 56, cyC = wide ? ly : H - 16, k = wide ? 1 : 1.3;
+      if (b.key === 'crowd') s += `<g class="ep-crowd" transform="translate(${cx},${cyC}) scale(${k})"><circle cx="-6" cy="-3" r="3"/><circle cx="6" cy="-3" r="3"/><circle cx="0" cy="-5" r="3.4"/><path d="M-11,6q5,-8 11,-8q6,0 11,8z"/></g>`;
       else if (b.key !== 'other') s += `<path class="ep-shape" style="fill:var(--c-${esc(b.col || 'W')})" d="${shapeD(b.col, cx, ly, 6)}"/>`;
-      s += `<text class="ec-val" x="${cx}" y="${H - 6}" text-anchor="middle">${esc(b.key === 'crowd' ? 'Crowd'.slice(0, slot >= 56 ? 5 : 2) : b.mono)}</text>`;
+      if (b.key !== 'crowd' || wide) s += `<text class="ec-val" x="${cx}" y="${H - 6}" text-anchor="middle">${esc(b.key === 'crowd' ? 'Crowd' : b.mono)}</text>`;
     });
     let path = '';
     bars.forEach((b, i) => { path += (i ? 'L' : 'M') + (L + slot * (i + .5)).toFixed(1) + ',' + Y(cums[i]).toFixed(1); });
@@ -948,7 +951,7 @@ const UI_END = (() => {
       </section>
       <section class="end-sec end-best" aria-labelledby="end-h-best">
         <h3 id="end-h-best">Best show</h3>
-        ${B ? `<p class="end-stat"><span class="end-big">${fmt(B.applause)}</span><span class="end-stat-txt">show ${B.n} · ${esc(festName(B.f))} ${SLOT[B.k]}${B.target ? ` · ${(B.applause / B.target).toFixed(1)}× the target` : ''}</span>
+        ${B ? `<p class="end-stat"><span class="end-big">${fmt(B.applause)}</span><span class="end-stat-txt">show ${B.n} · ${esc(festName(B.f))} ${SLOT[B.k]}${B.target ? ` · ${B.applause >= B.target ? (Math.floor(B.applause / B.target * 10) / 10).toFixed(1) + '× the target' : Math.floor(B.applause / B.target * 100) + '% of the target'}` : ''}</span>
           ${isRecord ? '<span class="chip chip-aah">New record</span>' : ''}${B.encore ? '<span class="chip">Encore!</span>' : ''}</p>` : '<p>No shows lit.</p>'}
       </section>
       ${lost ? '<section class="end-sec end-note end-near" aria-labelledby="end-h-near"><h3 id="end-h-near">How close</h3><div id="end-near" aria-live="polite"><p class="end-wait">Working out how close you came…</p></div></section>' : ''}
@@ -1073,7 +1076,7 @@ const UI_END = (() => {
     if (!items || !items.length) { el.innerHTML = '<p class="end-dim">No shows to add up yet.</p>'; return; }
     const W = Math.floor(el.clientWidth || 300), p = paretoSVG(items, W);
     el.innerHTML = `<div class="end-plot">${p.svg}</div><p class="end-cap" id="end-pareto-cap">${esc(paretoCaption(items))}</p>
-      <ul class="end-key">${p.bars.map((b, i) => `<li${i > p.vital || b.key === 'other' ? ' class="dim"' : ''}>${b.key === 'crowd' ? '<b>Crowd</b>' : b.key === 'other' ? '<b>…</b>' : `<b>${esc(b.mono)}</b>`} ${esc(b.key === 'crowd' ? 'the Crowd' : b.key === 'other' ? 'everything else' : b.name)} <span class="num">${pct(b.share)}</span></li>`).join('')}</ul>`;
+      <ul class="end-key">${p.bars.map((b, i) => `<li${i > p.vital || b.key === 'other' ? ' class="dim"' : ''}>${b.key === 'crowd' ? '<b><svg class="end-key-ico" width="22" height="14" viewBox="-11 -9 22 16" aria-hidden="true"><g class="ep-crowd"><circle cx="-6" cy="-3" r="3"/><circle cx="6" cy="-3" r="3"/><circle cx="0" cy="-5" r="3.4"/><path d="M-11,6q5,-8 11,-8q6,0 11,8z"/></g></svg></b>' : b.key === 'other' ? '<b>…</b>' : `<b>${esc(b.mono)}</b>`} ${esc(b.key === 'crowd' ? 'the Crowd' : b.key === 'other' ? 'everything else' : b.name)} <span class="num">${pct(b.share)}</span></li>`).join('')}</ul>`;
   }
 
   /* ---------- async jobs: near-miss → lesson, then Pareto (all within 1 s) ---------- */
@@ -1224,8 +1227,8 @@ const UI_END = (() => {
     const focusRIB = () => { const b = root.querySelector('#run-it-back'); if (b) b.focus({preventScroll: true}); root.scrollTop = 0; };
     focusRIB();
     requestAnimationFrame(() => { focusRIB(); paintCharts(false); });
-    const hd = headline();
-    call(G, 'announce', `${hd.eyebrow ? hd.eyebrow + ' ' : ''}${hd.main}. ${v.best ? 'Best show ' + fmt(v.best.applause) + '.' : ''}`, {assertive: true});
+    // The core announces the run end itself (assertive, spec §13); add only the best show, politely.
+    if (v.best) call(G, 'announce', `Best show: ${fmt(v.best.applause)} at show ${v.best.n}.`, {assertive: false});
   }
 
   function init(game) {

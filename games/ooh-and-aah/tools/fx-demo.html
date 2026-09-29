@@ -230,12 +230,13 @@ function bench(name, o, ms, reps) {
   o = o || {}; reps = reps || 3;
   const n = Math.round(ms / (1000 / 60)), js = new Float64Array(n).fill(1e9), full = new Float64Array(n).fill(1e9);
   let peak = 0;
-  const g = sky.getContext('2d');
+  const g = sky.getContext('2d'), bd = DESK ? $('#backdrop').getContext('2d') : null;
   for (let r = 0; r < reps; r++) {
     load(name, o); step(400, {flush: true}); FX.stats().resetMax(); play({speed: o.speed || 1});
     for (let k = 0; k < n; k++) {
       simT += 1 / 60; FX.update(1 / 60);
       const t0 = performance.now(); FX.render(); const t1 = performance.now(); g.getImageData(0, 0, 1, 1); const t2 = performance.now();
+      if (bd) bd.getImageData(0, 0, 1, 1);   // the backdrop too: an unflushed canvas piles up draw lists across frames
       if (t1 - t0 < js[k]) js[k] = t1 - t0;
       if (t2 - t0 < full[k]) full[k] = t2 - t0;
     }

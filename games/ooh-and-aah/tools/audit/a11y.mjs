@@ -75,14 +75,14 @@
  *                  Dynamic probe: every enabled control is hovered with the mouse; any new on-screen
  *                  text that keyboard focus and the accessible name do not also give is a FAIL
  *                  (catches JS tooltips). JS pointerover / mouseenter listeners are listed as notes.
- *                  Runs at 360×740 and at desktop width, in BUILD and on the end screen.
+ *                  Runs at every viewport, in BUILD and on the end screen.
  *
  *   Full interactive flow (e, f, g, i, overlays, the end screen): every viewport (see --full). The
  *   primary (360×740) and desktop (≥1200 px) viewports play the run to its end (F2 workshop,
  *   run-end announcements); the others end it at once with Abandon (keyboard, pause menu).
  *   Layout checks (a, b, c, d, k) run at every viewport in BUILD show 1, RESOLVING, BUILD show 2
  *   (shop + result card), every overlay and the end screen. (h) runs in its own reduced-motion
- *   contexts. (j) runs at the primary viewport; (l) at the primary and the desktop viewport.
+ *   contexts per viewport. (j) and (l) run at every viewport (tokens shrink at short heights).
  *   Findings carry the owning module (src/CONTRACT.md) so they can be routed.
  *
  * USAGE
@@ -1006,8 +1006,11 @@ function pageHelpers() {
       for (const n of [tok, ...tok.querySelectorAll('*')]) {
         const cs = getComputedStyle(n);
         if (/drop-shadow|blur\(/.test(cs.filter)) glows.push(`${H.sel(n)} filter ${cs.filter.slice(0, 40)}`);
-        if (cs.boxShadow !== 'none' && /\d+px \d+px [1-9]\d*px/.test(cs.boxShadow)) glows.push(`${H.sel(n)} box-shadow`);
-        if (cs.textShadow !== 'none') glows.push(`${H.sel(n)} text-shadow`);
+        // a glow is a shadow with a blur radius (ring shadows "0 0 0 1px" are outlines, not glows)
+        const blurred = cs.boxShadow !== 'none' && cs.boxShadow.split(/,(?![^(]*\))/).some(sh => { const l = sh.replace(/(rgba?|hsla?|color|oklch|oklab)\([^)]*\)|inset/gi, '').match(/-?[\d.]+px/g) || []; return parseFloat(l[2] || '0') > 0; });
+        if (blurred) glows.push(`${H.sel(n)} box-shadow ${cs.boxShadow.slice(0, 40)}`);
+        const tBlur = cs.textShadow !== 'none' && cs.textShadow.split(/,(?![^(]*\))/).some(sh => { const l = sh.replace(/(rgba?|hsla?|color|oklch|oklab)\([^)]*\)/gi, '').match(/-?[\d.]+px/g) || []; return parseFloat(l[2] || '0') > 0; });
+        if (tBlur) glows.push(`${H.sel(n)} text-shadow ${cs.textShadow.slice(0, 40)}`);
       }
       out.push({ sel: H.sel(tok.closest('button') || tok), outline, glows: glows.slice(0, 2) });
     }
@@ -1915,8 +1918,7 @@ async function sampleAnims(page, ms, every = 100) {
   while (Date.now() - t0 < ms) { try { all.push(...(await page.evaluate(() => window.__A11Y.animations()))); } catch (e) { /* ignore */ } await sleep(every); }
   return all;
 }
-async function reducedMotionAudit() {
-  const vp = PRIMARY;
+async function reducedMotionAudit(vp = PRIMARY) {
   // 1) OS-level prefers-reduced-motion: reduce
   let G = null;
   try {
@@ -2016,9 +2018,9 @@ async function auditViewport(vp, full) {
     if (buy.ok && buy.via && !/pointer/.test(buy.via)) REPORT.notes.push(`${vp}: purchase made via ${buy.via}`);
     await sleep(300);
     marks.afterBuy = (await liveLog(page)).length;
-    if (vp === PRIMARY) await guard('j', vp, 'BUILD show 2', () => greyscaleAudit(G, 'BUILD show 2'));
-    // hover: the phone layout and the desktop layout (where a mouse is the norm)
-    if (vp === PRIMARY || G.w >= 1200) await guard('l', vp, 'BUILD show 2', () => hoverAudit(G, 'BUILD show 2'));
+    await guard('j', vp, 'BUILD show 2', () => greyscaleAudit(G, 'BUILD show 2'));
+    // hover: every layout (the dynamic probe matters most at desktop width, where a mouse is the norm)
+    await guard('l', vp, 'BUILD show 2', () => hoverAudit(G, 'BUILD show 2'));
     if (!full) {
       await guard('g', vp, 'scripted show', async () => {
         const log = await liveLog(page);
@@ -2034,7 +2036,10 @@ async function auditViewport(vp, full) {
 
     // ---- overlays (f): pause, settings (+ i), logbook, help, inspect
     const fromFire = async key => { await page.evaluate(() => window.__A11Y.focusSel('#fire')); await page.keyboard.press(key); };
-    if ((want('f') || want('e') || want('i') || want('a')) && overBudget(60)) REPORT.notes.push(`${vp}: overlay checks skipped (time budget)`);
+    if ((want('f') || want('e') || want('i') || want('a')) && overBudget(60)) {
+      REPORT.notes.push(`${vp}: overlay checks skipped (time budget)`);
+      for (const c of 'fi') if (want(c)) record(c, vp, 'overlays', { skip: `skipped: --budget ${OPTS.budget}s nearly exhausted` });
+    }
     else if (want('f') || want('e') || want('i') || want('a')) {
       await auditOverlay(G, 'pause', [
         { name: 'key P', run: () => fromFire('p') },
@@ -2211,7 +2216,7 @@ async function auditViewport(vp, full) {
     if (ended) {
       await waitOpen(page, '#end', true, 4000);
       const endRes = await auditOverlay(G, 'end', [{ name: 'run end (automatic)', run: async () => true }], { close: false, expectFocus: '#run-it-back' });
-      if (vp === PRIMARY || G.w >= 1200) await guard('l', vp, 'end overlay', () => hoverAudit(G, 'end overlay'));
+      await guard('l', vp, 'end overlay', () => hoverAudit(G, 'end overlay'));
       if (endRes && want('f')) {
         await page.evaluate(() => window.__A11Y.focusSel('#run-it-back'));
         await page.keyboard.press('Enter');
@@ -2306,7 +2311,7 @@ function printReport(rows) {
   const vps = OPTS.viewports;
   const pad = (s, n) => String(s).padEnd(n);
   const cell = (st, n) => (st === '-' ? '-' : st + (n && st !== 'PASS' && st !== 'SKIP' && st !== 'ERROR' ? ' ' + n : ''));
-  const W = 46;
+  const W = 48;
   const lines = [];
   lines.push('');
   lines.push(`Ooh × Aah: accessibility and layout audit (${path.relative(process.cwd(), OPTS.file) || OPTS.file})`);
@@ -2401,24 +2406,26 @@ async function main() {
   await IMGPAGE.evaluate(imgHelpers);
 
   try {
-    // primary viewport first, then reduced motion (so a tight budget still covers h), then the rest
-    const order = [PRIMARY, ...(want('h') ? ['h'] : []), ...OPTS.viewports.filter(v => v !== PRIMARY)];
+    // primary viewport first; each viewport's main flow, then its reduced-motion contexts ("h@vp")
+    const vps = [PRIMARY, ...OPTS.viewports.filter(v => v !== PRIMARY)];
+    const order = vps.flatMap(v => (want('h') ? [v, 'h@' + v] : [v]));
     const runStep = async step => {
-      if (overBudget(step === 'h' ? 25 : 35)) {
+      const isH = step.startsWith('h@'), vp = isH ? step.slice(2) : step;
+      if (overBudget(isH ? 25 : 35)) {
         const why = `skipped: --budget ${OPTS.budget}s exhausted`;
-        REPORT.notes.push(`${step === 'h' ? 'reduced motion' : step}: ${why}`);
-        if (step === 'h') record('h', PRIMARY, 'reduced motion', { skip: why });
-        else for (const c of 'abcdk') if (want(c)) record(c, step, 'viewport', { skip: why });
+        REPORT.notes.push(`${vp}${isH ? ' reduced motion' : ''}: ${why}`);
+        if (isH) record('h', vp, 'reduced motion', { skip: why });
+        else for (const c of 'abcdk') if (want(c)) record(c, vp, 'viewport', { skip: why });
         return;
       }
-      log(step === 'h' ? 'reduced motion' : 'viewport ' + step);
-      if (step === 'h') await reducedMotionAudit();
-      else await auditViewport(step, OPTS.full.includes(step));
+      log((isH ? 'reduced motion ' : 'viewport ') + vp);
+      if (isH) await reducedMotionAudit(vp);
+      else await auditViewport(vp, OPTS.full.includes(vp));
     };
-    // --jobs browser contexts in parallel (each viewport is independent; default 2)
+    // --jobs browser contexts in parallel (each step is independent; default 2)
     const queue = order.slice();
     await Promise.all(Array.from({ length: Math.min(OPTS.jobs, queue.length) }, async () => { while (queue.length) await runStep(queue.shift()); }));
-    REPORT.runs.sort((a, b) => order.indexOf(a.viewport) - order.indexOf(b.viewport));
+    REPORT.runs.sort((a, b) => vps.indexOf(a.viewport) - vps.indexOf(b.viewport));
   } finally {
     await BROWSER.close().catch(() => {});
     SERVER.close();

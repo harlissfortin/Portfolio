@@ -953,6 +953,7 @@ const FX = (() => {
     g.fillStyle = kind === 'fusion' ? t.paper : col; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, x0 + w / 2, y0 + h / 2 + 1);
     if (kind === 'fusion') { g.fillStyle = col; g.font = '700 ' + Math.round(f2 * 0.8) + 'px ' + FONT_UI; g.fillText('✦', x0 + 17, y0 + h / 2 + 1); g.fillText('✦', x0 + w - 17, y0 + h / 2 + 1); }
     b.on = true; b.w = w + 4; b.h = h + 4; b.t0 = T; b.dur = dur; b.y = y; b.kind = kind;
+    clearPopups(W / 2 - 6 - b.w / 2, y - b.h / 2, W / 2 - 6 + b.w / 2, y + b.h / 2);   // a banner is L1: nothing sits on it
     return b;
   }
   function drawBanners(c) {
@@ -1711,8 +1712,9 @@ const FX = (() => {
     c.globalCompositeOperation = 'lighter';
     for (let k = 0; k < 2; k++) {
       if (APULSE[k] <= 0.01) continue;
+      // a floor glow under the chip, not behind its numerals: the readout keeps the highest contrast (§9 squint test)
       const A = anchor(k === 0 ? 'ooh' : 'aah'), r = 26 + 14 * APULSE[k];
-      c.globalAlpha = 0.5 * APULSE[k]; c.drawImage(BIG[k === 0 ? 4 : 1], A.x - r, A.y - r * 0.7, 2 * r, 1.4 * r);
+      c.globalAlpha = 0.42 * APULSE[k]; c.drawImage(BIG[k === 0 ? 3 : 1], A.x - r, A.y + 6, 2 * r, 0.62 * r);
     }
     c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
   }
