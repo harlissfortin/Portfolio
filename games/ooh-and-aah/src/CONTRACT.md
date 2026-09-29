@@ -20,7 +20,7 @@ There is one script tag and one shared global scope. Each JS module defines exac
 Completeness and clarity win over bytes:
 - **Do not cut features or tiers to save size.** Every Tier 1, 2 and 3 item in spec §11.1 ships.
 - **Do not minify or obfuscate.** Keep the code readable.
-- **Budgets:** there is no hard budget below 1,200 KB. `tools/build.mjs` warns above 800 KB and fails only above 1,200 KB.
+- **Budgets:** there is no hard budget below 1,200 KB. `tools/build.mjs` warns above 900 KB and fails only above 1,200 KB.
 - **Still avoid bloat.** Share helpers through the contract instead of duplicating them, and keep long text in one table.
 
 ## Ownership
@@ -149,7 +149,7 @@ Each defines `const UI_X = (() => { …; return { init(game), … } })()`. `GAME
 
 | Module | Scope |
 |---|---|
-| `UI_PLAY` | `#hud`, `#sponsor`, `#sky-overlay` (live readout, result card, info card, mood, Headliner telegraph labels), `#rack`, `#tools`, `#shop`, `#workshop`, `#fire`, `#inspect`. Owns selection and drag state, the §8.4 legibility layer, and the play-scope keys. It calls `FX.setScene` with tube centres after each layout or state change. |
+| `UI_PLAY` | `#hud`, `#sponsor`, `#sky-overlay` (live readout, result card, info card, mood, Headliner telegraph labels), `#rack`, `#tools`, `#shop`, `#workshop`, `#fire`, `#inspect`. Owns selection and drag state, the §8.4 legibility layer, and the play-scope keys. It also renders the `.mood` button inside `#firebar` and makes the HUD Coins and Crowd tappable buttons (`[data-hud]`) that open one-line sheets. It calls `FX.setScene` with tube centres after each layout or state change. |
 | `UI_PANELS` | `#board` and `#showlog` (a desktop side panel; on mobile it opens as the `'showlog'` sheet by tapping the Applause on the result card). |
 | `UI_END` | `#end` (the spec §8.2 end screen). Opens on `'runEnd'`; `'end'`-scope keys. |
 | `UI_MENUS` | `#pause-menu`, `#settings`, `#logbook`, `#help`, `#toasts`, `#tap-continue`; global keys `P`, `L`, `?`. |

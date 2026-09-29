@@ -16,69 +16,12 @@
 const UI_PLAY = (() => {
   'use strict';
 
-  /* ================= 0. Fixed tables (spec text; OOH.DATA wins when present) ================= */
+  /* ================= 0. Fixed tables (visual keys only; every rule, tip and name text comes from OOH.DATA) ================= */
 
-  const COLS = { R: ['Red', 'circle'], A: ['Gold', 'triangle'], G: ['Green', 'square'], B: ['Blue', 'diamond'], W: ['White', 'cross'], X: ['Rainbow', 'star'] };
-  const FESTS = ['Spring Lanterns', 'May Fair', 'Midsummer', 'Regatta', 'Harvest Moon', 'Bonfire Night', 'Winter Lights', "New Year's Eve"];
-  const SLOTS = ['Twilight', 'Evening', 'Headliner'];
-  const MOODS = { restless: 'Restless', hopeful: 'Hopeful', eager: 'Eager' };
+  const PLATE_KEY = { R: 'circle', A: 'triangle', G: 'square', B: 'diamond', W: 'cross', X: 'star' }; // plate outline per colour
   const RARITY = { C: ['Common', 1], U: ['Uncommon', 2], R: ['Rare', 3] };
-  const SPONSORS = {
-    coin: ['Riverside Brewery', 'pays +$2', 'pays 2 coins'],
-    crowd: ['The Gazette', 'pays Crowd +4', 'pays Crowd plus 4'],
-    rare: ['The Collector', 'pays a Collector card', 'adds a Rare card to the next shop'],
-  };
-  const RIGS = {
-    tall: ['Tall Tube', 4, "This tube's bursts hang 1 longer."],
-    brass: ['Brass Tube', 5, '+2 Aah after each burst from this tube.'],
-    spotlight: ['Spotlight', 5, 'Ooh from this tube (shell and fusion) ×2.'],
-    lucky: ['Lucky Tube', 4, '+$1 when this tube fires (once per show).'],
-    mortar: ['Mortar', 10, 'This tube fires its shell twice. At most 1 Mortar per rack.'],
-  };
-  const RULES = {
-    headwind: ['Headwind', 'The first burst is a dud: it scores nothing but still hangs.'],
-    drizzle: ['Drizzle', 'All Hang −1.'],
-    critic: ['The Critic', 'A burst the same colour as the burst before it earns no Ooh (White and Rainbow exempt).'],
-    shortfuse: ['Short Fuse', 'Only tubes 1–5 fire.'],
-    fog: ['Fog', 'Shells see only the 2 newest bursts.'],
-    ordinance: ['Noise Ordinance', 'White shells fire at half strength.'],
-    windshift: ['Wind Shift', 'The fuse runs right to left; rigs stay put.'],
-    ferry: ['Late Ferry', 'Half the Crowd misses the show: the Crowd adds only half.'],
-    crossed: ['Crossed Wires', 'Tubes 2, 4, 6 fire first, then 1, 3, 5.'],
-    streetlights: ['Sodium Streetlights', 'Tubes 2, 4 and 6 are washed out: their bursts count as White.'],
-    powercut: ['Power Cut', '+Aah is capped at 30 per show (× still works).'],
-    rival: ['Rival Crew', 'Your ♛ Crowd Favourite (as of lighting) fires at half strength.'],
-    countdown: ['Midnight Countdown', 'The fuse counts down N→1, then fires 1→N. The sky carries over; no rain check.'],
-    countdown3: ['Midnight Countdown', 'Three passes: 1→N, N→1, then 1→N. The sky carries over; no rain check.'],
-  };
-  // §4.13 one-line tooltips (fallback when OOH.DATA.TOOLTIPS lacks the id)
-  const TIPS = {
-    t_fuse: 'Light the fuse. Tubes fire left to right.',
-    t_sky: "Bursts hang in the sky. 'Sees' counts what's still up when a tube fires.",
-    t_aah: 'Aah multiplies Ooh.',
-    t_head: 'Headwind: your first burst is a dud but still hangs. Open with a long-hanging shell.',
-    t_mood: "The crowd's mood reads your rack against tonight's target. It never shows the score.",
-    t_crowd: 'Every show you pass grows your Crowd. It adds its size to Ooh.',
-    t_interest: '+$1 for every $5 you hold (max +$5).',
-    t_twin: 'Drop it on its twin: all its numbers double.',
-    t_fusion: 'Fire these two in this order to fuse them.',
-    t_crate: "Crate shells don't fire. Swap them in any time.",
-    t_rig: 'Rigs stay with the tube, not the shell.',
-    t_tube: 'More tubes, more bursts. 6 at most.',
-    t_sponsor: "A sponsor raises tonight's target ×1.5 and pays if you make it. Check the crowd with Accept on.",
-    t_match: "Match re-seats your shells so tonight's fuse fires them in their usual order.",
-    t_rain: 'Rain check used. Miss again and the season ends.',
-    t_count: 'Midnight Countdown: the fuse counts down 6→1, then fires 1→6. Your last tube opens and closes the show.',
-  };
-  const PAYOUT_LABELS = [ // [keys…, label, kind]
-    [['base', 'fee', 'showFee'], 'show fee', '$'],
-    [['interest'], 'interest', '$'],
-    [['sponsor', 'sponsorCoins', 'sponsorCoin'], 'sponsor', '$'],
-    [['shellCoins', 'coins', 'coinGain', 'shells'], 'from shells', '$'],
-    [['crowd', 'crowdGain', 'crowdPass'], 'Crowd', 'c'],
-    [['encore', 'encoreCrowd'], 'Encore Crowd', 'c'],
-    [['sponsorCrowd'], 'sponsor Crowd', 'c'],
-  ];
+  // Play-screen tips that are not in OOH.DATA.TOOLTIPS (DATA wins when it adds the id).
+  const UI_TIPS = { t_swap: 'Drop on a tube to swap. The old shell goes to the Crate.' };
 
   /* ================= 1. Icons (inline SVG, currentColor) ================= */
 
@@ -94,7 +37,8 @@ const UI_PLAY = (() => {
     match: svg(S_('M3 7h14M13.5 3.5 17 7l-3.5 3.5M21 17H7M10.5 13.5 7 17l3.5 3.5')),
     restore: svg(S_('M3.5 12a8.5 8.5 0 1 0 2.6-6.1M3.5 4v5h5M12 7.5V12l3 2')),
     rehearse: svg(S_('M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z') + '<circle cx="12" cy="12" r="3"/>'),
-    eye: svg(S_('M2.5 12s3.4-5.8 9.5-5.8 9.5 5.8 9.5 5.8-3.4 5.8-9.5 5.8S2.5 12 2.5 12z') + '<circle class="f" cx="12" cy="12" r="3.2"/>', 'ic eye'),
+    // "sees": a burst hanging in the sky (Rehearse keeps the eye)
+    sees: svg('<circle class="f" cx="12" cy="12" r="2.8"/>' + S_('M12 2.8v4M12 17.2v4M2.8 12h4M17.2 12h4M5.5 5.5l2.8 2.8M15.7 15.7l2.8 2.8M18.5 5.5l-2.8 2.8M8.3 15.7l-2.8 2.8'), 'ic sees-ic'),
     info: svg('<circle cx="12" cy="12" r="9.2"/>' + S_('M12 11v6M12 7.6v.2')),
     crown: svg(F_('M3 8.5l4.6 3.8L12 5l4.4 7.3L21 8.5 19.2 19H4.8z'), 'ic crown'),
     crate: svg(S_('M3.5 9h17v11h-17zM3.5 9l2-4.5h13l2 4.5M9.5 13h5')),
@@ -148,6 +92,7 @@ const UI_PLAY = (() => {
   const building = () => ui() === 'BUILD' || ui() === 'RESULT';
   const reduced = () => !!(G && G.reducedMotion);
   const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+  const touchy = () => (lastPointer ? lastPointer !== 'mouse' : !!(window.matchMedia && matchMedia('(hover: none)').matches));
   const overflows = el => !!el && el.getClientRects().length > 0 && el.scrollWidth > el.clientWidth + 0.5;
   // Progressive fitting: raise host[data-fit] one level at a time (CSS sheds detail per level) until over() is false.
   // `key` names everything the fit depends on (markup, width, fonts): an unchanged key skips the climb, which
@@ -214,27 +159,35 @@ const UI_PLAY = (() => {
     return r || { id, name: cap(id), mono: cap(id).slice(0, 2), cost: 3, hang: 1, rarity: 'C' };
   }
   function rigInfo(id) {
-    const r = lookup(DATA().RIGS, id) || {}, f = RIGS[id] || [cap(id), 0, ''];
-    return { id, name: r.name || f[0], cost: r.cost != null ? r.cost : f[1], text: r.text || r.effect || r.rule || f[2] };
+    const r = lookup(DATA().RIGS, id) || {};
+    return { id, name: r.name || cap(id), cost: r.cost != null ? r.cost : 0, text: r.text || r.effect || r.rule || '' };
   }
   function ruleInfo(id) {
-    const r = lookup(DATA().RULE_INFO, id) || lookup(DATA().HEADLINERS, id) || {}, f = RULES[id] || [cap(id), ''];
-    return { id, name: r.name || f[0], text: r.rule || r.text || r.effect || f[1] };
+    const r = lookup(DATA().RULE_INFO, id) || lookup(DATA().HEADLINERS, id) || {};
+    return { id, name: r.name || cap(id), text: r.rule || r.text || r.effect || '' };
   }
   function tipText(id) {
     const t = DATA().TOOLTIPS, e = t && (Array.isArray(t) ? t.find(x => x && x.id === id) : t[id]);
-    let s = (e && (typeof e === 'string' ? e : e.text)) || TIPS[id] || '';
+    let s = (e && (typeof e === 'string' ? e : e.text)) || UI_TIPS[id] || '';
     if (id === 't_count') { const n = S().tubes.length; s = s.replace(/6→1/, n + '→1').replace(/1→6/, '1→' + n); }
     return s;
   }
-  const colName = c => (COLS[c] || COLS.W)[0];
-  const colShape = c => (COLS[c] || COLS.W)[1];
+  // A tip's advice without its opening restatement of the rule ("Headwind: … . Open with …" → "Open with …").
+  function tipAdvice(id, name) {
+    const t = tipText(id);
+    if (!name || !t.startsWith(name + ':')) return t;
+    return t.split(/(?<=[.!?])\s+/).slice(1).join(' ') || t;
+  }
+  const colRow = c => lookup(DATA().COLOURS, c) || lookup(DATA().COLOURS, 'W') || {};
+  const colName = c => colRow(c).name || 'White';
+  const colShape = c => colRow(c).shape || PLATE_KEY[c] || 'cross';
+  const moodName = m => (DATA().MOOD_NAMES && DATA().MOOD_NAMES[m]) || cap(m);
   const shellName = sh => row(sh.id).name || cap(sh.id);
   const shellCol = sh => sh.col || row(sh.id).col || 'W';
   const rigShort = id => rigInfo(id).name.replace(/ Tube$/, '');
   function festName(f) {
     const t = DATA().FESTIVALS, e = t && t[f - 1];
-    return (e && (typeof e === 'string' ? e : e.name)) || FESTS[f - 1] || 'Afterparty ' + (f - 8);
+    return (e && (typeof e === 'string' ? e : e.name)) || 'Afterparty ' + (f - 8);
   }
   function cardText(id, col, star) {
     const o = sim();
@@ -258,7 +211,7 @@ const UI_PLAY = (() => {
   const slotOf = s => s % 3;
   const lastShow = () => (S().endless ? 35 : 23);
   const headlinerShow = s => s + (2 - slotOf(s));
-  const showName = s => (s === 23 ? 'Midnight Countdown' : SLOTS[slotOf(s)]);
+  const showName = s => (s === 23 ? ruleInfo('countdown').name : ((DATA().SHOW_NAMES || [])[slotOf(s)] || ''));
   function rulesFor(s) {
     const o = sim(), st = S();
     if (fnIn(o, 'rulesFor')) { const r = safe(() => o.rulesFor(st, s), null); if (Array.isArray(r)) return r; }
@@ -295,7 +248,7 @@ const UI_PLAY = (() => {
     const c = row(sh.id).cost || 3;
     return sh.star >= 2 ? 2 * c : Math.ceil(1.5 * c);
   }
-  const sellValue = sh => Math.max(1, Math.floor(0.75 * (sh.paid || 0)));
+  const sellValue = sh => (fnIn(sim(), 'sellValue') ? sim().sellValue(sh) : Math.max(1, Math.floor(0.75 * (sh.paid || 0))));
   const rarityOf = r => RARITY[r.rar || r.rarity] || RARITY.C;
   function rerollCost() {
     const o = sim(), st = S();
@@ -373,8 +326,11 @@ const UI_PLAY = (() => {
       sees: typeof c.sees === 'number' ? c.sees : null,
       ooh: num('ooh', 'plusOoh', 'oohGain', 'gainOoh'),
       aah: num('aah', 'plusAah', 'aahGain', 'gainAah'),
-      x: num('x', 'mult', 'times', 'xAah', 'multAah') || 1,
+      x: num('x', 'mult', 'times', 'multAah') || 1,
+      xAah: num('xAah'),
       fusion: fu && typeof fu === 'object' ? (fu.name || fu.id || '?') : fu,
+      fusionKey: fu && typeof fu === 'object' ? fu.key || null : null,
+      fusionNext: c.fusionNext && typeof c.fusionNext === 'object' ? { key: c.fusionNext.key || '', name: c.fusionNext.name || '?', tube: c.fusionNext.tube } : null,
       crowd: num('crowd', 'crowdGain'),
       coin: num('coin', 'coins', 'coinGain'),
       half: !!c.half, washed: !!c.washed, dud: !!c.dud,
@@ -408,11 +364,13 @@ const UI_PLAY = (() => {
   let held = null;               // {kind:'card', i} | {kind:'shell', slot} | {kind:'rig'}
   let hover = null;              // slot under the drag / keyboard focus while holding
   let targets = new Map();       // slotKey → the legal action for dropping `held` there
+  let swaps = new Map();         // slotKey → {kind:'swap'|'replace', out, refund, cost} for a card over an occupied tube
   let hypo = new Map();          // slotKey → {state, chips, order, sky} for that drop
   let sellArmed = null;          // slotKey armed for a 2-tap sell
   let flash = null;              // transient info-card message, cleared by the next input
-  let rehearse = false;          // Rehearse (H): preview the posted Headliner
+  let rehearse = false;          // Rehearse (H): preview the next Headliner
   let drag = null;               // pointer bookkeeping
+  let lastPointer = '';          // 'mouse' | 'touch' | 'pen' of the last press (the chip legend is for touch)
   let suppressUntil = 0;         // swallow the click that follows a drag / long-press
   let shownShow = -1;            // the show whose build we last opened
   let frozen = false;            // HUD / rack / shop hold still while RESOLVING
@@ -444,7 +402,7 @@ const UI_PLAY = (() => {
       return s;
     })(),
   };
-  const plateSVG = col => `<svg class="tok-plate" viewBox="0 0 44 44" aria-hidden="true" focusable="false">${PLATE[colShape(col)]}</svg>`;
+  const plateSVG = col => `<svg class="tok-plate" viewBox="0 0 44 44" aria-hidden="true" focusable="false">${PLATE[PLATE_KEY[col] || 'cross']}</svg>`;
 
   function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   function fallbackPicto(col) { // a plain radial burst when FX.pictogram is unavailable
@@ -520,8 +478,8 @@ const UI_PLAY = (() => {
       '<div class="hud-title"><span id="hud-show"></span></div>' +
       '<div class="hud-tgt"><span id="hud-target"></span><span class="hud-next"></span>' +
       '<button type="button" class="hud-head" data-hud="head"></button></div>' +
-      `<div class="hud-coins"><span class="vh">Coins</span><span id="hud-coins" class="num" data-fx-anchor="coins"></span></div>` +
-      `<div class="hud-crowd"><span class="vh">Crowd</span>${ICON.crowd}<span id="hud-crowd" class="num"></span><span class="hud-half" hidden>½</span></div>` +
+      `<button type="button" class="hud-coins" data-hud="coins"><span class="vh">Coins</span><span id="hud-coins" class="num" data-fx-anchor="coins"></span></button>` +
+      `<button type="button" class="hud-crowd" data-hud="crowd"><span class="vh">Crowd</span>${ICON.crowd}<span id="hud-crowd" class="num"></span><span class="hud-half" hidden>½</span></button>` +
       '<button type="button" class="hud-ic hud-rain" data-hud="rain"></button>';
     E.hudTitle = $('.hud-title', E.hud);
     E.hudTgt = $('.hud-tgt', E.hud);
@@ -532,6 +490,8 @@ const UI_PLAY = (() => {
     E.coins = $('#hud-coins');
     E.crowd = $('#hud-crowd');
     E.crowdHalf = $('.hud-half', E.hud);
+    E.coinsBtn = $('.hud-coins', E.hud);
+    E.crowdBtn = $('.hud-crowd', E.hud);
     E.rain = $('.hud-rain', E.hud);
 
     // Sponsor: the whole strip is one toggle
@@ -541,12 +501,13 @@ const UI_PLAY = (() => {
     // Sky overlay: DOM labels over the canvas (never fillText body text; §11.5)
     E.over.innerHTML =
       '<div class="sky-top"><div class="sky-label"></div><button type="button" class="rh-pill" data-sky="rule" hidden></button></div>' +
-      '<div class="lastchance" hidden>Last chance</div>' +
+      '<div class="lastchance" hidden>Last chance: one more miss ends the run</div>' +
       '<div class="readout" hidden aria-hidden="true"><span class="ro-o">OOH <b data-fx-anchor="ooh">0</b></span><span class="ro-x">×</span><span class="ro-a">AAH <b data-fx-anchor="aah">1</b></span><span class="ro-cap" hidden>cap 30</span></div>' +
       '<div class="result" hidden></div>' +
       '<div class="tip" hidden role="note"></div>' +
       '<div class="cheer" aria-hidden="true"><i class="band"></i><i class="fill"></i><i class="tick"></i></div>' +
-      '<div class="info" hidden></div>';
+      '<div class="info" hidden></div>' +
+      '<div class="legend" hidden aria-hidden="true"></div>';
     E.skyLabel = $('.sky-label', E.over);
     E.rhPill = $('.rh-pill', E.over);
     E.lastChance = $('.lastchance', E.over);
@@ -558,6 +519,7 @@ const UI_PLAY = (() => {
     E.tip = $('.tip', E.over);
     E.cheer = $('.cheer', E.over);
     E.info = $('.info', E.over);
+    E.legend = $('.legend', E.over);
 
     // Rack: 6 stable tube buttons (unused ones hidden), canopy arc, fuse
     let tubes = '';
@@ -580,17 +542,16 @@ const UI_PLAY = (() => {
       '<div class="crate">' +
       '<button type="button" class="slot" data-crate="0"></button><button type="button" class="slot" data-crate="1"></button></div>' +
       '<span class="divider" aria-hidden="true"></span>' +
-      `<button type="button" class="tool" data-act="undo" aria-label="Undo (U)">${ICON.undo}</button>` +
-      `<button type="button" class="tool" data-act="match" aria-label="Match: re-seat shells for tonight's fuse (M)">${ICON.match}</button>` +
-      `<button type="button" class="tool" data-act="restore" aria-label="Restore last show's order (B)">${ICON.restore}</button>` +
-      `<button type="button" class="tool" data-act="rehearse" aria-pressed="false" aria-label="Rehearse the next Headliner (H)">${ICON.rehearse}</button>` +
-      '<span class="tools-hint" aria-hidden="true"></span>';
+      `<button type="button" class="tool" data-act="undo" aria-label="Undo (U)">${ICON.undo}<span class="tl" aria-hidden="true">Undo</span></button>` +
+      `<button type="button" class="tool" data-act="match" aria-label="Match: re-seat shells for tonight's fuse (M)">${ICON.match}<span class="tl" aria-hidden="true">Match</span></button>` +
+      `<button type="button" class="tool" data-act="restore" aria-label="Restore last show's order (B)">${ICON.restore}<span class="tl" aria-hidden="true">Restore</span></button>` +
+      `<button type="button" class="tool" data-act="rehearse" aria-pressed="false" aria-label="Rehearse the next Headliner (H)">${ICON.rehearse}<span class="tl" aria-hidden="true">Rehearse</span></button>`;
     E.crates = [...E.tools.querySelectorAll('[data-crate]')];
     E.undo = $('[data-act="undo"]', E.tools);
     E.match = $('[data-act="match"]', E.tools);
     E.restore = $('[data-act="restore"]', E.tools);
     E.rehearse = $('[data-act="rehearse"]', E.tools);
-    E.toolsHint = $('.tools-hint', E.tools);
+
 
     // Shop: 4 stable card buttons (3 in a row, or 4 in a 2×2 grid)
     let cards = '';
@@ -608,10 +569,15 @@ const UI_PLAY = (() => {
     E.tubeBtn = $('[data-act="buyTube"]', E.workshop);
     E.rerollBtn = $('[data-act="reroll"]', E.workshop);
 
-    // Fire: label + mood pill at its right end
-    E.fire.innerHTML = '<span class="fire-lbl">Light the fuse</span><span class="mood" hidden><span class="mood-w"></span></span>';
+    // Fire: the label only. The mood pill is its own button beside it (a tap on it explains the mood, never lights).
+    E.fire.innerHTML = '<span class="fire-lbl">Light the fuse</span>';
     E.fireLbl = $('.fire-lbl', E.fire);
-    E.mood = $('.mood', E.fire);
+    E.mood = document.createElement('button');
+    E.mood.type = 'button';
+    E.mood.className = 'mood';
+    E.mood.dataset.act = 'mood';
+    E.mood.hidden = true;
+    E.firebar.appendChild(E.mood);
   }
 
   /* ================= 7. Layout (ResizeObserver on the column; §8.1) ================= */
@@ -744,7 +710,7 @@ const UI_PLAY = (() => {
     for (let j = 0; j < 3; j++) pips += j === 2 ? `<i class="hl${k === 2 ? ' now' : ''}">${ICON.crown}</i>` : `<i class="${j < k ? 'done' : j === k ? 'now' : ''}"></i>`;
     setHTML(E.show, `<span class="hs-fest">${esc(festName(festOf(s)))}</span><span class="hs-slot"> · ${esc(showName(s))}</span>` +
       `<span class="hs-pips" aria-hidden="true" title="${esc(showName(s))}">${pips}</span>`);
-    setHTML(E.target, `Target <b class="display num">${fmt(targetOf(s))}</b>`);
+    setHTML(E.target, `<span class="tgt-w">Target </span><span class="tgt-g" aria-hidden="true">◎</span><b class="display num">${fmt(targetOf(s))}</b>`);
     const nx = [];
     for (let j = s + 1; j <= Math.min(lastShow(), s + 2); j++) nx.push(`<span class="nx${j - s}">${fmt(targetOf(j))}${slotOf(j) === 2 ? ICON.crown : ''}</span>`);
     setHTML(E.next, nx.length ? '<span aria-hidden="true">▸</span> ' + nx.join('<span class="nx2"> · </span>') : '');
@@ -760,6 +726,8 @@ const UI_PLAY = (() => {
     E.coins.textContent = '$' + st.coins;
     E.crowd.textContent = fmt(st.crowd);
     E.crowdHalf.hidden = !hasRule('ferry');
+    E.coinsBtn.setAttribute('aria-label', `Coins: $${st.coins}. What they do`);
+    E.crowdBtn.setAttribute('aria-label', `Crowd: ${fmt(st.crowd)}${hasRule('ferry') ? ', half tonight' : ''}. What it does`);
     const used = critical(), fw = !!st.fairWeather;
     const noRain = !used && (view.tonight.some(r => /^countdown/.test(r)) || st.renown >= 6 || st.rain === 0);
     setHTML(E.rain, ICON.umbrella.replace('</svg>', (used ? ICON.crack : '') + '</svg>') + (fw ? '<span class="fw">FW</span>' : ''));
@@ -789,9 +757,9 @@ const UI_PLAY = (() => {
     E.play.toggleAttribute('data-sponsor', !!sp);
     if (!sp) return;
     const s = view.s, t = sp.accepted ? targetOf(s) : Math.round(targetOf(s) * 1.5);
-    const k = SPONSORS[sp.kind] || [cap(sp.kind), 'pays a reward', 'pays a reward'];
+    const k = lookup(DATA().SPONSORS, sp.kind) || {}, name = k.flavour || cap(sp.kind), reward = k.reward || '';
     E.spBtn.setAttribute('aria-pressed', sp.accepted ? 'true' : 'false');
-    const pay = String(k[1]).replace(/^pays /, '');
+    const pay = k.short || (sp.kind === 'rare' ? 'a Collector card' : reward);
     const tx = E.spBtn.querySelector('.sp-text');
     setHTML(tx, `<span class="sp-l1"><b>Sponsor</b> <span class="sp-x">×1.5 </span>→ <b class="num">${fmt(t)}</b></span>` +
       `<span class="sp-l2"><span class="sp-dot"> · </span><span class="sp-p">pays </span>${esc(pay)}</span>`);
@@ -799,7 +767,7 @@ const UI_PLAY = (() => {
     const l1 = tx.firstElementChild, l2 = tx.lastElementChild;
     queueFit('sponsor', () => fitLadder(E.sponsor, 3, () => overflows(tx) || overflows(l1) || overflows(l2), tx._html + sp.accepted));
     E.spBtn.querySelector('.sp-word').textContent = sp.accepted ? 'Accepted' : 'Accept';
-    E.spBtn.setAttribute('aria-label', `Sponsor, ${k[0]}: target times 1.5, to ${fmt(t)}; ${k[2]} if you pass. ${sp.accepted ? 'Accepted' : 'Not accepted'}.`);
+    E.spBtn.setAttribute('aria-label', `Sponsor, ${name}: target times 1.5, to ${fmt(t)}. If you pass: ${reward.replace(/\.$/, '')}. ${sp.accepted ? 'Accepted' : 'Not accepted'}.`);
   }
 
   /* ---------- Rack: numerals → sees → token → rig plate → fuse ---------- */
@@ -828,21 +796,23 @@ const UI_PLAY = (() => {
       T.btn.hidden = !tb;
       if (!tb) continue;
       const key = 'tube:' + i, can = !!held && targets.has(key), hy = can ? hypoFor(key) : null;
-      const sh = tb.shell, ghost = !hv && !!hy && !sh, ord = hv ? hv.order : ghost ? hy.order : v.order;
+      // One numbering at a time: the hovered drop's rack while hovering, else tonight's rack as it stands. An empty
+      // legal tube gets no numeral; its chip says where the drop would fire ("3rd", "LAST").
+      const sh = tb.shell, ord = hv ? hv.order : v.order;
       // fire-order numerals (one row per fuse pass)
       let num = '';
       for (let p = 0; p < passes; p++) {
         const e = ord.per[i].find(x => x.pass === p);
-        const last = e && e.to === ord.total && !ghost;
+        const last = e && e.to === ord.total;
         const lbl = !e ? '' : last && e.from === e.to ? 'LAST' : e.from === e.to ? String(e.from) : e.from + '–' + e.to;
-        num += `<span class="n${last ? ' last' : ''}${ghost && e ? ' hyp' : ''}${!e ? ' none' : ''}">${lbl}</span>`;
+        num += `<span class="n${last ? ' last' : ''}${!e ? ' none' : ''}">${lbl}</span>`;
       }
       if (rules.includes('shortfuse') && i >= 5) num = '<span class="n none">no fuse</span>';
       setHTML(T.num, num);
       // sees chip (hypothetical while this tube is a legal drop)
       const sees = hv ? hv.sees[i] : hy ? hy.sees[i] : v.sees[i];
       const showSees = (sh || hy || (hv && hovKey === key)) && sees != null;
-      setHTML(T.sees, showSees ? `${ICON.eye}<span class="sw">sees\u00a0</span>${sees}` : '');
+      setHTML(T.sees, showSees ? `${ICON.sees}<span class="sw">sees\u00a0</span>${sees}` : '');
       T.sees.classList.toggle('local', !!(hy || hv) && showSees);
       T.sees.classList.toggle('fogged', rules.includes('fog') && sees != null);
       // token + telegraph badges
@@ -863,17 +833,25 @@ const UI_PLAY = (() => {
         : `<span class="t-empty">${ICON.plus}</span>`);
       // local chips on legal drops: +Ooh, +Aah, ×, ✦, Crowd, $ (never a total; §8.4)
       let chips = '';
+      const sw = can ? swaps.get(key) : null;
+      if (hy && !sh && !hv) { // where an empty tube's drop would fire
+        const e = hy.order.per[i];
+        if (e && e.length) chips += `<span class="chip c-ord">${e[e.length - 1].to === hy.order.total ? 'LAST' : ordinal(e[0].from)}</span>`;
+      }
       if (hy && hy.chips[i]) {
-        const c = hy.chips[i];
+        const c = hy.chips[i], fu = c.fusion || (c.fusionNext && c.fusionNext.name);
         if (!partners) {
           if (c.ooh) chips += `<span class="chip c-ooh">+${fmtChip(c.ooh)}</span>`;
           if (c.aah) chips += `<span class="chip chip-aah c-aah">+${fmtChip(c.aah)}</span>`;
-          if (c.x > 1) chips += `<span class="chip chip-x c-x">${fmtX(c.x)}</span>`;
+          if (c.x > 1) chips += `<span class="chip chip-x c-x">${fmtX(c.x)}</span>` + (c.xAah >= 0.05 ? `<span class="chip c-xaah">(+${fmtChip(c.xAah)})</span>` : '');
         }
-        if (c.fusion) chips += `<span class="chip chip-fusion">✦${c.fusion === '?' ? ' ?' : ''}</span>`;
+        if (fu) chips += `<span class="chip chip-fusion">✦${fu === '?' ? ' ?' : ''}</span>`;
         if (!partners && c.crowd) chips += `<span class="chip c-crowd">${ICON.crowd}+${fmtChip(c.crowd)}</span>`;
         if (!partners && c.coin) chips += `<span class="chip c-coin">+$${fmtChip(c.coin)}</span>`;
-      } else if (hy && !partners) chips = '<span class="chip c-none">+0</span>';
+        if (!partners && !c.ooh && !c.aah && !(c.x > 1) && !c.crowd && !c.coin && !fu) chips += '<span class="chip c-none">+0</span>';
+      } else if (hy && !partners) chips += '<span class="chip c-none">+0</span>';
+      if (sw) chips += sw.kind === 'swap' ? `<span class="chip c-swap" title="Swap in: ${esc(shellName(sw.out))} goes to the Crate">→${ICON.crate}</span>`
+        : `<span class="chip c-swap sell" title="Replace: sells ${esc(shellName(sw.out))}">✕+$${sw.refund}</span>`;
       setHTML(T.chips, chips);
       // rig plate
       setHTML(T.rig, tb.rig ? (ICON.rig[tb.rig] || '') : '');
@@ -913,11 +891,14 @@ const UI_PLAY = (() => {
       if (e.length) s += ', fires ' + e.map(x => ordinal(x.from) + (x.to > x.from ? ' to ' + ordinal(x.to) : '')).join(' and ') + ' of ' + ord.total;
       else s += ', does not fire';
       if (sees != null) s += ', sees ' + sees;
-      if (view.fav === i) s += ', crowd favourite';
+      if (view.fav === i) s += ', Crowd Favourite';
       if (o.half) s += ', half strength';
       if (o.washed) s += ', washed out';
     }
-    if (held) s += targets.has('tube:' + i) ? ', drop here' : '';
+    if (held && targets.has('tube:' + i)) {
+      const w = swaps.get('tube:' + i);
+      s += !w ? ', drop here' : w.kind === 'swap' ? `, drop here to swap in: ${shellName(w.out)} goes to the Crate` : `, drop here to replace: sells ${shellName(w.out)} for ${w.refund} coins`;
+    }
     return s;
   }
   // The Critic: tubes with a burst right after a same-colour burst (White / Rainbow / wild exempt).
@@ -975,7 +956,7 @@ const UI_PLAY = (() => {
     const crate = S().crate || [null, null];
     E.crates.forEach((b, i) => {
       const sh = crate[i], key = 'crate:' + i, can = !!held && targets.has(key);
-      setHTML(b, sh ? tokenHTML(sh, { size: 'mini' }) : ICON.crate);
+      setHTML(b, sh ? tokenHTML(sh, { size: 'mini' }) : ICON.crate + '<span class="tl" aria-hidden="true">Crate</span>');
       b.classList.toggle('empty', !sh);
       b.classList.toggle('sel', !!held && held.kind === 'shell' && sameSlot(held.slot, { zone: 'crate', i }));
       b.classList.toggle('can', can);
@@ -994,17 +975,8 @@ const UI_PLAY = (() => {
     E.rehearse.setAttribute('aria-label', view.auto ? (view.rules.length ? `Rehearse: tonight's ${hName} is live` : 'Rehearse (H)') : `Rehearse ${hName || 'the next Headliner'} (H)`);
     E.rehearse.classList.toggle('on', view.rehearsing);
     E.rehearse.disabled = !hName || view.auto;
-    const hint = view.rehearsing ? 'Rehearsing' : '';
-    if (E.toolsHint.textContent !== hint) E.toolsHint.textContent = hint;
-    // a word, or nothing: never a clipped half-word (measured only when the word or the width changes)
-    if (!hint) { E.toolsHint.style.visibility = ''; E.toolsHint._fitKey = null; }
-    else queueFit('hint', () => {
-      const k = fitEpoch + '|' + mode + '|' + lastW + '|' + E.tools.className + hint;
-      if (E.toolsHint._fitKey === k) return;
-      E.toolsHint.style.visibility = '';
-      E.toolsHint.style.visibility = overflows(E.toolsHint) ? 'hidden' : '';
-      E.toolsHint._fitKey = k;
-    });
+    // Every tool carries its name under the icon; at 360 px with wide fallback fonts the row tightens instead of clipping.
+    queueFit('tools', () => fitLadder(E.tools, 2, () => E.tools.scrollWidth > E.tools.clientWidth + 0.5 || [...E.tools.querySelectorAll('.tl')].some(overflows), String(view.rehearsing) + (S().crate || []).map(x => !!x).join()));
   }
 
   /* ---------- Shop: 3-card row or 2×2 grid ---------- */
@@ -1013,7 +985,7 @@ const UI_PLAY = (() => {
     const four = cards.length >= 4;
     E.shop.dataset.n = four ? '4' : '3';
     E.shopEmpty.hidden = cards.length > 0;
-    if (!cards.length) E.shopEmpty.innerHTML = view.s === 0 ? 'The stalls open after the first show.' : 'The stalls are closed tonight.';
+    if (!cards.length) E.shopEmpty.textContent = view.s === 0 ? 'The shop opens after the first show.' : 'No shop tonight.';
     const mine = owned();
     const pairs = fusionPairs();
     E.cards.forEach((b, i) => {
@@ -1102,11 +1074,13 @@ const UI_PLAY = (() => {
     E.fire.disabled = !(resolving || u === 'BUILD' || u === 'RESULT');
     const mv = !resolving && moodVisible();
     E.mood.hidden = !mv;
+    E.firebar.classList.toggle('has-mood', mv);
     if (mv) {
       E.mood.dataset.mood = view.mood;
-      setHTML(E.mood, moodIcon(view.mood) + `<span class="mood-w">${MOODS[view.mood] || cap(view.mood)}</span>`);
+      setHTML(E.mood, moodIcon(view.mood) + `<span class="mood-w">${esc(moodName(view.mood))}</span>`);
+      E.mood.setAttribute('aria-label', `Crowd mood: ${moodName(view.mood)}. What it means`);
     }
-    E.fire.setAttribute('aria-label', resolving ? 'Skip to the result (Space twice)' : 'Light the fuse (F)' + (mv ? '. Crowd mood: ' + (MOODS[view.mood] || view.mood) : ''));
+    E.fire.setAttribute('aria-label', resolving ? 'Skip to the result (Space twice)' : 'Light the fuse (F)');
     E.fire.classList.toggle('glow', !resolving && !!S().firstRun && view.s === 0);
     E.fire.classList.toggle('crit', critical());
   }
@@ -1121,7 +1095,7 @@ const UI_PLAY = (() => {
     E.rhPill.hidden = !showPill;
     if (showPill) {
       const r = ruleInfo(rid), extra = view.rules.slice(1).map(x => ruleInfo(x).name);
-      const moodTxt = view.rehearsing && moodVisible() && view.pmood ? `: ${MOODS[view.pmood] || view.pmood}` : '';
+      const moodTxt = view.rehearsing && moodVisible() && view.pmood ? `: ${moodName(view.pmood)}` : '';
       setHTML(E.rhPill, ruleIcon(rid) + `<span>${view.rehearsing ? 'Rehearsing ' : 'Tonight: '}${esc(r.name)}${extra.length ? ' + ' + esc(extra.join(' + ')) : ''}${esc(moodTxt)}</span>`);
       E.rhPill.dataset.mood = view.rehearsing ? view.pmood || '' : '';
       E.rhPill.setAttribute('aria-label', `${view.rehearsing ? 'Rehearsing' : 'Tonight'}: ${r.name}. ${r.text}${moodTxt ? ' Crowd mood ' + moodTxt.slice(2) : ''}. Open the card.`);
@@ -1142,11 +1116,29 @@ const UI_PLAY = (() => {
       const t = E.info.querySelector('.info-t'); queueFit('info', () => fitLadder(E.info, 2, () => overflows(t), info));
     }
     E.skyWrap.classList.toggle('has-info', !!info);
+    // A racked shell's rule gets its 3 lines beside Sell (spec §8.1): the card grows only when 2 lines would cut it.
+    const tallable = !!info && !flash && !!held && held.kind === 'shell' && mode === 'regular';
+    if (!tallable) { E.info.classList.remove('tall'); E.skyWrap.classList.remove('info-tall'); }
+    else queueFit('infoTall', () => {
+      const x = E.info.querySelector('.info-x');
+      E.info.classList.remove('tall');
+      const tall = !!x && x.getClientRects().length > 0 && x.scrollHeight > x.clientHeight + 1;
+      E.info.classList.toggle('tall', tall);
+      E.skyWrap.classList.toggle('info-tall', tall);
+    });
+    // §8.4 chip legend while a card or shell is held on touch (no hover line there): the chip colours in words
+    const lg = !!info && !flash && !!held && held.kind !== 'rig' && targets.size > 0 && !hover && touchy();
+    E.legend.hidden = !lg;
+    if (lg) {
+      const partners = G.settings && G.settings.chips === 'partners';
+      setHTML(E.legend, (partners ? '' : '<span class="chip c-ooh">+Ooh</span><span class="chip c-aah">+Aah</span><span class="chip c-x">×Aah</span>') +
+        '<span class="chip chip-fusion">✦ fuse</span>' + (swaps.size ? `<span class="chip c-swap">→${ICON.crate} swap</span>` : ''));
+    }
     // result card (pinned until the first build action)
     const showRes = !!result && u !== 'RESOLVING' && !info;
     E.result.hidden = !showRes;
-    if (showRes) { const h = resultHTML(result); if (h !== E.result.dataset.html) { E.result.innerHTML = h; E.result.dataset.html = h; } } // no replayed rise on every render
-    else delete E.result.dataset.html;
+    if (showRes) { const h = resultHTML(result); if (h !== E.result.dataset.html) { E.result.innerHTML = h; E.result.dataset.html = h; } queueFit('result', fitResult); } // no replayed rise on every render
+    else { delete E.result.dataset.html; E.result._fitKey = null; E.play.removeAttribute('data-res-cover'); }
     E.skyWrap.classList.toggle('has-result', showRes);
     // cheer meter: mood band while building, live fill while resolving
     const target = readout.on || result ? (result ? result.target : litTarget) : targetOf(view.s);
@@ -1193,14 +1185,32 @@ const UI_PLAY = (() => {
 
   function resultHTML(r) {
     const ratio = r.target ? r.applause / r.target : 0;
-    const verdict = r.pass ? `Pass ×${(Math.floor(ratio * 10) / 10).toFixed(1)}` : `${fmt(Math.max(0, r.target - r.applause))} short`;
-    let pay = '';
-    for (const it of r.items) pay += `<li class="${it.kind === 'c' ? 'p-crowd' : 'p-coin'}">${esc(it.text)}</li>`;
+    const verdict = r.pass ? `Pass · ${(Math.floor(ratio * 10) / 10).toFixed(1)}× target` : `${fmt(Math.max(0, r.target - r.applause))} short`;
+    let pay = '', coins = 0, crowd = 0;
+    for (const it of r.items) {
+      pay += `<li class="${it.kind === 'c' ? 'p-crowd' : 'p-coin'}">${esc(it.text)}</li>`;
+      if (it.kind === 'c') crowd += it.v; else coins += it.v;
+    }
+    const tot = [coins ? `+$${coins}` : '', crowd ? `Crowd +${crowd}` : ''].filter(Boolean).join(' · ');
     return `<div class="res-card" data-pass="${r.pass ? 1 : 0}">` +
-      `<div class="res-head"><span class="res-verdict">${esc(verdict)}</span>${r.encore ? '<span class="res-encore">Encore!</span>' : ''}${r.relit ? '<span class="res-encore">One more!</span>' : ''}</div>` +
+      `<div class="res-head"><span class="res-verdict">${esc(verdict)}</span>${r.encore ? '<span class="res-encore enc">Encore!</span>' : ''}${r.relit ? '<span class="res-encore">One more!</span>' : ''}</div>` +
       `<button type="button" class="res-app" data-res="log" aria-label="Applause ${fmt(r.applause)}. Open the show log.">${fmt(r.applause)}</button>` +
       `<div class="res-eq">Ooh ${fmt(r.ooh)} × Aah ${fmtAah(r.aah)} <span class="res-vs">· target ${fmt(r.target)}</span></div>` +
-      (pay ? `<ul class="res-pay">${pay}</ul>` : '') + '</div>';
+      (r.rainUsed ? '<p class="res-rain">Rain check used. One more miss ends the run.</p>' : '') +
+      (pay ? `<ul class="res-pay">${pay}</ul>` : '') +
+      (tot ? `<p class="res-tot">${r.encore ? '<span class="tot-x">Encore! · </span>' : ''}${esc(tot)}</p>` : '') + '</div>';
+  }
+  // The result card sheds detail until it fits between the sky's top furniture (the compact Sponsor strip) and
+  // its bottom edge: 1 smaller Applause · 2 Applause beside the verdict · 3 no target, tighter chips · 4 totals for the
+  // itemised payout · 5 no Ooh × Aah line · 6 the card also covers the compact Sponsor strip until the first action.
+  // Nothing is ever cut mid-row.
+  function fitResult() {
+    const card = E.result.firstElementChild;
+    if (!card || E.result.hidden) { E.play.removeAttribute('data-res-cover'); return; }
+    const h = E.skyWrap.clientHeight;
+    fitLadder(E.result, 6, () => card.offsetHeight > E.result.clientHeight + 0.5, E.result.dataset.html + '|' + h + '|' + E.play.hasAttribute('data-sponsor'),
+      () => E.play.removeAttribute('data-res-cover'));
+    E.play.toggleAttribute('data-res-cover', E.result.dataset.fit === '6');
   }
 
   /* ---------- Info card ---------- */
@@ -1214,8 +1224,8 @@ const UI_PLAY = (() => {
       const twin = owned().find(o => o.sh.id === c.id && (o.sh.star || 1) < 3);
       title = `<b>${esc(r.name)}</b><span class="t-o1"> · ${colName(col)}</span> · $${c.cost}${twin ? `<span class="t-o2"> · twin ★${twin.sh.star + 1} $${upCost(twin.sh)}</span>` : ''}`;
       text = cardText(c.id, col, 1);
-      line3 = targets.size ? 'Tap a lit tube. Chips: white +Ooh · gold +Aah · ringed ×' : `Need $${Math.min(c.cost, twin ? upCost(twin.sh) : c.cost) - st.coins} more, or a free tube.`;
-      if (!targets.size && c.cost <= st.coins) line3 = 'No free tube: move a shell to the Crate, sell one, or add a tube.';
+      const need = targets.size ? 0 : shortfall(held.i);
+      line3 = targets.size ? 'Tap a lit tube. Chips: white +Ooh · gold +Aah · ringed ×' : need > 0 ? `Need $${need} more.` : 'No free tube: move a shell to the Crate, sell one, or add a tube.';
       if (st.kit === 'chemist' && r.col === '*') btns += '<button type="button" class="ib" data-info="colour" aria-label="Change colour (C)">Colour</button>';
     } else if (held.kind === 'shell') {
       const sh = slotShell(held.slot);
@@ -1225,7 +1235,7 @@ const UI_PLAY = (() => {
       text = cardText(sh.id, shellCol(sh), sh.star || 1);
       line3 = held.slot.zone === 'crate' ? 'In the Crate: it does not fire. Tap a tube to swap it in.' : 'Tap another tube to move or swap. The arc shows who sees it.';
       const k = slotKey(held.slot), armed = sellArmed === k;
-      btns += `<button type="button" class="ib sell${armed ? ' armed' : ''}" data-info="sell" aria-label="${armed ? 'Confirm: sell' : 'Sell'} ${esc(shellName(sh))} for ${sellValue(sh)} coins">${armed ? 'Tap again: sell' : 'Sell'} $${sellValue(sh)}</button>`;
+      btns += `<button type="button" class="ib sell${armed ? ' armed' : ''}" data-info="sell" aria-label="${armed ? 'Confirm: sell' : 'Sell'} ${esc(shellName(sh))} for ${sellValue(sh)} coins">${armed ? '<span>Tap again</span><span>to sell</span>' : `<span>Sell</span><span>$${sellValue(sh)}</span>`}</button>`;
     } else if (held.kind === 'rig') {
       const rc = st.shop.rig, ri = rigInfo(rc.id);
       title = `<b>${esc(ri.name)}</b><span class="t-o1"> · rig</span> · $${rc.cost != null ? rc.cost : ri.cost}`;
@@ -1236,18 +1246,26 @@ const UI_PLAY = (() => {
     return `<div class="info-body"><p class="info-t">${title}</p><p class="info-x">${esc(text)}</p><p class="info-h">${esc(line3)}</p></div>` + infoBtns(btns);
   }
   const infoBtns = extra => `<div class="info-btns">${extra}<button type="button" class="ib ib-i" data-info="inspect" aria-label="Inspect (I)">${ICON.info}</button></div>`;
+  const fusePartner = (key, first) => { const [a, b] = String(key || '').split('>'); const id = first ? b : a; return id ? row(id).name || cap(id) : ''; };
+  function chipWords(c) { // a drop's local chips in words (the hover line and the legend's source of truth)
+    const bits = [];
+    if (!c) return bits;
+    if (c.ooh) bits.push(`+${fmtChip(c.ooh)} Ooh`);
+    if (c.aah) bits.push(`+${fmtChip(c.aah)} Aah`);
+    if (c.x > 1) bits.push(c.xAah >= 0.05 ? `${fmtX(c.x)} (+${fmtChip(c.xAah)} Aah)` : `${fmtX(c.x)} Aah`);
+    if (c.fusion) bits.push(c.fusionKey ? `✦ with ${fusePartner(c.fusionKey, false)}` : '✦ ' + c.fusion);
+    if (c.fusionNext) bits.push(`✦ with ${fusePartner(c.fusionNext.key, true)} next`);
+    if (c.crowd) bits.push(`Crowd +${fmtChip(c.crowd)}`);
+    if (c.coin) bits.push(`+$${fmtChip(c.coin)}`);
+    return bits;
+  }
   function hoverLine(slot) {
     if (slot.zone === 'crate') return `${slotName(slot)}: shells here do not fire.`;
-    const hy = hypoFor(slotKey(slot));
+    const key = slotKey(slot), hy = hypoFor(key);
     if (!hy) return '';
-    const c = hy.chips[slot.i], e = hy.order.per[slot.i], bits = [`Tube ${slot.i + 1}`];
-    if (c) {
-      if (c.ooh) bits.push(`+${fmtChip(c.ooh)} Ooh`);
-      if (c.aah) bits.push(`+${fmtChip(c.aah)} Aah`);
-      if (c.x > 1) bits.push(fmtX(c.x) + ' Aah');
-      if (c.fusion) bits.push('✦ ' + c.fusion);
-      if (c.crowd) bits.push(`Crowd +${fmtChip(c.crowd)}`);
-    }
+    const e = hy.order.per[slot.i], w = swaps.get(key), bits = [`Tube ${slot.i + 1}`];
+    if (w) bits.push(w.kind === 'swap' ? `Swap in · ${shellName(w.out)} → Crate` : `Replace · +$${w.refund}`);
+    bits.push(...chipWords(hy.chips[slot.i]));
     if (hy.sees[slot.i] != null) bits.push('sees ' + hy.sees[slot.i]);
     if (e && e.length) bits.push(`fires ${ordinal(e[0].from)} of ${hy.order.total}${e[e.length - 1].to === hy.order.total ? ' · LAST' : ''}`);
     return bits.join(' · ');
@@ -1255,14 +1273,47 @@ const UI_PLAY = (() => {
 
   /* ================= 10. Holding: legal targets and hypothetical racks (§8.4) ================= */
 
+  // §2.5 one-gesture swap-in is off in the first-ever run's shows 1–2: the mood is hidden there, and those shows
+  // cannot be failed (spec §6), so no drop may make them failable.
+  const swapsOn = () => !(S().firstRun && (S().show | 0) < 2);
   function computeTargets(item) {
     const m = new Map();
+    swaps = new Map();
     for (const a of view.legal) {
       if (item.kind === 'card' && (a.type === 'buy' || a.type === 'upgrade') && a.card === item.i && a.to) m.set(slotKey(a.to), a);
       else if (item.kind === 'shell' && a.type === 'move' && sameSlot(a.from, item.slot) && a.to) m.set(slotKey(a.to), a);
       else if (item.kind === 'rig' && a.type === 'buyRig') m.set('tube:' + a.tube, a);
     }
+    // A card over an occupied non-twin tube: swap it in (the old shell goes to the Crate) or, with the Crate
+    // full, replace it (the old shell is sold). OOH.placeHeld names the exact action; the SIM judges it.
+    const o = sim();
+    if (item.kind === 'card' && swapsOn() && fnIn(o, 'placeHeld')) {
+      S().tubes.forEach((tb, j) => {
+        const key = 'tube:' + j;
+        if (!tb.shell || m.has(key)) return;
+        const h = safe(() => o.placeHeld(S(), { card: item.i }, j), null);
+        if (!h || (h.kind !== 'swap' && h.kind !== 'replace') || !h.action) return;
+        if (fnIn(o, 'illegalReason') && safe(() => o.illegalReason(S(), h.action), 'error')) return;
+        m.set(key, h.action);
+        swaps.set(key, { kind: h.kind, out: h.out || tb.shell, refund: h.refund || 0, cost: h.cost });
+      });
+    }
     return m;
+  }
+  // The coins a held card still lacks for its cheapest drop (0 when money is not what blocks it).
+  function shortfall(i) {
+    const st = S(), c = st.shop.cards[i];
+    if (!c) return 0;
+    const opts = [];
+    if (st.tubes.some(t => !t.shell) || (st.crate || []).some(x => !x)) opts.push(c.cost);
+    const twin = owned().find(o => o.sh.id === c.id && (o.sh.star || 1) < 3);
+    if (twin) opts.push(upCost(twin.sh));
+    if (swapsOn()) st.tubes.forEach(t => {
+      if (!t.shell || t.shell.id === c.id) return;
+      opts.push((st.crate || []).some(x => !x) ? c.cost : c.cost - sellValue(t.shell));
+    });
+    if (!opts.length) return 0;
+    return Math.max(0, Math.min(...opts) - st.coins);
   }
   // Apply the drop to a clone to read its exact local chips (the SIM stays untouched).
   function hypoFor(key) {
@@ -1299,11 +1350,14 @@ const UI_PLAY = (() => {
     sfx('tick');
     dismissTip();
     if (item.kind !== 'rig') queueTip('t_sky', '#rack');
+    // The first time the rack is full while a card is held: say that a drop on a tube swaps (§2.5).
+    if (item.kind === 'card' && S().tubes.every(t => t.shell) && [...swaps.values()].some(w => w.kind === 'swap')) showOwnTip('t_swap');
     render();
   }
   function clearHeld(silent) {
     const had = !!held;
-    held = null; hover = null; targets = new Map(); hypo = new Map();
+    held = null; hover = null; targets = new Map(); hypo = new Map(); swaps = new Map();
+    if (tip && tip.id === 't_swap') { tip = null; renderTip(); }
     if (had && !silent) render();
   }
   function setHover(slot) {
@@ -1326,6 +1380,7 @@ const UI_PLAY = (() => {
     const ev = G.dispatch(act) || [];
     const bad = Array.isArray(ev) && ev.find(e => e && e.type === 'illegal');
     if (bad) { deny(null, 'Not possible', bad.reason ? cap(String(bad.reason)) + '.' : 'That move is not allowed right now.', true); return false; }
+    if (Array.isArray(ev) && !ev.length) return true; // held in core's 120 ms input buffer (RESOLVING): nothing happened yet, so no success feedback
     const extra = SILENT_IN_AUDIO[act.type];
     if (extra) sfx(extra[0], act.type === 'setColour' ? { col: act.col } : extra[1]);
     if (act.type === 'reroll' && !reduced()) E.cards.forEach((b, i) => { b.style.animationDelay = i * 60 + 'ms'; b.classList.remove('flip'); void b.offsetWidth; b.classList.add('flip'); });
@@ -1419,6 +1474,7 @@ const UI_PLAY = (() => {
   }
 
   function onDown(e) {
+    lastPointer = e.pointerType || lastPointer;
     if (!e.isPrimary || e.button > 0) return;
     if (ui() === 'RESOLVING') return; // core fast-forwards ×4 on a tap anywhere in #play (§2.4)
     const el = itemEl(e.target);
@@ -1502,6 +1558,8 @@ const UI_PLAY = (() => {
     if (act === 'buyTube') { clearHeld(true); return tryAct('buyTube'); }
     if (el.dataset.hud === 'head' || el.dataset.sky === 'rule') return inspectItem({ kind: 'rule', id: el.dataset.sky ? view.rules[0] : view.hRules[0] });
     if (el.dataset.hud === 'rain') return inspectItem({ kind: 'rain' });
+    if (el.dataset.hud === 'coins' || el.dataset.hud === 'crowd') return inspectItem({ kind: el.dataset.hud });
+    if (act === 'mood') return inspectItem({ kind: 'mood' });
     if (el.dataset.res === 'log') { if (fnIn(G, 'open')) G.open('showlog'); return; }
     const inf = el.dataset.info;
     if (inf === 'inspect') return inspectItem(held ? (held.kind === 'shell' ? { kind: 'slot', slot: held.slot } : held) : null);
@@ -1518,9 +1576,10 @@ const UI_PLAY = (() => {
         const act = targets.get(k);
         if (act) return commit(act);
         if (held.kind === 'card') {
-          const c = S().shop.cards[held.i];
-          if (sh) return deny(el, `${cap(slotName(it.slot))} is taken`, `Drop ${row(c.id).name} on an empty tube${owned().some(o => o.sh.id === c.id) ? ' or on its twin' : ''}.`);
-          return deny(el, 'Not enough coins', `${row(c.id).name} costs $${c.cost}; you have $${S().coins}.`);
+          const c = S().shop.cards[held.i], nm = row(c.id).name, need = shortfall(held.i);
+          if (sh && sh.id === c.id && (sh.star || 1) >= 3) return deny(el, `${nm} is already ★3`, 'Drop it on another tube, or pick another card.');
+          if (sh && (it.slot.zone === 'crate' || !swapsOn())) return deny(el, `${cap(slotName(it.slot))} is taken`, `Drop ${nm} on an empty tube${owned().some(o => o.sh.id === c.id) ? ' or on its twin' : ''}.`);
+          return deny(el, 'Not enough coins', need > 0 ? `Need $${need} more.` : `${nm} costs $${c.cost}. You have $${S().coins}.`);
         }
         if (held.kind === 'rig') return deny(el, 'Rig not allowed here', it.slot.zone === 'crate' ? 'Rigs go on tubes.' : 'That tube already has this rig, or the rack already has a Mortar.');
         if (sh) return hold({ kind: 'shell', slot: it.slot });
@@ -1575,6 +1634,10 @@ const UI_PLAY = (() => {
         swallowKeyClick = performance.now() + 600; // cleared right after this key's keyup (Space clicks on keyup)
         return done();
       }
+      // A build key pressed as the show ends goes to core, which holds it for 120 ms and applies it if RESULT
+      // begins in time (spec §11.5); otherwise it expires as 'busy'.
+      const early = { t: { type: 'buyTube' }, x: { type: 'reroll' }, m: { type: 'match' }, b: { type: 'restore' } }[k.length === 1 ? k.toLowerCase() : k];
+      if (early) { commit(early); return done(); }
       return false;
     }
     if (!building()) return false;
@@ -1688,6 +1751,7 @@ const UI_PLAY = (() => {
       pass: sm.pass != null ? !!sm.pass : entry.pass != null ? !!entry.pass : !!ap.pass,
       encore: sm.encore != null ? !!sm.encore : !!(entry.encore || ap.encore),
       relit: !!(sm.relit || entry.relit), over: !!sm.over, items: payoutItems(pay),
+      rainUsed: !!sm.rainUsed && !sm.over && !(sm.pass != null ? sm.pass : entry.pass),
     };
     readout.on = false;
     frozen = false; // the HUD takes the payout at the slam
@@ -1707,8 +1771,8 @@ const UI_PLAY = (() => {
     coin(sp ? sp.coins : pay.sponsorCoins, 'sponsor');
     coin(pay.shellCoins, 'from shells');
     crowd(n(pay.crowdPass) + n(pay.crowdHeadliner) + n(pay.shellCrowd), 'Crowd');
-    crowd(pay.crowdEncore, 'Encore Crowd');
-    crowd(sp ? sp.crowd : 0, 'Sponsor Crowd');
+    crowd(pay.crowdEncore, 'Encore: Crowd');
+    crowd(sp ? sp.crowd : 0, 'Sponsor: Crowd');
     if (sp && sp.collector) out.push({ kind: '$', v: 0, text: 'Collector card next shop' });
     return out;
   }
@@ -1754,7 +1818,6 @@ const UI_PLAY = (() => {
       const known = fus.filter(([a, b]) => fusionFound(a, b));
       const fusTxt = known.map(([a, b, f]) => `<li>✦ ${esc(row(a).name)} → ${esc(row(b).name)}: <b>${esc((f && f.name) || '')}</b></li>`).join('') +
         (fus.length > known.length ? `<li class="dim">✦ ${fus.length - known.length} more fusion${fus.length - known.length > 1 ? 's' : ''} to discover</li>` : '');
-      const tags = [].concat(r.tags || []).filter(t => t && t !== 'basic').map(cap);
       const facts = [`${colName(col)} ${colShape(col)}`, `★${star}`, `Hang ${hang}${r.shots > 1 ? ' each' : ''}`, rar[0], `$${r.cost}`];
       if (r.shots > 1) facts.push(`${r.shots} bursts`);
       let place = '';
@@ -1769,7 +1832,7 @@ const UI_PLAY = (() => {
       }
       return `<div class="insp-head">${tokenHTML(sh, { size: 'xl', hang })}<div><h2>${esc(r.name)}</h2><p class="insp-sub">${esc(facts.join(' · '))}</p></div></div>` +
         place + `<ul class="insp-tiers">${tiers}</ul>` + (fusTxt ? `<ul class="insp-fus">${fusTxt}</ul>` : '') +
-        (tags.length ? `<p class="insp-tags">Build style: ${esc(tags.join(' · '))}</p>` : '') + tipLine(where && where.tip || 't_sky') +
+        tipLine(where && where.tip || 't_sky') +
         `<div class="insp-btns">${extraBtns || ''}${close}</div>`;
     };
     if (item.kind === 'card') {
@@ -1790,7 +1853,7 @@ const UI_PLAY = (() => {
       if (!rc) return '';
       const ri = rigInfo(rc.id);
       return `<div class="insp-head"><span class="insp-glyph">${ICON.rig[rc.id] || ''}</span><div><h2>${esc(ri.name)}</h2><p class="insp-sub">Rig · $${rc.cost != null ? rc.cost : ri.cost}</p></div></div>` +
-        `<p class="insp-rule">${esc(ri.text)}</p><p>Rigs stay on the tube when shells move, and cannot be sold. A new rig replaces the old one.</p>${tipLine('t_rig')}<div class="insp-btns">${close}</div>`;
+        `<p class="insp-rule">${esc(ri.text)}</p><p>Rigs stay on the tube when shells move, and cannot be sold. A new rig replaces the old one.</p><div class="insp-btns">${close}</div>`;
     }
     if (item.kind === 'rule') {
       if (!item.id) return '';
@@ -1798,18 +1861,33 @@ const UI_PLAY = (() => {
       return `<div class="insp-head"><span class="insp-glyph">${ruleIcon(item.id)}</span><div><h2>${esc(r.name)}</h2><p class="insp-sub">${show === s ? 'Tonight' : 'Show ' + (show + 1) + ' · ' + festName(festOf(show)) + ' Headliner'} · target ${fmt(targetOf(show))}</p></div></div>` +
         `<p class="insp-rule">${esc(r.text)}</p>` +
         (show !== s ? '<p>Press <b>Rehearse</b> (H) to preview it on your rack: numerals, chips and the crowd\'s mood switch to its rule.</p>' : '') +
-        (item.id === 'windshift' || item.id === 'crossed' ? tipLine('t_match') : item.id === 'headwind' ? tipLine('t_head') : /^countdown/.test(item.id) ? tipLine('t_count') : '') +
+        (() => { // the tip's advice only: the rule itself is the line above
+          const id = item.id === 'windshift' || item.id === 'crossed' ? 't_match' : item.id === 'headwind' ? 't_head' : /^countdown/.test(item.id) ? 't_count' : null;
+          const t = id ? tipAdvice(id, r.name) : '';
+          return t ? `<p class="insp-tip">${esc(t)}</p>` : '';
+        })() +
         `<div class="insp-btns">${close}</div>`;
     }
     if (item.kind === 'rain') {
       const used = critical();
       return `<div class="insp-head"><span class="insp-glyph${used ? ' bad' : ''}">${ICON.umbrella}</span><div><h2>Rain check</h2><p class="insp-sub">${used ? 'Used' : 'Unused'}${st.fairWeather ? ' · Fair Weather' : ''}</p></div></div>` +
-        `<p class="insp-rule">Forgives one missed show per run, but not the Midnight Countdown.</p>${used ? tipLine('t_rain') : ''}` +
+        `<p class="insp-rule">Forgives one missed show per run, but not the Midnight Countdown.</p>${used ? '<p class="insp-tip">One more miss ends the run.</p>' : ''}` +
         (st.fairWeather ? '<p>Fair Weather: targets ×0.75, and the Countdown can be relit once.</p>' : '') + `<div class="insp-btns">${close}</div>`;
     }
     if (item.kind === 'mood') {
-      return `<div class="insp-head"><span class="insp-glyph">${moodIcon(view.mood)}</span><div><h2>Crowd mood: ${esc(MOODS[view.mood] || '')}</h2></div></div>` +
-        `<p class="insp-rule">${esc(tipText('t_mood'))}</p><p><b>Restless</b>: they doubt you. <b>Hopeful</b>: it could go either way. <b>Eager</b>: they expect a pass.</p><div class="insp-btns">${close}</div>`;
+      const m = view.mood, b = k => (k === m ? `<b>${esc(moodName(k))}</b>` : esc(moodName(k)));
+      return `<div class="insp-head"><span class="insp-glyph">${moodIcon(m)}</span><div><h2>Crowd mood: ${esc(moodName(m))}</h2></div></div>` +
+        `<p class="insp-rule">How your rack reads against tonight's target. ${b('eager')}: likely pass · ${b('hopeful')}: close · ${b('restless')}: likely miss.</p>` +
+        `<div class="insp-btns">${close}</div>`;
+    }
+    if (item.kind === 'coins') {
+      return `<div class="insp-head"><span class="insp-glyph coin">$</span><div><h2>Coins: $${st.coins}</h2></div></div>` +
+        `<p class="insp-rule">Spend them in the shop between shows. ${esc(tipText('t_interest'))}</p><div class="insp-btns">${close}</div>`;
+    }
+    if (item.kind === 'crowd') {
+      const n = st.crowd, half = view.tonight.includes('ferry') ? Math.floor(n / 2) : null;
+      return `<div class="insp-head"><span class="insp-glyph">${ICON.crowd}</span><div><h2>Crowd: ${fmt(n)}</h2></div></div>` +
+        `<p class="insp-rule">Adds ${fmt(n)} Ooh to every show${half != null ? ` (${fmt(half)} tonight: ${esc(ruleInfo('ferry').name)})` : ''}. Grows each show you pass.</p><div class="insp-btns">${close}</div>`;
     }
     return '';
   }
@@ -1820,7 +1898,7 @@ const UI_PLAY = (() => {
   // fusion badge) and lights up the element each tip is about, one at a time. Without GAME.tip it
   // shows the line itself in the sky.
   const TIP_ANCHOR = {
-    t_fuse: '#fire', t_sky: '#rack', t_aah: '.readout, .result', t_head: '.hud-head', t_mood: '#fire .mood',
+    t_fuse: '#fire', t_sky: '#rack', t_aah: '.readout, .result', t_head: '.hud-head', t_mood: '#firebar .mood',
     t_crowd: '.hud-crowd', t_interest: '.hud-coins', t_twin: '.card .b-twin', t_fusion: '.card .b-fuse',
     t_crate: '.crate', t_rig: '[data-act="buyRig"]', t_tube: '[data-act="buyTube"]', t_sponsor: '[data-act="sponsor"]',
     t_match: '[data-act="match"]', t_rain: '.hud-rain', t_count: '.hud-head',
@@ -1832,6 +1910,13 @@ const UI_PLAY = (() => {
     if ((tip && tip.id === id) || tipQueue.includes(id) || !tipText(id)) return;
     tipQueue.push(id);
     if (!tip) nextTip();
+  }
+  // A tip this screen shows itself (in the sky), once ever, until the next action or the end of the hold.
+  function showOwnTip(id) {
+    if (!G || seen(id) || !tipText(id)) return;
+    tipQueue.length = 0;
+    tipQueue.push(id);
+    nextTip();
   }
   function nextTip() {
     const id = tipQueue.shift();

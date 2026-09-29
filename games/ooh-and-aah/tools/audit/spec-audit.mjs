@@ -630,7 +630,7 @@ function specChecks(S, designText) {
     ['spec.parse.tooltips', '§4.13', 'tooltips table', S.tooltips.length, 16],
     ['spec.parse.colours', '§4.1', 'colour table (6 + fusion accent)', S.colours.length, 7],
     ['spec.parse.targets', '§5.1', 'targets table', S.targets.length, 24],
-    ['spec.parse.glossary', '§1', 'glossary', S.glossary.length, 19],
+    ['spec.parse.glossary', '§1', 'glossary', S.glossary.length, 29],
     ['spec.parse.rulescard', '§1', 'rules card lines', S.rulesCard.length, 3],
     ['spec.parse.festivals', '§1', 'festival names', S.festivalsS1.length, 8],
     ['spec.parse.goldens', '§11.8', 'golden resolver tests', S.goldens.length, 30],
@@ -973,7 +973,7 @@ function dataChecks(S, L) {
     return verdict(f, w, S.festivalsS1.join(', '));
   });
 
-  check(C('data.glossary', '§1 Glossary', '19 glossary terms and meanings (help card, Logbook)'), () => {
+  check(C('data.glossary', '§1 Glossary', '29 glossary terms and meanings (help card, Logbook)'), () => {
     const f = [], w = []; const G = asList(D.GLOSSARY).map((g) => (Array.isArray(g) ? { term: g[0], meaning: g[1] } : { term: g.term, meaning: g.meaning ?? g.text }));
     if (G.length !== S.glossary.length) f.push(`count: spec ${S.glossary.length} vs DATA ${G.length}`);
     S.glossary.forEach((g, i) => {
@@ -984,7 +984,7 @@ function dataChecks(S, L) {
       const bare = normText(g.meaning.replace(/\s*\(§[\d.]+\)/g, ''));
       if (normText(g.meaning) !== normText(d.meaning)) { if (bare !== normText(g.meaning) && normText(d.meaning) === bare) { /* cross-reference dropped: fine */ } else if (bare !== normText(g.meaning) && normText(d.meaning).startsWith(bare.replace(/\.$/, ''))) w.push(`${g.term}.meaning: spec ${short(g.meaning)} (a cross-reference) expanded in DATA to ${short(d.meaning, 120)}   ⟵ DESIGN.md:${ref}`); else fieldCmp(f, w, g.term, 'meaning', g.meaning, d.meaning, ref, 'text'); }
     });
-    return verdict(f, w, '19 terms match');
+    return verdict(f, w, '29 terms match');
   });
 
   check(C('data.rulescard', '§1 Rules card', '3-line rules card text'), () => {
@@ -1302,7 +1302,8 @@ function simChecks(spec, L) {
       if (m !== bucket) f.push(`${r.map((x) => x[0]).join(',')}: mood ${m}, §3.3 bucket for ${a}/${T0} = ${(a / T0).toFixed(3)} is ${bucket}`);
       if (bucket !== want) specWarn.push(`§6 calls the ${r.map((x) => x[0]).join(',')} rack (${score} vs target ${T0}, ratio ${(score / T0).toFixed(3)}) ${want}, but §3.3's thresholds (0.85 / 1.25) make it ${bucket}`);
     }
-    if (specWarn.length) warn({ id: 'spec.self.mood6', spec: '§6 vs §3.3', title: '§6 mood examples agree with the §3.3 bucket thresholds', owner: 'spec' }, `${specWarn.length} example(s) contradict §3.3`, specWarn);
+    { const c6 = { id: 'spec.self.mood6', spec: '§6 vs §3.3', title: '§6 mood examples agree with the §3.3 bucket thresholds', owner: 'spec' };
+      if (specWarn.length) warn(c6, `${specWarn.length} example(s) contradict §3.3`, specWarn); else pass(c6, 'every §6 mood example follows the §3.3 thresholds'); }
     return verdict(f, [], '4 examples: scores match §6, moods follow §3.3');
   });
 
@@ -1896,7 +1897,7 @@ async function browserChecks(spec, L) {
       if (!/^Show 1 of 24, Spring Lanterns Twilight\. Target 100\./.test(r.live.trim())) w.push(`#live-polite at the show 1 build: ${short(r.live.trim(), 140)} (§13: "Show 1 of 24, Spring Lanterns Twilight. Target 100. …")`);
       return verdict(f, w, 'tool states ok');
     });
-    await U('fire', '§6, §8.1', 'Light the fuse → resolution → next build: $8, Crowd 1, show-2 shop = Chrysanthemum, Palm, Comet at $3', 'play', async () => {
+    await U('fire', '§6, §8.1', 'Light the fuse → resolution → next build: $8, Crowd 1, show-2 shop = Crossette $5, Palm $3, Comet $3', 'play', async () => {
       const f = [], w = [];
       await pU.click('#fire', { timeout: T }).catch((e) => f.push('click #fire: ' + e.message.split('\n')[0]));
       await pU.waitForFunction(() => window.__game.state().show === 1 && ['BUILD', 'RESULT'].includes(document.querySelector('#app').getAttribute('data-ui')), null, { timeout: T }).catch(() => f.push('did not reach the show 2 build'));
@@ -1905,8 +1906,8 @@ async function browserChecks(spec, L) {
       if (!/\$\s?8\b/.test(r.coins || '')) f.push(`#hud-coins = ${short(r.coins)} (spec $8)`);
       if (!/\b1\b/.test(r.crowd || '')) f.push(`#hud-crowd = ${short(r.crowd)} (spec 1)`);
       if (!/130/.test(r.target || '')) f.push(`#hud-target = ${short(r.target)} (spec 130)`);
-      const want = [/Chrysanthemum/, /Palm/, /Comet/]; want.forEach((re, i) => { if (!re.test(r.cards[i] || '')) f.push(`card ${i}: ${short(r.cards[i], 120)} (spec ${re.source})`); if (r.cards[i] && !/\$\s?3/.test(r.cards[i])) w.push(`card ${i} shows no $3 price: ${short(r.cards[i], 120)}`); });
-      if (/Chrysanthemum/.test(r.cards[0] || '') && !/Green/.test(r.cards[0])) w.push('card 0 aria-label does not name its colour (Green)');
+      const want = [[/Crossette/, 5], [/Palm/, 3], [/Comet/, 3]]; want.forEach(([re, $], i) => { if (!re.test(r.cards[i] || '')) f.push(`card ${i}: ${short(r.cards[i], 120)} (spec ${re.source})`); if (r.cards[i] && !new RegExp('\\$\\s?' + $ + '\\b').test(r.cards[i])) w.push(`card ${i} shows no $${$} price: ${short(r.cards[i], 120)}`); });
+      if (/Crossette/.test(r.cards[0] || '') && !/Green/.test(r.cards[0])) w.push('card 0 aria-label does not name its colour (Green)');
       return verdict(f, w, `ui ${r.ui}, ${r.coins}, cards ${r.cards.length}`);
     });
     await U('buy-undo', 'CONTRACT, §2.5, §8.3', 'tap card then tap tube buys into that tube; Undo reverts', 'play', async () => {
@@ -1939,7 +1940,7 @@ async function browserChecks(spec, L) {
       await waitUi(pU, 'BUILD');
       return verdict(f, [], 'P, Esc, L, ?, 1, F');
     });
-    await U('help', '§8.3, §1', 'Help holds the 3-line rules card, the glossary (19 terms) and the key map', 'menus', async () => {
+    await U('help', '§8.3, §1', 'Help holds the 3-line rules card, the glossary (29 terms) and the key map', 'menus', async () => {
       await ev(pU, () => GAME.open('help')); const t = await ev(pU, () => document.querySelector('#help')?.innerText || ''); await ev(pU, () => GAME.close());
       const f = [], w = []; const T2 = normText(t);
       spec.rulesCard.forEach((l, i) => { if (!T2.includes(normText(strip(l)).slice(0, 60))) f.push(`rules card line ${i + 1} missing: ${short(strip(l), 80)}`); });
@@ -1949,7 +1950,7 @@ async function browserChecks(spec, L) {
     });
     await U('settings', '§8.3, §7.5', 'Settings lists every §8.3 control; Export/Import use an in-page text field; Reset is a 2-tap', 'menus', async () => {
       await ev(pU, () => GAME.open('settings')); const r = await ev(pU, () => ({ t: document.querySelector('#settings')?.innerText || '', inputs: document.querySelectorAll('#settings textarea, #settings input[type=text]').length })); await ev(pU, () => GAME.close());
-      const f = [], w = []; const want = [['Sound', /Sound/i], ['Music', /Music/i], ['Reduced motion', /Reduced motion/i], ['High contrast', /High contrast/i], ['Show speed 50/75/100', /50\s*%?[\s\S]*75\s*%?[\s\S]*100\s*%?/], ['Instant results', /Instant/i], ['Chips', /Chips/i], ['Crowd mood', /mood/i], ['Fair Weather', /Fair Weather/i], ['Export', /Export/i], ['Import', /Import/i], ['Reset progress', /Reset/i]];
+      const f = [], w = []; const want = [['Sound', /Sound/i], ['Music', /Music/i], ['Reduced motion', /Reduced motion/i], ['High contrast', /High contrast/i], ['Show speed 50/75/100', /50\s*%?[\s\S]*75\s*%?[\s\S]*100\s*%?/], ['Instant results', /Instant/i], ['Hints while holding (chips)', /Hints|Chips/i], ['Crowd mood', /mood/i], ['Fair Weather', /Fair Weather/i], ['Export', /Export/i], ['Import', /Import/i], ['Reset progress', /Reset/i]];
       for (const [n, re] of want) if (!re.test(r.t)) f.push(`${n} missing`);
       if (!/Haptics/i.test(r.t)) w.push('Haptics not shown (only if navigator.vibrate exists — headless Chromium has it)');
       if (!r.inputs) w.push('no in-page text field for Export/Import visible without interaction');
@@ -2094,8 +2095,8 @@ async function browserChecks(spec, L) {
       if (!lessonHit) f.push('no §4.12 lesson text found on the end screen');
       if (!/Best show/i.test(T2)) w.push('"Best show" block not found');
       if (!/Run it back/.test(T2)) f.push('no "Run it back" button text');
-      for (const [lbl, re] of [['Replay seed', /Replay seed/i], ['Kit', /\bKit\b/], ['Renown', /Renown/], ['Logbook', /Logbook/], ['keepsake "None"', /\bNone\b/], ['Pareto "Crowd" bar', /Crowd/]]) if (!re.test(T2)) w.push(`end screen lacks ${lbl}`);
-      if (!/short \(\d+%\) at /.test(T2)) w.push('no near-miss line ("N short (P%) at <festival>", §8.2 item 5)');
+      for (const [lbl, re] of [['Play this seed again', /Play this seed again/i], ['Kit', /\bKit\b/], ['Renown', /Renown/], ['Logbook', /Logbook/], ['keepsake "None"', /\bNone\b/], ['Pareto "Crowd" bar', /Crowd/]]) if (!re.test(T2)) w.push(`end screen lacks ${lbl}`);
+      if (!/ of [\d,.KMB]+ \(\d+%\) at /.test(T2)) w.push('no near-miss line ("X of Y (P%) at <show>", §8.2 item 5)');
       if (!r.rib) f.push('#run-it-back not visible'); if (r.focus !== 'run-it-back') f.push(`focus on #${r.focus} (spec: Run it back)`);
       if (r.ui !== 'END') w.push(`data-ui = ${r.ui} (expected END)`);
       if (!/./.test(r.live || '')) w.push('#live-assertive empty at run end');

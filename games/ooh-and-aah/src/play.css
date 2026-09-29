@@ -6,7 +6,7 @@
 ============================================================ */
 
 /* ---------- 1. The column: a flex column so hidden rows (Sponsor, Workshop) take no space or gap ---------- */
-#play{display:flex;flex-direction:column;gap:var(--gap);overflow:hidden;
+#play{display:flex;flex-direction:column;gap:var(--gap);overflow:hidden;--pad-top:8px;padding-top:var(--pad-top); /* room for the HUD buttons' 44 px hit areas, which overhang their 32 px row */
   --h-hud:60px;--h-sponsor:40px;--h-rack:132px;--h-tools:52px;--h-shop:124px;--h-ws:48px;--h-fire:56px;
   --tok-h:60px;--rig-h:16px;--sky-min:140px;--rows:1}
 #play[data-mode="compact"],#play[data-mode="scroll"]{
@@ -33,11 +33,12 @@
 #play[data-mode="scroll"] > #firebar{position:sticky;bottom:0;z-index:8;padding-top:4px;
   background:linear-gradient(180deg,transparent,var(--sky-horizon) 30%)}
 
-/* RESOLVING: shop, workshop and tools slide down (240 ms) and the sky grows into their space */
+/* RESOLVING: shop, workshop and tools step down and dim (240 ms) while the show plays. Their rows keep their space, so
+   the rack and the sky never move: no layout shift at the light or at the slam (transform and opacity only). */
 #play > #tools,#play > #shop,#play > #workshop,#play > #sponsor{
-  transition:height .24s var(--ease-out),margin .24s var(--ease-out),opacity .2s linear,transform .24s var(--ease-out)}
-#app[data-ui="RESOLVING"] #play > :is(#tools,#shop,#workshop,#sponsor){height:0;margin-top:calc(-1 * var(--gap));
-  opacity:0;transform:translateY(40px);pointer-events:none;overflow:hidden}
+  transition:opacity .2s linear,transform .24s var(--ease-out)}
+#app[data-ui="RESOLVING"] #play > :is(#tools,#shop,#workshop){opacity:.28;transform:translateY(10px);pointer-events:none}
+#app[data-ui="RESOLVING"] #play > #sponsor{opacity:0;pointer-events:none}
 #app[data-ui="END"] #play > :is(#shop,#workshop){opacity:.5}
 
 /* ---------- 2. HUD: Regular two rows / Compact one row ---------- */
@@ -63,6 +64,14 @@
 #hud-show .hs-pips i.hl.now{color:var(--aah);filter:drop-shadow(0 0 4px rgba(242,193,78,.55))}
 #hud-show .hs-pips .ic{display:block;width:14px;height:14px}
 #hud .hud-tgt{grid-area:tgt;display:flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;overflow-x:clip;overflow-y:visible}
+/* Narrow target block (compact HUD at 360 px): the word "Target" gives way to a ◎ glyph so the
+   Headliner button keeps its full 44 px instead of being clipped. The word stays for screen readers. */
+#hud .hud-tgt{container-type:inline-size}
+#hud .tgt-g{display:none;margin-right:3px;color:var(--paper-dim)}
+@container (max-width: 160px){
+  #hud .tgt-w{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  #hud .tgt-g{display:inline}
+}
 #hud .hud-tgt > *{flex:none}
 #hud .hud-tgt:is([data-fit="1"],[data-fit="2"],[data-fit="3"]) .hh-name{display:none}
 #hud .hud-tgt:is([data-fit="1"],[data-fit="2"],[data-fit="3"]) .hh-pill{padding:0 9px}
@@ -81,6 +90,10 @@
 #hud .hud-head.now .hh-pill{background:var(--brass);color:var(--ink);border-color:var(--brass)}
 #hud .hud-coins{grid-area:coins}
 #hud .hud-crowd{grid-area:crowd;display:flex;align-items:center;gap:4px}
+#hud :is(.hud-coins,.hud-crowd){position:relative;min-width:44px;min-height:44px;margin:-8px 0;padding:0 2px;border:0;border-radius:10px;background:transparent;
+  justify-content:center;text-align:center;
+  color:inherit;font:inherit;cursor:pointer}
+#hud :is(.hud-coins,.hud-crowd):hover{background:rgba(255,255,255,.06)}
 #hud-coins,#hud-crowd{font:600 20px/1 var(--f-display);font-variant-numeric:tabular-nums}
 #hud-coins{color:var(--aah)}
 #hud .hud-crowd > .ic{width:20px;height:20px;color:var(--paper-dim)}
@@ -143,8 +156,8 @@
 #sky-overlay .rh-pill .ic{width:18px;height:18px;flex:none;color:var(--aah)}
 #sky-overlay .rh-pill[data-mood="eager"]{border-color:var(--ok)}
 #sky-overlay .rh-pill[data-mood="restless"]{border-color:var(--danger)}
-#sky-overlay .lastchance{position:absolute;left:50%;top:44px;transform:translateX(-50%);white-space:nowrap;
-  font:italic 700 20px/1 var(--f-display);color:var(--danger);background:rgba(5,7,15,.72);padding:6px 16px;border-radius:999px;
+#sky-overlay .lastchance{position:absolute;left:50%;top:44px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 40px);
+  text-align:center;font:italic 700 18px/1.2 var(--f-display);color:var(--danger);background:rgba(5,7,15,.72);padding:5px 14px;border-radius:16px;
   border:1px solid var(--danger)}
 
 /* the live readout: OOH 145 × AAH 19.5 */
@@ -152,6 +165,8 @@
   font:700 16px/1 var(--f-ui);letter-spacing:.08em;text-shadow:0 1px 2px #000,0 0 12px rgba(0,0,0,.85)}
 #sky-overlay .readout b{display:inline-block;font:italic 700 26px/1 var(--f-display);letter-spacing:0;margin-left:4px;font-variant-numeric:tabular-nums}
 #sky-overlay .ro-o{color:var(--ooh)}
+#sky-overlay .ro-o b,#sky-overlay .ro-a b{min-width:4.6ch} /* digits are tabular: fixed boxes keep the readout still as it counts */
+#sky-overlay .ro-o b{text-align:right}
 #sky-overlay .ro-a{color:var(--aah)}
 #sky-overlay .ro-x{font:italic 700 22px/1 var(--f-display);color:var(--paper-dim)}
 #sky-overlay .ro-cap{font:700 16px/1 var(--f-ui);letter-spacing:0;color:var(--danger);border:1px solid var(--danger);border-radius:6px;padding:2px 6px}
@@ -160,40 +175,67 @@
 @keyframes ui-punch{50%{transform:scale(1.15)}}
 @keyframes ui-punch-big{45%{transform:scale(1.3)}}
 
-/* the result card, pinned after the slam until the first build action */
-#sky-overlay .result{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(320px,calc(100% - 40px))}
-#sky-overlay .res-card{pointer-events:auto;text-align:center;padding:8px 14px 10px;border-radius:14px;
+/* the result card, pinned after the slam until the first build action. It sits in a box that starts below the sky's
+   top furniture (the rule pill, or the compact Sponsor strip) and ends 6 px above the rack; UI_PLAY.fitResult raises
+   .result[data-fit] until the card fits that box (see there), so no row is ever cut or hidden under the Sponsor. */
+#sky-overlay .result{position:absolute;left:0;right:0;top:calc(var(--res-top,44px) + var(--sp-pad,0px));bottom:6px;
+  display:flex;align-items:center;justify-content:center;pointer-events:none}
+#play[data-sponsor]:is([data-mode="compact"],[data-mode="scroll"]) #sky-overlay .result{--sp-pad:48px}
+#play[data-res-cover][data-res-cover] #sky-overlay .result{--sp-pad:0px;--res-top:6px;align-items:flex-start;z-index:7}
+#play[data-res-cover]:is([data-mode="compact"],[data-mode="scroll"]) > #sponsor{visibility:hidden}
+#sky-overlay .res-card{pointer-events:auto;flex:none;width:min(320px,calc(100% - 40px));text-align:center;padding:8px 14px 10px;border-radius:14px;
   background:rgba(7,10,24,.86);border:1px solid var(--line);border-top:3px solid var(--ok);box-shadow:0 12px 40px rgba(0,0,0,.5);
   animation:ui-rise .28s var(--ease-out)}
 #sky-overlay .res-card[data-pass="0"]{border-top-color:var(--danger)}
-#sky-overlay .res-head{display:flex;justify-content:center;align-items:center;gap:8px;font:700 16px/1.2 var(--f-ui)}
+#sky-overlay .res-head{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:4px 8px;font:700 16px/1.2 var(--f-ui)}
 #sky-overlay .res-verdict{color:var(--ok)}
 #sky-overlay [data-pass="0"] .res-verdict{color:var(--danger)}
-#sky-overlay .res-encore{font:italic 700 18px/1 var(--f-display);color:var(--ink);background:var(--aah);padding:3px 10px;border-radius:999px}
+#sky-overlay .res-encore{font:italic 700 18px/1 var(--f-display);color:var(--ink);background:var(--aah);padding:2px 10px;border-radius:999px}
 #sky-overlay .res-app{display:block;margin:2px auto 0;min-height:44px;padding:0 10px;border:0;border-radius:10px;background:transparent;
   color:var(--paper);font:italic 700 44px/1 var(--f-display);font-variant-numeric:tabular-nums;
   text-decoration:underline dotted rgba(244,239,230,.35);text-decoration-thickness:2px;text-underline-offset:6px}
 #sky-overlay .res-app:hover{text-decoration-color:var(--aah)}
 #sky-overlay .res-eq{font:400 16px/1.3 var(--f-ui);color:var(--paper-dim)}
 #sky-overlay .res-vs{white-space:nowrap}
+#sky-overlay .res-rain{margin:4px 0 0;font:700 16px/20px var(--f-ui);color:#FF9A88}
 #sky-overlay .res-pay{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 6px}
-#sky-overlay .res-pay li{font:700 16px/1 var(--f-ui);padding:4px 8px;border-radius:999px;background:rgba(242,193,78,.14);color:var(--aah);font-variant-numeric:tabular-nums}
+#sky-overlay .res-pay li{font:700 16px/1 var(--f-ui);padding:4px 8px;border-radius:999px;background:rgba(242,193,78,.14);color:var(--aah);font-variant-numeric:tabular-nums;white-space:nowrap}
 #sky-overlay .res-pay li.p-crowd{background:var(--ooh-bg);color:var(--ooh)}
-@keyframes ui-rise{from{opacity:0;transform:translateY(10px) scale(.96)}}
+#sky-overlay .res-tot{display:none;margin:0;font:700 16px/20px var(--f-ui);color:var(--aah);white-space:nowrap}
+@keyframes ui-rise{from{opacity:0;translate:0 10px}} /* translate composes with each element's own transform; text never scales */
 @container sky (max-height: 230px){
-  #sky-overlay .result{top:6px;transform:translateX(-50%)}
-  #sky-overlay .res-app{font-size:34px;min-height:44px}
+  #sky-overlay .result{--res-top:6px;align-items:flex-start}
   #sky-wrap.has-result .sky-top{visibility:hidden}
-  #sky-overlay .res-pay{max-height:26px;overflow:hidden}
 }
 @container sky (max-height: 170px){
   #sky-wrap.has-info .sky-top{visibility:hidden}
-  #sky-overlay .res-card{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px;text-align:left;padding:4px 10px 6px}
-  #sky-overlay .res-head{grid-column:2;justify-content:flex-start}
-  #sky-overlay .res-app{grid-row:1 / span 2;font-size:30px;margin:0;padding:0 4px}
-  #sky-overlay .res-eq{grid-column:2}
-  #sky-overlay .res-pay,#sky-overlay .res-vs{display:none}
 }
+/* fit 1: a smaller Applause */
+#sky-overlay .result:not([data-fit="0"]) .res-app{font-size:34px}
+#sky-overlay .result:not([data-fit="0"]) .res-card{padding:6px 12px 8px}
+/* fit 2+: Applause beside the verdict and the Ooh × Aah line; the rest below at full width */
+#sky-overlay .result:is([data-fit="2"],[data-fit="3"],[data-fit="4"],[data-fit="5"],[data-fit="6"]) .res-card{display:grid;
+  grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:10px;text-align:left;padding:4px 10px 6px}
+#sky-overlay .result:is([data-fit="2"],[data-fit="3"],[data-fit="4"],[data-fit="5"],[data-fit="6"]) .res-head{grid-column:2;justify-content:flex-start}
+#sky-overlay .result:is([data-fit="2"],[data-fit="3"],[data-fit="4"],[data-fit="5"],[data-fit="6"]) .res-app{grid-column:1;grid-row:1 / span 2;font-size:30px;margin:0;padding:0 4px}
+#sky-overlay .result:is([data-fit="2"],[data-fit="3"],[data-fit="4"],[data-fit="5"],[data-fit="6"]) :is(.res-eq,.res-tot){grid-column:2}
+#sky-overlay .result:is([data-fit="2"],[data-fit="3"],[data-fit="4"],[data-fit="5"],[data-fit="6"]) :is(.res-rain,.res-pay){grid-column:1 / -1}
+#sky-overlay .result:is([data-fit="2"],[data-fit="3"],[data-fit="4"],[data-fit="5"],[data-fit="6"]) .res-pay{justify-content:flex-start;margin-top:4px}
+/* fit 3+: no "· target", tighter payout chips */
+#sky-overlay .result:is([data-fit="3"],[data-fit="4"],[data-fit="5"],[data-fit="6"]) .res-vs{display:none}
+#sky-overlay .result:is([data-fit="3"],[data-fit="4"],[data-fit="5"],[data-fit="6"]) .res-pay{gap:2px 4px}
+#sky-overlay .result:is([data-fit="3"],[data-fit="4"],[data-fit="5"],[data-fit="6"]) .res-pay li{padding:2px 6px}
+/* fit 4+: the payout as totals beside the Applause */
+#sky-overlay .result:is([data-fit="4"],[data-fit="5"],[data-fit="6"]) .res-pay{display:none}
+#sky-overlay .result:is([data-fit="4"],[data-fit="5"],[data-fit="6"]) .res-tot{display:block}
+/* fit 5+: no Ooh × Aah line (the show log has it) */
+#sky-overlay .result:is([data-fit="5"],[data-fit="6"]) .res-eq{display:none}
+#sky-overlay .result:is([data-fit="5"],[data-fit="6"]) .res-card{padding:1px 10px 2px}
+#sky-overlay .result:is([data-fit="5"],[data-fit="6"]) :is(.res-head,.res-rain,.res-tot){line-height:18px}
+#sky-overlay .result:is([data-fit="5"],[data-fit="6"]) .res-rain{grid-column:2;margin:0}
+#sky-overlay .res-tot .tot-x{display:none;font-style:italic}
+#sky-overlay .result:is([data-fit="5"],[data-fit="6"]) .res-card:has(.tot-x) .res-head .enc{display:none}
+#sky-overlay .result:is([data-fit="5"],[data-fit="6"]) .res-tot .tot-x{display:inline}
 
 /* the docked info card (selection), the fallback tip, the cheer meter */
 #sky-overlay .info{position:absolute;left:8px;right:8px;bottom:8px;height:68px;display:flex;align-items:center;gap:6px;
@@ -214,7 +256,10 @@
   color:var(--paper);font:700 16px/1 var(--f-ui);display:grid;place-items:center}
 #sky-overlay .ib .ic{width:22px;height:22px}
 #sky-overlay .ib-i{padding:0}
-#sky-overlay .ib.sell{color:var(--danger);border-color:rgba(224,83,61,.6);background:transparent}
+#sky-overlay .ib.sell{color:var(--danger);border-color:rgba(224,83,61,.6);background:transparent;min-width:52px;padding:0 6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:18px}
+#play[data-mode="regular"] #sky-overlay .info.tall{height:88px}
+#play[data-mode="regular"] #sky-overlay .info.tall .info-x{-webkit-line-clamp:3}
 #sky-overlay .ib.sell.armed{background:var(--danger);color:var(--ink);border-color:var(--danger)}
 #play[data-mode="compact"] #sky-overlay .info,#play[data-mode="scroll"] #sky-overlay .info{height:48px;padding:2px 2px 2px 10px;left:6px;right:6px;bottom:6px}
 #play[data-mode="compact"] #sky-overlay .info-x,#play[data-mode="scroll"] #sky-overlay .info-x,
@@ -229,12 +274,14 @@
 #sky-overlay .cheer{position:absolute;right:6px;top:48px;bottom:14px;width:8px;border-radius:4px;background:rgba(255,255,255,.08);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 #sky-wrap.has-info .cheer{bottom:84px}
+#play[data-mode="regular"] #sky-wrap.has-info.info-tall .cheer{bottom:104px}
 #sky-overlay .info{transition:bottom .16s var(--ease-out)}
 #sky-wrap.has-arc #sky-overlay .info{bottom:28px}
 #sky-overlay .info[data-fit="1"] .t-o1,#sky-overlay .info[data-fit="2"] :is(.t-o1,.t-o2){display:none}
 #play[data-mode="compact"] #sky-wrap.has-info .cheer,#play[data-mode="scroll"] #sky-wrap.has-info .cheer{bottom:60px}
 #sky-overlay .cheer i{position:absolute;left:0;right:0;display:block}
-#sky-overlay .cheer .fill{bottom:0;height:calc(var(--fill,0) * 100%);border-radius:4px;background:linear-gradient(0deg,var(--aah),#FFF1C2);transition:height .18s var(--ease-out)}
+#sky-overlay .cheer .fill{bottom:0;height:100%;border-radius:4px;background:linear-gradient(0deg,var(--aah),#FFF1C2);
+  transform:scaleY(var(--fill,0));transform-origin:50% 100%;transition:transform .18s var(--ease-out)} /* scaled, not resized: no layout per frame */
 #sky-overlay .cheer .tick{bottom:50%;left:-4px;right:-4px;height:2px;background:var(--paper);border-radius:1px}
 #sky-overlay .cheer .band{display:none;border-radius:4px;background:rgba(255,255,255,.22);box-shadow:0 0 0 1px rgba(255,255,255,.35)}
 #sky-overlay .cheer[data-band="restless"] .band{display:block;bottom:0;height:42.5%;background:rgba(224,83,61,.35)}
@@ -328,12 +375,12 @@
   background:rgba(5,7,15,.55);font:700 16px/18px var(--f-ui);letter-spacing:-.01em;color:var(--paper-dim);white-space:nowrap;
   font-variant-numeric:tabular-nums}
 #rack .t-sees:empty{background:transparent;padding:0}
-#rack .t-sees .eye{display:none;width:16px;height:16px;margin-right:2px;stroke-width:2.2}
+#rack .t-sees .sees-ic{display:none;width:16px;height:16px;margin-right:2px;stroke-width:2.2}
 #rack .t-sees.local{background:rgba(242,193,78,.2);color:var(--paper);box-shadow:inset 0 0 0 1px rgba(242,193,78,.55)}
 #rack[data-fit="1"] .t-sees{padding:0 3px;letter-spacing:-.04em}
 #rack[data-fit="2"] .t-sees{padding:0 5px 0 4px;letter-spacing:0}
 #rack[data-fit="2"] .t-sees .sw{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
-#rack[data-fit="2"] .t-sees .eye{display:block}
+#rack[data-fit="2"] .t-sees .sees-ic{display:block}
 #rack .t-sees.fogged{color:var(--paper);box-shadow:inset 0 0 0 1px rgba(185,178,199,.6)}
 #rack .t-body{position:relative;width:48px;height:var(--tok-h);transform-origin:50% 100%;border-radius:7px 7px 5px 5px;
   background:radial-gradient(ellipse 60% 9px at 50% 3px,#000 0 70%,transparent 100%),linear-gradient(90deg,#120d09,#2c2118 42%,#150f0a);
@@ -354,15 +401,33 @@
 #rack .t-rig.can{box-shadow:0 0 0 2px var(--aah);background:rgba(242,193,78,.25)}
 /* local chips on legal drops (never a total) */
 #rack .t-chips{position:absolute;left:-4px;right:-4px;top:3px;display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:none;z-index:2}
-#rack .t-chips .chip{min-height:18px;height:18px;padding:0 4px;gap:1px;font:700 16px/18px var(--f-ui);letter-spacing:-.02em;
+:is(#rack .t-chips,#sky-overlay .legend) .chip{min-height:18px;height:18px;padding:0 4px;gap:1px;font:700 16px/18px var(--f-ui);letter-spacing:-.02em;
   box-shadow:0 1px 3px rgba(0,0,0,.6);white-space:nowrap}
-#rack .t-chips .c-ooh{background:rgba(244,239,230,.94);color:var(--ink)}
-#rack .t-chips .c-aah{border-radius:4px;background:var(--aah);color:var(--ink)}
-#rack .t-chips .c-x{background:var(--ink);color:var(--aah)}
-#rack .t-chips .chip-fusion{background:var(--c-fusion);color:var(--ink)}
+:is(#rack .t-chips,#sky-overlay .legend) .c-ooh{background:rgba(244,239,230,.94);color:var(--ink)}
+:is(#rack .t-chips,#sky-overlay .legend) .c-aah{border-radius:4px;background:var(--aah);color:var(--ink)}
+:is(#rack .t-chips,#sky-overlay .legend) .c-x{background:var(--ink);color:var(--aah)}
+:is(#rack .t-chips,#sky-overlay .legend) .chip-fusion{background:var(--c-fusion);color:var(--ink)}
 #rack .t-chips .c-crowd,#rack .t-chips .c-coin,#rack .t-chips .c-none{background:var(--ink);color:var(--paper)}
 #rack .t-chips .c-crowd .ic{width:12px;height:12px}
 #rack .t-chips .c-none{color:var(--paper-dim)}
+/* × as the Aah it adds here ("(+6)"), where the drop would fire ("3rd", "LAST"), and a swap / replace drop */
+#rack .t-chips .c-xaah{border-radius:4px;background:var(--ink);color:var(--aah);box-shadow:inset 0 0 0 1px var(--aah),0 1px 3px rgba(0,0,0,.6)}
+#rack .t-chips .c-ord{background:var(--ink);color:var(--aah);font-family:var(--f-ui)}
+:is(#rack .t-chips,#sky-overlay .legend) .c-swap{background:var(--ink);color:var(--paper);box-shadow:inset 0 0 0 1px var(--paper-dim),0 1px 3px rgba(0,0,0,.6)}
+:is(#rack .t-chips,#sky-overlay .legend) .c-swap .ic{width:14px;height:14px;stroke-width:2.4}
+#rack .t-chips .c-swap.sell{color:#FF9A88;box-shadow:inset 0 0 0 1px var(--danger),0 1px 3px rgba(0,0,0,.6)}
+/* the chip legend while a card or shell is held on touch (UI_PLAY): just above the info card */
+#sky-overlay .legend{position:absolute;left:8px;right:8px;bottom:82px;display:flex;justify-content:center;align-items:center;gap:6px;
+  pointer-events:none;transition:bottom .16s var(--ease-out)}
+#sky-overlay .legend[hidden]{display:none}
+#sky-overlay .legend .chip{height:22px;min-height:22px;padding:0 6px;line-height:22px}
+#sky-wrap.info-tall #sky-overlay .legend{bottom:102px}
+#sky-wrap.has-arc #sky-overlay .legend{bottom:102px}
+#sky-wrap.has-arc.info-tall #sky-overlay .legend{bottom:122px}
+#play:is([data-mode="compact"],[data-mode="scroll"]) #sky-overlay .legend{bottom:60px}
+#play:is([data-mode="compact"],[data-mode="scroll"]) #sky-wrap.has-arc #sky-overlay .legend{bottom:82px}
+@container sky (max-height: 124px){#sky-overlay .legend{display:none}}
+@container sky (max-height: 160px){#play[data-sponsor]:is([data-mode="compact"],[data-mode="scroll"]) #sky-overlay .legend{display:none}}
 /* states: selected, legal drop, hovered drop, dimmed, hatched, armed */
 #rack .tube .t-body,#rack .tube .t-tok{transition:transform .14s var(--ease-out),opacity .14s}
 #rack .tube.sel .t-body{box-shadow:inset 0 3px 0 -1px var(--brass),0 0 0 2px var(--aah),0 0 18px rgba(242,193,78,.45);transform:translateY(-4px)}
@@ -409,19 +474,34 @@
   border:1px solid rgba(201,162,39,.45);color:rgba(244,239,230,.35);
   background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 1px,transparent 1px 5px),linear-gradient(180deg,#2A1F15,#1A130D)}
 #tools .slot .ic{width:22px;height:22px}
+#tools .slot.empty{grid-template-rows:auto auto;align-content:center;row-gap:1px}
+#tools .slot.empty .ic{width:20px;height:20px}
 #tools .slot.sel{box-shadow:0 0 0 2px var(--aah),0 0 14px rgba(242,193,78,.45)}
 #tools .slot.can{border:2px dashed var(--aah)}
 #tools .slot.hov{box-shadow:0 0 0 3px var(--focus)}
 #tools .slot.armed{box-shadow:0 0 0 3px var(--danger)}
 #tools .divider{width:8px;align-self:stretch;flex:none;margin-inline:-8px;
   background:linear-gradient(var(--line),var(--line)) center / 1px 60% no-repeat}
-#tools .tool{position:relative;width:44px;height:44px;padding:0;display:grid;place-items:center;flex:none;
-  border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--paper)}
+#tools .tool{position:relative;min-width:44px;height:44px;padding:0 5px;display:grid;grid-template-rows:auto auto;align-content:center;
+  justify-items:center;row-gap:1px;flex:none;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--paper)}
+#tools .tool .ic{width:20px;height:20px}
+/* every tool (and an empty Crate slot) names itself under its icon */
+#tools .tl{display:block;font:400 16px/16px var(--f-ui);letter-spacing:-.02em;white-space:nowrap;color:inherit}
+#tools .slot .tl{color:rgba(244,239,230,.6)}
+#tools[data-fit="1"]{gap:4px}
+#tools[data-fit="1"] .crate{gap:4px}
+#tools[data-fit="1"] .tool{padding:0 2px}
+#tools[data-fit="1"] .tl{letter-spacing:-.05em}
+#tools[data-fit="2"]{gap:3px}
+#tools[data-fit="2"] .crate{gap:3px}
+#tools[data-fit="2"] .divider{display:none}
+#tools[data-fit="2"] .tool{padding:0 1px}
+#tools[data-fit="2"] .tl{letter-spacing:-.07em}
 #tools .tool:hover:not(:disabled){border-color:var(--paper-dim)}
 #tools .tool:disabled{opacity:.38;cursor:default}
 #tools .tool.lit:not(:disabled){border-color:var(--brass);box-shadow:0 0 0 1px var(--brass),0 0 14px rgba(201,162,39,.45);color:var(--aah)}
 #tools .tool[aria-pressed="true"]{background:var(--brass);border-color:var(--brass);color:var(--ink);opacity:1}
-#tools .tools-hint{flex:1 1 0;min-width:0;overflow:hidden;white-space:nowrap;font:italic 700 16px/1 var(--f-display);color:var(--aah)}
+
 
 /* ---------- 8. Shop: 3 vertical cards, or a 2 × 2 grid of tiles ---------- */
 #shop{position:relative}
@@ -517,17 +597,24 @@
 
 /* ---------- 10. Fire: Light the fuse + the mood pill ---------- */
 #firebar{display:flex;align-items:stretch;padding-bottom:4px}
-#fire{position:relative;width:100%;height:100%;display:flex;align-items:center;gap:8px;padding:0 6px 0 16px;border-radius:12px;
+#fire{position:relative;width:100%;height:100%;display:flex;align-items:center;gap:8px;padding:0 16px;border-radius:12px;
   font:italic 700 22px/1 var(--f-display);letter-spacing:.01em;
   background:linear-gradient(180deg,#E0BB45,var(--brass) 55%,#A9861C);border:1px solid #E6C85E;color:var(--ink);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 6px 18px rgba(201,162,39,.25)}
 #fire .fire-lbl{flex:1;text-align:center;white-space:nowrap}
-#fire .mood{display:inline-flex;align-items:center;gap:4px;height:calc(100% - 12px);padding:0 12px 0 6px;border-radius:999px;flex:none;
-  background:var(--ink);color:var(--paper);font:700 16px/1 var(--f-ui);font-style:normal;letter-spacing:0}
-#fire .mood .pose{width:24px;height:24px;stroke-width:2.2}
-#fire .mood[data-mood="restless"] .mood-w{color:#FF9A88}
-#fire .mood[data-mood="hopeful"] .mood-w{color:var(--aah)}
-#fire .mood[data-mood="eager"] .mood-w{color:var(--ok)}
+/* the Crowd mood: its own button beside Light the fuse (a tap explains it; it never lights) */
+#firebar{gap:8px}
+#firebar .mood{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:44px;padding:0 12px 0 8px;border-radius:12px;flex:none;
+  background:var(--ink);color:var(--paper);border:1px solid var(--line);font:700 16px/1 var(--f-ui);letter-spacing:0}
+#firebar .mood[hidden]{display:none}
+#firebar .mood:hover{border-color:var(--paper-dim)}
+#firebar .mood .pose{width:24px;height:24px;stroke-width:2.2}
+#firebar .mood[data-mood="restless"]{border-color:rgba(224,83,61,.7)}
+#firebar .mood[data-mood="restless"] .mood-w{color:#FF9A88}
+#firebar .mood[data-mood="hopeful"] .mood-w{color:var(--aah)}
+#firebar .mood[data-mood="eager"]{border-color:rgba(123,211,137,.6)}
+#firebar .mood[data-mood="eager"] .mood-w{color:var(--ok)}
+#fire{flex:1 1 auto;min-width:0}
 #fire.skip{background:var(--surface-2);border-color:var(--line);color:var(--paper);box-shadow:none}
 #fire:disabled{filter:saturate(.4) brightness(.8)}
 #fire.glow{animation:ui-glow 1.8s ease-in-out infinite}
@@ -542,7 +629,7 @@
 #play .ghost{position:fixed;left:0;top:0;z-index:60;pointer-events:none;will-change:transform;filter:drop-shadow(0 10px 12px rgba(0,0,0,.65))}
 #play .ghost-rig{display:grid;place-items:center;width:44px;height:44px;border-radius:10px;background:var(--brass);color:var(--ink)}
 #play .ghost-rig .ic{width:26px;height:26px}
-#play :is(.card,.slot,.tool,.ws,.hud-ic,.hud-head,.ib,.rh-pill,.res-app,.sp-toggle):focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+#play :is(.card,.slot,.tool,.ws,.hud-ic,.hud-head,.hud-coins,.hud-crowd,.mood,.ib,.rh-pill,.res-app,.sp-toggle):focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 
 /* ---------- 12. Inspect sheet ---------- */
 /* opaque, lifted, and the play column dimmed behind it (tapping the dimmed area closes it) */
@@ -557,6 +644,7 @@
 #inspect .insp-glyph{display:grid;place-items:center;width:56px;height:56px;border-radius:14px;background:var(--brass);color:var(--ink);flex:none}
 #inspect .insp-glyph .ic{width:32px;height:32px}
 #inspect .insp-glyph.bad{background:var(--danger)}
+#inspect .insp-glyph.coin{font:600 30px/1 var(--f-display);color:var(--ink)}
 #inspect .insp-rule{font:400 18px/1.4 var(--f-ui);margin:0 0 10px}
 #inspect .insp-lines{margin:0 0 10px;padding-left:20px;font:400 16px/1.45 var(--f-ui)}
 #inspect .insp-tiers,#inspect .insp-fus{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:4px;font:400 16px/1.35 var(--f-ui)}

@@ -31,7 +31,7 @@ The parser must read every content table before anything can be compared, so the
 
 | § | Requirement | Method |
 |---|---|---|
-| §4.1–§4.13, §5.1, §1, §11.8 | Every content table parses with the expected row count (34 shells, 25 patterns, 12 fusions, 5 rigs, 13 Headliners, 5 kits, 3 Sponsors, 8 Renown, 10 milestones, 14 lessons, 16 tooltips, 7 colours, 24 targets, 19 glossary terms, 3 rules-card lines, 8 festivals, 30 goldens, 3 traces) | AUTO `spec.parse.*` |
+| §4.1–§4.13, §5.1, §1, §11.8 | Every content table parses with the expected row count (34 shells, 25 patterns, 12 fusions, 5 rigs, 13 Headliners, 5 kits, 3 Sponsors, 8 Renown, 10 milestones, 14 lessons, 16 tooltips, 7 colours, 24 targets, 29 glossary terms, 3 rules-card lines, 8 festivals, 30 goldens, 3 traces) | AUTO `spec.parse.*` |
 | §4, §11.8 | Every shell name, unlock name, kit rack cell and golden tube token resolves to an id | AUTO `spec.parse.integrity` |
 | §4.3 | 22 shells have Unlock = start | AUTO `spec.self.startpool` |
 | §4.2 | Every ★1 card text is ≤ 64 characters | AUTO `spec.self.cardtext64` |
@@ -67,7 +67,7 @@ The parser must read every content table before anything can be compared, so the
 | §4.1 | Colour table: name, chemical, glyph, shape, role, default and high-contrast hex; Rainbow wedges | AUTO `data.colours` |
 | §5.1, §5.10 | TARGETS (24), bases, show multipliers, Afterparty targets (12) | AUTO `data.targets` |
 | §1, Fiction | Festival names (8, then Afterparty I–IV) and show names | AUTO `data.names` |
-| §1 | Glossary (19 terms) and the 3-line rules card | AUTO `data.glossary`, `data.rulescard` |
+| §1 | Glossary (29 terms) and the 3-line rules card | AUTO `data.glossary`, `data.rulescard` |
 | §5.6 | Rarity weights per festival | AUTO `data.rarity` |
 | §4.3, CONTRACT | `describeShell(id, col, ★1)` equals the §4.3 card text; ★2 doubles the numbers | AUTO `sim.helpers` |
 

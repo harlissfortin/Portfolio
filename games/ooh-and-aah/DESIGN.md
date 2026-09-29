@@ -76,8 +76,8 @@ All figures come from the v11 sim, 1,000 seeds unless noted. The bots are define
 - **Pitch:** Load fireworks into a rack of mortar tubes and light one fuse. Every burst scores off whatever earlier bursts left hanging in the sky, and the crowd's Applause is literally Ooh × Aah.
 - **Rules card.** The help card shows exactly these three lines:
   1. The fuse fires your tubes left to right. Each burst stays up for the next few bursts (its Hang), and later shells score by what is still up.
-  2. Shells add Ooh, add Aah, or multiply Aah; your Crowd adds its size to Ooh. Applause = Ooh × Aah must beat the target (one rain check per run).
-  3. Between shows, spend coins on shells, tubes and rigs. Drop a shell on its twin to upgrade it; a shell fired right after its partner fuses with it.
+  2. Shells add Ooh, add Aah or multiply Aah. Aah starts at 1, and your Crowd adds its size to Ooh. Applause is Ooh × Aah. Reach the target to pass. You may miss one show per run (your rain check).
+  3. Between shows, spend coins on shells, tubes and rigs. Drop a card on its twin to upgrade it. Some shells fuse when they fire right after a partner.
 
 ### Fiction
 
@@ -94,6 +94,9 @@ A river town hires you, a junior pyrotechnician, to fire its festival year. Ther
 
 | Term | Meaning |
 |---|---|
+| Ooh | The base of your score. Shells add Ooh, and your Crowd adds its size. |
+| Aah | Multiplies Ooh. It starts at 1 each show, and shells add to it or multiply it. |
+| Applause | Your score for a show: Ooh × Aah. Reach the target to pass. |
 | Burst | One firing of a shell. Most shells make 1 burst, a Roman Candle makes 3, and a Mortar rig doubles a tube's bursts. |
 | Up / the sky | The bursts still hanging when a shell fires. The burst being fired is not up yet. |
 | Hang | How many later bursts a burst stays up for. |
@@ -101,17 +104,24 @@ A river town hires you, a junior pyrotechnician, to fire its festival year. Ther
 | Fire order | The order in which bursts fire: normally tube 1 to the last tube, unless tonight's rule changes it. |
 | Tube | A slot in the rack. You start with 4; the maximum is 6. |
 | Rig | A tube upgrade. It stays on the tube, not on the shell. |
-| Crate | 2 bench slots. Shells in the Crate don't fire. |
+| Crate | 2 spare slots. Shells in the Crate don't fire. |
 | ★ / break | Upgrade tier: ★1, ★2 (double-break), ★3 (triple-break). |
+| Twin | A card for a shell you own. Drop it on that shell to upgrade it: all its numbers double, up to ★3. |
+| Fusion | Fire a shell right before its partner, and the partner's first burst fuses. The Logbook lists all 12. |
 | Crowd | A counter that persists through the run and adds its size to Ooh at the end of every show. |
 | Crowd mood | Restless, Hopeful or Eager: the crowd's read of your rack against tonight's target. It never shows a number. |
+| Interest | After each show you pass, +$1 for every $5 you hold (up to +$5). |
 | Rain check | Forgives one miss per run, but not at the Countdown. |
 | Encore | Applause of at least 2× the target. Crowd +2 × the festival number. |
-| Sponsor | Optional: this show's target ×1.5 in exchange for a reward. |
-| Headliner | The 3rd show of each festival, with a rule twist. It is posted a festival ahead. |
+| Sponsor | Optional. Raises this show's target ×1.5 for a reward. |
+| Headliner | The 3rd show of each festival, with a rule twist. It is announced a festival ahead. |
 | Match | Re-seats your shells so that tonight's fuse fires them in their usual order. |
+| Rehearse | Previews the next Headliner: the chips and the crowd mood read your rack under its rule. |
+| Restore | Puts your shells back in the tubes they held at the last show. |
 | ♛ Crowd Favourite | The shell whose removal would cost the most Applause right now. |
-| Fair Weather | The labelled assist: all targets ×0.75, and the Countdown may be relit once (§7.4). |
+| Keepsake | After a run, keep one Common shell. It starts your next run in the Crate. |
+| Renown | Harder levels you unlock by winning. Each level adds one rule to all the ones before it. |
+| Fair Weather | An easier mode: every target ×0.75, and you can relight the Countdown once. These runs are marked (§7.4). |
 | Afterparty | The optional endless mode after a win (§5.10). |
 
 ---
@@ -521,12 +531,12 @@ A fusion needs A's tube to fire immediately before B's tube. It applies to B's f
 | 12 | Smiley → Town Crest | Hometown Hero | `aahPerCrowd:12` | Packed House |
 
 **Non-fusion synergies** (Logbook "Techniques" page; information only):
-- Canopy: Willow, Glitter or a Tall Tube feeding Chrysanthemum, Crossette or Finale.
-- Clear-then-solo: Salute or Thunder King before Comet.
-- Count: Roman Candle or Mortar feeding Crackle, Horsetail or Barrage.
+- Long hang first: Willow, Glitter or a Tall Tube before Chrysanthemum, Crossette or Grand Finale.
+- Clear, then Comet: Salute or Thunder King right before Comet.
+- Many bursts first: Roman Candle or Mortar before Crackle, Horsetail or Barrage.
 - Spotlight on a Chrysanthemum ★3.
 - Mortar on a × shell.
-- Crowd scaffolding: fire Girandola and Smiley early, sell them late, and keep the Crowd.
+- Grow the Crowd early: fire Girandola and Smiley in the first festivals and sell them later. The Crowd stays.
 - Countdown: your last tube opens and closes the show.
 
 ### 4.6 Rigs (one per tube; they never move with shells and cannot be sold)
@@ -539,23 +549,25 @@ A fusion needs A's tube to fire immediately before B's tube. It applies to B's f
 | lucky | Lucky Tube | 4 | Horseshoe ∩ | +$1 when this tube fires (once per show). | start |
 | mortar | Mortar | 10 | Double ring ◎ | This tube fires its shell twice. At most 1 Mortar per rack. | start |
 
-### 4.7 Headliners (posted a festival ahead; each is drawn on the rack as a telegraph, §8.4)
+### 4.7 Headliners (announced a festival ahead; each is drawn on the rack as a telegraph, §8.4)
+
+The Counters and Rack telegraph cells are player text: the Logbook shows them as "Hurts: …" and "On the rack: …".
 
 | id | Name | Window | Rule | Counters | Rack telegraph |
 |---|---|---|---|---|---|
-| headwind | Headwind | F1 (always F1 in the first-ever run) | The first burst is a dud: it scores nothing but still hangs. | Openers (the "Goomba") | Gust icon and dud hatch on fire-order #1 |
-| drizzle | Drizzle | F1–3 | All Hang −1. | Canopy | Every Hang pip loses one (shown crossed out) |
-| critic | The Critic | F2–5 | A burst the same colour as the burst before it earns no Ooh (White and Rainbow exempt). | Mono | Monocle between consecutive tubes of the same colour |
-| shortfuse | Short Fuse | F3–6 | Only tubes 1–5 fire. | Wide racks | Tube 6 hatched |
-| fog | Fog | F3–7 | Shells see only the 2 newest bursts. | Canopy, Rainbow | Fog band; "sees" chips capped at 2 |
-| ordinance | Noise Ordinance | F3–7 | White shells (by row colour) fire at half strength. | Thunder, Salvo | "½" badge on White tokens |
-| windshift | Wind Shift | F4–7 | The fuse runs right to left; rigs stay put. | Rigs, fusions | Fuse arrow reversed; numerals reversed; Match button lit |
-| ferry | Late Ferry | F4–7 | Half the Crowd misses the show: the Crowd adds only half. | Crowd | Crowd counter shows "½" |
-| crossed | Crossed Wires | F5–7 | Tubes 2, 4, 6 fire first, then 1, 3, 5. | Order, fusions | Numerals re-sequenced; Match button lit |
-| streetlights | Sodium Streetlights | F5–7 | The embankment lamps wash out tubes 2, 4 and 6: their bursts count as White. | Mono, Rainbow | Tokens in tubes 2, 4 and 6 desaturated, with a lamp glyph |
-| powercut | Power Cut | F6–7 | +Aah is capped at 30 per show (× still works). | Aah stacks | Cap tick at 30 on the Aah meter |
-| rival | Rival Crew | F6–7 | Your ♛ Crowd Favourite (as of lighting) fires at half strength. | One-trick carries | "½" on the ♛ tube |
-| countdown | **Midnight Countdown** | F8 (fixed) | The fuse counts down N→1, then fires 1→N. The sky carries over; **no rain check**. | Tests the whole engine: every shell fires twice | Out-and-back fuse path; a countdown numeral row (N…1) above a celebration row (1…N) |
+| headwind | Headwind | F1 (always F1 in the first-ever run) | The first burst is a dud: it scores nothing but still hangs. | a strong first shell | a gust icon on the first tube to fire, hatched to show the dud |
+| drizzle | Drizzle | F1–3 | All Hang −1. | long-hanging shells | one Hang pip crossed out on every shell |
+| critic | The Critic | F2–5 | A burst the same colour as the burst before it earns no Ooh (White and Rainbow exempt). | one-colour skies | a monocle between back-to-back tubes of the same colour |
+| shortfuse | Short Fuse | F3–6 | Only tubes 1–5 fire. | a 6th tube | tube 6 hatched out |
+| fog | Fog | F3–7 | Shells see only the 2 newest bursts. | long-hanging shells and Rainbow shells | a fog band, and no tube sees more than 2 |
+| ordinance | Noise Ordinance | F3–7 | Shells printed White fire at half strength. | racks built on White shells | a ½ badge on White shells |
+| windshift | Wind Shift | F4–7 | The fuse runs right to left; rigs stay put. | rigs and fusions | the fuse arrow and tube numbers reversed, and Match lit |
+| ferry | Late Ferry | F4–7 | Half the Crowd misses the show: the Crowd adds only half. | a big Crowd | a ½ on the Crowd counter |
+| crossed | Crossed Wires | F5–7 | Tubes 2, 4, 6 fire first, then 1, 3, 5. | fire order and fusions | tube numbers in the new firing order, and Match lit |
+| streetlights | Sodium Streetlights | F5–7 | The embankment lamps wash out tubes 2, 4 and 6: their bursts count as White. | one-colour and Rainbow skies | tubes 2, 4 and 6 greyed, with a lamp icon |
+| powercut | Power Cut | F6–7 | +Aah is capped at 30 per show (× still works). | big +Aah stacks | a cap mark at 30 on the Aah meter |
+| rival | Rival Crew | F6–7 | Your ♛ Crowd Favourite (as of lighting) fires at half strength. | a rack that leans on one shell | a ½ on the ♛ tube |
+| countdown | **Midnight Countdown** | F8 (fixed) | The fuse fires your tubes last to first, then first to last. The sky carries over, and there is **no rain check**. | no single build. Every shell fires twice | an out-and-back fuse path, with two rows of tube numbers |
 
 **Drawing:**
 - At `createState`, for f = 1..7 in order: `eligible` = the rows (in table order) with `min ≤ f ≤ max` that have not been drawn yet; pick `eligible[floor(rng() × len)]`. F8 is always `countdown`.
@@ -589,7 +601,7 @@ A fusion needs A's tube to fire immediately before B's tube. It applies to B's f
 |---|---|---|
 | coin | Riverside Brewery | +$2 |
 | crowd | The Gazette | Crowd +4 |
-| rare | The Collector | The next shop adds a 4th shell card: a Rare, or an Uncommon in F3. It is excluded from rerolls. |
+| rare | The Collector | The next shop adds a 4th card: a Rare (an Uncommon in Festival 3). Rerolls keep it. |
 
 ### 4.10 Renown (the Heat ladder)
 
@@ -601,10 +613,10 @@ Renown is opt-in and stacks. Level n+1 unlocks when you win at level n, and a lo
 | 2 | Every Twilight from Festival 2 on gets a mild twist: Headwind, Drizzle or The Critic. |
 | 3 | Rerolls start at $2 (+$1 each). |
 | 4 | Tubes cost +$4 ($10 / $14). |
-| 5 | Shell cards cost +$1. Upgrade prices still come from the row cost. |
+| 5 | Shell cards cost +$1. Upgrade prices don't change. |
 | 6 | No rain check. |
 | 7 | The Countdown also halves your ♛ Crowd Favourite, as Rival Crew does. |
-| 8 | The Countdown fires three passes (1→N, N→1, 1→N) and its target is 900,000. |
+| 8 | The Countdown fires your tubes first to last, last to first, then first to last again. Its target is 900,000. |
 
 ### 4.11 Milestones (teaching achievements)
 
@@ -621,11 +633,11 @@ Milestones progress in lost runs too. Progress bars show the best value ever rea
 | m_headliner | Headliner Hunter | Pass Festival 4's Headliner (2 / 87 / 97%) | Blue Moon |
 | m_rigger | Rigger | 3 rigs installed at once (greedy never buys rigs; novice 97%) | Night Market kit |
 | m_win | Happy New Year | Win a run | Renown 1, Afterparty, Daily Show |
-| m_logbook | Logbook Half | Discover 6 of the 12 fusions | Information only: every fusion shows its left half as a silhouette |
+| m_logbook | Logbook Half | Discover 6 of the 12 fusions | Information only: every unfound fusion shows its first shell |
 
 ### 4.12 Lessons
 
-The end screen shows one lesson. Evaluate the predicates top to bottom; the first match wins. `{}` fields come from the run log; numbers print without a trailing ".0", and "1 bursts" reads "1 burst". Lessons 1 and 4 reuse the near-miss search's best order (§8.6) when the end screen has it.
+The end screen shows one lesson. Evaluate the predicates top to bottom; the first match wins. `{}` fields come from the run log; numbers print without a trailing ".0", and "1 bursts" reads "1 burst". Lesson 2's {show} reads "show 9 (Midsummer Headliner)". Lessons 1 and 4 reuse the near-miss search's best order (§8.6) when the end screen has it.
 
 | # | Predicate | Text |
 |---|---|---|
@@ -638,34 +650,39 @@ The end screen shows one lesson. Evaluate the predicates top to bottom; the firs
 | 7 | Lost on a sponsored show | "Sponsors raise the target ×1.5. Take one when the crowd stays Eager with Accept on." |
 | 8 | An empty tube fired in 2+ shows while you held ≥ $3 | "An empty tube fired nothing in {n} shows. Even a Peony adds 20 Ooh." |
 | 9 | Never held ≥ $5 at a payout after show 4 | "Holding $5 or more pays +$1 per $5 every show (up to +$5)." |
-| 10 | Lost with no fusion all run and 3+ upgrades | "Upgrades double; ✦ fusions and × shells multiply. Drop a card on a full tube next to its partner: the old shell moves to the Crate." |
-| 11 | Never upgraded | "Drop a shell on its twin: all its numbers double." |
+| 10 | Lost with no fusion all run and 3+ upgrades | "Upgrades double. ✦ fusions and × shells multiply. Drop a card on a full tube next to its partner. The old shell moves to the Crate." |
+| 11 | Never upgraded | "Drop a card on its twin: all its numbers double." |
 | 12 | Crowd < 25 at the end of F4 | "Girandola and Smiley pay into every future show through the Crowd." |
 | 13 | Won | "Next: Renown {n+1}: {modifier}." |
-| 14 | Default | "Bursts hang for their Hang; readers count what's still up. Build a canopy before you cash it in." |
+| 14 | Default | "Put long-hanging shells first and the shells that count the sky after them." |
 
 ### 4.13 One-line tooltips
 
 Each tooltip is shown once, on first encounter. Tooltips never block play and are dismissed by the next action.
 
+- Core queues every tip (at each build open and after each action). The play screen adds the two triggers only it can see: t_sky when a shell is lifted, and t_fusion when a ✦ badge is drawn.
+- One tip shows at a time. When several are due they wait in this order: t_sky, t_crate, t_fuse, t_rain, t_head, t_count, t_match, t_mood, t_sponsor, t_aah, t_fusion, t_twin, t_crowd, t_interest, t_rig, t_tube.
+- A tip waits while its subject is off screen: t_fusion, t_twin and t_rig need that card in the shop, t_tube the tube button, t_sponsor an offer, t_head, t_match and t_count tonight's rule, and t_mood a visible mood.
+- Lifting a shell shows t_sky at once. A tip it replaces that was up for less than 3 s returns after the next action.
+
 | Id | Trigger | Text |
 |---|---|---|
 | t_fuse | Show 1 build | "Light the fuse. Tubes fire left to right." |
-| t_sky | First shell lifted | "Bursts hang in the sky. 'Sees' counts what's still up when a tube fires." |
+| t_sky | First shell lifted | "Bursts hang in the sky. The sees number counts the bursts still up when a tube fires." |
 | t_aah | First Aah > 1 at the slam | "Aah multiplies Ooh." |
 | t_head | Show 3 build | "Headwind: your first burst is a dud but still hangs. Open with a long-hanging shell." |
 | t_mood | Show 3 build (first-ever run), after t_head | "The crowd's mood reads your rack against tonight's target. It never shows the score." |
 | t_crowd | First Crowd gain | "Every show you pass grows your Crowd. It adds its size to Ooh." |
 | t_interest | First payout at ≥ $5 | "+$1 for every $5 you hold (max +$5)." |
 | t_twin | First twin card | "Drop it on its twin: all its numbers double." |
-| t_fusion | First fusion badge | "Fire these two in this order to fuse them." |
+| t_fusion | First fusion badge | "✦ This card fuses with a shell you own. Drop it where the rack shows ✦." |
 | t_crate | First shell placed in the Crate | "Crate shells don't fire. Swap them in any time." |
 | t_rig | First rig card | "Rigs stay with the tube, not the shell." |
 | t_tube | First tube button | "More tubes, more bursts. 6 at most." |
 | t_sponsor | First Sponsor | "A sponsor raises tonight's target ×1.5 and pays if you make it. Check the crowd with Accept on." |
 | t_match | First Wind Shift or Crossed Wires build | "Match re-seats your shells so tonight's fuse fires them in their usual order." |
-| t_rain | First miss | "Rain check used. Miss again and the season ends." |
-| t_count | F8 build | "Midnight Countdown: the fuse counts down 6→1, then fires 1→6. Your last tube opens and closes the show." |
+| t_rain | First miss | "Rain check used. One more miss ends the run." |
+| t_count | F8 build | "Midnight Countdown: the fuse fires your tubes last to first, then first to last. Your last tube opens and closes the show." |
 
 ---
 
@@ -736,7 +753,7 @@ Each tooltip is shown once, on first encounter. Tooltips never block play and ar
   - the rack rim turns red (static);
   - the fuse ember glows red.
 - These cues play **only** on the first build after the miss and on every Headliner or Countdown build afterwards:
-  - a "Last chance" banner;
+  - a "Last chance: one more miss ends the run" banner;
   - a slow 1.2 s rim pulse with no flashing;
   - a heartbeat at −24 dB.
 
@@ -823,7 +840,7 @@ The first-ever run is detected when there is no meta save, or `meta.runs == 0`. 
 | ~0:35 | Show 2 (target 130): the Palm build scores **378** (×2.9). **Encore!** Crowd +1 +2 → 4. Coins: $5 + $1 interest + $4 = $10 (t_interest). | First compounding; ×6 Aah (t_aah) |
 | ~1:00 | Show 3, **Headwind** (the Goomba; target 150), posted since load. The crowd's mood appears (t_head, t_mood).<br>• A Willow-first rack loses only the Willow's 20 Ooh (the dud still hangs): **276**, Eager.<br>• The chip-suggested Comet opener scores **162**: Hopeful, passes.<br>• Naive T4 racks read low: Comet in T4 scores 126 (ratio 0.84, Restless) and Palm in T4 scores 132 (ratio 0.88, Hopeful, under the §3.3 thresholds). One swap fixes them (216 / 264). | Rearranging; the Crowd mood |
 | ~1:30 | First F2 shop: the workshop row appears (rig card and tube button; t_rig, t_tube). Salute, Roman Candle, Heart and Girandola enter the pool. The first-run override always offers a fusion partner: Palm for Palm owners, Salute for Comet owners, and Salute + Comet otherwise. | Workshop; clearers; multi-burst |
-| 0:42–2:30 | First fusion: Strobing Crossette at show 2 when the Crossette goes in T4; otherwise Thunderclap Comet or Palm Grove, now reachable with the one-gesture swap-in (§2.5). Braid banner, "Logbook: Fusions 1/12", milestone First Fusion. | Fusion |
+| 0:42–2:30 | First fusion: Strobing Crossette at show 2 when the Crossette goes in T4; otherwise Thunderclap Comet or Palm Grove, now reachable with the one-gesture swap-in (§2.5). Braid banner, the toast "New fusion: Strobing Crossette (1 of 12 found)", and "First Fusion done: Strontium Star and Crackle join the shop next run". | Fusion |
 | ~2:30 | Shows 5–6. The F2 Headliner (Drizzle or The Critic) has been drawn on the rack since show 1. | Posted counter |
 | ~3:00 | F3: Uncommons (Crossette, Echo, Waterfall, Kamuro, Dahlia, Smiley, Glitter) and the first **Sponsor** (t_sponsor). | Risk offer |
 | 3:00–5:00 | A typical first run ends here. The end screen shows one lesson (§4.12), 2 unlock bars (e.g. "Packed House 22/40", "Busy Sky 6/8") and 1 silhouette ("Salute → ?"). | — |
@@ -958,7 +975,7 @@ Milestones are checked on SIM events during a run. Unlocks apply to the **next**
 | Tools | 52 | Crate × 2 (44 px slots) pinned on the left and always visible, then an 8 px divider, then Undo, Match, Restore and Rehearse (44 px icon buttons with `aria-label`s). Match is disabled unless tonight's rule permutes the fuse. |
 | Shop | 124 | **3 cards:** 104 × 120 vertical cards (token 48 × 60, name up to 2 lines at 16 px with `hyphens:auto`, price chip, rarity pips, one badge: "✦ Fuses", "Twin ★2 $5", "Collector" or "Pity"). **4 cards:** a 2 × 2 grid of 160 × 58 tiles (token 40 × 48, one-line name, price and badge). |
 | Workshop | 48 | Rig card (glyph, name, $), Add tube ($6 / $10) and Reroll ($n). Hidden in F1. |
-| Fire | 56 | **Light the fuse**, full width, in the thumb zone. A **mood pill** sits at its right end: a crowd glyph (arms down / half / up) plus "Restless", "Hopeful" or "Eager". |
+| Fire | 56 | **Light the fuse** in the thumb zone. Beside it, a separate **mood button**: a crowd glyph (arms down / half / up) plus "Restless", "Hopeful" or "Eager". Tapping it opens a one-line sheet explaining the mood. *(Build decision: as part of the fire button, tapping the pill to learn what it meant lit the fuse.)* |
 
 - Fixed rows total 472 px, plus 28 px of gaps = 500 px.
 - At 740 px the sky gets about 240 px, or about 196 px with the Sponsor strip.
@@ -982,7 +999,7 @@ Milestones are checked on SIM events during a run. Unlocks apply to the **next**
 - Full shell names are always in the card's `aria-label`, the info card and Inspect.
 - Card text is at most 64 characters, with numbers scaled for the shell's ★.
 
-**During RESOLVING:** the shop, workshop and tools rows slide down (240 ms) and the sky grows into their space. The Fire button becomes **Skip ▸▸**.
+**During RESOLVING:** the shop, workshop and tools rows keep their space and dim, and the Fire button becomes **Skip ▸▸**. *(Build decision: sliding the rows away and growing the sky caused about 36 layout shifts per show; keeping the space brings it to 2.)* The info card may grow to 88 px when an owned shell's rule needs three lines.
 
 **Desktop (1440 × 900):**
 - Three columns over a full-bleed decorative sky; the sky keeps drawing bursts behind the side panels at low alpha (L3).
@@ -1060,7 +1077,7 @@ Milestones are checked on SIM events during a run. Unlocks apply to the **next**
 | `--ooh` chip | `#FFFFFF` on `rgba(255,255,255,.12)` | same |
 | `--aah` chip | `#F2C14E` | `#FFD166` |
 | `--x` chip | `#F2C14E` text in a `#56B4E9` ring | `#FFD166` in `#8AD7FF` |
-| `--danger` | `#E0533D` | `#FF6B5E` |
+| `--danger` | `#F07560` (build decision: lifted from `#E0533D` to reach 4.5:1 on every surface) | `#FF6B5E` |
 | `--ok` | `#7BD389` | `#8CFF9E` |
 | `--focus` | `#FFD166`, 3 px outline, 2 px offset | same |
 | Colour tokens | §4.1 | §4.1 |
@@ -1127,7 +1144,7 @@ Milestones are checked on SIM events during a run. Unlocks apply to the **next**
 | `gainOoh {v, tube}` | White "+80 Ooh" popup; the OOH counter punches (1.15×, 90 ms) | Crowd "oo" vowel, gain ∝ tier | — |
 | `gainAah {v}` | Gold "+6 Aah" popup; the AAH counter punches | Crowd "aa" vowel | — |
 | `multAah {factor}` | Gold-on-blue "×1.8" slam with a ring shockwave; AAH counter punch 1.3×; shake; hit-stop 40 + 20 × tier ms (max 120) | × bell (FM), pitch rising with tier | 15 ms |
-| `fusion {name, first}` | The two bursts braid (bezier spiral, fusion pink) and a name banner shows for 900 ms; hit-stop 100 ms. First discovery adds a "Logbook +1 (n/12)" toast. | Fusion chord | 20-30-20 ms |
+| `fusion {name, first}` | The two bursts braid (bezier spiral, fusion pink) and a name banner shows for 900 ms; hit-stop 100 ms. First discovery adds a "New fusion: Thunderclap Comet (1 of 12 found)" toast. | Fusion chord | 20-30-20 ms |
 | `clear {n}` | A white wave sweeps the sky and the cleared bursts fly into AAH as sparks; shake | Boom + whoosh | 12 ms |
 | `extend {n}` | Every burst up gains a Hang pip with a sparkle | High chime | — |
 | `repeat {from, rate}` | Ghost copies of the repeated bursts at 50% alpha; popups tagged "echo" | Echo tap (delay 90 ms, feedback 0.3) | — |
@@ -1139,7 +1156,7 @@ Milestones are checked on SIM events during a run. Unlocks apply to the **next**
 | `payout {...}` | An itemised ticker on the result card | Coin blips (max 5) | — |
 | `rainCheck` / `critical` | The umbrella cracks and the rim turns red. The pulse and "Last chance" appear only on the builds listed in §5.4. | Heartbeat at −24 dB, only on those builds | 40 ms |
 | `relight` (Fair Weather) | "The crowd stays for one more!" banner; the sky resets | Rising two-tone | 20 ms |
-| `milestone {id, value}` | Toast "Busy Sky 6/8" | Tick | — |
+| `milestone {id, value}` | Toast "Busy Sky: 6 of 8 bursts in one show"; on completion "Triple-break done: Nishiki Kamuro joins the shop next run". In the first run, progress toasts wait until show 4. | Tick | — |
 | `runLost` | The sky dims and the lanterns go out; end screen after 900 ms | Low drone fades out | — |
 | **Top tier** (Headliner or Countdown clear, run-best show, `runWon`) | Full-sky finale (every tube fires a barrage); one white flash (never more than 3 flashes per second); hit-stop 150 ms; confetti embers | Bass thump + 5-note pentatonic fanfare | 40 ms |
 
@@ -1562,7 +1579,7 @@ Real players are slower: at 30–45 s per show, a 24-show win takes 12–18 minu
 ### 12.4 Human gates (built stage)
 
 A cold stopwatch test with 3 people:
-- the first run lasts 3–5 min;
+- the first fusion lands by 2:30 in the first run, and the greedy-mood proxy's first run lasts 3–5 min. A chip-reading player's first-run length is informational: any change that lets a novice build an engine makes their run longer (round-1 design review, finding C);
 - the first 1-of-3 choice comes before 0:30;
 - at least 2 of 3 testers predict Applause within 2× by show 6;
 - at least 2 of 3 can say what the crowd's mood means after show 3.
@@ -1585,9 +1602,9 @@ No tester should skip animations because they already know the total. If one doe
 **aria-live:**
 - `#live-polite`:
   - Build open: "Show 5 of 24, May Fair Evening. Target 430. Crowd mood: Eager. Sponsor offered: target 645, pays 2 coins. Next Headliner: Drizzle."
-  - Purchases: "Bought Palm, Red, into tube 3. 5 coins left. Crowd mood: Hopeful."
+  - Purchases: "Bought Palm, Red, into tube 3. You have 5 coins. Crowd mood: Hopeful."
   - Result: "Applause 1,950: Ooh 162 times Aah 12. Passed, 4.5 times the target. Crowd plus 3."
-- `#live-assertive`: "Rain check used. Last chance." and the run end.
+- `#live-assertive`: "Rain check used. One more miss ends the run." and the run end.
 
 **Tube buttons:** `aria-label="Tube 3: Palm, Red circle, star 1, Hang 2, rig Brass, fires 3rd of 6, sees 2"`. The Crowd Favourite adds ", crowd favourite"; Headliner effects add ", half strength" or ", washed out".
 

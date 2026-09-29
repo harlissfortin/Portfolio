@@ -47,7 +47,7 @@ const GAME = (() => {
     // per run (saved with the run)
     lit: [], lastPreLight: null, runBest: {}, startProgress: {}, runUnlocks: [], counted: false,
     buildMs: 0, missPending: false, recordAtStart: 0, recordHit: false, posterAdded: false,
-    lastChance: false, pendingToasts: [], tipQueue: [], tipShown: null, tipAt: 0, lastPay: null,
+    lastChance: false, pendingToasts: [], tipQueue: [], tipShown: null, tipAt: 0, lastPay: null, heldProgress: null,
     layout: 'regular', gestured: false, unlocked: false, audioHeld: false, kickQueued: false, resizeQueued: false, ann: {polite: [], assertive: [], queued: false}, cache: {},
   };
 
@@ -123,7 +123,8 @@ const GAME = (() => {
     const ids = src.length ? src.map(r => r.id) : Object.keys(MS);
     const out = ids.map(id => {
       const r = src.find(x => x.id === id) || {}, fb = MS[id] || [cap(id), 1];
-      return {id, name: r.name || fb[0], goal: isNum(r.goal) ? r.goal : isNum(r.target) ? r.target : fb[1]};
+      return {id, name: r.name || fb[0], goal: isNum(r.goal) ? r.goal : isNum(r.target) ? r.target : fb[1],
+        progress: isStr(r.progress) ? r.progress : null, unlocks: isObj(r.unlocks) ? r.unlocks : null};
     });
     return (S.cache.ms = out);
   }
@@ -288,7 +289,7 @@ const GAME = (() => {
     S.lastRun = null;
     emit('meta', {meta: S.meta});
     newRun({});
-    toast('Progress reset. A fresh season begins.', {kind: 'info'});
+    toast('Progress reset. Your next run is a first run again.', {kind: 'info'});
     return true;
   }
 
@@ -357,7 +358,7 @@ const GAME = (() => {
     S.undo = []; S.rehearse = false; S.lit = []; S.lastPreLight = null; S.runBest = {};
     S.startProgress = {...S.meta.progress}; S.runUnlocks = []; S.counted = false; S.buildMs = 0; S.missPending = false;
     S.recordAtStart = (S.meta.records.bestShow && S.meta.records.bestShow.score) || 0; S.recordHit = false;
-    S.posterAdded = false; S.lastChance = false; S.pendingToasts = []; S.tipQueue = []; S.tipShown = null; S.lastPay = null;
+    S.posterAdded = false; S.lastChance = false; S.pendingToasts = []; S.tipQueue = []; S.tipShown = null; S.lastPay = null; S.heldProgress = null;
   }
   function restoreRun(saved) {
     resetRunFields();
@@ -503,7 +504,7 @@ const GAME = (() => {
     }
     const nh = nextHeadliner(s);
     if (nh !== s && nh < (st.endless ? 36 : 24)) t += ' Next Headliner: ' + (rulesAt(st, nh).map(ruleName).join(' and ') || 'none') + '.';
-    if (S.lastChance) t += ' Last chance.';
+    if (S.lastChance) t += ' Last chance: one more miss ends the run.';
     return t;
   }
   function dismissResult() { if (S.ui === 'RESULT') setUI('BUILD'); }
@@ -574,7 +575,7 @@ const GAME = (() => {
     emit('sim', {action: {type: 'undo'}, events: []});
     emit('change', {state: S.state});
     callAudio('ui', 'tick');
-    announce('Undone. ' + S.state.coins + ' coins.' + (moodVisible() ? ' Crowd mood: ' + moodWord(S.state) + '.' : ''));
+    announce('Undone. ' + coinsText(S.state.coins) + (moodVisible() ? ' Crowd mood: ' + moodWord(S.state) + '.' : ''));
     return true;
   }
   function slotText(slot) {
@@ -586,10 +587,11 @@ const GAME = (() => {
     const t = slot.zone === 'crate' ? st.crate && st.crate[slot.i] : st.tubes[slot.i] && st.tubes[slot.i].shell;
     return t || null;
   }
+  const coinsText = n => 'You have ' + n + (n === 1 ? ' coin.' : ' coins.');
   const shellText = sh => (sh ? shellName(sh.id) + (sh.col && sh.col !== 'W' && sh.col !== 'X' ? ', ' + colName(sh.col) : '') : 'a shell');
   function actionText(a, pre, st) {
     const card = pre.shop && pre.shop.cards && pre.shop.cards[a.card];
-    const tail = ' ' + st.coins + ' coins left.' + (moodVisible() ? ' Crowd mood: ' + moodWord(st) + '.' : '');
+    const tail = ' ' + coinsText(st.coins) + (moodVisible() ? ' Crowd mood: ' + moodWord(st) + '.' : '');
     switch (a.type) {
       case 'buy': return 'Bought ' + shellText(card) + ', into ' + slotText(a.to) + '.' + tail;
       case 'upgrade': { const sh = shellAt(st, a.to); return 'Upgraded ' + shellText(sh) + ' to star ' + (sh ? sh.star : 2) + ' in ' + slotText(a.to) + '.' + tail; }
@@ -677,9 +679,9 @@ const GAME = (() => {
     switch (ev.type) {
       case 'applause': slam(r); break;
       case 'fusion':
-        if (ev.first) toast('Logbook +1 (' + foundFusions() + '/' + Math.max(12, fusionList().length) + ')', {kind: 'discover'});
+        if (ev.first) toast('New fusion: ' + (ev.name || 'a fusion') + ' (' + foundFusions() + ' of ' + Math.max(12, fusionList().length) + ' found)', {kind: 'discover'});
         break;
-      case 'rainCheck': announce('Rain check used. Last chance.', {assertive: true}); break;
+      case 'rainCheck': announce('Rain check used. One more miss ends the run.', {assertive: true}); break;
       case 'relight': announce('The crowd stays for one more! You may relight the Countdown.', {assertive: true}); break;
       case 'runLost': callFX('dim'); r.dimmed = true; break;
     }
@@ -778,7 +780,7 @@ const GAME = (() => {
     if (!lr) return 'The run is over.';
     const st = lr.state || {}, s = st.show != null ? st.show : 0;
     if (lr.abandoned) return 'Run abandoned at show ' + (s + 1) + '. Run it back is ready.';
-    if (lr.won && !lr.afterparty) return 'Happy New Year! You won the season. Run it back, or stay for the Afterparty.';
+    if (lr.won && !lr.afterparty) return 'Happy New Year! You won this run. Run it back, or stay for the Afterparty.';
     if (lr.won) return 'The Afterparty is over: ' + lr.afterpartyShows + ' shows cleared.';
     return 'The crowd went home: ' + festName(Math.floor(s / 3) + 1) + ', show ' + (s + 1) + '. Run it back is ready.';
   }
@@ -952,7 +954,28 @@ const GAME = (() => {
       }
       if (!isDone(ms.id) && val >= ms.goal) completeMilestone(ms, val);
     }
-    if (improved && improved.val / improved.goal >= 0.5) S.pendingToasts.push([improved.name + ' ' + improved.val + '/' + improved.goal, 'milestone']);
+    // Progress toasts ("Busy Sky: 4 of 8 bursts in one show") wait until show 4 of the first run, so they do not
+    // crowd the first tips; the best one held back plays at show 4's build unless a newer one replaces it.
+    const best = improved && improved.val / improved.goal >= 0.5 ? improved : null;
+    if (st.firstRun && st.show < 3) { if (best) S.heldProgress = best; return; }
+    const out = best || (S.heldProgress && !isDone(S.heldProgress.id) ? S.heldProgress : null);
+    if (out) S.pendingToasts.push([progressText(out), 'milestone']);
+    S.heldProgress = null;
+  }
+  function progressText(ms) {
+    const t = ms.progress || '{v} of {g}';
+    return ms.name + ': ' + t.replace('{v}', ms.val).replace('{g}', ms.goal);
+  }
+  const andList = a => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+  // "Triple-break done: Nishiki Kamuro joins the shop next run"
+  function doneText(ms) {
+    const u = ms.unlocks || {}, sh = (u.shells || []).map(shellName), kits = (u.kits || []).map(k => 'the ' + kitName(k) + ' kit');
+    let t;
+    if (ms.id === 'm_win') t = 'Renown 1, the Afterparty and the Daily Show are open';
+    else if (ms.id === 'm_logbook') t = 'every unfound fusion now shows its first shell';
+    else if (sh.length) t = andList(sh) + (sh.length > 1 ? ' join' : ' joins') + ' the shop next run' + (kits.length ? ', with ' + andList(kits) : '');
+    else if (kits.length) t = andList(kits) + ' unlocks next run';
+    return ms.name + ' done' + (t ? ': ' + t : '');
   }
   function pushUnlock(kind, id, milestone) {
     if (S.runUnlocks.some(u => u.kind === kind && u.id === id)) return;
@@ -970,7 +993,7 @@ const GAME = (() => {
     if (!rows('KITS').length) for (const k in KIT_LOCK) if (KIT_LOCK[k] === ms.id) pushUnlock('kit', k, ms.id);
     if (ms.id === 'm_win') { pushUnlock('mode', 'afterparty', ms.id); pushUnlock('mode', 'daily', ms.id); }
     emit('milestone', {id: ms.id, value: val, goal: ms.goal, done: true});
-    S.pendingToasts.push([ms.name + ' ✓ Unlocks from your next run.', 'milestone']);
+    S.pendingToasts.push([doneText(ms), 'milestone']);
     emit('meta', {meta: m});
     saveNow();
   }

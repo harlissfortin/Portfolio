@@ -164,12 +164,12 @@ function OohSim() {
     FUSIONS[key] = { key, n: i + 1, a, b, name, p, params: p, lock, fest, text }; FUSION_KEYS.push(key); });
   const FU = FUSIONS;
   const TECHNIQUES = [
-    'Canopy: Willow, Glitter or a Tall Tube feeding Chrysanthemum, Crossette or Finale.',
-    'Clear-then-solo: Salute or Thunder King before Comet.',
-    'Count: Roman Candle or Mortar feeding Crackle, Horsetail or Barrage.',
+    'Long hang first: Willow, Glitter or a Tall Tube before Chrysanthemum, Crossette or Grand Finale.',
+    'Clear, then Comet: Salute or Thunder King right before Comet.',
+    'Many bursts first: Roman Candle or Mortar before Crackle, Horsetail or Barrage.',
     'Spotlight on a Chrysanthemum ★3.',
     'Mortar on a × shell.',
-    'Crowd scaffolding: fire Girandola and Smiley early, sell them late, and keep the Crowd.',
+    'Grow the Crowd early: fire Girandola and Smiley in the first festivals and sell them later. The Crowd stays.',
     'Countdown: your last tube opens and closes the show.',
   ];
 
@@ -185,26 +185,26 @@ function OohSim() {
 
   // §4.7 Headliners (drawn in table order at createState; F8 is always the Countdown).
   const HEADLINER_ROWS = [
-    ['headwind', 'Headwind', 1, 1, 'The first burst is a dud: it scores nothing but still hangs.', 'Openers (the "Goomba")', 'Gust icon and dud hatch on fire-order #1'],
-    ['drizzle', 'Drizzle', 1, 3, 'All Hang −1.', 'Canopy', 'Every Hang pip loses one (shown crossed out)'],
-    ['critic', 'The Critic', 2, 5, 'A burst the same colour as the burst before it earns no Ooh (White and Rainbow exempt).', 'Mono', 'Monocle between consecutive tubes of the same colour'],
-    ['shortfuse', 'Short Fuse', 3, 6, 'Only tubes 1–5 fire.', 'Wide racks', 'Tube 6 hatched'],
-    ['fog', 'Fog', 3, 7, 'Shells see only the 2 newest bursts.', 'Canopy, Rainbow', 'Fog band; "sees" chips capped at 2'],
-    ['ordinance', 'Noise Ordinance', 3, 7, 'White shells (by row colour) fire at half strength.', 'Thunder, Salvo', '"½" badge on White tokens'],
-    ['windshift', 'Wind Shift', 4, 7, 'The fuse runs right to left; rigs stay put.', 'Rigs, fusions', 'Fuse arrow reversed; numerals reversed; Match button lit'],
-    ['ferry', 'Late Ferry', 4, 7, 'Half the Crowd misses the show: the Crowd adds only half.', 'Crowd', 'Crowd counter shows "½"'],
-    ['crossed', 'Crossed Wires', 5, 7, 'Tubes 2, 4, 6 fire first, then 1, 3, 5.', 'Order, fusions', 'Numerals re-sequenced; Match button lit'],
-    ['streetlights', 'Sodium Streetlights', 5, 7, 'The embankment lamps wash out tubes 2, 4 and 6: their bursts count as White.', 'Mono, Rainbow', 'Tokens in tubes 2, 4 and 6 desaturated, with a lamp glyph'],
-    ['powercut', 'Power Cut', 6, 7, '+Aah is capped at 30 per show (× still works).', 'Aah stacks', 'Cap tick at 30 on the Aah meter'],
-    ['rival', 'Rival Crew', 6, 7, 'Your ♛ Crowd Favourite (as of lighting) fires at half strength.', 'One-trick carries', '"½" on the ♛ tube'],
-    ['countdown', 'Midnight Countdown', 8, 8, 'The fuse counts down N→1, then fires 1→N. The sky carries over; no rain check.', 'Tests the whole engine: every shell fires twice', 'Out-and-back fuse path; a countdown numeral row (N…1) above a celebration row (1…N)'],
+    ['headwind', 'Headwind', 1, 1, 'The first burst is a dud: it scores nothing but still hangs.', 'a strong first shell', 'a gust icon on the first tube to fire, hatched to show the dud'],
+    ['drizzle', 'Drizzle', 1, 3, 'All Hang −1.', 'long-hanging shells', 'one Hang pip crossed out on every shell'],
+    ['critic', 'The Critic', 2, 5, 'A burst the same colour as the burst before it earns no Ooh (White and Rainbow exempt).', 'one-colour skies', 'a monocle between back-to-back tubes of the same colour'],
+    ['shortfuse', 'Short Fuse', 3, 6, 'Only tubes 1–5 fire.', 'a 6th tube', 'tube 6 hatched out'],
+    ['fog', 'Fog', 3, 7, 'Shells see only the 2 newest bursts.', 'long-hanging shells and Rainbow shells', 'a fog band, and no tube sees more than 2'],
+    ['ordinance', 'Noise Ordinance', 3, 7, 'Shells printed White fire at half strength.', 'racks built on White shells', 'a ½ badge on White shells'],
+    ['windshift', 'Wind Shift', 4, 7, 'The fuse runs right to left; rigs stay put.', 'rigs and fusions', 'the fuse arrow and tube numbers reversed, and Match lit'],
+    ['ferry', 'Late Ferry', 4, 7, 'Half the Crowd misses the show: the Crowd adds only half.', 'a big Crowd', 'a ½ on the Crowd counter'],
+    ['crossed', 'Crossed Wires', 5, 7, 'Tubes 2, 4, 6 fire first, then 1, 3, 5.', 'fire order and fusions', 'tube numbers in the new firing order, and Match lit'],
+    ['streetlights', 'Sodium Streetlights', 5, 7, 'The embankment lamps wash out tubes 2, 4 and 6: their bursts count as White.', 'one-colour and Rainbow skies', 'tubes 2, 4 and 6 greyed, with a lamp icon'],
+    ['powercut', 'Power Cut', 6, 7, '+Aah is capped at 30 per show (× still works).', 'big +Aah stacks', 'a cap mark at 30 on the Aah meter'],
+    ['rival', 'Rival Crew', 6, 7, 'Your ♛ Crowd Favourite (as of lighting) fires at half strength.', 'a rack that leans on one shell', 'a ½ on the ♛ tube'],
+    ['countdown', 'Midnight Countdown', 8, 8, 'The fuse fires your tubes last to first, then first to last. The sky carries over, and there is no rain check.', 'no single build. Every shell fires twice', 'an out-and-back fuse path, with two rows of tube numbers'],
   ];
   const HEADLINERS = {}; const HEADLINER_IDS = [];
   for (const [id, name, min, max, text, counters, telegraph] of HEADLINER_ROWS) { HEADLINERS[id] = { id, name, min, max, text, counters, telegraph }; HEADLINER_IDS.push(id); }
   const DRAW_ROWS = HEADLINER_ROWS.filter(r => r[0] !== 'countdown').map(r => ({ id: r[0], min: r[2], max: r[3] }));
   // Every rule id the resolver understands, for labels (Headliners plus the Renown 8 three-pass Countdown).
   const RULE_INFO = Object.assign({}, HEADLINERS, {
-    countdown3: { id: 'countdown3', name: 'Midnight Countdown', min: 8, max: 8, text: 'Renown 8: the fuse fires three passes (1→N, N→1, 1→N) and the target is 900,000.', counters: 'Everything', telegraph: 'Three numeral rows' },
+    countdown3: { id: 'countdown3', name: 'Midnight Countdown', min: 8, max: 8, text: 'Renown 8: the fuse fires your tubes first to last, last to first, then first to last again. The target is 900,000.', counters: 'no single build', telegraph: 'three rows of tube numbers' },
   });
   const TWISTS = {
     twilight: ['headwind', 'drizzle', 'critic'],                                                          // Renown 2 (§4.10)
@@ -226,7 +226,7 @@ function OohSim() {
   const SPONSORS = {
     coin: { kind: 'coin', flavour: 'Riverside Brewery', reward: '+$2' },
     crowd: { kind: 'crowd', flavour: 'The Gazette', reward: 'Crowd +4' },
-    rare: { kind: 'rare', flavour: 'The Collector', reward: 'The next shop adds a 4th shell card: a Rare, or an Uncommon in F3. It is excluded from rerolls.' },
+    rare: { kind: 'rare', flavour: 'The Collector', reward: 'The next shop adds a 4th card: a Rare (an Uncommon in Festival 3). Rerolls keep it.' },
   };
 
   // §4.10 Renown (index = level; 0 = none).
@@ -236,28 +236,29 @@ function OohSim() {
     { level: 2, text: 'Every Twilight from Festival 2 on gets a mild twist: Headwind, Drizzle or The Critic.' },
     { level: 3, text: 'Rerolls start at $2 (+$1 each).' },
     { level: 4, text: 'Tubes cost +$4 ($10 / $14).' },
-    { level: 5, text: 'Shell cards cost +$1. Upgrade prices still come from the row cost.' },
+    { level: 5, text: "Shell cards cost +$1. Upgrade prices don't change." },
     { level: 6, text: 'No rain check.' },
     { level: 7, text: 'The Countdown also halves your ♛ Crowd Favourite, as Rival Crew does.' },
-    { level: 8, text: 'The Countdown fires three passes (1→N, N→1, 1→N) and its target is 900,000.' },
+    { level: 8, text: 'The Countdown fires your tubes first to last, last to first, then first to last again. Its target is 900,000.' },
   ];
 
   // §4.11 milestones. `goal` is the progress-bar goal for the run value described in `metric`.
+  // `metric` is the Logbook's "Progress:" line; `progress` is the in-run toast ("Busy Sky: 4 of 8 bursts in one show").
   const MILESTONE_ROWS = [
-    ['m_fusion', 'First Fusion', 'Fire any fusion', 1, 'fusions fired', { shells: ['strontium', 'crackle'] }],
-    ['m_busy', 'Busy Sky', '8+ bursts in one show', 8, 'bursts in one show (not the Countdown)', { shells: ['horsetail', 'cake'], kits: ['salvo'] }],
-    ['m_mono', 'Monochrome Night', 'A show with 5+ coloured bursts, all one colour, White ignored', 5, 'coloured bursts in a one-colour show', { shells: ['fern', 'brocade'] }],
-    ['m_spectrum', 'Full Spectrum', '3 colours up at once, or bursts of all 4 colours fired in one show', 3, 'colours up at once (4 fired counts as 3)', { shells: ['prism', 'tourbillon'], kits: ['chemist'] }],
-    ['m_crowd', 'Packed House', 'Crowd reaches 40', 40, 'Crowd', { shells: ['crest', 'saturn'], kits: ['showman'] }],
-    ['m_triple', 'Triple-break', 'Own a ★3 shell', 3, 'highest ★ owned', { shells: ['nishiki'] }],
-    ['m_headliner', 'Headliner Hunter', "Pass Festival 4's Headliner", 1, "Festival 4's Headliner passed", { shells: ['bluemoon'] }],
-    ['m_rigger', 'Rigger', '3 rigs installed at once', 3, 'rigs installed at once', { kits: ['market'] }],
-    ['m_win', 'Happy New Year', 'Win a run', 1, 'wins', { other: ['Renown 1', 'Afterparty', 'Daily Show'] }],
-    ['m_logbook', 'Logbook Half', 'Discover 6 of the 12 fusions', 6, 'fusions discovered', { other: ['Every fusion shows its left half as a silhouette'] }],
+    ['m_fusion', 'First Fusion', 'Fire any fusion', 1, 'fusions fired', { shells: ['strontium', 'crackle'] }, '{v} of {g} fusions fired'],
+    ['m_busy', 'Busy Sky', '8+ bursts in one show', 8, 'bursts in one show, not counting the Countdown', { shells: ['horsetail', 'cake'], kits: ['salvo'] }, '{v} of {g} bursts in one show'],
+    ['m_mono', 'Monochrome Night', 'A show with 5+ coloured bursts, all one colour, White ignored', 5, 'coloured bursts in a one-colour show', { shells: ['fern', 'brocade'] }, '{v} of {g} bursts in one colour'],
+    ['m_spectrum', 'Full Spectrum', '3 colours up at once, or bursts of all 4 colours fired in one show', 3, 'colours up at once, and all 4 fired in one show counts as 3', { shells: ['prism', 'tourbillon'], kits: ['chemist'] }, '{v} of {g} colours up at once'],
+    ['m_crowd', 'Packed House', 'Crowd reaches 40', 40, 'Crowd', { shells: ['crest', 'saturn'], kits: ['showman'] }, 'Crowd {v} of {g}'],
+    ['m_triple', 'Triple-break', 'Own a ★3 shell', 3, 'highest ★ owned', { shells: ['nishiki'] }, 'your best shell is ★{v} of ★{g}'],
+    ['m_headliner', 'Headliner Hunter', "Pass Festival 4's Headliner", 1, "Festival 4's Headliner passed", { shells: ['bluemoon'] }, "Festival 4's Headliner passed: {v} of {g}"],
+    ['m_rigger', 'Rigger', '3 rigs installed at once', 3, 'rigs installed at once', { kits: ['market'] }, '{v} of {g} rigs installed at once'],
+    ['m_win', 'Happy New Year', 'Win a run', 1, 'wins', { other: ['Renown 1', 'Afterparty', 'Daily Show'] }, '{v} of {g} wins'],
+    ['m_logbook', 'Logbook Half', 'Discover 6 of the 12 fusions', 6, 'fusions discovered', { other: ['Every unfound fusion shows its first shell'] }, '{v} of {g} fusions found'],
   ];
   const MILESTONES = {}; const MILESTONE_IDS = [];
-  for (const [id, name, text, goal, metric, unlocks] of MILESTONE_ROWS) {
-    MILESTONES[id] = { id, name, text, goal, metric, unlocks: { shells: unlocks.shells || [], kits: unlocks.kits || [], other: unlocks.other || [] } };
+  for (const [id, name, text, goal, metric, unlocks, progress] of MILESTONE_ROWS) {
+    MILESTONES[id] = { id, name, text, goal, metric, progress, unlocks: { shells: unlocks.shells || [], kits: unlocks.kits || [], other: unlocks.other || [] } };
     MILESTONE_IDS.push(id);
   }
   const POOL_MILESTONES = ['m_fusion', 'm_busy', 'm_mono', 'm_spectrum', 'm_crowd', 'm_triple', 'm_headliner', 'm_rigger'];
@@ -273,31 +274,31 @@ function OohSim() {
     { n: 7, when: 'Lost on a sponsored show', text: 'Sponsors raise the target ×1.5. Take one when the crowd stays Eager with Accept on.' },
     { n: 8, when: 'An empty tube fired in 2+ shows while you held ≥ $3', text: 'An empty tube fired nothing in {n} shows. Even a Peony adds 20 Ooh.' },
     { n: 9, when: 'Never held ≥ $5 at a payout after show 4', text: 'Holding $5 or more pays +$1 per $5 every show (up to +$5).' },
-    { n: 10, when: 'Lost with no fusion all run and 3+ upgrades', text: 'Upgrades double; ✦ fusions and × shells multiply. Drop a card on a full tube next to its partner: the old shell moves to the Crate.' },
-    { n: 11, when: 'Never upgraded', text: 'Drop a shell on its twin: all its numbers double.' },
+    { n: 10, when: 'Lost with no fusion all run and 3+ upgrades', text: 'Upgrades double. ✦ fusions and × shells multiply. Drop a card on a full tube next to its partner. The old shell moves to the Crate.' },
+    { n: 11, when: 'Never upgraded', text: 'Drop a card on its twin: all its numbers double.' },
     { n: 12, when: 'Crowd < 25 at the end of F4', text: 'Girandola and Smiley pay into every future show through the Crowd.' },
     { n: 13, when: 'Won', text: 'Next: Renown {n+1}: {modifier}.' },
-    { n: 14, when: 'Default', text: "Bursts hang for their Hang; readers count what's still up. Build a canopy before you cash it in." },
+    { n: 14, when: 'Default', text: 'Put long-hanging shells first and the shells that count the sky after them.' },
   ];
 
   // §4.13 one-line tooltips (shown once each; triggers are evaluated by the UI).
   const TOOLTIP_ROWS = [
     ['t_fuse', 'Show 1 build', 'Light the fuse. Tubes fire left to right.'],
-    ['t_sky', 'First shell lifted', "Bursts hang in the sky. 'Sees' counts what's still up when a tube fires."],
+    ['t_sky', 'First shell lifted', 'Bursts hang in the sky. The sees number counts the bursts still up when a tube fires.'],
     ['t_aah', 'First Aah > 1 at the slam', 'Aah multiplies Ooh.'],
     ['t_head', 'Show 3 build', 'Headwind: your first burst is a dud but still hangs. Open with a long-hanging shell.'],
     ['t_mood', 'Show 3 build (first-ever run), after t_head', "The crowd's mood reads your rack against tonight's target. It never shows the score."],
     ['t_crowd', 'First Crowd gain', 'Every show you pass grows your Crowd. It adds its size to Ooh.'],
     ['t_interest', 'First payout at ≥ $5', '+$1 for every $5 you hold (max +$5).'],
     ['t_twin', 'First twin card', 'Drop it on its twin: all its numbers double.'],
-    ['t_fusion', 'First fusion badge', 'Fire these two in this order to fuse them.'],
+    ['t_fusion', 'First fusion badge', '✦ This card fuses with a shell you own. Drop it where the rack shows ✦.'],
     ['t_crate', 'First shell placed in the Crate', "Crate shells don't fire. Swap them in any time."],
     ['t_rig', 'First rig card', 'Rigs stay with the tube, not the shell.'],
     ['t_tube', 'First tube button', 'More tubes, more bursts. 6 at most.'],
     ['t_sponsor', 'First Sponsor', "A sponsor raises tonight's target ×1.5 and pays if you make it. Check the crowd with Accept on."],
     ['t_match', 'First Wind Shift or Crossed Wires build', "Match re-seats your shells so tonight's fuse fires them in their usual order."],
-    ['t_rain', 'First miss', 'Rain check used. Miss again and the season ends.'],
-    ['t_count', 'F8 build', 'Midnight Countdown: the fuse counts down 6→1, then fires 1→6. Your last tube opens and closes the show.'],
+    ['t_rain', 'First miss', 'Rain check used. One more miss ends the run.'],
+    ['t_count', 'F8 build', 'Midnight Countdown: the fuse fires your tubes last to first, then first to last. Your last tube opens and closes the show.'],
   ];
   const TOOLTIPS = {}; const TOOLTIP_IDS = [];
   for (const [id, trigger, text] of TOOLTIP_ROWS) { TOOLTIPS[id] = { id, trigger, text }; TOOLTIP_IDS.push(id); }
@@ -305,10 +306,13 @@ function OohSim() {
   // §1 rules card and glossary.
   const RULES_CARD = [
     'The fuse fires your tubes left to right. Each burst stays up for the next few bursts (its Hang), and later shells score by what is still up.',
-    'Shells add Ooh, add Aah, or multiply Aah; your Crowd adds its size to Ooh. Applause = Ooh × Aah must beat the target (one rain check per run).',
-    'Between shows, spend coins on shells, tubes and rigs. Drop a shell on its twin to upgrade it; a shell fired right after its partner fuses with it.',
+    'Shells add Ooh, add Aah or multiply Aah. Aah starts at 1, and your Crowd adds its size to Ooh. Applause is Ooh × Aah. Reach the target to pass. You may miss one show per run (your rain check).',
+    'Between shows, spend coins on shells, tubes and rigs. Drop a card on its twin to upgrade it. Some shells fuse when they fire right after a partner.',
   ];
   const GLOSSARY = [
+    ['Ooh', 'The base of your score. Shells add Ooh, and your Crowd adds its size.'],
+    ['Aah', 'Multiplies Ooh. It starts at 1 each show, and shells add to it or multiply it.'],
+    ['Applause', 'Your score for a show: Ooh × Aah. Reach the target to pass.'],
     ['Burst', 'One firing of a shell. Most shells make 1 burst, a Roman Candle makes 3, and a Mortar rig doubles a tube\'s bursts.'],
     ['Up / the sky', 'The bursts still hanging when a shell fires. The burst being fired is not up yet.'],
     ['Hang', 'How many later bursts a burst stays up for.'],
@@ -316,17 +320,24 @@ function OohSim() {
     ['Fire order', "The order in which bursts fire: normally tube 1 to the last tube, unless tonight's rule changes it."],
     ['Tube', 'A slot in the rack. You start with 4; the maximum is 6.'],
     ['Rig', 'A tube upgrade. It stays on the tube, not on the shell.'],
-    ['Crate', "2 bench slots. Shells in the Crate don't fire."],
+    ['Crate', "2 spare slots. Shells in the Crate don't fire."],
     ['★ / break', 'Upgrade tier: ★1, ★2 (double-break), ★3 (triple-break).'],
+    ['Twin', 'A card for a shell you own. Drop it on that shell to upgrade it: all its numbers double, up to ★3.'],
+    ['Fusion', "Fire a shell right before its partner, and the partner's first burst fuses. The Logbook lists all 12."],
     ['Crowd', 'A counter that persists through the run and adds its size to Ooh at the end of every show.'],
     ['Crowd mood', "Restless, Hopeful or Eager: the crowd's read of your rack against tonight's target. It never shows a number."],
+    ['Interest', 'After each show you pass, +$1 for every $5 you hold (up to +$5).'],
     ['Rain check', 'Forgives one miss per run, but not at the Countdown.'],
     ['Encore', 'Applause of at least 2× the target. Crowd +2 × the festival number.'],
-    ['Sponsor', "Optional: this show's target ×1.5 in exchange for a reward."],
-    ['Headliner', 'The 3rd show of each festival, with a rule twist. It is posted a festival ahead.'],
+    ['Sponsor', "Optional. Raises this show's target ×1.5 for a reward."],
+    ['Headliner', 'The 3rd show of each festival, with a rule twist. It is announced a festival ahead.'],
     ['Match', "Re-seats your shells so that tonight's fuse fires them in their usual order."],
+    ['Rehearse', "Previews the next Headliner: the chips and the crowd mood read your rack under its rule."],
+    ['Restore', 'Puts your shells back in the tubes they held at the last show.'],
     ['♛ Crowd Favourite', 'The shell whose removal would cost the most Applause right now.'],
-    ['Fair Weather', 'The labelled assist: all targets ×0.75, and the Countdown may be relit once.'],
+    ['Keepsake', 'After a run, keep one Common shell. It starts your next run in the Crate.'],
+    ['Renown', 'Harder levels you unlock by winning. Each level adds one rule to all the ones before it.'],
+    ['Fair Weather', 'An easier mode: every target ×0.75, and you can relight the Countdown once. These runs are marked.'],
     ['Afterparty', 'The optional endless mode after a win.'],
   ];
 
@@ -1319,7 +1330,7 @@ function OohSim() {
       const isCD = rules.includes('countdown') || rules.includes('countdown3');
       const bestApplause = () => reo && (nmShow == null || nmShow === s) ? reo.applause : bestArrangement(lastRack(last), rules, lastCrowd(last)).applause;
       if (isCD && lastRack(last)) { const b = bestApplause(); if (b >= last.target) return L(1, { n: fmt(b) }); }
-      if (last.moodAtLight === 'restless') return L(2, { show: showName(s) });
+      if (last.moodAtLight === 'restless') return L(2, { show: 'show ' + (s + 1) + ' (' + showName(s) + ')' });
       if (lastRack(last)) {
         const r = scoreFull(lastRack(last), rules, lastCrowd(last), { trace: true });
         let added = 0, burst = null; const xs = [];
@@ -1393,7 +1404,7 @@ function OohSim() {
     return (neg ? '−' : '') + out;
   }
   // Aah: 1 decimal below 100, none above (§3.1).
-  function fmtAah(x) { if (typeof x !== 'number' || !Number.isFinite(x)) return fmt(x); return x < 100 ? (Math.floor(x * 10) / 10).toFixed(1) : fmt(x); }
+  function fmtAah(x) { if (typeof x !== 'number' || !Number.isFinite(x)) return fmt(x); return x < 100 ? String(Math.floor(x * 10) / 10) : fmt(x); } // 3, 3.5, 19.5 (one format everywhere)
 
   const num = v => String(+(+v).toFixed(4));
   function fillText(tpl, m, star, p) {

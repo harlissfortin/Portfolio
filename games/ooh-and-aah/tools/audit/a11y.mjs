@@ -47,7 +47,7 @@
  *   (g) live       #live-polite / #live-assertive exist, have the right aria-live values
  *                  and are exposed in the AX tree. A scripted show must announce the build
  *                  open ("Show N of 24 … Target N"), a purchase ("Bought …, into tube N.
- *                  N coins left") and the result ("Applause N: Ooh N times Aah N. Passed|
+ *                  You have N coins.") and the result ("Applause N: Ooh N times Aah N. Passed|
  *                  Missed"). The run end (and a spent rain check) is announced assertively.
  *   (h) motion     With prefers-reduced-motion: reduce emulated: GAME.reducedMotion is true,
  *                  FX runs in reduced mode (FX.stats() / data-motion), and no CSS animation
@@ -1797,7 +1797,7 @@ function evalLive(vp, log, marks, regions, extra = {}) {
   expect('build-open (show 1)', 0, lit, [/Show \d+ of \d+/i, /Target [\d,.]+[KMB]?/i]);
   expect('result', lit, m.beforeBuy != null ? m.beforeBuy : log.length, [/Applause [\d,.]+[KMBe\d]*/i, /Ooh [\d,.KMB]+ times Aah [\d,.KMBe]+/i, /(Passed|Missed|short)/i]);
   expect('build-open (show 2)', lit, m.beforeBuy != null ? m.beforeBuy : log.length, [/Show 2 of \d+/i, /Target/i], 'WARN');
-  if (m.beforeBuy != null && m.bought) expect('purchase', m.beforeBuy, m.afterBuy != null ? m.afterBuy : log.length, [/Bought .+,? into (tube \d+|(the )?crate)/i, /\d+ coins? left/i]);
+  if (m.beforeBuy != null && m.bought) expect('purchase', m.beforeBuy, m.afterBuy != null ? m.afterBuy : log.length, [/Bought .+,? into (tube \d+|(the )?crate)/i, /You have \d+ coins?/i]);
   else if (m.beforeBuy != null) notes.push('purchase not made (' + (m.buyWhy || '?') + '): purchase announcement not verified');
   const moodLater = log.filter(x => x.region === 'live-polite' && /Show ([3-9]|1\d|2[0-4]) of/i.test(x.text));
   if (moodLater.length && !moodLater.some(x => /Crowd mood: (Restless|Hopeful|Eager)/i.test(x.text))) issues.push({ level: 'WARN', sel: '#live-polite', msg: 'build-open announcements from show 3 on never include "Crowd mood: …"' });

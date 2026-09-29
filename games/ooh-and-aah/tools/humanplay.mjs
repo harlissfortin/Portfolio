@@ -16,7 +16,12 @@
  *      tube's "sees N", and the card badges ("✦ Fuses", "Twin ★2 $5"). Score = Ooh/10 + 1.5·Aah
  *      + 15·(× − 1) + 0.4·Crowd + $ + ✦ 6 + twin 4 + "✦ Fuses" badge 3 + 0.5·sees. Buy the best
  *      placement (tap card → tap tube, or a drag ~30% of the time) while it scores ≥ 1.5 (keep $5
- *      for interest when the crowd is already Eager, unless it is a fusion or a twin). After a new
+ *      for interest when the crowd is already Eager, unless it is a fusion or a twin). An occupied
+ *      tube that lights up for a non-twin card is the one-gesture swap-in (chip "→▭": the old shell
+ *      goes to the Crate; "✕+$n": the Crate is full, so it is sold): the proxy remembers what each
+ *      racked shell read when it placed it (starters count 2) and swaps only when the new chips beat
+ *      that by 1.5, Undoing the swap if the mood pill drops. × chips are read with their "(+n)"
+ *      Aah equivalent when shown. After a new
  *      shell lands, lift it and move it next to a ✦ partner or to a spot that reads clearly better
  *      (Undo if the mood drops). Then add a tube if the rack is full, buy the rig card if coins
  *      are spare, and reroll once if nothing appealed.
@@ -125,14 +130,17 @@ const fmtNum = n => (n == null ? '—' : n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' :
  * "+60" (Ooh), "+9" (Aah), "×1.8", "✦" / "✦ ?" (a fusion), crowd "+4", "+$2", "+0" (nothing).
  */
 function parseChips(list) {
-  const c = { ooh: 0, aah: 0, x: 1, fusion: false, crowd: 0, coin: 0, none: false, n: 0 };
+  const c = { ooh: 0, aah: 0, x: 1, xAah: 0, fusion: false, crowd: 0, coin: 0, none: false, swap: null, refund: 0, n: 0 };
   for (const { k, t } of list || []) {
     const v = parseFmt(String(t).replace(/−/g, '-').replace(/^[^\d-]*/, '')) || 0;
     c.n++;
     if (k === 'ooh') c.ooh += v; else if (k === 'aah') c.aah += v; else if (k === 'crowd') c.crowd += v; else if (k === 'coin') c.coin += v;
     else if (k === 'x') { const m = /×\s*(\d+(?:\.\d+)?)/.exec(t); if (m && +m[1] > 1) c.x *= +m[1]; }
+    else if (k === 'xaah') c.xAah += v;
     else if (k === 'fusion') c.fusion = true;
     else if (k === 'none') c.none = true;
+    else if (k === 'swap') { c.n--; if (/\+\$/.test(t)) { c.swap = 'replace'; c.refund = v; } else c.swap = 'swap'; }
+    else if (k === 'ord') c.n--;
   }
   return c;
 }
@@ -142,7 +150,8 @@ function parseChips(list) {
  * upgrade is the exciting find; a shell that "sees more" (more bursts up in the sky) is better placed.
  */
 function scorePlacement(d, { twin, fuses, sees }) {
-  let v = d.ooh / 10 + d.aah * 1.5 + (d.x > 1 ? (d.x - 1) * 15 : 0) + d.crowd * 0.4 + d.coin;
+  // a × chip with its "(+n)" Aah equivalent reads like +Aah; without it, ×1.4 counts as 6
+  let v = d.ooh / 10 + d.aah * 1.5 + (d.x > 1 ? (d.xAah > 0 ? d.xAah * 1.5 : (d.x - 1) * 15) : 0) + d.crowd * 0.4 + d.coin;
   if (d.fusion) v += 6;
   if (twin) v += 4;
   v += Math.min(sees || 0, 6) * 0.5;
@@ -165,6 +174,9 @@ function tubeInfo(t) {
   return {
     j: t.j, empty: !!t.empty, name: t.empty ? null : (m ? m[1].trim() : ''), star: +(aria.match(/star\s*(\d)/i) || [])[1] || 1,
     rig: rig && !/^(none|no)$/i.test(rig) ? rig : null, fav: /favourite|favorite/i.test(aria), can: !!t.can,
+    // a legal drop on an occupied non-twin tube is a swap-in (old shell → Crate) or, with the Crate full, a replace (sold)
+    swap: /drop here to swap in/i.test(aria) ? 'swap' : /drop here to replace/i.test(aria) ? 'replace' : null,
+    refund: +((aria.match(/drop here to replace[^,]*?for\s+(\d+)\s+coins/i) || [])[1] || 0),
     sees: +((t.sees || '').match(/\d+/) || [0])[0], chips: parseChips(t.chips),
     text: `${t.ord} ${t.sees} ${(t.chips || []).map(c => c.t).join(' ')}`.replace(/\s+/g, ' ').trim(),
   };
@@ -200,7 +212,7 @@ function pageRead() {
   const fb = q('#firebar') || (fire && fire.parentElement);
   let moodSrc = fb ? text(fb) : '';
   if (fb) for (const el of qa('*', fb)) if (vis(el)) moodSrc += ' ' + (el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || '');
-  const pill = fire && q('.mood', fire);
+  const pill = q('#firebar .mood') || (fire && q('.mood', fire));
   const mm = pill && !pill.hidden && vis(pill) ? (pill.dataset.mood || text(pill)).match(/\b(restless|hopeful|eager)\b/i) : moodSrc.match(/\b(restless|hopeful|eager)\b/i);
   out.mood = mm ? mm[1].toLowerCase() : null;
   out.held = qa('#rack .sel, #tools .sel, #shop .sel, #workshop .sel').filter(vis).map(el => el.dataset.card != null ? `button[data-card="${el.dataset.card}"]`
@@ -213,7 +225,8 @@ function pageRead() {
   // with the class "can" and ", drop here" in the aria-label.
   const chipKind = c => { const k = cls(c);
     return /\bc-ooh\b/.test(k) ? 'ooh' : /\bc-aah\b|chip-aah/.test(k) ? 'aah' : /\bc-x\b|chip-x/.test(k) ? 'x' : /chip-fusion/.test(k) ? 'fusion'
-      : /\bc-crowd\b/.test(k) ? 'crowd' : /\bc-coin\b/.test(k) ? 'coin' : /\bc-none\b/.test(k) ? 'none' : 'other'; };
+      : /\bc-crowd\b/.test(k) ? 'crowd' : /\bc-coin\b/.test(k) ? 'coin' : /\bc-none\b/.test(k) ? 'none'
+      : /\bc-xaah\b/.test(k) ? 'xaah' : /\bc-swap\b/.test(k) ? 'swap' : /\bc-ord\b/.test(k) ? 'ord' : 'other'; };
   out.tubes = qa('button[data-tube]').filter(vis).map(el => {
     const aria = el.getAttribute('aria-label') || '';
     const seesEl = q('.t-sees', el), numEl = q('.t-num', el);
@@ -296,7 +309,11 @@ class HumanProxy {
     this.findings = new Set(); // UI problems the proxy ran into (reported, never worked around silently)
     this.shotKeys = new Set();
     this.curShow = null;
+    this.valueAt = new Map(); // tube → what the shell there read (chip score) when the proxy placed it; starters count 2
+    this.rejected = new Set(); // "card name→tube" swaps undone this show (the mood dropped)
   }
+  /** What the shell on tube j is worth to this player: remembered from its placement, else a starter's 2. */
+  worth(j) { return this.valueAt.has(j) ? this.valueAt.get(j) : 2; }
   /** Record a UI problem with its context (show, coins, the info card's text) and a screenshot the first time. */
   async note(msg) {
     const s = await this.read().catch(() => null);
@@ -393,6 +410,7 @@ class HumanProxy {
 
   // ---- one build phase, then light
   async playShow(rec, isFirstShow) {
+    this.rejected = new Set();
     let s = await this.read();
     const offered = s.cards.map(cardInfo).filter(c => !c.sold && !c.disabled);
     rec.cardsOffered = offered.length;
@@ -410,11 +428,20 @@ class HumanProxy {
       const keepInterest = s.mood === 'eager' && coins >= 5 && best && coins - best.cost < 5 && !best.twin && !best.chips.fusion;
       if (best && best.score >= 1.5 && !keepInterest) {
         await this.think(6);
+        const mood0 = s.mood;
         const how = await this.commitPlacement(best);
         if (how) {
-          rec.purchases++; rec.buys.push({ card: best.card.name, tube: best.tube + 1, twin: best.twin, score: +best.score.toFixed(1), chips: best.chipText, via: how });
+          // a swap that makes the crowd less keen is undone in one step (Undo) and not tried again this show
+          if (best.swap && mood0 && rank((await this.read()).mood) < rank(mood0)) {
+            await this.tap('[data-act="undo"]'); await this.settle();
+            this.rejected.add(`${best.card.name}→${best.tube}`); rec.swapsUndone = (rec.swapsUndone || 0) + 1;
+            continue;
+          }
+          rec.purchases++; rec.buys.push({ card: best.card.name, tube: best.tube + 1, twin: best.twin, swap: best.swap || undefined, score: +best.score.toFixed(1), chips: best.chipText, via: how });
+          if (best.swap) rec[best.swap === 'swap' ? 'swapIns' : 'replaces'] = (rec[best.swap === 'swap' ? 'swapIns' : 'replaces'] || 0) + 1;
           if (rec.firstChoiceMade == null) rec.firstChoiceMade = this.model;
-          this.decide(best.twin ? 'upgrade' : 'buy');
+          this.valueAt.set(best.tube, best.twin ? this.worth(best.tube) * 2 : best.gain);
+          this.decide(best.twin ? 'upgrade' : best.swap ? 'swap' : 'buy');
           if (!best.twin) await this.reposition(rec, best);
           continue;
         }
@@ -529,17 +556,23 @@ class HumanProxy {
     for (const c of cards) {
       const newOk = c.price != null && c.price <= coins;
       const twinOk = c.twinPrice != null && c.twinPrice <= coins;
-      if (!newOk && !twinOk) continue;
       const after = await this.lift(c.i);
       if (!after) { await this.note(`tapping shop card ${c.i + 1} (${c.name}) did not lift it`); continue; }
       const held = after.tubes.map(tubeInfo);
-      if (!held.some(t => t.can)) continue; // nowhere to put it (no empty tube, no twin)
+      if (!held.some(t => t.can)) continue; // nowhere to put it (money, or no free tube)
       for (const t of held) {
         if (!t.can) continue;
-        const twin = !t.empty; // a card can only drop on an occupied tube when that shell is its twin
-        if (twin ? !twinOk : !newOk) continue;
-        options.push({ card: c, tube: t.j, twin, cost: twin ? c.twinPrice : c.price, chips: t.chips, chipsSeen: t.chips.n > 0,
-          chipText: t.text.slice(0, 80), score: scorePlacement(t.chips, { twin, fuses: c.fuses, sees: t.sees }) + this.rng() * 0.05 });
+        // an occupied legal tube is its twin (upgrade), or a swap-in / replace (the aria-label and the chip say which)
+        const swap = t.empty ? null : t.swap || t.chips.swap;
+        const twin = !t.empty && !swap;
+        const refund = swap === 'replace' ? (t.refund || t.chips.refund || 0) : 0;
+        if (twin ? !twinOk : !(c.price != null && c.price <= coins + refund)) continue;
+        if (swap && this.rejected.has(`${c.name}→${t.j}`)) continue;
+        const gain = scorePlacement(t.chips, { twin, fuses: c.fuses, sees: t.sees });
+        // a swap gives up what the old shell was doing there (remembered, not shown): it must beat it
+        const score = (swap ? gain - this.worth(t.j) : gain) + this.rng() * 0.05;
+        options.push({ card: c, tube: t.j, twin, swap, refund, gain, cost: twin ? c.twinPrice : c.price - refund, chips: t.chips, chipsSeen: t.chips.n > 0,
+          chipText: t.text.slice(0, 80), score });
       }
     }
     return options.sort((a, b) => b.score - a.score);
@@ -592,6 +625,7 @@ class HumanProxy {
     const after = (await this.read()).mood;
     if (mood0 && after && rank(after) < rank(mood0)) { await this.tap('[data-act="undo"]'); await this.settle(); rec.movesUndone = (rec.movesUndone || 0) + 1; return; }
     rec.repositions = (rec.repositions || 0) + 1;
+    { const a = this.worth(bought.tube), b = this.worth(best.j); this.valueAt.set(best.j, a); this.valueAt.set(bought.tube, b); }
     rec.buys[rec.buys.length - 1].tube = `${bought.tube + 1}→T${best.j + 1}`;
     this.decide('move');
   }
@@ -616,7 +650,11 @@ class HumanProxy {
       await this.settle();
       const after = (await this.read()).mood;
       rec.swapsTried++;
-      if (rank(after) > rank(mood)) { mood = after; rec.swapsKept++; this.decide('move'); if (mood === 'eager') break; }
+      if (rank(after) > rank(mood)) {
+        mood = after; rec.swapsKept++; this.decide('move');
+        const a = this.worth(from), b = this.worth(to); this.valueAt.set(to, a); this.valueAt.set(from, b);
+        if (mood === 'eager') break;
+      }
       else { await this.tap('[data-act="undo"]'); await this.settle(); }
       s = await this.read();
     }
@@ -765,7 +803,7 @@ async function playRun(ctx, runNo, url, o, errors) {
 function printShowLine(r) {
   const rules = (r.rules && r.rules.length ? r.rules.join('+') : '-').slice(0, 13);
   const bits = [];
-  if (r.buys.length) bits.push(r.buys.map(b => `${b.twin ? '★' : ''}${b.card}→T${b.tube}${b.via === 'drag' ? '(drag)' : ''}`).join(' '));
+  if (r.buys.length) bits.push(r.buys.map(b => `${b.twin ? '★' : ''}${b.card}${b.swap === 'swap' ? '⇄' : b.swap === 'replace' ? '⇄$' : '→'}T${b.tube}${b.via === 'drag' ? '(drag)' : ''}`).join(' '));
   if (r.rigs.length) bits.push(r.rigs.map(x => `${x.rig}→T${x.tube}`).join(' '));
   if (r.tubesBought) bits.push(`+${r.tubesBought} tube`);
   if (r.rerolls) bits.push('reroll');
@@ -876,7 +914,7 @@ function printRunSummary(run) {
     const sorted = ratios.slice().sort((a, b) => a - b);
     console.log(`  Applause/target: median ${sorted[Math.floor(sorted.length / 2)].toFixed(2)} · min ${sorted[0].toFixed(2)} · max ${sorted[sorted.length - 1].toFixed(2)} · misses ${run.shows.filter(r => r.pass === false).length}`);
   }
-  console.log(`  input: ${run.stats.taps} taps, ${run.stats.drags} drags`);
+  console.log(`  input: ${run.stats.taps} taps, ${run.stats.drags} drags · swap-ins ${run.shows.reduce((a, r) => a + (r.swapIns || 0), 0)}, replaces ${run.shows.reduce((a, r) => a + (r.replaces || 0), 0)}, swaps undone ${run.shows.reduce((a, r) => a + (r.swapsUndone || 0), 0)}`);
   for (const g of run.gates) console.log(`  [${g.status}] ${pad(g.id, 26)} ${pad(g.got, 34)} want ${g.want}`);
   for (const er of run.errors.slice(0, 10)) console.log(`  ! ${er.kind}: ${er.text.split('\n')[0]}`);
   for (const f of run.findings || []) console.log(`  finding: ${f}`);

@@ -988,7 +988,7 @@ const FX = (() => {
       if (AP.subS !== AP.score || AP.subG !== AP.target || AP.subP !== AP.pass) {
         const tg = AP.target || 1, ratio = AP.score / tg;
         AP.subS = AP.score; AP.subG = AP.target; AP.subP = AP.pass;
-        AP.sub = AP.pass ? 'Pass ×' + (ratio < 100 ? (Math.floor(ratio * 10) / 10).toFixed(1) : fmt(Math.floor(ratio))) : fmt(Math.ceil(tg - AP.score)) + ' short';
+        AP.sub = AP.pass ? 'Pass · ' + (ratio < 100 ? (Math.floor(ratio * 10) / 10).toFixed(1) : fmt(Math.floor(ratio))) + '× target' : fmt(Math.ceil(tg - AP.score)) + ' short';
         AP.subW = textW(c, FONT_SUB, AP.sub);
       }
       const sub = AP.sub, w = AP.subW + 22;
