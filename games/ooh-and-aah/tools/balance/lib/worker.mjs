@@ -29,9 +29,11 @@ parentPort.on('message', m => {
       const d = job.driver === 'other' ? (workerData.driver === 'sim' ? 'spec' : 'sim') : job.driver === 'native' ? 'native' : workerData.driver;
       const rec = d === 'native' ? runner(workerData.driver).nativeRun(job) : runner(d).playRun(job);
       rec.driver = d;
+      rec.key = `${job.cfg}|${job.seed}|${job.opts && job.opts.rndSeed !== undefined ? job.opts.rndSeed : ''}`; // resume key (analyze.mjs jobKey)
+      if (job.opts && job.opts.rndSeed !== undefined) rec.rndSeed = job.opts.rndSeed;
       out.push({ ok: true, rec });
     } catch (e) {
-      out.push({ ok: false, cfg: job.cfg, seed: job.seed, error: String((e && e.message) || e), stack: String((e && e.stack) || '').split('\n').slice(0, 5).join(' | ') });
+      out.push({ ok: false, cfg: job.cfg, seed: job.seed, key: `${job.cfg}|${job.seed}|${job.opts && job.opts.rndSeed !== undefined ? job.opts.rndSeed : ''}`, error: String((e && e.message) || e), stack: String((e && e.stack) || '').split('\n').slice(0, 5).join(' | ') });
     }
   }
   parentPort.postMessage({ type: 'done', id: m.id, out });

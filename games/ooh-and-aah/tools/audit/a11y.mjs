@@ -98,6 +98,8 @@
  *     --query <qs>         URL flags for the page (default "fresh=1"; e.g. "fresh=1&seed=abc")
  *     --fonts              let Google Fonts load (default: aborted, so the run is offline and
  *                          deterministic; text renders in the fallback font stack)
+ *     --jobs <n>           viewports audited in parallel browser contexts (default 2, max 4;
+ *                          --jobs 1 for a strictly sequential run)
  *     --budget <s>         total time budget in seconds (default 480). Past it, remaining
  *                          steps are skipped (SKIP, noted); a watchdog at budget + 90 s writes
  *                          the partial JSON and exits 2, so the tool never hangs.
@@ -163,6 +165,7 @@ const OPTS = {
   query: opt('query', 'fresh=1'),
   fonts: flag('fonts') && !flag('no-fonts'),
   budget: Math.max(60, +opt('budget', 480) || 480),
+  jobs: Math.max(1, Math.min(4, +opt('jobs', 2) || 2)),
   timeout: +opt('timeout', 15000) || 15000,
   keepShots: flag('keep-shots'),
   verbose: flag('verbose'),
@@ -384,7 +387,8 @@ function pageHelpers() {
         if (cY) { if (by0 > b.y0) { b.y0 = by0; if (isHard) hardBy = n; } if (by1 < b.y1) { b.y1 = by1; if (isHard) hardBy = n; } }
       };
       apply(soft, false);
-      if (scroll) scrollers.push(H.sel(n)); else if (n !== document.body) apply(hard, true);
+      // past a scroll container the content can be scrolled into view, so outer clips are not hard
+      if (scroll) scrollers.push(H.sel(n)); else if (n !== document.body && !scrollers.length) apply(hard, true);
     }
     const de = document.documentElement, docY = !fixed && de.scrollHeight > innerHeight + 1 && !/hidden|clip/.test(getComputedStyle(de).overflowY + getComputedStyle(document.body).overflowY);
     if (!scrollers.length) {
@@ -650,9 +654,16 @@ function pageHelpers() {
     for (const c of H.controls(scope)) {
       const el = H.get(c.id);
       const union = rs => { const x0 = Math.min(...rs.map(r => r.x)), y0 = Math.min(...rs.map(r => r.y)), x1 = Math.max(...rs.map(r => r.x + r.w)), y1 = Math.max(...rs.map(r => r.y + r.h)); return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 }; };
-      let r = c.rect;
-      if (c.hiddenInput && c.labelRects.length) r = union(c.labelRects);
-      else if (c.labelRects.length && /^(checkbox|radio)$/.test(c.type || '')) r = union([c.rect, ...c.labelRects]);
+      // inside a scroll container, scroll the control to the middle first so a sticky header or the
+      // scrollport edge does not read as "covered" (the user would scroll there)
+      let cRect = c.rect, lRects = c.labelRects;
+      if (H.clipOf(el).scrollers.length) {
+        try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) { /* ignore */ }
+        cRect = rectOf(el); lRects = (el.labels ? [...el.labels] : []).filter(l => H.shown(l)).map(rectOf);
+      }
+      let r = cRect;
+      if (c.hiddenInput && lRects.length) r = union(lRects);
+      else if (lRects.length && /^(checkbox|radio)$/.test(c.type || '')) r = union([cRect, ...lRects]);
       const labs = el.labels ? [...el.labels] : [];
       const hitOk = h => !!h && (h === el || el.contains(h) || labs.some(l => l === h || l.contains(h)));
       const ok = r.w >= 43.5 && r.h >= 43.5;
@@ -1359,8 +1370,9 @@ async function namesAudit(G, label, scope) {
       tubesChecked++;
       const i = +c.data.tube;
       const probs = tubeLabelProblems(name, i, info.tubes[i]);
-      if (probs.length) issues.push({ level: 'FAIL', sel: c.sel, msg: '§13 tube label: ' + probs.join('; '), name });
-      else if (info.tubes[i] && info.tubes[i].shell && !TUBE_RE.test(name)) issues.push({ level: 'WARN', sel: c.sel, msg: 'tube label has every §13 part but not the exact §13 order/format', name });
+      if (probs.length) issues.push({ level: 'FAIL', sel: c.sel, msg: `§13 tube label: ${probs.join('; ')} (label: "${name}")`, name });
+      else if (info.tubes[i] && info.tubes[i].shell && !TUBE_RE.test(name)) issues.push({ level: 'WARN', sel: c.sel, msg: `tube label has every §13 part but not the exact §13 order/format (label: "${name}")`, name });
+      else if (info.tubes[i] && info.tubes[i].shell && !notes.some(n => n.startsWith('tube label'))) notes.push(`tube label sample: "${name}"`);
     }
     if (c.data.card != null) {
       const card = info.cards[+c.data.card];
@@ -2390,20 +2402,23 @@ async function main() {
 
   try {
     // primary viewport first, then reduced motion (so a tight budget still covers h), then the rest
-    const order = [PRIMARY, 'h', ...OPTS.viewports.filter(v => v !== PRIMARY)];
-    for (const step of order) {
-      if (step === 'h' && !want('h')) continue;
+    const order = [PRIMARY, ...(want('h') ? ['h'] : []), ...OPTS.viewports.filter(v => v !== PRIMARY)];
+    const runStep = async step => {
       if (overBudget(step === 'h' ? 25 : 35)) {
         const why = `skipped: --budget ${OPTS.budget}s exhausted`;
         REPORT.notes.push(`${step === 'h' ? 'reduced motion' : step}: ${why}`);
         if (step === 'h') record('h', PRIMARY, 'reduced motion', { skip: why });
         else for (const c of 'abcdk') if (want(c)) record(c, step, 'viewport', { skip: why });
-        continue;
+        return;
       }
       log(step === 'h' ? 'reduced motion' : 'viewport ' + step);
       if (step === 'h') await reducedMotionAudit();
       else await auditViewport(step, OPTS.full.includes(step));
-    }
+    };
+    // --jobs browser contexts in parallel (each viewport is independent; default 2)
+    const queue = order.slice();
+    await Promise.all(Array.from({ length: Math.min(OPTS.jobs, queue.length) }, async () => { while (queue.length) await runStep(queue.shift()); }));
+    REPORT.runs.sort((a, b) => order.indexOf(a.viewport) - order.indexOf(b.viewport));
   } finally {
     await BROWSER.close().catch(() => {});
     SERVER.close();

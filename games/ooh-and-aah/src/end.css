@@ -14,6 +14,8 @@
   border:1px solid var(--line);border-top:3px solid var(--brass);border-radius:16px 16px 0 0;
   box-shadow:0 18px 60px rgba(0,0,0,.55);animation:end-rise .42s var(--ease-out) both}
 #end[data-won="1"] .end-card{animation-delay:.45s}
+:root[data-motion="reduced"] #end .end-card{animation:none}
+@media (prefers-reduced-motion: reduce){ #end .end-card{animation:none} }
 @keyframes end-rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 
 /* ---------- 1. header ---------- */
@@ -29,7 +31,7 @@
 @keyframes end-twinkle{from{opacity:.35;transform:scale(.8)}to{opacity:1;transform:scale(1.15)}}
 #end .end-tags{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;row-gap:2px;color:var(--paper-dim)}
 #end .end-tags li{white-space:nowrap}
-#end .end-tags li + li::before{content:"·";margin:0 8px;color:var(--paper-dim)}
+#end .end-tags li + li::before{content:"·";margin:0 6px;color:var(--paper-dim)}
 #end .end-tags b{color:var(--paper)}
 #end .end-tags .end-tag-fw b{color:var(--aah)}
 
@@ -127,6 +129,7 @@
 #end .end-more .btn{flex:1 1 136px;min-width:0}
 #end .end-more [data-end="kit"],#end .end-more [data-end="renown"]{flex:1 1 auto;white-space:nowrap}   /* side by side when both fit, else stacked */
 #end .end-more [data-end="daily"]{flex-basis:100%}
+#end .end-more-hint{flex-basis:100%;margin:2px 0 0;text-align:center}
 #end .end-pick{margin-top:10px;display:grid;gap:6px;padding:8px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
 #end .end-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:var(--tap);padding:8px 12px;text-align:left;
   border:2px solid transparent;border-radius:var(--radius-s);background:transparent;color:var(--paper)}

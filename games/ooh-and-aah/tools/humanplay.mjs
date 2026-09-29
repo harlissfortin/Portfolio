@@ -854,7 +854,8 @@ async function main() {
 function gatesFor(run) {
   const g = [];
   const mins = run.modelSeconds / 60;
-  if (run.firstRun) g.push({ id: 'first-run length', want: '3–5 min', got: `${mins.toFixed(1)} min`, status: mins >= 3 && mins <= 5 ? 'PASS' : 'FAIL' });
+  if (run.firstRun && run.ended && run.ended.outcome === 'cap') g.push({ id: 'first-run length', want: '3–5 min', got: `${mins.toFixed(1)} min (stopped by --max-shows)`, status: 'INFO' });
+  else if (run.firstRun) g.push({ id: 'first-run length', want: '3–5 min', got: `${mins.toFixed(1)} min`, status: mins >= 3 && mins <= 5 ? 'PASS' : 'FAIL' });
   else g.push({ id: 'run length', want: 'informational (not a first-ever run)', got: `${mins.toFixed(1)} min`, status: 'INFO' });
   g.push({ id: 'first 1-of-3 choice shown', want: '< 0:30', got: mmss(run.firstChoiceShown), status: run.firstChoiceShown != null && run.firstChoiceShown < 30 ? 'PASS' : 'FAIL' });
   g.push({ id: 'first choice made', want: 'informational', got: mmss(run.firstChoiceMade), status: 'INFO' });

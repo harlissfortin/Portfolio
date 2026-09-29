@@ -578,16 +578,19 @@ const UI_PLAY = (() => {
 
   /* ================= 7. Layout (ResizeObserver on the column; §8.1) ================= */
 
+  let lastW = 0;
   function measure() {
     if (!E.play) return;
-    const h = E.play.clientHeight;
+    const h = E.play.clientHeight, w = E.play.clientWidth;
     const m = h >= 700 ? 'regular' : h >= 520 ? 'compact' : 'scroll';
     if (m !== mode || E.play.dataset.mode !== m) {
       mode = m;
       E.play.dataset.mode = m;
       (m === 'regular' ? E.hudTitle : E.skyLabel).appendChild(E.show);
+      lastW = w;
       render();
-    } else pushScene();
+    } else if (w !== lastW) { lastW = w; render(); } // tube spacing and the fit ladders depend on the width
+    else pushScene();
   }
 
   // Tube centres in canvas CSS px, for FX.setScene.
@@ -1622,6 +1625,7 @@ const UI_PLAY = (() => {
       const known = fus.filter(([a, b]) => fusionFound(a, b));
       const fusTxt = known.map(([a, b, f]) => `<li>✦ ${esc(row(a).name)} → ${esc(row(b).name)}: <b>${esc((f && f.name) || '')}</b></li>`).join('') +
         (fus.length > known.length ? `<li class="dim">✦ ${fus.length - known.length} more fusion${fus.length - known.length > 1 ? 's' : ''} to discover</li>` : '');
+      const tags = [].concat(r.tags || []).filter(t => t && t !== 'basic').map(cap);
       const facts = [`${colName(col)} ${colShape(col)}`, `★${star}`, `Hang ${hang}${r.shots > 1 ? ' each' : ''}`, rar[0], `$${r.cost}`];
       if (r.shots > 1) facts.push(`${r.shots} bursts`);
       let place = '';
@@ -1636,7 +1640,7 @@ const UI_PLAY = (() => {
       }
       return `<div class="insp-head">${tokenHTML(sh, { size: 'xl', hang })}<div><h2>${esc(r.name)}</h2><p class="insp-sub">${esc(facts.join(' · '))}</p></div></div>` +
         place + `<ul class="insp-tiers">${tiers}</ul>` + (fusTxt ? `<ul class="insp-fus">${fusTxt}</ul>` : '') +
-        (r.tags ? `<p class="insp-tags">${esc([].concat(r.tags).join(' · '))}</p>` : '') + tipLine(where && where.tip || 't_sky') +
+        (tags.length ? `<p class="insp-tags">Build style: ${esc(tags.join(' · '))}</p>` : '') + tipLine(where && where.tip || 't_sky') +
         `<div class="insp-btns">${extraBtns || ''}${close}</div>`;
     };
     if (item.kind === 'card') {
@@ -1784,6 +1788,10 @@ const UI_PLAY = (() => {
     // "the next input" disarms a sell and clears a transient message
     window.addEventListener('pointerdown', e => {
       const t = e.target;
+      // a tap on the dimmed area around the Inspect sheet closes it (and does nothing else)
+      if (!E.inspect.hidden && !(t.closest && t.closest('#inspect')) && (!fnIn(G, 'top') || G.top() === 'inspect')) {
+        suppressUntil = performance.now() + 450; e.stopPropagation(); closeInspect(); return;
+      }
       if (sellArmed && !(t.closest && t.closest('[data-info="sell"],[data-insp="sell"]'))) { sellArmed = null; if (!itemEl(t)) render(); }
       if (flash && !(t.closest && t.closest('.info'))) { flash = null; if (!itemEl(t)) render(); }
     }, true);

@@ -652,20 +652,35 @@ const FX = (() => {
      is the largest raster cost in render, so it stays small) ---------- */
   let TR = null, trc = null, trS = 1, trIdle = 0, trDirty = false;
   function buildTrail() { trS = Math.min(0.8, dpr * 0.5); TR = mkCanvas(W * trS, H * trS); trc = TR.getContext('2d'); trDirty = false; }
+  // Trail dots are batched: one rect path per (colour × 4 alpha levels), ≤ 36 fills a tick instead of one bitmap draw
+  // per particle (the per-op raster cost dominated render). Counting sort into preallocated arrays: no allocation.
+  const TBK = new Uint8Array(400), TORD = new Int16Array(400), TCNT = new Int16Array(38), TR_A = [0.12, 0.26, 0.47, 0.75];
   function depositTrails() {
     if (!trc) return;
-    const P = M;
+    const P = M, n = P.n;
     let any = false;
-    if (!trDirty) { let live = false; for (let i = 0; i < P.n; i++) if (P.on[i] && P.tr[i] > 0 && P.age[i] >= 0 && !(P.fl[i] & EMB)) { live = true; break; } if (!live) return; }
+    if (!trDirty) { let live = false; for (let i = 0; i < n; i++) if (P.on[i] && P.tr[i] > 0 && P.age[i] >= 0 && !(P.fl[i] & EMB)) { live = true; break; } if (!live) return; }
     trc.globalCompositeOperation = 'destination-out'; trc.globalAlpha = 1; trc.fillStyle = 'rgba(0,0,0,0.13)'; trc.fillRect(0, 0, TR.width, TR.height);
     trc.globalCompositeOperation = 'source-over';
-    for (let i = 0; i < P.n; i++) {
+    TCNT.fill(0);
+    for (let i = 0; i < n; i++) {
+      TBK[i] = 255;
       if (!P.on[i] || P.tr[i] <= 0 || P.age[i] < 0 || (P.fl[i] & (EMB | GLOW))) continue;
       const lf = P.age[i] / P.life[i], a = P.tr[i] * P.al[i] * (lf < 0.6 ? 0.85 : 0.85 * (1 - (lf - 0.6) / 0.4));
       if (a < 0.02) continue;
+      const k = (P.fl[i] & RAINBOW) ? (Math.floor(P.age[i] * 5 + P.ph[i]) & 3) : P.ci[i], bk = k * 4 + (a > 0.6 ? 3 : a > 0.35 ? 2 : a > 0.18 ? 1 : 0);
+      TBK[i] = bk; TCNT[bk + 1]++;
+    }
+    for (let k = 1; k < 38; k++) TCNT[k] += TCNT[k - 1];
+    for (let i = 0; i < n; i++) if (TBK[i] !== 255) TORD[TCNT[TBK[i]]++] = i;   // TCNT[bk] now = end of bucket bk
+    let j = 0;
+    for (let bk = 0; bk < 36; bk++) {
+      const end = TCNT[bk];
+      if (j >= end) continue;
       any = true;
-      const r = Math.max(0.6, P.sz[i] * 0.7) * trS;
-      trc.globalAlpha = a; trc.drawImage(DOT[(P.fl[i] & RAINBOW) ? (Math.floor(P.age[i] * 5 + P.ph[i]) & 3) : P.ci[i]], P.x[i] * trS - r, P.y[i] * trS - r, 2 * r, 2 * r);
+      trc.globalAlpha = TR_A[bk & 3]; trc.fillStyle = COLS[bk >> 2]; trc.beginPath();
+      for (; j < end; j++) { const i = TORD[j], r = Math.max(0.6, P.sz[i] * 0.7) * trS; trc.rect(P.x[i] * trS - r, P.y[i] * trS - r, 2 * r, 2 * r); }
+      trc.fill();
     }
     trc.globalAlpha = 1;
     if (any) { trIdle = 0; trDirty = true; } else if (trDirty && (trIdle += 1) > 90) { trc.clearRect(0, 0, TR.width, TR.height); trDirty = false; }
@@ -721,7 +736,7 @@ const FX = (() => {
     // merge identical consecutive popups (150 ms, 40 px): "+15 Ooh ×3"
     for (const p of POPS) {
       if (p.on && p.die < 0 && p.kind === kind && p.text === text && p.tag === (tag || '') && T - p.t0 < 0.15 && Math.abs(p.x - x) < 40 && Math.abs(p.y - y) < 40) {
-        p.n++; p.t0 = T; popupArt(p); p.x = clamp(p.x, p.w / 2 + 2, W - p.w / 2 - 20); return p;
+        p.y += popDy(p); p.n++; p.t0 = T; popupArt(p);   // restart its life where it stands (no jump back down) p.x = clamp(p.x, p.w / 2 + 2, W - p.w / 2 - 20); clearUnder(p); return p;
       }
     }
     let p = null, act = 0, old = null;
@@ -735,26 +750,40 @@ const FX = (() => {
   }
   // A popup's on-screen box now (its rise included).
   const popDy = q => (opt.reducedMotion ? 0 : -18 * easeOut(Math.min(1, Math.max(0, (T - q.t0) / q.life) * 1.4)));
-  // Legibility: a new popup never lands on a live one. It moves above the one it hits (both then rise at the same
-  // rate, and the newer one never falls behind), or below it when there is no room above. At most 8 nudges.
-  function placeFree(p) {
-    const pad = 3, top = p.h / 2 + 2, bot = rTop - p.h / 2;
-    for (let it = 0; it < 8; it++) {
-      let hit = null;
-      for (const q of POPS) {
-        if (!q.on || q === p || q.die >= 0) continue;
-        const qy = q.y + popDy(q);
-        if (Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(p.y - qy) < (p.h + q.h) / 2 + pad) { hit = q; break; }
-      }
-      if (!hit) return;
-      const hy = hit.y + popDy(hit), up = hy - (hit.h + p.h) / 2 - pad;
-      if (up >= top) p.y = up;
-      else {
-        const dn = hy + (hit.h + p.h) / 2 + pad;
-        if (dn > bot) return;
-        p.y = dn;
-      }
+  // Legibility: a new popup never lands on a live popup or banner, nor on the live readout strip at the top of the sky.
+  // Candidates are searched nearest-first from its natural place: just above what it hits (both rise at the same rate
+  // and the newer never falls behind) or just below (measured from where the other one will end its rise).
+  const PC = [];
+  function popHit(p, y, pad) {
+    for (const q of POPS) {
+      if (!q.on || q === p || q.die >= 0) continue;
+      const qy = q.y + popDy(q);
+      if (Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(y - qy) < (p.h + q.h) / 2 + pad) return q;
     }
+    for (const b of BAN) if (b.on && Math.abs(p.x - (W / 2 - 6)) < (p.w + b.w) / 2 + pad && Math.abs(y - b.y) < (p.h + b.h) / 2 + pad) return b;
+    return null;
+  }
+  function placeFree(p) {
+    const pad = 3, ro = anchor('ooh'), top = Math.max(p.h / 2 + 2, ro.y + 18 + p.h / 2), bot = rTop - p.h / 2 - 2;
+    if (bot <= top) return;
+    const y0 = clamp(p.y, top, bot);
+    PC.length = 0; PC.push(y0);
+    for (let it = 0; it < 24 && PC.length; it++) {
+      let bi = 0;
+      for (let k = 1; k < PC.length; k++) if (Math.abs(PC[k] - y0) < Math.abs(PC[bi] - y0)) bi = k;
+      const y = PC[bi]; PC[bi] = PC[PC.length - 1]; PC.length--;
+      if (y < top - 0.5 || y > bot + 0.5) continue;
+      const q = popHit(p, y, pad);
+      if (!q) { p.y = y; return; }
+      const d = (q.h + p.h) / 2 + pad, rising = POPS.includes(q);
+      PC.push((rising ? q.y + popDy(q) : q.y) - d, q.y + d);
+    }
+    // No free spot: the newest news wins. Whatever it would cover fades out (220 ms) and it takes its natural place.
+    p.y = y0;
+    clearUnder(p);
+  }
+  function clearUnder(p) {
+    for (let k = 0, q; k < POPN && (q = popHit(p, p.y, 1)); k++) { if (POPS.includes(q)) q.die = T; else break; }
   }
   // Clear popups out of a box (the Applause) with a quick fade, so L1 keeps the highest contrast.
   function clearPopups(x0, y0, x1, y1) {

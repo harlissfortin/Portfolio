@@ -875,7 +875,12 @@ async function flowKeys(browser, vp, run = new Run('keys', vp, 'host')) {
     const u = await ui(page);
     // Tabbing off the last stop parks focus on the document before it wraps: that is the browser, not the game.
     if (fi.none) { if (isReady(u) && key !== 'Tab' && key !== 'Shift+Tab') { lostFocus++; lostAfter.add(key); } return fi; }
-    if (!fi.visible && !bad.has(fi.sel)) bad.set(fi.sel, `${!fi.shown ? 'element hidden' : !fi.inView ? 'off-screen' : 'no focus indicator'} (after ${key})`);
+    if (!fi.visible && !bad.has(fi.sel)) {
+      // Rows slide and fade in after a show: judge the focus once any transition has settled.
+      await sleep(450);
+      const again = await focusInfo();
+      if (again.sel === fi.sel && !again.visible) bad.set(fi.sel, `${!again.shown ? 'element hidden' : !again.inView ? 'off-screen' : 'no focus indicator'} (after ${key}, data-ui ${u})`);
+    }
     return fi;
   };
   const matches = (sel) => page.evaluate((q) => { const a = document.activeElement; return !!(a && a.matches && a.matches(q)); }, sel);

@@ -21,9 +21,12 @@
 #play > #workshop{height:var(--h-ws)}
 #play > #firebar{height:var(--h-fire)}
 
+/* Desktop: the centre column lines up with the side panels (base.css gives them 24 px of block padding) */
+@media (min-width:1200px){#play{--pad-top:18px;padding-block:var(--pad-top) 20px}}
+
 /* Compact: the Sponsor offer overlays the sky's top edge instead of taking a row */
 #play[data-mode="compact"] > #sponsor,#play[data-mode="scroll"] > #sponsor{position:absolute;z-index:6;
-  top:calc(var(--h-hud) + var(--gap));left:var(--gutter);right:var(--gutter)}
+  top:calc(var(--pad-top,0px) + var(--h-hud) + var(--gap));left:var(--gutter);right:var(--gutter)}
 /* Compact with scroll (<520): the column scrolls and the fire row sticks, so Light the fuse is never clipped */
 #play[data-mode="scroll"]{overflow-y:auto;overscroll-behavior:contain}
 #play[data-mode="scroll"] > #sky-wrap{flex:0 0 var(--sky-min)}
@@ -124,6 +127,7 @@
 #sky-overlay .sky-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;max-width:calc(100% - 24px)}
 #sky-overlay .sky-label{min-width:0;max-width:100%}
 #sky-overlay .sky-label:empty{display:none}
+#app[data-ui="RESOLVING"] #sky-overlay .sky-top{visibility:hidden} /* the live readout owns the top of the sky */
 #sky-overlay .sky-label #hud-show{font-size:18px;line-height:28px;padding:0 10px;border-radius:14px;background:rgba(5,7,15,.55);
   text-shadow:0 1px 2px #000}
 #play[data-sponsor][data-mode="compact"] #sky-overlay,#play[data-sponsor][data-mode="scroll"] #sky-overlay{padding-top:48px}
@@ -178,6 +182,7 @@
   #sky-overlay .res-pay{max-height:26px;overflow:hidden}
 }
 @container sky (max-height: 170px){
+  #sky-wrap.has-info .sky-top{visibility:hidden}
   #sky-overlay .res-card{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px;text-align:left;padding:4px 10px 6px}
   #sky-overlay .res-head{grid-column:2;justify-content:flex-start}
   #sky-overlay .res-app{grid-row:1 / span 2;font-size:30px;margin:0;padding:0 4px}
@@ -520,6 +525,11 @@
 #play :is(.card,.slot,.tool,.ws,.hud-ic,.hud-head,.ib,.rh-pill,.res-app,.sp-toggle):focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 
 /* ---------- 12. Inspect sheet ---------- */
+/* opaque, lifted, and the play column dimmed behind it (tapping the dimmed area closes it) */
+#inspect{background:linear-gradient(180deg,#221A4E,#10142E 55%);border-color:rgba(201,162,39,.4);
+  box-shadow:0 -14px 40px rgba(0,0,0,.55),0 0 0 100vmax rgba(3,5,12,.6);animation:ui-sheet .22s var(--ease-out)}
+#inspect::before{content:"";display:block;width:40px;height:4px;margin:-6px auto 10px;border-radius:2px;background:rgba(244,239,230,.25)}
+@keyframes ui-sheet{from{transform:translateY(24px);opacity:.4}}
 #inspect .insp-head{display:flex;align-items:center;gap:14px;margin-bottom:10px}
 #inspect .insp-head h2{margin:0 0 2px}
 #inspect .insp-sub,#inspect .insp-where,#inspect .insp-tags{margin:0;color:var(--paper-dim);font:400 16px/1.35 var(--f-ui)}
@@ -547,7 +557,7 @@
 :root[data-contrast="high"] #shop .card,:root[data-contrast="high"] #tools .slot{background:#000;border-color:#FFFFFF}
 :root[data-contrast="high"] #fire{background:var(--brass);box-shadow:none}
 :root[data-contrast="high"] #play .tip-anchor,:root[data-contrast="high"] #fire.glow{box-shadow:none!important;outline:3px solid var(--focus)}
-:root[data-motion="reduced"] #fire.glow,:root[data-motion="reduced"] #rack.pulse,:root[data-motion="reduced"] #play .tip-anchor{animation:none}
+:root[data-motion="reduced"] #fire.glow,:root[data-motion="reduced"] #rack.pulse,:root[data-motion="reduced"] #play .tip-anchor,:root[data-motion="reduced"] #inspect{animation:none}
 :root[data-motion="reduced"] #fire.glow{box-shadow:0 0 0 3px rgba(242,193,78,.5)}
 :root[data-motion="reduced"] #rack.pulse{box-shadow:0 -1px 0 rgba(224,83,61,.7),0 -6px 26px rgba(224,83,61,.3)}
 @media (prefers-reduced-motion: reduce){

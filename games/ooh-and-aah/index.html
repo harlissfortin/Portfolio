@@ -144,9 +144,12 @@ button{cursor:pointer;touch-action:manipulation}
 #play > #workshop{height:var(--h-ws)}
 #play > #firebar{height:var(--h-fire)}
 
+/* Desktop: the centre column lines up with the side panels (base.css gives them 24 px of block padding) */
+@media (min-width:1200px){#play{--pad-top:18px;padding-block:var(--pad-top) 20px}}
+
 /* Compact: the Sponsor offer overlays the sky's top edge instead of taking a row */
 #play[data-mode="compact"] > #sponsor,#play[data-mode="scroll"] > #sponsor{position:absolute;z-index:6;
-  top:calc(var(--h-hud) + var(--gap));left:var(--gutter);right:var(--gutter)}
+  top:calc(var(--pad-top,0px) + var(--h-hud) + var(--gap));left:var(--gutter);right:var(--gutter)}
 /* Compact with scroll (<520): the column scrolls and the fire row sticks, so Light the fuse is never clipped */
 #play[data-mode="scroll"]{overflow-y:auto;overscroll-behavior:contain}
 #play[data-mode="scroll"] > #sky-wrap{flex:0 0 var(--sky-min)}
@@ -247,6 +250,7 @@ button{cursor:pointer;touch-action:manipulation}
 #sky-overlay .sky-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;max-width:calc(100% - 24px)}
 #sky-overlay .sky-label{min-width:0;max-width:100%}
 #sky-overlay .sky-label:empty{display:none}
+#app[data-ui="RESOLVING"] #sky-overlay .sky-top{visibility:hidden} /* the live readout owns the top of the sky */
 #sky-overlay .sky-label #hud-show{font-size:18px;line-height:28px;padding:0 10px;border-radius:14px;background:rgba(5,7,15,.55);
   text-shadow:0 1px 2px #000}
 #play[data-sponsor][data-mode="compact"] #sky-overlay,#play[data-sponsor][data-mode="scroll"] #sky-overlay{padding-top:48px}
@@ -301,6 +305,7 @@ button{cursor:pointer;touch-action:manipulation}
   #sky-overlay .res-pay{max-height:26px;overflow:hidden}
 }
 @container sky (max-height: 170px){
+  #sky-wrap.has-info .sky-top{visibility:hidden}
   #sky-overlay .res-card{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px;text-align:left;padding:4px 10px 6px}
   #sky-overlay .res-head{grid-column:2;justify-content:flex-start}
   #sky-overlay .res-app{grid-row:1 / span 2;font-size:30px;margin:0;padding:0 4px}
@@ -643,6 +648,11 @@ button{cursor:pointer;touch-action:manipulation}
 #play :is(.card,.slot,.tool,.ws,.hud-ic,.hud-head,.ib,.rh-pill,.res-app,.sp-toggle):focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 
 /* ---------- 12. Inspect sheet ---------- */
+/* opaque, lifted, and the play column dimmed behind it (tapping the dimmed area closes it) */
+#inspect{background:linear-gradient(180deg,#221A4E,#10142E 55%);border-color:rgba(201,162,39,.4);
+  box-shadow:0 -14px 40px rgba(0,0,0,.55),0 0 0 100vmax rgba(3,5,12,.6);animation:ui-sheet .22s var(--ease-out)}
+#inspect::before{content:"";display:block;width:40px;height:4px;margin:-6px auto 10px;border-radius:2px;background:rgba(244,239,230,.25)}
+@keyframes ui-sheet{from{transform:translateY(24px);opacity:.4}}
 #inspect .insp-head{display:flex;align-items:center;gap:14px;margin-bottom:10px}
 #inspect .insp-head h2{margin:0 0 2px}
 #inspect .insp-sub,#inspect .insp-where,#inspect .insp-tags{margin:0;color:var(--paper-dim);font:400 16px/1.35 var(--f-ui)}
@@ -670,7 +680,7 @@ button{cursor:pointer;touch-action:manipulation}
 :root[data-contrast="high"] #shop .card,:root[data-contrast="high"] #tools .slot{background:#000;border-color:#FFFFFF}
 :root[data-contrast="high"] #fire{background:var(--brass);box-shadow:none}
 :root[data-contrast="high"] #play .tip-anchor,:root[data-contrast="high"] #fire.glow{box-shadow:none!important;outline:3px solid var(--focus)}
-:root[data-motion="reduced"] #fire.glow,:root[data-motion="reduced"] #rack.pulse,:root[data-motion="reduced"] #play .tip-anchor{animation:none}
+:root[data-motion="reduced"] #fire.glow,:root[data-motion="reduced"] #rack.pulse,:root[data-motion="reduced"] #play .tip-anchor,:root[data-motion="reduced"] #inspect{animation:none}
 :root[data-motion="reduced"] #fire.glow{box-shadow:0 0 0 3px rgba(242,193,78,.5)}
 :root[data-motion="reduced"] #rack.pulse{box-shadow:0 -1px 0 rgba(224,83,61,.7),0 -6px 26px rgba(224,83,61,.3)}
 @media (prefers-reduced-motion: reduce){
@@ -971,6 +981,8 @@ button{cursor:pointer;touch-action:manipulation}
   border:1px solid var(--line);border-top:3px solid var(--brass);border-radius:16px 16px 0 0;
   box-shadow:0 18px 60px rgba(0,0,0,.55);animation:end-rise .42s var(--ease-out) both}
 #end[data-won="1"] .end-card{animation-delay:.45s}
+:root[data-motion="reduced"] #end .end-card{animation:none}
+@media (prefers-reduced-motion: reduce){ #end .end-card{animation:none} }
 @keyframes end-rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 
 /* ---------- 1. header ---------- */
@@ -986,7 +998,7 @@ button{cursor:pointer;touch-action:manipulation}
 @keyframes end-twinkle{from{opacity:.35;transform:scale(.8)}to{opacity:1;transform:scale(1.15)}}
 #end .end-tags{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;row-gap:2px;color:var(--paper-dim)}
 #end .end-tags li{white-space:nowrap}
-#end .end-tags li + li::before{content:"·";margin:0 8px;color:var(--paper-dim)}
+#end .end-tags li + li::before{content:"·";margin:0 6px;color:var(--paper-dim)}
 #end .end-tags b{color:var(--paper)}
 #end .end-tags .end-tag-fw b{color:var(--aah)}
 
@@ -1084,6 +1096,7 @@ button{cursor:pointer;touch-action:manipulation}
 #end .end-more .btn{flex:1 1 136px;min-width:0}
 #end .end-more [data-end="kit"],#end .end-more [data-end="renown"]{flex:1 1 auto;white-space:nowrap}   /* side by side when both fit, else stacked */
 #end .end-more [data-end="daily"]{flex-basis:100%}
+#end .end-more-hint{flex-basis:100%;margin:2px 0 0;text-align:center}
 #end .end-pick{margin-top:10px;display:grid;gap:6px;padding:8px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
 #end .end-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:var(--tap);padding:8px 12px;text-align:left;
   border:2px solid transparent;border-radius:var(--radius-s);background:transparent;color:var(--paper)}
@@ -4258,7 +4271,7 @@ const FX = (() => {
     // merge identical consecutive popups (150 ms, 40 px): "+15 Ooh ×3"
     for (const p of POPS) {
       if (p.on && p.die < 0 && p.kind === kind && p.text === text && p.tag === (tag || '') && T - p.t0 < 0.15 && Math.abs(p.x - x) < 40 && Math.abs(p.y - y) < 40) {
-        p.n++; p.t0 = T; popupArt(p); p.x = clamp(p.x, p.w / 2 + 2, W - p.w / 2 - 20); return p;
+        p.y += popDy(p); p.n++; p.t0 = T; popupArt(p);   // restart its life where it stands (no jump back down) p.x = clamp(p.x, p.w / 2 + 2, W - p.w / 2 - 20); clearUnder(p); return p;
       }
     }
     let p = null, act = 0, old = null;
@@ -4272,26 +4285,40 @@ const FX = (() => {
   }
   // A popup's on-screen box now (its rise included).
   const popDy = q => (opt.reducedMotion ? 0 : -18 * easeOut(Math.min(1, Math.max(0, (T - q.t0) / q.life) * 1.4)));
-  // Legibility: a new popup never lands on a live one. It moves above the one it hits (both then rise at the same
-  // rate, and the newer one never falls behind), or below it when there is no room above. At most 8 nudges.
-  function placeFree(p) {
-    const pad = 3, top = p.h / 2 + 2, bot = rTop - p.h / 2;
-    for (let it = 0; it < 8; it++) {
-      let hit = null;
-      for (const q of POPS) {
-        if (!q.on || q === p || q.die >= 0) continue;
-        const qy = q.y + popDy(q);
-        if (Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(p.y - qy) < (p.h + q.h) / 2 + pad) { hit = q; break; }
-      }
-      if (!hit) return;
-      const hy = hit.y + popDy(hit), up = hy - (hit.h + p.h) / 2 - pad;
-      if (up >= top) p.y = up;
-      else {
-        const dn = hy + (hit.h + p.h) / 2 + pad;
-        if (dn > bot) return;
-        p.y = dn;
-      }
+  // Legibility: a new popup never lands on a live popup or banner, nor on the live readout strip at the top of the sky.
+  // Candidates are searched nearest-first from its natural place: just above what it hits (both rise at the same rate
+  // and the newer never falls behind) or just below (measured from where the other one will end its rise).
+  const PC = [];
+  function popHit(p, y, pad) {
+    for (const q of POPS) {
+      if (!q.on || q === p || q.die >= 0) continue;
+      const qy = q.y + popDy(q);
+      if (Math.abs(p.x - q.x) < (p.w + q.w) / 2 + pad && Math.abs(y - qy) < (p.h + q.h) / 2 + pad) return q;
     }
+    for (const b of BAN) if (b.on && Math.abs(p.x - (W / 2 - 6)) < (p.w + b.w) / 2 + pad && Math.abs(y - b.y) < (p.h + b.h) / 2 + pad) return b;
+    return null;
+  }
+  function placeFree(p) {
+    const pad = 3, ro = anchor('ooh'), top = Math.max(p.h / 2 + 2, ro.y + 18 + p.h / 2), bot = rTop - p.h / 2 - 2;
+    if (bot <= top) return;
+    const y0 = clamp(p.y, top, bot);
+    PC.length = 0; PC.push(y0);
+    for (let it = 0; it < 24 && PC.length; it++) {
+      let bi = 0;
+      for (let k = 1; k < PC.length; k++) if (Math.abs(PC[k] - y0) < Math.abs(PC[bi] - y0)) bi = k;
+      const y = PC[bi]; PC[bi] = PC[PC.length - 1]; PC.length--;
+      if (y < top - 0.5 || y > bot + 0.5) continue;
+      const q = popHit(p, y, pad);
+      if (!q) { p.y = y; return; }
+      const d = (q.h + p.h) / 2 + pad, rising = POPS.includes(q);
+      PC.push((rising ? q.y + popDy(q) : q.y) - d, q.y + d);
+    }
+    // No free spot: the newest news wins. Whatever it would cover fades out (220 ms) and it takes its natural place.
+    p.y = y0;
+    clearUnder(p);
+  }
+  function clearUnder(p) {
+    for (let k = 0, q; k < POPN && (q = popHit(p, p.y, 1)); k++) { if (POPS.includes(q)) q.die = T; else break; }
   }
   // Clear popups out of a box (the Applause) with a quick fade, so L1 keeps the highest contrast.
   function clearPopups(x0, y0, x1, y1) {
@@ -7661,16 +7688,19 @@ const UI_PLAY = (() => {
 
   /* ================= 7. Layout (ResizeObserver on the column; §8.1) ================= */
 
+  let lastW = 0;
   function measure() {
     if (!E.play) return;
-    const h = E.play.clientHeight;
+    const h = E.play.clientHeight, w = E.play.clientWidth;
     const m = h >= 700 ? 'regular' : h >= 520 ? 'compact' : 'scroll';
     if (m !== mode || E.play.dataset.mode !== m) {
       mode = m;
       E.play.dataset.mode = m;
       (m === 'regular' ? E.hudTitle : E.skyLabel).appendChild(E.show);
+      lastW = w;
       render();
-    } else pushScene();
+    } else if (w !== lastW) { lastW = w; render(); } // tube spacing and the fit ladders depend on the width
+    else pushScene();
   }
 
   // Tube centres in canvas CSS px, for FX.setScene.
@@ -8705,6 +8735,7 @@ const UI_PLAY = (() => {
       const known = fus.filter(([a, b]) => fusionFound(a, b));
       const fusTxt = known.map(([a, b, f]) => `<li>✦ ${esc(row(a).name)} → ${esc(row(b).name)}: <b>${esc((f && f.name) || '')}</b></li>`).join('') +
         (fus.length > known.length ? `<li class="dim">✦ ${fus.length - known.length} more fusion${fus.length - known.length > 1 ? 's' : ''} to discover</li>` : '');
+      const tags = [].concat(r.tags || []).filter(t => t && t !== 'basic').map(cap);
       const facts = [`${colName(col)} ${colShape(col)}`, `★${star}`, `Hang ${hang}${r.shots > 1 ? ' each' : ''}`, rar[0], `$${r.cost}`];
       if (r.shots > 1) facts.push(`${r.shots} bursts`);
       let place = '';
@@ -8719,7 +8750,7 @@ const UI_PLAY = (() => {
       }
       return `<div class="insp-head">${tokenHTML(sh, { size: 'xl', hang })}<div><h2>${esc(r.name)}</h2><p class="insp-sub">${esc(facts.join(' · '))}</p></div></div>` +
         place + `<ul class="insp-tiers">${tiers}</ul>` + (fusTxt ? `<ul class="insp-fus">${fusTxt}</ul>` : '') +
-        (r.tags ? `<p class="insp-tags">${esc([].concat(r.tags).join(' · '))}</p>` : '') + tipLine(where && where.tip || 't_sky') +
+        (tags.length ? `<p class="insp-tags">Build style: ${esc(tags.join(' · '))}</p>` : '') + tipLine(where && where.tip || 't_sky') +
         `<div class="insp-btns">${extraBtns || ''}${close}</div>`;
     };
     if (item.kind === 'card') {
@@ -8867,6 +8898,10 @@ const UI_PLAY = (() => {
     // "the next input" disarms a sell and clears a transient message
     window.addEventListener('pointerdown', e => {
       const t = e.target;
+      // a tap on the dimmed area around the Inspect sheet closes it (and does nothing else)
+      if (!E.inspect.hidden && !(t.closest && t.closest('#inspect')) && (!fnIn(G, 'top') || G.top() === 'inspect')) {
+        suppressUntil = performance.now() + 450; e.stopPropagation(); closeInspect(); return;
+      }
       if (sellArmed && !(t.closest && t.closest('[data-info="sell"],[data-insp="sell"]'))) { sellArmed = null; if (!itemEl(t)) render(); }
       if (flash && !(t.closest && t.closest('.info'))) { flash = null; if (!itemEl(t)) render(); }
     }, true);
@@ -10166,7 +10201,7 @@ const UI_END = (() => {
           if (t2 - t1 > (tm.worstStep || 0)) { tm.worstStep = t2 - t1; tm.worstIn = name; }
           stepMax = Math.min(4, Math.max(stepMax * .98, t2 - t1));
           t1 = t2;
-        } while (!r.done && t1 - t0 + stepMax < 6);
+        } while (!r.done && t1 - t0 + stepMax < 5.5);
       } catch (e) { warn('slice', e); r = {done: true, value: null}; }
       tm.slices++; tm.maxSlice = Math.max(tm.maxSlice, now() - t0); tm.ms = now() - tm.start;
       if (id !== job) return;
@@ -10752,7 +10787,8 @@ const UI_END = (() => {
       <button type="button" class="btn" data-end="logbook">Logbook</button>
       <button type="button" class="btn" data-end="kit" aria-expanded="${picker === 'kit'}" aria-controls="end-pick"${ks.length < 2 ? ' aria-disabled="true"' : ''}>Kit: ${esc(kitRow(sel.kit).name)} <span aria-hidden="true">▾</span></button>
       <button type="button" class="btn" data-end="renown" aria-expanded="${picker === 'renown'}" aria-controls="end-pick"${rmax < 1 ? ' aria-disabled="true"' : ''}>Renown ${sel.renown} <span aria-hidden="true">▾</span></button>
-      ${daily ? '<button type="button" class="btn" data-end="daily">Daily Show</button>' : ''}`;
+      ${daily ? '<button type="button" class="btn" data-end="daily">Daily Show</button>' : ''}
+      ${ks.length < 2 || rmax < 1 ? `<p class="end-dim end-more-hint">${ks.length < 2 && rmax < 1 ? 'Milestones open more kits; a win opens Renown.' : ks.length < 2 ? 'Milestones open more kits.' : 'Win a season to raise your Renown.'}</p>` : ''}`;
     const pk = root.querySelector('#end-pick');
     if (!picker) { pk.hidden = true; pk.innerHTML = ''; return; }
     pk.hidden = false;

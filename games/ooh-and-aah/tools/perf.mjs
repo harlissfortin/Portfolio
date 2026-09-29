@@ -733,7 +733,13 @@ async function simTimings(page, { iters }) {
     let minStep = Infinity; let a = performance.now();
     for (let i = 0; i < 200000 && minStep > 0.001; i++) { const b = performance.now(); if (b > a) { minStep = Math.min(minStep, b - a); a = b; } }
     out.timerResolutionMs = minStep;
-    const stats = (arr, total, n) => { const s = Array.from(arr).sort((x, y) => x - y); const p = (q) => s[Math.min(s.length - 1, Math.max(0, Math.ceil(q * s.length) - 1))]; return { n, mean: total / n, p50: p(0.5), p95: p(0.95), max: s[s.length - 1] }; };
+    // robust = median of 25-call block means: a mean that preemption by other processes cannot inflate.
+    const stats = (arr, total, n) => {
+      const s = Array.from(arr).sort((x, y) => x - y); const p = (q) => s[Math.min(s.length - 1, Math.max(0, Math.ceil(q * s.length) - 1))];
+      const B = []; for (let i = 0; i + 25 <= arr.length; i += 25) { let t = 0; for (let j = i; j < i + 25; j++) t += arr[j]; B.push(t / 25); }
+      B.sort((x, y) => x - y);
+      return { n, mean: total / n, p50: p(0.5), p95: p(0.95), max: s[s.length - 1], robust: B.length >= 3 ? B[B.length >> 1] : null };
+    };
     // Synchronous calls are timed without an await (a microtask per call would inflate them).
     const bench = async (fn, n, warm = 10) => {
       for (let i = 0; i < warm; i++) { const r = fn(i); if (r && typeof r.then === 'function') await r; }
@@ -920,26 +926,48 @@ function evaluate(report) {
   const mob = report.profiles.mobile; const desk = report.profiles.desktop;
   const primary = mob || desk; const pname = mob ? 'mobile' : 'desktop';
   const chains = (p) => (p ? ['show7', 'cd14', 'cdwin'].map((k) => p.scenarios && p.scenarios[k]).filter((s) => s && s.frames) : []);
+  // Host overloaded = 1-min load above the core count, or the renderer busy much longer than it was on
+  // a CPU. Then tails (p95) mostly measure other processes: verdicts use the median / robust mean, and a
+  // tail over budget is a WARN.
+  const hostOf = (p) => {
+    if (!p) return { over: false };
+    const loads = [p.host, report.host && report.host.start, report.host && report.host.end, ...Object.values(p.scenarios || {}).map((x) => x.host)].filter(Boolean);
+    const worst = loads.reduce((w, x) => (x.load1 / x.cores > w.load1 / w.cores ? x : w), loads[0] || { load1: 0, cores: 1 });
+    const waits = Object.values(p.scenarios || {}).map((x) => x.cpu && x.cpu.waitRatio).filter((x) => x != null);
+    const wait = waits.length ? Math.max(...waits) : null;
+    return { over: worst.load1 / worst.cores > 1 || (wait != null && wait > 1.5 * (p.throttle || 1)), worst, wait };
+  };
+  const pHost = hostOf(primary);
   // render ≤ 6 ms
   if (primary) {
-    let worst = null;
+    let worst = null; let w50 = null;
     for (const s of chains(primary)) {
       const fr = s.frames; let v; let src;
-      if (fr.fxRenderPerFrameMs) { v = fr.fxRenderPerFrameMs.p95; src = 'FX.render per frame, p95'; } else if (fr.rafCallbackMs) { v = fr.rafCallbackMs.p95; src = 'whole rAF callback per frame, p95 (FX.render not wrappable: upper bound)'; }
+      if (fr.fxRenderPerFrameMs) { v = fr.fxRenderPerFrameMs.p95; src = 'FX.render per frame'; } else if (fr.rafCallbackMs) { v = fr.rafCallbackMs.p95; src = 'whole rAF callback per frame (FX.render not wrappable: upper bound)'; }
       if (v != null && (!worst || v > worst.v)) worst = { v, src, s: s.scenario, p50: fr.fxRenderPerFrameMs ? fr.fxRenderPerFrameMs.p50 : null, cpu: s.cpu && s.cpu.cpuPerFrameMs, max: fr.fxRenderPerFrameMs ? fr.fxRenderPerFrameMs.max : fr.rafCallbackMs && fr.rafCallbackMs.max };
+      const m = fr.fxRenderPerFrameMs && fr.fxRenderPerFrameMs.p50;
+      if (m != null && (!w50 || m > w50.v)) w50 = { v: m, s: s.scenario };
     }
-    if (worst) add('render', `FX render (${pname}${pname === 'mobile' ? `, CPU ×${report.config.throttle}` : ''}, §11.7)`, '≤ 6 ms', `${fmtMs(worst.v)} p95, ${fmtMs(worst.p50)} p50 (max ${fmtMs(worst.max)}) in ${worst.s}`, worst.v <= 6 ? 'PASS' : 'FAIL', worst.src + (worst.max > 6 ? '; some frames exceed 6 ms' : '') + (worst.cpu != null ? `; main-thread CPU ${fmtMs(worst.cpu)} per rendered frame (all work, CDP ThreadTime)` : ''));
-    else add('render', 'FX render (§11.7)', '≤ 6 ms', 'n/a', 'SKIP', 'no lit show recorded');
+    if (worst) {
+      const verdict = !pHost.over ? (worst.v <= 6 ? 'PASS' : 'FAIL') : w50 && w50.v > 6 ? 'FAIL' : worst.v <= 6 ? 'PASS' : 'WARN';
+      add('render', `FX render (${pname}${pname === 'mobile' ? `, CPU ×${report.config.throttle}` : ''}, §11.7)`, pHost.over ? '≤ 6 ms (p50: host overloaded)' : '≤ 6 ms p95',
+        `${fmtMs(worst.v)} p95 in ${worst.s} (max ${fmtMs(worst.max)}); worst p50 ${fmtMs(w50 && w50.v)}${w50 ? ` in ${w50.s}` : ''}`, verdict,
+        worst.src + (worst.max > 6 ? '; some frames exceed 6 ms' : '') + (worst.cpu != null ? `; main-thread CPU ${fmtMs(worst.cpu)} per rendered frame (all work, CDP ThreadTime)` : ''));
+    } else add('render', 'FX render (§11.7)', '≤ 6 ms', 'n/a', 'SKIP', 'no lit show recorded');
   }
   // step ≤ 2 ms
   const sim = primary && primary.sim;
   if (sim && sim.step && Object.keys(sim.step).length) {
     const [name, v] = Object.entries(sim.step).sort((a, b) => b[1].p95 - a[1].p95)[0];
-    add('step', `OOH.step (${pname}, worst action, §11.7)`, '≤ 2 ms', `${fmtMs(v.p95, 3)} p95 (${name}; mean ${fmtMs(v.mean, 3)}, max ${fmtMs(v.max, 3)})`, v.p95 <= 2 ? 'PASS' : 'FAIL', `actions timed: ${Object.keys(sim.step).join(', ')}`);
+    add('step', `OOH.step (${pname}, worst action, §11.7)`, '≤ 2 ms p95', `${fmtMs(v.p95, 3)} p95 (${name}; p50 ${fmtMs(v.p50, 3)}, mean ${fmtMs(v.mean, 3)}, max ${fmtMs(v.max, 3)})`, v.p95 <= 2 ? 'PASS' : pHost.over && v.p50 <= 2 ? 'WARN' : 'FAIL', `actions timed: ${Object.keys(sim.step).join(', ')}`);
   } else add('step', 'OOH.step (§11.7)', '≤ 2 ms', 'n/a', 'SKIP', (sim && sim.notes || []).join('; ') || 'no SIM timings');
   if (sim && sim.resolveCountdown) {
     const v = sim.resolveCountdown;
-    add('resolve', `resolveShow, 6-tube Countdown (${pname}, §11.7)`, '≤ 0.2 ms p95', `${fmtMs(v.p95, 3)} p95 (mean ${fmtMs(v.mean, 4)}, max ${fmtMs(v.max, 3)}; ${sim.countdownBursts} bursts)`, v.p95 <= 0.2 ? 'PASS' : 'FAIL', `via ${sim.resolveVia}; the spec's node reference averages 17 µs`);
+    // The spec states a typical cost ("averages about 17 µs"): the verdict uses the robust mean; the
+    // p95 is a FAIL on a quiet host and a WARN on an overloaded one.
+    const typ = v.robust != null ? v.robust : v.mean;
+    const verdict = typ > 0.2 ? 'FAIL' : v.p95 <= 0.2 ? 'PASS' : pHost.over ? 'WARN' : 'FAIL';
+    add('resolve', `resolveShow, 6-tube Countdown (${pname}, §11.7)`, '≤ 0.2 ms', `${fmtMs(typ, 4)} robust mean, ${fmtMs(v.p95, 3)} p95 (mean ${fmtMs(v.mean, 4)}, max ${fmtMs(v.max, 3)}; ${sim.countdownBursts} bursts)`, verdict, `via ${sim.resolveVia}; robust mean = median of 25-call block means; the spec's node reference averages 17 µs`);
   } else add('resolve', 'resolveShow, 6-tube Countdown (§11.7)', '≤ 0.2 ms', 'n/a', 'SKIP');
   // particles ≤ 400
   let pmax = null; let pkey = null; let pscen = null;
@@ -997,11 +1025,8 @@ function evaluate(report) {
   for (const c of checks) {
     const m = /^(render|step|resolve)$/.exec(c.id) ? pname : (/^(?:frames|longtask|act|boot)\.(\w+)/.exec(c.id) || [])[1];
     const p = m && report.profiles[m]; if (!p) continue;
-    const loads = [p.host, report.host && report.host.start, report.host && report.host.end, ...Object.values(p.scenarios || {}).map((x) => x.host)].filter(Boolean);
-    const worst = loads.reduce((w, x) => (x.load1 / x.cores > w.load1 / w.cores ? x : w), loads[0] || { load1: 0, cores: 1 });
-    const waits = Object.values(p.scenarios || {}).map((x) => x.cpu && x.cpu.waitRatio).filter((x) => x != null);
-    const wait = waits.length ? Math.max(...waits) : null;
-    if (worst.load1 / worst.cores > 1 || (wait != null && wait > 1.5 * (p.throttle || 1)))
+    const { over, worst, wait } = hostOf(p);
+    if (over)
       c.detail = `${c.detail ? c.detail + '; ' : ''}host overloaded (load ${worst.load1} on ${worst.cores} cores${wait != null ? `, busy/CPU up to ${wait}×` : ''}): wall-clock timings inflated`;
   }
   return checks;
@@ -1055,8 +1080,8 @@ function mdReport(rep) {
     if (p.sim) {
       const s = p.sim;
       L.push(`**SIM timings** (timer resolution ${s.timerResolutionMs != null ? (s.timerResolutionMs * 1000).toFixed(0) + ' µs' : 'n/a'}, crossOriginIsolated ${s.crossOriginIsolated}; state: show ${s.state ? s.state.show + 1 : '?'}, ${s.state ? s.state.tubes : '?'} tubes):`, '');
-      L.push('| Call | n | mean | p50 | p95 | max |', '|---|---|---|---|---|---|');
-      const row = (name, v) => v && L.push(`| ${name} | ${v.n} | ${fmtMs(v.mean, 4)} | ${fmtMs(v.p50, 3)} | ${fmtMs(v.p95, 3)} | ${fmtMs(v.max, 3)} |`);
+      L.push('| Call | n | mean | robust mean | p50 | p95 | max |', '|---|---|---|---|---|---|---|');
+      const row = (name, v) => v && L.push(`| ${name} | ${v.n} | ${fmtMs(v.mean, 4)} | ${v.robust != null ? fmtMs(v.robust, 4) : '—'} | ${fmtMs(v.p50, 3)} | ${fmtMs(v.p95, 3)} | ${fmtMs(v.max, 3)} |`);
       row(`resolveShow, 6-tube Countdown (${s.countdownBursts} bursts)`, s.resolveCountdown);
       row('resolveShow, same, with trace', s.resolveCountdownTrace);
       row('resolveShow, tonight\'s rules', s.resolveTonight);

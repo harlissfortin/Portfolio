@@ -448,7 +448,7 @@ const UI_END = (() => {
           if (t2 - t1 > (tm.worstStep || 0)) { tm.worstStep = t2 - t1; tm.worstIn = name; }
           stepMax = Math.min(4, Math.max(stepMax * .98, t2 - t1));
           t1 = t2;
-        } while (!r.done && t1 - t0 + stepMax < 6);
+        } while (!r.done && t1 - t0 + stepMax < 5.5);
       } catch (e) { warn('slice', e); r = {done: true, value: null}; }
       tm.slices++; tm.maxSlice = Math.max(tm.maxSlice, now() - t0); tm.ms = now() - tm.start;
       if (id !== job) return;
@@ -1034,7 +1034,8 @@ const UI_END = (() => {
       <button type="button" class="btn" data-end="logbook">Logbook</button>
       <button type="button" class="btn" data-end="kit" aria-expanded="${picker === 'kit'}" aria-controls="end-pick"${ks.length < 2 ? ' aria-disabled="true"' : ''}>Kit: ${esc(kitRow(sel.kit).name)} <span aria-hidden="true">▾</span></button>
       <button type="button" class="btn" data-end="renown" aria-expanded="${picker === 'renown'}" aria-controls="end-pick"${rmax < 1 ? ' aria-disabled="true"' : ''}>Renown ${sel.renown} <span aria-hidden="true">▾</span></button>
-      ${daily ? '<button type="button" class="btn" data-end="daily">Daily Show</button>' : ''}`;
+      ${daily ? '<button type="button" class="btn" data-end="daily">Daily Show</button>' : ''}
+      ${ks.length < 2 || rmax < 1 ? `<p class="end-dim end-more-hint">${ks.length < 2 && rmax < 1 ? 'Milestones open more kits; a win opens Renown.' : ks.length < 2 ? 'Milestones open more kits.' : 'Win a season to raise your Renown.'}</p>` : ''}`;
     const pk = root.querySelector('#end-pick');
     if (!picker) { pk.hidden = true; pk.innerHTML = ''; return; }
     pk.hidden = false;

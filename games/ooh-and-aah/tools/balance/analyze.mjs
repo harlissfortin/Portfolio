@@ -30,8 +30,11 @@
 //                      harness's §12.1 rule; harness: always the harness's rule
 //   --workers=N        worker threads (default 4)
 //   --out=DIR          report directory (default tools/reports/balance, git-ignored) → balance-report.txt/.json
-//   --save-records=F   also write every run record as JSON lines;  --load-records=F  re-analyse
-//                      saved records without playing (the SIM is still loaded for bench/ceiling)
+//   --save-records=F   also write every run record as JSON lines, appended as each run finishes
+//                      (a killed pass keeps what it played);  --load-records=F  re-analyse saved
+//                      records without playing (the SIM is still loaded for bench/ceiling)
+//   --resume=F         like --save-records=F, but first load F and play only the runs it lacks
+//                      (refused if F was played by a different SIM hash or driver)
 //   --shapley-runs=K   human runs whose every show is checked against shapley() (default 30)
 //   --xcheck-seeds=K   seeds for the driver cross-check (default 50): with --driver=sim the core
 //                      bots are replayed by the spec port, and by the SIM's own playRun when exported
@@ -151,14 +154,43 @@ const { analyses, jobs } = AN.plan({
 
 // ------------------------------------------------------------------ run
 const t0 = Date.now();
+const jobKey = j => `${j.cfg}|${j.seed}|${j.opts && j.opts.rndSeed !== undefined ? j.opts.rndSeed : ''}`;
 const records = [], errors = [];
 async function runAll() {
   if (typeof args['load-records'] === 'string') {
     const lines = fs.readFileSync(args['load-records'], 'utf8').split('\n').filter(Boolean);
-    for (const l of lines) { const x = JSON.parse(l); if (x.error) errors.push(x); else records.push(x); }
-    log(`loaded ${records.length} records from ${args['load-records']}`);
+    let bad = 0;
+    for (const l of lines) { let x; try { x = JSON.parse(l); } catch (e) { bad++; continue; } if (x.header) { if (x.simHash !== simHash) log(`note: records were played by SIM sha1 ${x.simHash}; the loaded SIM is ${simHash}`); continue; } if (x.error) errors.push(x); else records.push(x); }
+    log(`loaded ${records.length} records from ${args['load-records']}${bad ? ` (${bad} unreadable lines skipped)` : ''}`);
     return;
   }
+  // ---- incremental record file (--save-records / --resume)
+  const resumeF = typeof args.resume === 'string' ? path.resolve(args.resume) : null;
+  const saveF = resumeF || (typeof args['save-records'] === 'string' ? path.resolve(args['save-records']) : null);
+  let saveFd = null;
+  if (saveF) {
+    const header = { header: 1, simHash, driver, simSponsor: SIM_SPONSOR, date: new Date().toISOString() };
+    if (resumeF && fs.existsSync(resumeF)) {
+      const want = new Set(jobs.map(jobKey)), have = new Set();
+      let bad = 0, hdr = null, kept = 0;
+      for (const l of fs.readFileSync(resumeF, 'utf8').split('\n')) {
+        if (!l) continue; let x; try { x = JSON.parse(l); } catch (e) { bad++; continue; }
+        if (x.header) { hdr = hdr || x; continue; }
+        if (x.error || !x.key || !want.has(x.key) || have.has(x.key)) continue; // errored runs are retried
+        have.add(x.key); records.push(x); kept++;
+      }
+      if (hdr && (hdr.simHash !== simHash || hdr.driver !== driver) && !args['resume-any']) {
+        console.error(`--resume: ${resumeF} was played by SIM sha1 ${hdr.simHash} (driver ${hdr.driver}); this SIM is ${simHash} (driver ${driver}). Start a new file, or pass --resume-any to mix them.`);
+        process.exit(2);
+      }
+      const before = jobs.length; for (let i = jobs.length - 1; i >= 0; i--) if (have.has(jobKey(jobs[i]))) jobs.splice(i, 1);
+      log(`resume: ${kept} runs loaded from ${resumeF}${bad ? ` (${bad} unreadable lines skipped)` : ''}; ${jobs.length} of ${before} left to play`);
+      // rewrite the file compactly (header + the kept records) so errors and stray lines do not pile up
+      fs.writeFileSync(resumeF, [JSON.stringify(hdr || header)].concat(records.map(r => JSON.stringify(r))).join('\n') + '\n');
+    } else fs.writeFileSync(saveF, JSON.stringify(header) + '\n');
+    saveFd = fs.openSync(saveF, 'a');
+  }
+  const persist = o => { if (saveFd !== null) { try { fs.writeSync(saveFd, JSON.stringify(o) + '\n'); } catch (e) { log('could not append to the record file: ' + e.message); saveFd = null; } } };
   if (!jobs.length) return;
   jobs.sort((a, b) => b.weight - a.weight);
   log(`SIM ${path.relative(process.cwd(), simFile) || simFile} (${api.kind}, sha1 ${simHash}) · driver ${driverNote} · ${jobs.length} runs on ${WORKERS} workers`);
@@ -183,7 +215,7 @@ async function runAll() {
         else if (m.type === 'fatal') { fatal = m.error; w.terminate(); }
         else if (m.type === 'done') {
           clearTimeout(timer);
-          for (const o of m.out) { if (o.ok) records.push(o.rec); else errors.push(o); }
+          for (const o of m.out) { if (o.ok) { records.push(o.rec); persist(o.rec); } else { errors.push(o); persist(o); } }
           done += m.out.length; inflight = null;
           for (const o of m.out) { const c = o.ok ? o.rec.cfg + '#' + o.rec.seed : o.cfg + '#' + o.seed; doneW += wOf.get(c) || 1; }
           if (Date.now() - lastLog > (QUIET ? 3e5 : 15000)) { lastLog = Date.now(); const el = (Date.now() - t0) / 1000; log(`${done}/${jobs.length} runs · ${el.toFixed(0)} s · ETA ${((el / Math.max(1e-9, doneW)) * (totalW - doneW)).toFixed(0)} s (by CPU weight)`); }
@@ -197,11 +229,7 @@ async function runAll() {
   });
   if (fatal) { console.error('Worker could not load the SIM:\n' + fatal); writeFatal(fatal); process.exit(2); }
   log(`played ${records.length} runs (${errors.length} errors) in ${((Date.now() - t0) / 1000).toFixed(0)} s`);
-  if (typeof args['save-records'] === 'string') {
-    const f = path.resolve(args['save-records']);
-    fs.writeFileSync(f, records.map(r => JSON.stringify(r)).concat(errors.map(e => JSON.stringify(e))).join('\n') + '\n');
-    log('records written to ' + f);
-  }
+  if (saveFd !== null) { try { fs.closeSync(saveFd); } catch (e) { /* ignore */ } log('records in ' + saveF); }
 }
 
 // ------------------------------------------------------------------ analyse + report
