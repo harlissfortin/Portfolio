@@ -43,6 +43,8 @@
 #pause-menu .pm-tile{flex-direction:column;min-height:76px;gap:6px;padding:10px 4px;background:var(--wood);border-color:var(--wood-hi)}
 #pause-menu .pm-tile .m-ico{color:var(--aah);width:26px;height:26px}
 #pause-menu .pm-tile:hover{border-color:var(--brass)}
+#pause-menu .pm-tiles-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+#pause-menu .pm-tiles-4 .pm-tile{flex-direction:row;justify-content:flex-start;min-height:52px;gap:10px;padding:8px 12px}
 #pause-menu .pm-ticket{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 8px;
   padding:4px 6px 0 16px;border:1px dashed var(--brass);border-radius:var(--radius);background:var(--ink)}
 #pause-menu .pm-ticket-v{display:grid;min-width:0;padding-right:8px;border-right:1px dashed var(--brass)}
@@ -252,6 +254,13 @@
 #help .hp-card li + li{border-top:1px dashed rgba(5,7,15,.3)}
 #help .hp-n{font-size:var(--t-xl);line-height:1;color:var(--wood)}
 #help .hp-sec h3{display:flex;align-items:center;gap:12px;margin:0 0 10px}
+#help .hp-tut{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:0 4px 20px;padding:12px 14px;border-radius:12px;
+  border:1px solid rgba(201,162,39,.6);background:radial-gradient(120% 90% at 0% 0%,rgba(242,193,78,.14),transparent 70%),var(--surface)}
+#help .hp-tut-t{flex:1 1 180px;margin:0;display:grid;gap:2px}
+#help .hp-tut-t .display-italic{font-size:var(--t-l);color:var(--aah)}
+#help .hp-tut-b{flex:1 1 auto;border-color:var(--brass);background:transparent;color:var(--aah)}
+#help .hp-tut-b:hover{background:rgba(242,193,78,.1)}
+#help .hp-tut-b .m-ico{width:20px;height:20px}
 #help .hp-sec + .hp-sec{margin-top:24px}
 #help .hp-gloss{margin:0}
 #help .hp-gloss > div{display:grid;grid-template-columns:7em minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}

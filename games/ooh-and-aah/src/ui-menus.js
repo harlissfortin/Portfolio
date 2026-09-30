@@ -53,6 +53,7 @@ const UI_MENUS = (() => {
     lock: '<path d="M6 11h12v10H6zM9 11V7a3 3 0 0 1 6 0v4"/>',
     unlock: '<path d="M6 11h12v10H6zM9 11V7a3 3 0 0 1 5.8-1"/>',
     spark: '<path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/>',
+    rehearse: '<path d="M4 20V9l8-5 8 5v11M9 20v-6h6v6"/><path d="M12 7.5v2.5"/>',
     umbrella: '<path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9zM12 12v7a2 2 0 0 0 4 0"/>',
     // Headliners (§4.7 telegraph motifs)
     headwind: '<path d="M3 8h10a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h6"/>',
@@ -268,7 +269,8 @@ const UI_MENUS = (() => {
       h('header', { class: 'm-head pm-head' }, h('div', { class: 'm-titles' }, eyebrow('Intermission'), h('h2', { class: 'display', id: 'pause-menu-title' }, 'Paused'), P.where)),
       h('div', { class: 'm-body pm-body' },
         P.resume,
-        h('div', { class: 'pm-tiles' }, tile('pause-settings', 'gear', 'Settings', 'settings'), tile('pause-logbook', 'book', 'Logbook', 'logbook'), tile('pause-help', 'help', 'Help', 'help')),
+        h('div', { class: 'pm-tiles' + (can(G, 'startTutorial') ? ' pm-tiles-4' : '') }, tile('pause-settings', 'gear', 'Settings', 'settings'), tile('pause-logbook', 'book', 'Logbook', 'logbook'), tile('pause-help', 'help', 'Help', 'help'),
+          can(G, 'startTutorial') ? h('button', { type: 'button', id: 'pause-tutorial', class: 'btn pm-tile', onclick: startTutorial }, icon('rehearse'), h('span', null, 'Tutorial')) : null),
         h('div', { class: 'pm-ticket' }, h('div', { class: 'pm-ticket-v' }, h('label', { for: 'pause-seed', class: 'pm-ticket-k' }, 'Seed'), P.seed), P.copy, P.copyNote),
         P.tags,
         P.abandon));
@@ -299,6 +301,12 @@ const UI_MENUS = (() => {
     P.tags.replaceChildren(...tags.map((t) => h('span', { class: 'chip pm-chip' }, t)));
     P.abandon.hidden = !(st.phase === 'build' && G.ui !== 'END');
     if (!keepArmed) P.abandon._disarm();
+  }
+
+  // Help and Pause both start "Rehearsal Night": close the menus first, then the core sets the run aside.
+  function startTutorial() {
+    for (let n = 0; n < 8 && call(G, 'top') && call(G, 'top') !== 'end'; n++) call(G, 'close');
+    call(G, 'startTutorial');
   }
 
   /* ======================================================================
@@ -794,7 +802,11 @@ const UI_MENUS = (() => {
     let rules = DATA().RULES_CARD;
     rules = Array.isArray(rules) ? rules : typeof rules === 'string' ? rules.split(/\n+/).map((s) => s.replace(/^\s*\d+[.)]\s*/, '')).filter(Boolean) : [];
     const gl = rows(DATA().GLOSSARY).map((g) => Array.isArray(g) ? g : [g.term || g.id || g.name, g.meaning || g.text || g.def]).filter((g) => g[0]);
+    const tut = can(G, 'startTutorial') ? h('div', { class: 'hp-tut' },
+      h('p', { class: 'hp-tut-t' }, h('span', { class: 'display-italic' }, 'Rehearsal Night'), h('span', null, 'Learn by playing, in about 2 minutes.')),
+      h('button', { type: 'button', id: 'help-tutorial', class: 'btn hp-tut-b', onclick: startTutorial }, icon('rehearse'), h('span', null, 'Play the tutorial'))) : null;
     const body = h('div', { class: 'm-body hp-body', tabindex: '0', role: 'region', 'aria-label': 'Rules, glossary and keys' },
+      tut,
       h('ol', { class: 'hp-card', 'aria-label': 'The rules' }, rules.slice(0, 3).map((t, i) => h('li', null, h('span', { class: 'hp-n display-italic', 'aria-hidden': 'true' }, String(i + 1)), h('span', null, t)))),
       gl.length ? h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-gl' }, h('h3', { class: 'display', id: 'hp-gl' }, h('span', null, 'Glossary'), rule()),
         h('dl', { class: 'hp-gloss' }, gl.map(([t, d]) => h('div', null, h('dt', null, t), h('dd', null, d))))) : null,
@@ -844,7 +856,8 @@ const UI_MENUS = (() => {
   // Held: not at the play screen (a show, the end, boot) or something is open over it.
   function toastsHeld() {
     const app = $('app'), ui = app ? app.dataset.ui : '';
-    return (ui !== 'BUILD' && ui !== 'RESULT') || !!topName() || document.hidden;
+    // Rehearsal Night shows no toasts: any queued from the run set aside wait for its return.
+    return (ui !== 'BUILD' && ui !== 'RESULT') || !!topName() || document.hidden || !!(G && G.tutorial);
   }
   function kick() {
     if (!T.raf && (T.cur || T.q.length)) T.raf = requestAnimationFrame(toastFrame);
@@ -1076,6 +1089,8 @@ const UI_MENUS = (() => {
     call(G, 'on', 'tipDone', tipDone);
     call(G, 'on', 'resize', () => { requeue(); kick(); if (isOpen('logbook')) tabEdges(); });
     call(G, 'on', 'ui', kick);
+    // Rehearsal Night starts: the toast on screen (or fading out) leaves at once; the queue waits for the run's return.
+    call(G, 'on', 'tutorial', (p) => { if (p && p.active) { requeue(); const box = $('toasts'); if (box) box.replaceChildren(); } kick(); });
     const settled = (e) => { if ((T.cur || T.q.length) && e.target && e.target.closest && e.target.closest('#sky-wrap, #sponsor, #hud')) kick(); };
     if ($('play')) for (const ev of ['transitionend', 'animationend']) $('play').addEventListener(ev, settled, { passive: true });
     call(G, 'on', 'change', kick);

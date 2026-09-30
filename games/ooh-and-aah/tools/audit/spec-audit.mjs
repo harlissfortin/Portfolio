@@ -139,7 +139,7 @@ const wants = (g) => (ONLY ? ONLY.has(g) : g !== 'bots' || OPT.bots > 0);
 
 // ------------------------------------------------------------------ report
 const CHECKS = [];
-const OWNERS = ['sim', 'audio', 'fx', 'core', 'play', 'panels', 'end', 'menus', 'lead', 'tooling', 'spec'];
+const OWNERS = ['sim', 'audio', 'fx', 'core', 'play', 'panels', 'end', 'menus', 'tutorial', 'lead', 'tooling', 'spec'];
 function add(c) {
   const rec = {
     id: c.id, group: c.id.split('.')[0], owner: c.owner || 'sim', spec: c.spec || '',
@@ -1475,7 +1475,7 @@ function simChecks(spec, L) {
 // ============================================================================
 //  8. Static page contract on the built file
 // ============================================================================
-const SRC_OWNER = { 'sim.js': 'sim', 'audio.js': 'audio', 'fx.js': 'fx', 'core.js': 'core', 'ui-play.js': 'play', 'play.css': 'play', 'ui-panels.js': 'panels', 'panels.css': 'panels', 'ui-end.js': 'end', 'end.css': 'end', 'ui-menus.js': 'menus', 'menus.css': 'menus', 'base.css': 'lead', 'body.html': 'lead', 'head.html': 'tooling' };
+const SRC_OWNER = { 'sim.js': 'sim', 'audio.js': 'audio', 'fx.js': 'fx', 'core.js': 'core', 'ui-play.js': 'play', 'play.css': 'play', 'ui-panels.js': 'panels', 'panels.css': 'panels', 'ui-end.js': 'end', 'end.css': 'end', 'ui-menus.js': 'menus', 'menus.css': 'menus', 'ui-tutorial.js': 'tutorial', 'tutorial.css': 'tutorial', 'base.css': 'lead', 'body.html': 'lead', 'head.html': 'tooling' };
 function loadSources() { const dir = path.join(GAME_DIR, 'src'); const out = {}; for (const f of Object.keys(SRC_OWNER)) { try { out[f] = fs.readFileSync(path.join(dir, f), 'utf8'); } catch { /* missing module */ } } return out; }
 /** Which src file (and line) holds a snippet: for owner attribution in the report. */
 function locate(SRC, snippet) {
@@ -1634,16 +1634,16 @@ function staticChecks(spec, html, SRC) {
     const f = [], w = [];
     if (scripts.length !== 1) f.push(`${scripts.length} <script> tags (CONTRACT: exactly one)`);
     if (!/GAME\.boot\(\);?\s*$/.test(scripts.length ? scripts[scripts.length - 1][1] : '')) f.push('the script does not end with GAME.boot();');
-    const order = [['function OohSim', 'sim'], ['const OOH', 'sim'], ['const AUDIO', 'audio'], ['const FX', 'fx'], ['const GAME', 'core'], ['const UI_PLAY', 'play'], ['const UI_PANELS', 'panels'], ['const UI_END', 'end'], ['const UI_MENUS', 'menus']];
+    const order = [['function OohSim', 'sim'], ['const OOH', 'sim'], ['const AUDIO', 'audio'], ['const FX', 'fx'], ['const GAME', 'core'], ['const UI_PLAY', 'play'], ['const UI_PANELS', 'panels'], ['const UI_END', 'end'], ['const UI_MENUS', 'menus'], ['const UI_TUTORIAL', 'tutorial']];
     let last = -1; for (const [g, o] of order) { const re = new RegExp('^' + g.replace(' ', '\\s+') + '\\b', 'gm'); const all = [...js.matchAll(re)]; if (!all.length) f.push(`${g} not defined at top level (${o})`); else { if (all.length > 1) f.push(`${g} defined ${all.length}×`); if (all[0].index < last) f.push(`${g} out of CONTRACT order`); last = all[0].index; } }
-    const cssOrder = ['base.css', 'play.css', 'panels.css', 'end.css', 'menus.css'].map((n) => { const t = (SRC[n] || '').trim().slice(0, 80); return t ? css.indexOf(t) : -2; });
+    const cssOrder = ['base.css', 'play.css', 'panels.css', 'end.css', 'menus.css', 'tutorial.css'].map((n) => { const t = (SRC[n] || '').trim().slice(0, 80); return t ? css.indexOf(t) : -2; });
     if (cssOrder.some((v, i) => v === -1)) w.push(`a CSS module's first line is not found verbatim in the build (${cssOrder})`);
     else if (cssOrder.some((v, i) => i && v >= 0 && cssOrder[i - 1] >= 0 && v < cssOrder[i - 1])) f.push('CSS files out of CONTRACT order');
     // Top-level identifiers beyond the one global per module.
     const tops = [...js.matchAll(/^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]);
-    const allowed = new Set(['OohSim', 'OOH', 'AUDIO', 'FX', 'GAME', 'UI_PLAY', 'UI_PANELS', 'UI_END', 'UI_MENUS']);
+    const allowed = new Set(['OohSim', 'OOH', 'AUDIO', 'FX', 'GAME', 'UI_PLAY', 'UI_PANELS', 'UI_END', 'UI_MENUS', 'UI_TUTORIAL']);
     const extra = tops.filter((t) => !allowed.has(t)); if (extra.length) f.push(`extra top-level identifiers: ${extra.join(', ')}`);
-    return verdict(f, w, '9 globals in order');
+    return verdict(f, w, '10 globals in order');
   });
   check(C('static.dom', 'CONTRACT, §11.1', 'body.html skeleton holds every contracted container id', 'lead'), () => {
     const f = []; const body = SRC['body.html'] || html;

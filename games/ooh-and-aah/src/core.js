@@ -6,7 +6,9 @@
    - persistence (key oohxaah.v1), settings and meta (milestones,
      unlocks, Logbook, records, Renown, kits, keepsake, posters);
    - the overlay stack with focus trap, keyboard routing, lifecycle,
-     aria-live messages, haptics and the §11.6 hooks (window.__game).
+     aria-live messages, haptics and the §11.6 hooks (window.__game);
+   - the Rehearsal Night tutorial (startTutorial / tutorialGoto /
+     endTutorial): the run in progress is set aside in memory.
    Every call into OOH / FX / AUDIO / UI_* is guarded.
    GAME.state is always the live SIM state. After light() it is
    already post-show; 'change' is held back until the slam, and the
@@ -35,6 +37,8 @@ const GAME = (() => {
   const KIT_LOCK = {apprentice: null, salvo: 'm_busy', chemist: 'm_spectrum', market: 'm_rigger', showman: 'm_crowd'};
   const HAPTIC = {bought: 8, upgraded: 8, moved: 8, rigInstalled: 8, tubeAdded: 8, sold: 8, matched: 8,
     multAah: 15, fusion: [20, 30, 20], clear: 12, rainCheck: 40, relight: 20};
+  // Events the tutorial never emits: its bookkeeping lands in a scratch meta that is thrown away (CONTRACT "Tutorial").
+  const TUT_MUTED = ['meta', 'milestone', 'unlock', 'discover', 'toast', 'tip'];
   const DROP_TYPES = ['buy', 'upgrade', 'move', 'sell', 'buyRig', 'buyTube', 'reroll', 'sponsor', 'match', 'restore', 'setColour'];
 
   /* ---------- module state ---------- */
@@ -48,6 +52,7 @@ const GAME = (() => {
     lit: [], lastPreLight: null, runBest: {}, startProgress: {}, runUnlocks: [], counted: false,
     buildMs: 0, missPending: false, recordAtStart: 0, recordHit: false, posterAdded: false,
     lastChance: false, pendingToasts: [], tipQueue: [], tipShown: null, tipAt: 0, lastPay: null, heldProgress: null,
+    tut: null,   // the tutorial while it runs: {step, total, hasRun, saved: the run set aside + the real meta}
     layout: 'regular', gestured: false, unlocked: false, audioHeld: false, kickQueued: false, resizeQueued: false, ann: {polite: [], assertive: [], queued: false}, cache: {},
   };
 
@@ -136,6 +141,7 @@ const GAME = (() => {
     return () => { const l = S.listeners[name], i = l ? l.indexOf(fn) : -1; if (i >= 0) l.splice(i, 1); };
   }
   function emit(name, payload) {
+    if (S.tut && TUT_MUTED.includes(name)) return;
     const l = S.listeners[name];
     if (l) for (const fn of l.slice()) { try { fn(payload); } catch (e) { warn('listener ' + name, e); } }
     const w = S.listeners['*'];
@@ -220,11 +226,13 @@ const GAME = (() => {
     m.records.winsByKit = objOf(r.winsByKit, isInt);
     if (isInt(r.highestRenown)) m.records.highestRenown = r.highestRenown;
     if (Array.isArray(raw.posters)) m.posters = raw.posters.filter(isObj).slice(-5);
+    if (raw.tutorial === 'skipped' || raw.tutorial === 'done') m.tutorial = raw.tutorial;
     return m;
   }
   function setMeta(patch) {
     if (!isObj(patch)) return false;
     S.meta = cleanMeta({...S.meta, ...cloneJSON(patch)});
+    if (S.tut) S.tut.saved.meta = cleanMeta({...S.tut.saved.meta, ...cloneJSON(patch)});   // the scratch meta is thrown away at the end
     saveNow();
     emit('meta', {meta: S.meta});
     return true;
@@ -255,10 +263,16 @@ const GAME = (() => {
       best: S.runBest, startProgress: S.startProgress, unlocks: S.runUnlocks, missPending: S.missPending,
       recordAtStart: S.recordAtStart, recordHit: S.recordHit, posterAdded: S.posterAdded};
   }
-  const snapshot = () => ({v: 1, settings: {...S.settings, sfxVol: S.settings.soundVol}, meta: S.meta, run: runForSave()});
-  function saveNow() {
+  // While the tutorial runs, a save writes the settings and the real meta and keeps the stored run exactly as it is:
+  // the tutorial never writes a run save, meta progress, milestones, the Logbook or records.
+  function storedRun() {
+    try { const raw = localStorage.getItem(STORE_KEY); const o = raw ? JSON.parse(raw) : null; return isObj(o) && o.v === 1 && o.run !== undefined ? o.run : null; } catch (e) { return null; }
+  }
+  const snapshot = keepRun => ({v: 1, settings: {...S.settings, sfxVol: S.settings.soundVol},
+    meta: S.tut ? S.tut.saved.meta : S.meta, run: S.tut || keepRun ? storedRun() : runForSave()});
+  function saveNow(keepRun) {
     if (!S.booted || S.flags.fresh) return false;
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(snapshot())); return true; } catch (e) { return false; }
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(snapshot(keepRun === true))); return true; } catch (e) { return false; }
   }
   function validRun(r) {
     if (!isObj(r) || !isObj(r.state)) return false;
@@ -276,6 +290,7 @@ const GAME = (() => {
     let obj;
     try { obj = JSON.parse(decodeURIComponent(escape(atob(String(str || '').trim())))); } catch (e) { return false; }
     if (!isObj(obj) || obj.v !== 1) return false;
+    leaveTutorial();
     S.settings = cleanSettings(obj.settings);
     S.meta = cleanMeta(obj.meta);
     applySettings();
@@ -287,6 +302,7 @@ const GAME = (() => {
     return true;
   }
   function resetProgress() {
+    leaveTutorial();
     S.meta = defaultMeta();
     S.lastRun = null;
     emit('meta', {meta: S.meta});
@@ -414,7 +430,7 @@ const GAME = (() => {
     return st;
   }
   // Emit the run start and open its first build (the page is complete at rest).
-  function beginRun(restored) {
+  function beginRun(restored, extra) {
     setUI('BUILD');
     callFX('critical', isCritical());
     if (S.state) callFX('setSeed', S.state.seed);
@@ -422,15 +438,16 @@ const GAME = (() => {
     const bo = S.state ? safe(() => sim().describeBuild(S.state), null) : null;
     if (bo) callAudio('onEvent', bo);
     callAudio('setCrowd', S.state ? S.state.crowd : 0);
-    emit('runStart', {state: S.state, restored: !!restored});
+    emit('runStart', {state: S.state, restored: !!restored, ...(extra || {})});
     emit('change', {state: S.state});
     kick();
     codexScan(S.state);
     onBuildOpen();
-    if (!restored) saveNow();
+    if (!restored && !S.tut) saveNow();
   }
   function newRun(o = {}) {
     if (!isObj(o)) o = {};
+    leaveTutorial();
     const resolving = !!S.res;
     abortResolve();
     if (resolving) callFX('clearSky', {all: true});         // no popups / banners from the aborted show
@@ -449,7 +466,7 @@ const GAME = (() => {
     emit('meta', {meta: S.meta});
   }
   function abandon() {
-    if (!S.state || S.ui === 'END' || S.ui === 'BOOT') return false;
+    if (!S.state || S.ui === 'END' || S.ui === 'BOOT' || S.tut) return false;
     if (S.res) { completeNow(); callFX('clearSky', {all: true}); }
     if (S.ui === 'END' || S.state.phase !== 'build') return false;
     finalizeRun({abandoned: true});
@@ -472,6 +489,101 @@ const GAME = (() => {
     codexScan(S.state);
     onBuildOpen();
     saveNow();
+    return true;
+  }
+
+  /* ---------- the tutorial: Rehearsal Night (CONTRACT "Tutorial", spec §6.1) ----------
+     startTutorial() sets the run in progress aside in memory (never in storage) together with the real meta, and
+     gives the tutorial a scratch copy of the meta: its Logbook, records and milestone bookkeeping land there and
+     are thrown away. While it runs: no run save (a save keeps the stored run as it is), no finalizeRun and no END,
+     no tips, no toasts, and the meta-side events (TUT_MUTED) are muted; announce() still works. endTutorial()
+     puts the run back exactly as it was (or starts a new run) and records meta.tutorial. */
+  const RUN_KEYS = ['state', 'undo', 'rehearse', 'lit', 'lastPreLight', 'runBest', 'startProgress', 'runUnlocks', 'counted',
+    'buildMs', 'missPending', 'recordAtStart', 'recordHit', 'posterAdded', 'lastChance', 'pendingToasts', 'tipQueue',
+    'tipShown', 'tipAt', 'lastPay', 'heldProgress', 'runOpts', 'lastRun'];
+  const tutorialDefs = () => (Array.isArray(data().TUTORIAL) ? data().TUTORIAL : []);
+  const hashOf = st => safe(() => sim().hashState(st), null);
+  function emitTutorial() {
+    const t = S.tut, defs = tutorialDefs();
+    emit('tutorial', t ? {active: true, step: t.step, total: t.total, def: defs[t.step] || null, hasRun: t.hasRun}
+      : {active: false, step: -1, total: defs.length, def: null, hasRun: false});
+  }
+  // Load OOH.tutorialState(i) as the live state (ui BUILD), like a run start but with no save.
+  function tutLoad(i) {
+    const st = safe(() => sim().tutorialState(i), null);
+    if (!isObj(st)) return false;
+    if (S.res) abortResolve();
+    callFX('clearSky', {all: true});
+    closeAll();
+    resetRunFields();
+    S.recordAtStart = 0;   // no "new record" top tier from a scripted show
+    S.state = st;
+    beginRun(false, {tutorial: true});
+    return true;
+  }
+  function startTutorial() {
+    const defs = tutorialDefs();
+    if (!S.booted || !can(sim(), 'tutorialState') || !defs.length) return false;
+    if (S.tut) return tutorialGoto(0, {fresh: true});
+    if (S.res) completeNow();   // the show on screen finishes first; its bookkeeping was done at the light
+    dismissTip();
+    closeAll();
+    const saved = {meta: S.meta, ui: S.ui};
+    for (const k of RUN_KEYS) saved[k] = S[k];
+    S.tut = {step: 0, total: defs.length, hasRun: !!S.state && S.state.phase === 'build' && S.ui !== 'END', saved};
+    S.meta = cloneJSON(S.meta);
+    if (!tutLoad(0)) { leaveTutorial(); return false; }
+    emitTutorial();
+    return true;
+  }
+  // Enter step i. A 'live' step keeps the state the player's own actions made when it is the scripted one
+  // (same hashState as OOH.tutorialState(i)); otherwise, and for every 'fresh' step, the scripted state is loaded.
+  function tutorialGoto(i, o = {}) {
+    if (!S.tut) return false;
+    const defs = tutorialDefs();
+    i = Math.max(0, Math.min(defs.length - 1, Math.floor(Number(i)) || 0));
+    let keep = false;
+    if (defs[i].state === 'live' && !(isObj(o) && o.fresh) && S.state && S.state.phase === 'build') {
+      const want = safe(() => sim().tutorialState(i), null), h = want && hashOf(want);
+      keep = !!h && h === hashOf(S.state);
+    }
+    S.tut.step = i;
+    if (!keep) tutLoad(i);
+    emitTutorial();
+    return true;
+  }
+  // Put the run set aside back (its fields and the real meta) without presenting it; emits only 'tutorial' {active: false}.
+  function leaveTutorial() {
+    const t = S.tut;
+    if (!t) return null;
+    abortResolve();
+    callFX('clearSky', {all: true});
+    closeAll();
+    S.tut = null;
+    for (const k of RUN_KEYS) S[k] = t.saved[k];
+    S.meta = t.saved.meta;
+    emitTutorial();
+    return t;
+  }
+  // endTutorial({startRun, done}): done defaults to "on the last step". Finishing sets meta.tutorial = 'done'; leaving
+  // early sets 'skipped' unless it is already set. startRun starts a new run (a first run while meta.runs is 0);
+  // otherwise the run set aside comes back exactly as it was, or its end screen if it had ended.
+  function endTutorial(o = {}) {
+    if (!S.tut) return false;
+    if (!isObj(o)) o = {};
+    const t = S.tut, done = o.done != null ? !!o.done : t.step >= t.total - 1;
+    const meta = t.saved.meta;
+    meta.tutorial = done ? 'done' : meta.tutorial || 'skipped';
+    leaveTutorial();
+    saveNow(true);   // settings + meta only: the stored run stays the one from before the tutorial
+    emit('meta', {meta: S.meta});
+    if (o.startRun || !S.state) { newRun({}); return true; }
+    if (t.saved.ui === 'END') {
+      setUI('END');
+      emit('change', {state: S.state});
+      emit('runEnd', {won: !!(S.lastRun && S.lastRun.won), lastRun: S.lastRun});
+      if (top() !== 'end') open('end', {focus: '#run-it-back'});
+    } else beginRun(true);
     return true;
   }
 
@@ -716,7 +828,7 @@ const GAME = (() => {
     const imm = r.instant || !S.loopOn;
     if (S.state.phase !== 'build') {
       if (S.state.phase === 'lost' && !r.dimmed) callFX('dim');
-      after(imm ? 0 : ticks(S.state.phase === 'lost' ? 0.9 : 1.0), () => { if (S.res === r) { S.res = null; goEnd(); } });   // a win: the finale (~2.2 s) already played out before onDone
+      after(imm ? 0 : ticks(S.state.phase === 'lost' ? 0.9 : 1.0), () => { if (S.res === r) { S.res = null; endOrRescue(); } });   // a win: the finale (~2.2 s) already played out before onDone
     } else {
       after(imm ? 0 : Math.max(0, ticks(0.6) - (S.tick - r.slamTick)), () => { if (S.res === r) { S.res = null; toResult(r.buffer); } });
     }
@@ -727,7 +839,7 @@ const GAME = (() => {
     r.instant = true;
     if (r.handle && !r.done) { try { if (can(r.handle, 'skip')) r.handle.skip(); } catch (e) { warn('skip', e); } }
     chainDone(r.token);
-    if (S.res === r) { S.res = null; if (S.state.phase === 'build') toResult(r.buffer); else goEnd(); }
+    if (S.res === r) { S.res = null; if (S.state.phase === 'build') toResult(r.buffer); else endOrRescue(); }
   }
   function abortResolve() {
     if (!S.res) return;
@@ -757,6 +869,10 @@ const GAME = (() => {
     flushToasts();
     onBuildOpen();
     if (buffered) for (const b of buffered) if (b.until >= S.tick && (S.ui === 'RESULT' || S.ui === 'BUILD')) dispatch(b.action);
+  }
+  // The tutorial never reaches END: a show that ended the run (it cannot, by design) reloads the step's scripted state.
+  function endOrRescue() {
+    if (S.tut) { tutLoad(S.tut.step); emitTutorial(); } else goEnd();
   }
   function goEnd() {
     closeAll();
@@ -831,7 +947,7 @@ const GAME = (() => {
     if (st.phase === 'won') topTier = 'runWon';
     else if (pass && pre.show % 3 === 2) topTier = pre.show === 23 ? 'countdown' : 'headliner';
     else if (pass && record) topTier = 'record';
-    if (st.phase !== 'build') finalizeRun({});
+    if (st.phase !== 'build' && !S.tut) finalizeRun({});
     return {entry, summary, topTier};
   }
   function finalizeRun(o) {
@@ -1094,11 +1210,13 @@ const GAME = (() => {
     q.splice(i, 0, id);
   }
   function queueTip(id) {
+    if (S.tut) return;
     if (S.meta.seenTips.includes(id) || S.tipQueue.includes(id) || S.tipShown === id || !tipText(id)) return;
     enqueueTip(id);
   }
   // UI_PLAY's triggers. Returns true if the tip is now shown or queued.
   function tip(id) {
+    if (S.tut) return false;
     if (S.tipShown === id) return true;
     if (S.meta.seenTips.includes(id) || !tipText(id)) return false;
     S.tipQueue = S.tipQueue.filter(x => x !== id);
@@ -1118,7 +1236,7 @@ const GAME = (() => {
     return true;
   }
   function showNextTip() {
-    if (S.tipShown || !S.tipQueue.length || S.ui === 'RESOLVING' || S.ui === 'END') return;
+    if (S.tut || S.tipShown || !S.tipQueue.length || S.ui === 'RESOLVING' || S.ui === 'END') return;
     const st = S.state, k = S.tipQueue.findIndex(x => tipLive(x, st));
     if (k < 0) return;
     const id = S.tipQueue.splice(k, 1)[0];
@@ -1182,7 +1300,7 @@ const GAME = (() => {
     }
   }
   function toast(text, o = {}) {
-    if (!text) return;
+    if (!text || S.tut) return;
     const p = {text: String(text), kind: o.kind || 'info'};
     if (o.id) p.id = o.id;
     emit('toast', p);
@@ -1370,6 +1488,7 @@ const GAME = (() => {
     if (e.key === 'Escape') {
       e.preventDefault();
       if (t) { if (t.name !== 'end') close(t.name); }
+      else if (S.tut) endTutorial({startRun: false});
       else if (S.ui === 'BUILD' || S.ui === 'RESULT' || S.ui === 'RESOLVING') open('pause');
       return;
     }
@@ -1669,7 +1788,8 @@ const GAME = (() => {
     S.booted = true;
     // UI modules render into their containers.
     const mods = [typeof UI_PLAY !== 'undefined' ? UI_PLAY : null, typeof UI_PANELS !== 'undefined' ? UI_PANELS : null,
-      typeof UI_END !== 'undefined' ? UI_END : null, typeof UI_MENUS !== 'undefined' ? UI_MENUS : null];
+      typeof UI_END !== 'undefined' ? UI_END : null, typeof UI_MENUS !== 'undefined' ? UI_MENUS : null,
+      typeof UI_TUTORIAL !== 'undefined' ? UI_TUTORIAL : null];
     for (const m of mods) if (can(m, 'init')) { try { m.init(api); } catch (e) { console.error('[core] UI init', e); } }
     // Input and lifecycle.
     window.addEventListener('keydown', onKeyDown);
@@ -1714,6 +1834,8 @@ const GAME = (() => {
     get critical() { return {on: isCritical(), lastChance: S.lastChance}; },
     get layout() { return S.layout; },
     get lastLit() { return S.lit.length ? S.lit[S.lit.length - 1] : null; },
+    get tutorial() { return S.tut ? {step: S.tut.step, total: S.tut.total, hasRun: S.tut.hasRun} : null; },
+    startTutorial, tutorialGoto, endTutorial,
     boot, dispatch, undo, canUndo, light, fastForward, skip,
     newRun, abandon, enterAfterparty, startDaily, setKeepsake, setRehearse, dismissResult,
     setSetting, setMeta, saveNow, exportSave, importSave, resetProgress,

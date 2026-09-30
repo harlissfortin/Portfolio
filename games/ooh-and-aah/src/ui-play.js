@@ -1920,8 +1920,10 @@ const UI_PLAY = (() => {
     t_match: '[data-act="match"]', t_rain: '.hud-rain', t_count: '.hud-head',
   };
   function seen(id) { const m = G.meta; return seenLocal.has(id) || !!(m && Array.isArray(m.seenTips) && m.seenTips.includes(id)); }
+  // Rehearsal Night (CONTRACT "Tutorial") queues no first-run tips and marks none as seen.
+  const tutorialOn = () => !!(G && safe(() => G.tutorial, null));
   function queueTip(id) {
-    if (!G || seen(id)) return;
+    if (!G || tutorialOn() || seen(id)) return;
     if (fnIn(G, 'tip')) { seenLocal.add(id); G.tip(id); return; }
     if ((tip && tip.id === id) || tipQueue.includes(id) || !tipText(id)) return;
     tipQueue.push(id);
@@ -1929,7 +1931,7 @@ const UI_PLAY = (() => {
   }
   // A tip this screen shows itself (in the sky), once ever, until the next action or the end of the hold.
   function showOwnTip(id) {
-    if (!G || seen(id) || !tipText(id)) return;
+    if (!G || tutorialOn() || seen(id) || !tipText(id)) return;
     tipQueue.length = 0;
     tipQueue.push(id);
     nextTip();

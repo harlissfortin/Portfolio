@@ -5,6 +5,8 @@
 //   node tools/test-sim.mjs --seeds=1000 --bots=human,novice,oracle
 //   node tools/test-sim.mjs --no-bots             everything except the bot suite
 //   node tools/test-sim.mjs --workers=4 --json=out.json
+//   node tools/test-sim.mjs --tutorial            only the tutorial checks (SIM script + the in-browser core check)
+//   node tools/test-sim.mjs --no-browser          skip the in-browser tutorial check (it needs Playwright)
 //
 // Exit code 0 when every assertion passes and every bot win rate is within tolerance of the §12.2 reference
 // (±4 points at 1,000 seeds, ±4·√(1000/N) at N seeds). Other §12.2 metrics outside tolerance print WARN.
@@ -134,6 +136,15 @@ async function main() {
   check('SIM never calls Math.random() or Date.now()', !/Math\.random\s*\(|Date\.now\s*\(/.test(src));
   { const code = src.replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, '');   // comments stripped
     check('SIM reads no clock at all (no Date, performance.now or crypto)', !/\bDate\b|\bperformance\s*\.\s*now\b|\bcrypto\s*\./.test(code)); }
+
+  /* ---------------------------------------------------------- 0b. tutorial (CONTRACT "Tutorial", spec §6.1) */
+  await tutorialChecks({ check, section, log, args });
+  if (args.tutorial) {
+    section('Result');
+    log(`  ${passes} checks passed, ${warnings} warnings, ${failures} failures · ${((performance.now() - t00) / 1000).toFixed(1)} s`);
+    process.exitCode = failures ? 1 : 0;
+    return;
+  }
 
   /* ---------------------------------------------------------- 1. content tables */
   section('Content tables (§4, §5)');
@@ -596,4 +607,254 @@ async function main() {
   section('Result');
   log(`  ${passes} checks passed, ${warnings} warnings, ${failures} failures · ${((performance.now() - t00) / 1000).toFixed(1)} s`);
   process.exitCode = failures ? 1 : 0;
+}
+
+/* ============================================================ tutorial: Rehearsal Night (CONTRACT "Tutorial", spec §6.1) */
+// Plays every step's `do` on tutorialState(i) and checks the outcome the text promises; then (unless --no-browser)
+// runs the built page in Chromium and checks that startTutorial → endTutorial restores the exact run and writes no run save.
+async function tutorialChecks({ check, section, log, args }) {
+  section('Tutorial: Rehearsal Night (CONTRACT "Tutorial", spec §6.1)');
+  const T = OOH.DATA.TUTORIAL, D = OOH.DATA;
+  const XTYPES = ['light', 'result', 'buy', 'move', 'upgrade', 'fusion', 'next'];
+  const xs = d => (Array.isArray(d.expect) ? d.expect : [d.expect]);
+  const slotEq = (a, b) => !!a && !!b && a.zone === b.zone && a.i === b.i;
+  if (!check('DATA.TUTORIAL is a table of 10 steps and api.tutorialState exists', Array.isArray(T) && T.length === 10 && typeof OOH.tutorialState === 'function', T && T.length)) return;
+  for (const [i, d] of T.entries()) {
+    const ok = typeof d.id === 'string' && typeof d.title === 'string' && d.title && typeof d.text === 'string' && d.text && ['fresh', 'live'].includes(d.state)
+      && Array.isArray(d.target) && d.target.length && d.target.every(x => typeof x === 'string') && Array.isArray(d.do) && xs(d).every(x => x && XTYPES.includes(x.type))
+      && (xs(d).length === 1 || xs(d).every(x => typeof x.text === 'string' && x.text));
+    check(`step ${i + 1} (${d.id}) is well formed`, ok, JSON.stringify(d).slice(0, 160));
+    const words = [d.title, d.text, ...xs(d).map(x => x.text || '')].join(' ');
+    check(`step ${i + 1} text is plain (no em dash, no placeholder, short sentences)`, !/[—{}]/.test(words) && words.split(/[.!?:]\s/).every(x => x.split(/\s+/).length <= 22), words);
+    check(`step ${i + 1}: 'next' steps do nothing, action steps do something`, xs(d)[0].type === 'next' ? d.do.length === 0 : d.do.length === xs(d).length);
+  }
+  check('step 1 is fresh and the last step is marked last', T[0].state === 'fresh' && T[T.length - 1].last === true && T.slice(0, -1).every(d => !d.last));
+  // A state the whole SIM accepts: shape, ids, uids, JSON round trip, a legal build.
+  function validState(S) {
+    const shells = [...S.tubes.map(t => t.shell), ...S.crate].filter(Boolean), uids = shells.map(x => x.uid);
+    return S.v === 1 && S.phase === 'build' && Number.isInteger(S.show) && S.show >= 0 && S.show < 24 && Array.isArray(S.rng) && S.rng.length === 4
+      && S.tubes.length >= 4 && S.tubes.length <= 6 && S.crate.length === 2 && Number.isInteger(S.coins) && S.coins >= 0 && S.rain === 1
+      && shells.every(x => D.SHELLS[x.id] && x.star >= 1 && x.star <= 3 && typeof x.col === 'string' && Number.isInteger(x.uid) && x.uid < S.nextUid)
+      && new Set(uids).size === uids.length && (!S.shop || S.shop.cards.every(c => D.SHELLS[c.id] && c.cost > 0))
+      && OOH.hashState(JSON.parse(JSON.stringify(S))) === OOH.hashState(S) && OOH.legalActions(S).length > 1
+      && Array.isArray(OOH.previewChips(S)) && typeof OOH.mood(S) === 'string';
+  }
+  const shows = [];   // {step, applause event, events, pre, post}
+  let prev = null;
+  for (let i = 0; i < T.length; i++) {
+    const d = T[i], S = OOH.tutorialState(i), h = OOH.hashState(S);
+    check(`tutorialState(${i}) is deterministic and valid (show ${S.show + 1}, $${S.coins}, Crowd ${S.crowd})`, OOH.hashState(OOH.tutorialState(i)) === h && validState(S));
+    if (d.state === 'live') check(`step ${i + 1} is live: the player's own continuation of step ${i} is exactly tutorialState(${i})`, prev && OOH.hashState(prev) === h);
+    const C = OOH.clone(S);
+    let evs = [];
+    xs(d).forEach((x, k) => {
+      const a = d.do[k];
+      if (!a) return;
+      const pre = OOH.clone(C), ev = OOH.step(C, a);
+      evs = evs.concat(ev);
+      check(`step ${i + 1}: ${a.type}${a.displace ? ' (swap-in)' : ''} is legal on the step's state`, !ev.some(e => e.type === 'illegal'), JSON.stringify(ev.find(e => e.type === 'illegal')));
+      if (x.type === 'result' || x.type === 'light' || x.type === 'fusion') {
+        const ap = ev.find(e => e.type === 'applause');
+        shows.push({ step: i, ap, ev, pre, post: OOH.clone(C) });
+        check(`step ${i + 1}: the show passes its target (${ap && ap.ooh} × ${ap && ap.aah} = ${ap && ap.score} vs ${ap && ap.target})`, ap && ap.pass && C.phase === 'build' && C.rain === 1 && !ev.some(e => e.type === 'rainCheck'));
+        if (x.type === 'fusion') { const f = ev.find(e => e.type === 'fusion' && e.key === x.key);
+          check(`step ${i + 1}: the swap-in fuses (${x.key} = Strobing Crossette)`, f && f.name === 'Strobing Crossette' && D.FUSIONS[x.key], JSON.stringify(ev.filter(e => e.type === 'fusion'))); }
+      }
+      if (x.type === 'buy') { const b = ev.find(e => e.type === 'bought');
+        check(`step ${i + 1}: buys card ${x.card} into tube ${x.tube + 1}${x.displace ? ', old shell to the Crate' : ''}`, b && a.card === x.card && a.to.i === x.tube && (a.displace || null) === (x.displace || null)
+          && C.tubes[x.tube].shell.id === pre.shop.cards[x.card].id && (!x.displace || C.crate.some(c => c && c.uid === pre.tubes[x.tube].shell.uid))); }
+      if (x.type === 'upgrade') check(`step ${i + 1}: the twin upgrades to ★2`, ev.some(e => e.type === 'upgraded') && C.tubes[x.tube].shell.star === 2 && pre.tubes[x.tube].shell.star === 1 && a.card === x.card);
+      if (x.type === 'move') check(`step ${i + 1}: moves tube ${x.from + 1} to tube ${x.to + 1}`, ev.some(e => e.type === 'moved') && slotEq(a.from, { zone: 'tube', i: x.from }) && slotEq(a.to, { zone: 'tube', i: x.to }));
+    });
+    prev = C;
+  }
+  // The numbers every step text quotes, from the SIM.
+  const [s1, s2, s3] = shows, st = i => OOH.tutorialState(i), txt = i => [T[i].text, ...xs(T[i]).map(x => x.text || '')].join(' ');
+  check('three shows are lit (steps 1, 6, 8)', shows.map(x => x.step).join() === '0,5,7', shows.map(x => x.step).join());
+  check(`step 2 quotes show 1 exactly: ${s1.ap.ooh} × ${s1.ap.aah} = ${s1.ap.score}, target ${s1.ap.target}`,
+    txt(1).includes(`${s1.ap.ooh} × ${s1.ap.aah} = ${s1.ap.score}`) && txt(1).includes(`target of ${s1.ap.target}`) && s1.ap.pass);
+  { const S = st(2), sees = OOH.seesPerTube(S, OOH.rulesFor(S));
+    check(`step 3: Peony sees 1 and Strobe sees 2 (${JSON.stringify(sees)})`, S.tubes[1].shell.id === 'peony' && S.tubes[2].shell.id === 'strobe' && sees[1] === 1 && sees[2] === 2
+      && /Peony sees 1 burst/.test(txt(2)) && /Strobe sees 2/.test(txt(2))); }
+  { const S = st(3), c = S.shop.cards[1], P = st(0);
+    check('step 4: the Palm card is Red, $3, affordable, and tube 4 is the empty tube', c.id === 'palm' && c.col === 'R' && c.cost === 3 && S.coins >= 3 && !S.tubes[3].shell && S.tubes.filter(t => !t.shell).length === 1 && /tube 4/.test(txt(3)));
+    check('step 4: "passing a show pays coins"', S.coins > P.coins);
+    check('step 4: swap-ins are off here (first run, show 2), so the drop is into the empty tube', S.firstRun && S.show < 2 && !xs(T[3])[0].displace);
+    const held = OOH.previewChips(S, OOH.rulesFor(S), 1);
+    check(`step 4: tube 4's chips show what Palm adds there (+${held[3] && held[3].ooh} Ooh)`, held[3] && held[3].kind === 'buy' && held[3].ooh === 12); }
+  { const a = st(4), b = st(5), r = S => OOH.resolveShow(S.tubes, { rules: OOH.rulesFor(S), crowd: S.crowd }).applause;
+    check(`step 5: the move raises the Applause (${r(a)} → ${r(b)})`, r(b) > r(a));
+    check('step 5: Palm is Red and gains 3 Aah right after the Peony, none in tube 4',
+      a.tubes[3].shell.col === 'R' && OOH.previewChips(a)[3].aah === 0 && OOH.previewChips(b)[2].aah === 3 && b.tubes[1].shell.id === 'peony' && /3 Aah/.test(txt(4)));
+    const rev = OOH.clone(a); OOH.step(rev, { type: 'move', from: { zone: 'tube', i: 2 }, to: { zone: 'tube', i: 3 } });
+    check('step 5: the same swap done the other way round gives the same state', OOH.hashState(rev) === OOH.hashState(b)); }
+  check(`step 6: the Applause beats step 1's (${s2.ap.score} > ${s1.ap.score}) and the text quotes ${s1.ap.score}`, s2.ap.score > s1.ap.score && txt(5).includes(String(s1.ap.score)));
+  { const S = st(6), c = S.shop.cards[0], up = st(7);
+    const o1 = OOH.previewChips(S)[1].ooh, o2 = OOH.previewChips(up)[1].ooh;
+    check(`step 7: the Peony card is the Peony's twin and every number doubles (+${o1} → +${o2} Ooh)`, c.id === 'peony' && S.tubes[1].shell.id === 'peony' && o2 === 2 * o1 && S.coins >= OOH.upCost('peony', 1) + S.shop.cards[1].cost);
+    check('step 7: a plain show (no rule twist, not a Headliner) with swap-ins on', OOH.rulesFor(S).length === 0 && S.show % 3 !== 2 && !(S.firstRun && S.show < 2)); }
+  { const S = st(7), c = S.shop.cards[1];
+    check('step 8: Crossette swaps in on the Palm, right after the Strobe', c.id === 'crossette' && S.tubes[3].shell.id === 'palm' && S.tubes[2].shell.id === 'strobe' && S.crate.every(x => !x));
+    const chips = OOH.previewChips(S, OOH.rulesFor(S), 1, { zone: 'tube', i: 3 });
+    check('step 8: the drop is a swap (Palm to the Crate) and its chips show the fusion', chips && chips[3].kind === 'swap' && chips[3].displace === 'crate' && chips[3].fusion && chips[3].fusion.key === 'strobe>crossette'); }
+  { const S = st(8), cheer = s3.ev.find(e => e.type === 'crowdCheer');
+    check('step 9: Palm rests in the Crate and does not fire', S.crate[0] && S.crate[0].id === 'palm' && !s3.ev.some(e => e.tube != null && s3.pre.tubes[e.tube] && s3.pre.tubes[e.tube].shell && s3.pre.tubes[e.tube].shell.id === 'palm'));
+    check(`step 9: every pass grew the Crowd (${shows.map(x => x.pre.crowd + '→' + x.post.crowd).join(', ')}) and the Crowd adds its size to Ooh`,
+      shows.every(x => x.post.crowd > x.pre.crowd) && cheer && cheer.v === s3.pre.crowd && s3.pre.crowd > 0); }
+  { const S = st(9), nh = OOH.nextHeadlinerShow(S.show);
+    check(`step 10: the mood shows (${OOH.mood(S)}), a Headliner is posted (show ${nh + 1}: ${OOH.rulesFor(S, nh)}), the rain check is unspent`,
+      OOH.moodVisible(S) && OOH.rulesFor(S, nh).length === 1 && D.HEADLINERS[OOH.rulesFor(S, nh)[0]] && S.rain === 1 && S.show % 3 !== 2); }
+  if (!args['no-browser']) await tutorialBrowserCheck({ check, log });
+}
+
+// The core half: in the built page, startTutorial → play every step → endTutorial restores the exact run.
+async function tutorialBrowserCheck({ check, log }) {
+  let chromium;
+  try { ({ chromium } = createRequire('/opt/node22/lib/node_modules/')('playwright')); }
+  catch (e) { try { ({ chromium } = require('playwright')); } catch (e2) { log('  (skipped the in-browser tutorial check: Playwright is not installed)'); return; } }
+  const { spawnSync } = await import('node:child_process');
+  const out = path.join(os.tmpdir(), `ooh-tutorial-check-${process.pid}.html`);
+  const b = spawnSync(process.execPath, [path.join(HERE, 'build.mjs'), `--out=${out}`, '--quiet', '--allow-missing'], { encoding: 'utf8' });
+  if (!check('the page builds for the in-browser tutorial check', b.status === 0 && fs.existsSync(out), (b.stdout + b.stderr).trim().split('\n').slice(-3).join(' | '))) return;
+  const body = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>'
+    + fs.readFileSync(out, 'utf8') + '</body></html>';
+  fs.rmSync(out, { force: true });
+  const browser = await chromium.launch();
+  try {
+    const newPage = async () => {
+      const ctx = await browser.newContext({ viewport: { width: 400, height: 860 } });
+      await ctx.route('**/*', r => { const u = r.request().url();
+        if (/fonts\.(googleapis|gstatic)\.com/.test(u)) return r.abort();
+        if (u.startsWith('http://ooh.test/')) return r.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body });
+        return r.continue(); });
+      const page = await ctx.newPage(), errors = [];
+      page.on('pageerror', e => errors.push(String(e)));
+      await page.goto('http://ooh.test/');
+      await page.waitForFunction(() => typeof GAME !== 'undefined' && GAME.ui === 'BUILD');
+      await page.evaluate(() => GAME.setSetting('instant', true));
+      return { page, errors };
+    };
+    const idle = page => page.waitForFunction(() => GAME.ui === 'BUILD' || GAME.ui === 'RESULT', null, { timeout: 20000 });
+    const spy = page => page.evaluate(() => {
+      window.__w = []; const set = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) { window.__w.push(v); return set.call(this, k, v); };
+      window.__ev = []; for (const n of ['toast', 'meta', 'milestone', 'discover', 'unlock', 'runEnd', 'tip']) GAME.on(n, () => { if (GAME.tutorial) window.__ev.push(n); });
+      window.__uis = []; GAME.on('ui', p => { if (GAME.tutorial) window.__uis.push(p.to); });
+    });
+    const snap = page => page.evaluate(() => { const st = JSON.parse(localStorage.getItem('oohxaah.v1') || 'null');
+      return { hash: __game.hash(), ui: GAME.ui, undo: GAME.canUndo(), stored: st ? JSON.stringify(st.run) : null, storedTut: st && st.meta.tutorial, meta: JSON.stringify(GAME.meta),
+        tutorial: GAME.tutorial }; });
+
+    // 1. A run in progress (show 1 lit and saved, then an unsaved buy), the whole tutorial, then back to the run.
+    { const { page, errors } = await newPage();
+      await page.evaluate(() => GAME.light()); await idle(page);
+      await page.evaluate(() => GAME.dispatch(__game.legalActions().find(a => a.type === 'buy' && a.to.zone === 'tube')));
+      const before = await snap(page);
+      await spy(page);
+      check('in the page: startTutorial() starts at step 1 on tutorialState(0)', await page.evaluate(() => GAME.startTutorial() && GAME.tutorial.step === 0 && GAME.tutorial.hasRun === true
+        && OOH.hashState(GAME.state) === OOH.hashState(OOH.tutorialState(0))));
+      const T = await page.evaluate(() => OOH.DATA.TUTORIAL), bad = [];
+      for (let i = 0; i < T.length; i++) {
+        const r = await page.evaluate(i => ({ step: GAME.tutorial && GAME.tutorial.step, same: OOH.hashState(GAME.state) === OOH.hashState(OOH.tutorialState(i)) }), i);
+        const miss = await page.evaluate(sels => sels.filter(s => { const el = document.querySelector(s), q = el && el.getBoundingClientRect(); return !q || !q.width || !q.height || el.closest('[hidden]'); }), T[i].target);
+        if (r.step !== i || !r.same || miss.length) bad.push(`step ${i + 1}: ${JSON.stringify(r)} ${miss.join(' ')}`);
+        for (const a of T[i].do) { await page.evaluate(a => (a.type === 'light' ? GAME.light() : GAME.dispatch(a)), a); await idle(page); }
+        if (i === T.length - 1) break;
+        // UI_TUTORIAL advances on its own after an action; a Next step (or a missing UI module) is stepped on here.
+        try { await page.waitForFunction(n => GAME.tutorial && GAME.tutorial.step === n, i + 1, { timeout: 2500 }); }
+        catch (e) { await page.evaluate(n => GAME.tutorialGoto(n), i + 1); }
+      }
+      check('in the page: every step starts on its scripted state with its spotlight targets on screen', !bad.length, bad.join(' · '));
+      await page.evaluate(() => GAME.endTutorial({ startRun: false }));
+      const after = await snap(page), w = await page.evaluate(() => ({ w: window.__w, ev: window.__ev, uis: window.__uis }));
+      check('in the page: endTutorial() restores the exact previous run (same hash, BUILD, undo kept)', after.hash === before.hash && after.ui === 'BUILD' && after.undo === before.undo && after.tutorial === null,
+        JSON.stringify([before.hash, after.hash, after.ui]));
+      check(`in the page: the tutorial wrote no run save (${w.w.length} writes, each keeps the stored run)`, after.stored === before.stored && w.w.every(v => JSON.stringify(JSON.parse(v).run) === before.stored));
+      check('in the page: no toast, meta, milestone, Logbook, unlock, tip or runEnd event, and never END', !w.ev.length && !w.uis.includes('END'), JSON.stringify([w.ev, [...new Set(w.uis)]]));
+      const m0 = JSON.parse(before.meta), m1 = JSON.parse(after.meta);
+      check('in the page: finishing sets meta.tutorial = "done" (stored too) and changes nothing else in the meta', m1.tutorial === 'done' && after.storedTut === 'done'
+        && JSON.stringify({ ...m1, tutorial: undefined }) === JSON.stringify({ ...m0, tutorial: undefined }));
+      check('in the page: no script errors', !errors.length, errors.slice(0, 3).join(' | '));
+    }
+    // 2. Skipped early from a run that had ended: its end screen comes back; meta.tutorial = 'skipped'.
+    { const { page, errors } = await newPage();
+      await page.evaluate(() => { for (let k = 0; k < 40 && GAME.ui !== 'END'; k++) { GAME.light(); } });
+      await page.waitForFunction(() => GAME.ui === 'END', null, { timeout: 20000 });
+      const before = await snap(page);
+      await spy(page);
+      await page.evaluate(() => { GAME.startTutorial(); GAME.tutorialGoto(2); });
+      const mid = await page.evaluate(() => ({ ui: GAME.ui, hasRun: GAME.tutorial.hasRun, end: GAME.isOpen('end') }));
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => GAME.tutorial === null, null, { timeout: 5000 }).catch(() => page.evaluate(() => GAME.endTutorial({ startRun: false })));
+      const after = await snap(page);
+      check('in the page: from an ended run the tutorial plays (hasRun false), and Esc or Skip brings back the end screen', mid.ui !== 'END' && !mid.end && mid.hasRun === false
+        && after.ui === 'END' && after.hash === before.hash && await page.evaluate(() => GAME.isOpen('end')), JSON.stringify([mid, after.ui]));
+      check('in the page: leaving early sets meta.tutorial = "skipped" with no run save', after.storedTut === 'skipped' && after.stored === before.stored);
+      check('in the page: no script errors (ended run)', !errors.length, errors.slice(0, 3).join(' | '));
+    }
+    // 3. "Start your first run": a new first run replaces the one set aside.
+    { const { page } = await newPage();
+      await page.evaluate(() => GAME.light()); await idle(page);
+      await page.evaluate(() => { GAME.startTutorial(); GAME.tutorialGoto(9); GAME.endTutorial({ startRun: true }); });
+      const r = await page.evaluate(() => ({ show: GAME.state.show, first: GAME.state.firstRun, seed: GAME.state.seed, ui: GAME.ui, t: GAME.meta.tutorial,
+        stored: JSON.parse(localStorage.getItem('oohxaah.v1')).run.state.show }));
+      check('in the page: "Start your first run" starts a fresh first run at show 1 and saves it', r.show === 0 && r.first && r.seed === 'first-show' && r.ui === 'BUILD' && r.t === 'done' && r.stored === 0, JSON.stringify(r));
+    }
+    // 4. The real UI (UI_TUTORIAL): the first-launch offer, every step played by clicks on the ringed control only,
+    //    then "Start your first run". No tip or toast on screen, no tip marked seen, every step announced.
+    { const { page, errors } = await newPage();
+      const offer = await page.evaluate(() => { const o = document.querySelector('#tutorial .tu-offer'); return !!o && !o.hidden; });
+      check('in the page (UI): a fresh profile gets the "New here?" offer, and the fuse stays usable', offer && await page.evaluate(() => !document.getElementById('fire').disabled));
+      if (offer) {
+        const seen0 = await page.evaluate(() => JSON.stringify(GAME.meta.seenTips));
+        await page.evaluate(() => {
+          const U = window.__ui = { ann: [], tips: [] };
+          for (const id of ['live-polite', 'live-assertive']) { const el = document.getElementById(id); new MutationObserver(() => U.ann.push(el.textContent)).observe(el, { childList: true, characterData: true, subtree: true }); }
+          const vis = el => !!el && !el.hidden && el.getClientRects().length > 0;
+          (function poll() { if (GAME.tutorial) { const t = document.querySelector('#sky-overlay .tip'); if (vis(t)) U.tips.push('tip: ' + t.textContent); for (const x of document.querySelectorAll('#toasts .toast')) if (vis(x)) U.tips.push('toast: ' + x.textContent); } requestAnimationFrame(poll); })();
+        });
+        const clickRinged = async sel => {   // a real click, and only where the spotlight's ring says
+          await page.waitForFunction(sel => { const el = document.querySelector(sel); if (!el) return false; if (el.closest('#tutorial')) return true; const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+            return [...document.querySelectorAll('#tutorial .tu-ring.act')].some(q => { const b = q.getBoundingClientRect(); return x > b.left && x < b.right && y > b.top && y < b.bottom; }); }, sel, { timeout: 1500 }).catch(() => {});
+          const p = await page.evaluate(sel => { const el = document.querySelector(sel); if (!el) return null; const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+            const own = !!el.closest('#tutorial'), ring = [...document.querySelectorAll('#tutorial .tu-ring.act')].some(q => { const b = q.getBoundingClientRect(); return x > b.left && x < b.right && y > b.top && y < b.bottom; });
+            return { x, y, ok: own || ring }; }, sel);
+          if (!p) return `${sel} missing`;
+          await page.mouse.click(p.x, p.y);
+          return p.ok ? '' : `${sel} is not ringed`;
+        };
+        const bad = [];
+        bad.push(await clickRinged('#tutorial [data-tu="offer-play"]'));
+        await page.waitForFunction(() => GAME.tutorial && GAME.tutorial.step === 0, null, { timeout: 5000 }).catch(() => bad.push('the offer did not start the tutorial'));
+        let finish = '';
+        for (let n = 0; n < 60 && !finish; n++) {
+          await page.waitForTimeout(120);
+          const u = await page.evaluate(() => { const t = GAME.tutorial; if (!t) return null; const b = s => { const e = document.querySelector('#tutorial [data-tu="' + s + '"]'); return e && !e.hidden ? e.textContent : ''; };
+            return { step: t.step, ui: GAME.ui, s: UI_TUTORIAL.state(), next: b('next'), sel: document.querySelectorAll('#rack .sel, #shop .sel').length }; });
+          if (!u) break;
+          if (u.s.watching || u.ui === 'RESOLVING') continue;
+          const x = u.s.expect || {}, at = (sel) => clickRinged(sel).then(m => m && bad.push(`step ${u.step + 1}: ${m}`));
+          if (u.next) { if (/run/.test(u.next)) { finish = u.next; await at('#tutorial [data-tu="next"]'); } else await at('#tutorial [data-tu="next"]'); }
+          else if (x.type === 'result' || x.type === 'fusion' || x.type === 'light') await at('#fire');
+          else if (x.type === 'buy' || x.type === 'upgrade') await at(u.sel ? `#rack [data-tube="${x.tube}"]` : `#shop [data-card="${x.card}"]`);
+          else if (x.type === 'move') { const t = u.sel ? x.to : x.from; await at(`#rack [data-tube="${t && t.i != null ? t.i : t}"]`); }
+          if (u.step === 3 && !u.sel && !u.next) {   // a stray click off the spotlight changes nothing
+            const h0 = await page.evaluate(() => OOH.hashState(GAME.state));
+            await page.evaluate(() => { const r = document.querySelector('[data-act="reroll"]'); if (r) { const b = r.getBoundingClientRect(); document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2); } });
+            const r = await page.$('#rack [data-tube="0"]'); if (r) { const b = await r.boundingBox(); await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2); }
+            if (await page.evaluate(h0 => OOH.hashState(GAME.state) !== h0, h0)) bad.push('step 4: a click off the spotlight changed the state');
+          }
+        }
+        await page.waitForFunction(() => !GAME.tutorial, null, { timeout: 5000 }).catch(() => bad.push('the tutorial did not finish'));
+        const r = await page.evaluate(() => ({ show: GAME.state.show, first: GAME.state.firstRun, t: GAME.meta.tutorial, seen: JSON.stringify(GAME.meta.seenTips), U: window.__ui,
+          layer: !!document.querySelector('#tutorial .tu-card:not([hidden])'), offer: !document.querySelector('#tutorial .tu-offer').hidden }));
+        const unsaid = []; for (let i = 1; i <= 10; i++) if (!r.U.ann.some(a => a.includes(`Tutorial, step ${i} of 10`))) unsaid.push(i);
+        check('in the page (UI): every step is played by clicking the ringed control, to "Start your first run"', !bad.filter(Boolean).length && finish === 'Start your first run'
+          && r.show === 0 && r.first && r.t === 'done' && !r.layer && !r.offer, [...bad.filter(Boolean), finish, JSON.stringify({ show: r.show, t: r.t, layer: r.layer, offer: r.offer })].join(' · '));
+        check('in the page (UI): no tip or toast shows inside the tutorial, and no tip is marked seen', !r.U.tips.length && r.seen === seen0, [...new Set(r.U.tips)].slice(0, 3).join(' · ') + (r.seen !== seen0 ? ` seenTips ${seen0} -> ${r.seen}` : ''));
+        check('in the page (UI): every step is announced for screen readers', !unsaid.length, 'missing steps ' + unsaid.join(','));
+      }
+      check('in the page (UI): no script errors', !errors.length, errors.slice(0, 3).join(' | '));
+    }
+  } finally { await browser.close(); }
 }

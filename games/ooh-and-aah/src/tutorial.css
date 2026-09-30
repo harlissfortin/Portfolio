@@ -1,0 +1,117 @@
+/* ============================================================
+   tutorial.css — UI_TUTORIAL: #tutorial ("Rehearsal Night").
+   One layer over the play column, under every overlay (40+):
+   a scrim with cut-outs, brass rings on the lit controls, one
+   playbill-style callout card, and the first-launch offer.
+   The layer itself never takes a pointer; its cards do.
+============================================================ */
+#tutorial{position:absolute;inset:0;z-index:38;pointer-events:none;overflow:hidden}
+
+/* ---------- scrim with cut-outs ---------- */
+#tutorial .tu-scrim{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .22s var(--ease-out)}
+#tutorial .tu-scrim.on{opacity:1}
+#tutorial .tu-dim{fill:rgba(3,5,12,.66)}
+:root[data-contrast="high"] #tutorial .tu-dim{fill:rgba(0,0,0,.84)}
+
+/* ---------- rings on the lit controls ---------- */
+#tutorial .tu-rings{position:absolute;inset:0}
+#tutorial .tu-ring{position:absolute;border-radius:12px;pointer-events:none}
+#tutorial .tu-ring.act{box-shadow:0 0 0 2px var(--aah),0 0 0 5px rgba(204,121,167,.38),0 0 26px 6px rgba(242,193,78,.34)}
+#tutorial .tu-ring.act::after{content:"";position:absolute;inset:-2px;border-radius:inherit;box-shadow:0 0 0 2px var(--aah);
+  animation:tu-ring 1.6s var(--ease-out) infinite}
+#tutorial .tu-ring.show{box-shadow:0 0 0 1px rgba(242,193,78,.55),0 0 18px 2px rgba(204,121,167,.18)}
+#tutorial .tu-rings.tu-nudge .tu-ring.act{animation:tu-nudge .36s var(--ease-out)}
+@keyframes tu-ring{0%{opacity:.9;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.08)}}
+@keyframes tu-nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+:root[data-contrast="high"] #tutorial .tu-ring.act{box-shadow:0 0 0 3px var(--focus),0 0 0 6px #000}
+:root[data-contrast="high"] #tutorial .tu-ring.show{box-shadow:0 0 0 2px var(--paper)}
+
+/* ---------- the callout: a small playbill card ---------- */
+#tutorial .tu-card{position:absolute;left:0;top:0;pointer-events:auto;max-width:calc(100% - 24px);
+  padding:12px 16px 12px;border-radius:14px;color:var(--paper);
+  background:radial-gradient(120% 60% at 50% 0%,rgba(242,193,78,.14),transparent 64%),linear-gradient(var(--surface-2),var(--surface-2)),var(--bg);
+  border:1px solid var(--brass);
+  box-shadow:inset 0 0 0 3px var(--surface-2),inset 0 0 0 4px rgba(201,162,39,.3),0 18px 48px rgba(0,0,0,.6);
+  transition:transform .24s var(--ease-out)}
+#tutorial .tu-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-4px 0 2px}
+#tutorial .tu-prog{display:inline-flex;align-items:center;gap:8px;min-width:0}
+#tutorial .tu-eyebrow{display:none;white-space:nowrap;font:700 16px/1.2 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--brass)}
+#tutorial .tu-count{white-space:nowrap;font:700 16px/1 var(--f-ui);color:var(--paper-dim);font-variant-numeric:tabular-nums}
+#tutorial .tu-dots{display:inline-flex;gap:4px}
+#tutorial .tu-dots i{width:6px;height:6px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--paper-dim);opacity:.7}
+#tutorial .tu-dots i.done{background:var(--brass);box-shadow:none;opacity:1}
+#tutorial .tu-dots i.now{background:var(--aah);box-shadow:0 0 6px 1px rgba(242,193,78,.75);opacity:1;transform:scale(1.3)}
+#tutorial .tu-title{margin:0 0 4px;font:600 var(--t-l)/1.15 var(--f-display);font-optical-sizing:auto;text-wrap:balance;color:var(--paper)}
+#tutorial .tu-text{margin:0;font:400 var(--t-m)/1.4 var(--f-ui);text-wrap:pretty}
+#tutorial .tu-note{margin:6px 0 0;font:700 var(--t-s)/1.35 var(--f-ui);color:var(--aah)}
+#tutorial .tu-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px;margin-top:10px}
+/* Skip: a quiet text button in the header, 36 px tall with a 44 px hit area */
+#tutorial .tu-skip{position:relative;flex:none;min-height:36px;margin-right:-4px;padding:0 4px;border:0;background:none;color:var(--paper-dim);
+  font:700 var(--t-s)/1 var(--f-ui);text-decoration:underline;text-decoration-color:rgba(185,178,199,.45);text-underline-offset:4px}
+#tutorial .tu-skip::before{content:"";position:absolute;inset:-4px -2px}
+#tutorial .tu-skip:hover{color:var(--paper)}
+#tutorial .tu-next{min-width:96px}
+#tutorial .tu-show{border-color:var(--brass);background:transparent;color:var(--aah)}
+#tutorial .tu-alt{background:var(--wood);border-color:var(--wood-hi)}
+#tutorial .tu-card[data-phase="finish"] .tu-actions .btn{flex:1 1 auto}
+#tutorial .tu-card[data-phase="finish"] .tu-head{min-height:36px}
+#tutorial .tu-card[data-phase="watch"] .tu-title{font-size:var(--t-m);margin-bottom:2px}
+#tutorial .tu-card[data-phase="watch"] .tu-text{font-size:var(--t-s);color:var(--paper-dim)}
+#tutorial .tu-card.tu-ok{border-color:var(--ok)}
+#tutorial .tu-card.tu-ok .tu-title::after{content:" \2713";color:var(--ok)}
+/* the tail points at the control the card talks about */
+#tutorial .tu-tail{position:absolute;display:none;width:14px;height:14px;margin-left:-7px;background:var(--surface-2);
+  border:1px solid var(--brass);transform:rotate(45deg)}
+#tutorial .tu-tail.up{display:block;top:-8px;border-right:0;border-bottom:0}
+#tutorial .tu-tail.down{display:block;bottom:-8px;border-left:0;border-top:0}
+#tutorial .tu-tail.left,#tutorial .tu-tail.right{display:block;margin:-7px 0 0}
+#tutorial .tu-tail.left{left:-8px;border-right:0;border-top:0}
+#tutorial .tu-tail.right{right:-8px;border-left:0;border-bottom:0}
+#tutorial .tu-card.tu-ok .tu-tail{border-color:var(--ok)}
+@media (min-width:480px){ #tutorial .tu-card[data-phase="finish"] .tu-eyebrow{display:inline} }
+@media (max-width:400px){
+  #tutorial .tu-card{padding:10px 14px}
+  #tutorial .tu-title{font-size:20px}
+  #tutorial .tu-text{font-size:var(--t-s)}
+}
+@media (max-height:619px){
+  #tutorial .tu-card{padding:8px 14px 9px}
+  #tutorial .tu-head{margin:-4px 0 0}
+  #tutorial .tu-title{font-size:19px;margin-bottom:2px}
+  #tutorial .tu-text{font-size:var(--t-s);line-height:1.3;text-wrap:wrap}
+  #tutorial .tu-skip{min-height:32px}
+  #tutorial .tu-skip::before{inset:-6px -2px}
+  #tutorial .tu-actions{margin-top:6px}
+}
+:root[data-contrast="high"] #tutorial .tu-card{background:#000;border:2px solid var(--paper);box-shadow:none}
+:root[data-contrast="high"] #tutorial .tu-eyebrow{color:var(--aah)}
+:root[data-contrast="high"] #tutorial .tu-skip{color:var(--paper)}
+:root[data-contrast="high"] #tutorial .tu-tail{background:#000;border-color:var(--paper)}
+
+/* ---------- the first-launch offer (in the sky; the rest of the screen stays live) ---------- */
+#tutorial .tu-offer{position:absolute;left:0;top:0;pointer-events:auto;padding:10px 12px 12px;border-radius:14px;
+  background:linear-gradient(rgba(27,20,64,.94),rgba(11,16,38,.94));border:1px solid rgba(201,162,39,.75);
+  box-shadow:inset 0 0 0 3px rgba(27,20,64,.94),inset 0 0 0 4px rgba(201,162,39,.25),0 12px 32px rgba(0,0,0,.5);
+  animation:tu-in .32s var(--ease-out) both}
+#tutorial .tu-offer-t{margin:0 0 8px;font:600 var(--t-m)/1.25 var(--f-display);text-align:center;text-wrap:balance}
+#tutorial .tu-offer-k{font-style:italic;color:var(--aah)}
+#tutorial .tu-offer-b{display:flex;gap:8px}
+#tutorial .tu-offer-b .btn{flex:1 1 0;white-space:nowrap}
+#tutorial .tu-offer-no{background:transparent}
+@keyframes tu-in{from{opacity:0;transform:translateY(8px)}}
+@media (max-height:619px){
+  #tutorial .tu-offer{padding:8px 10px 10px}
+  #tutorial .tu-offer-t{margin-bottom:6px;font-size:var(--t-s)}
+}
+:root[data-contrast="high"] #tutorial .tu-offer{background:#000;border:2px solid var(--paper);box-shadow:none}
+
+/* ---------- reduced motion: no pulse, no glide ---------- */
+:root[data-motion="reduced"] #tutorial .tu-ring.act::after,
+:root[data-motion="reduced"] #tutorial .tu-rings.tu-nudge .tu-ring.act{animation:none;display:none}
+:root[data-motion="reduced"] #tutorial .tu-card,
+:root[data-motion="reduced"] #tutorial .tu-scrim{transition:none}
+:root[data-motion="reduced"] #tutorial .tu-offer{animation:none}
+@media (prefers-reduced-motion: reduce){
+  #tutorial .tu-ring.act::after{animation:none;display:none}
+  #tutorial .tu-card,#tutorial .tu-scrim{transition:none}
+}

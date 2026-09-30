@@ -1316,6 +1316,8 @@ button{cursor:pointer;touch-action:manipulation}
 #pause-menu .pm-tile{flex-direction:column;min-height:76px;gap:6px;padding:10px 4px;background:var(--wood);border-color:var(--wood-hi)}
 #pause-menu .pm-tile .m-ico{color:var(--aah);width:26px;height:26px}
 #pause-menu .pm-tile:hover{border-color:var(--brass)}
+#pause-menu .pm-tiles-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+#pause-menu .pm-tiles-4 .pm-tile{flex-direction:row;justify-content:flex-start;min-height:52px;gap:10px;padding:8px 12px}
 #pause-menu .pm-ticket{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 8px;
   padding:4px 6px 0 16px;border:1px dashed var(--brass);border-radius:var(--radius);background:var(--ink)}
 #pause-menu .pm-ticket-v{display:grid;min-width:0;padding-right:8px;border-right:1px dashed var(--brass)}
@@ -1525,6 +1527,13 @@ button{cursor:pointer;touch-action:manipulation}
 #help .hp-card li + li{border-top:1px dashed rgba(5,7,15,.3)}
 #help .hp-n{font-size:var(--t-xl);line-height:1;color:var(--wood)}
 #help .hp-sec h3{display:flex;align-items:center;gap:12px;margin:0 0 10px}
+#help .hp-tut{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:0 4px 20px;padding:12px 14px;border-radius:12px;
+  border:1px solid rgba(201,162,39,.6);background:radial-gradient(120% 90% at 0% 0%,rgba(242,193,78,.14),transparent 70%),var(--surface)}
+#help .hp-tut-t{flex:1 1 180px;margin:0;display:grid;gap:2px}
+#help .hp-tut-t .display-italic{font-size:var(--t-l);color:var(--aah)}
+#help .hp-tut-b{flex:1 1 auto;border-color:var(--brass);background:transparent;color:var(--aah)}
+#help .hp-tut-b:hover{background:rgba(242,193,78,.1)}
+#help .hp-tut-b .m-ico{width:20px;height:20px}
 #help .hp-sec + .hp-sec{margin-top:24px}
 #help .hp-gloss{margin:0}
 #help .hp-gloss > div{display:grid;grid-template-columns:7em minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
@@ -1588,6 +1597,124 @@ button{cursor:pointer;touch-action:manipulation}
 :root[data-contrast="high"] #settings .st-block{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
 :root[data-contrast="high"] #tap-continue .tc-moon{filter:none}
 :root[data-contrast="high"] #help .hp-card{box-shadow:0 0 0 2px var(--paper)}
+/* ==== tutorial.css ==== */
+/* ============================================================
+   tutorial.css — UI_TUTORIAL: #tutorial ("Rehearsal Night").
+   One layer over the play column, under every overlay (40+):
+   a scrim with cut-outs, brass rings on the lit controls, one
+   playbill-style callout card, and the first-launch offer.
+   The layer itself never takes a pointer; its cards do.
+============================================================ */
+#tutorial{position:absolute;inset:0;z-index:38;pointer-events:none;overflow:hidden}
+
+/* ---------- scrim with cut-outs ---------- */
+#tutorial .tu-scrim{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .22s var(--ease-out)}
+#tutorial .tu-scrim.on{opacity:1}
+#tutorial .tu-dim{fill:rgba(3,5,12,.66)}
+:root[data-contrast="high"] #tutorial .tu-dim{fill:rgba(0,0,0,.84)}
+
+/* ---------- rings on the lit controls ---------- */
+#tutorial .tu-rings{position:absolute;inset:0}
+#tutorial .tu-ring{position:absolute;border-radius:12px;pointer-events:none}
+#tutorial .tu-ring.act{box-shadow:0 0 0 2px var(--aah),0 0 0 5px rgba(204,121,167,.38),0 0 26px 6px rgba(242,193,78,.34)}
+#tutorial .tu-ring.act::after{content:"";position:absolute;inset:-2px;border-radius:inherit;box-shadow:0 0 0 2px var(--aah);
+  animation:tu-ring 1.6s var(--ease-out) infinite}
+#tutorial .tu-ring.show{box-shadow:0 0 0 1px rgba(242,193,78,.55),0 0 18px 2px rgba(204,121,167,.18)}
+#tutorial .tu-rings.tu-nudge .tu-ring.act{animation:tu-nudge .36s var(--ease-out)}
+@keyframes tu-ring{0%{opacity:.9;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.08)}}
+@keyframes tu-nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+:root[data-contrast="high"] #tutorial .tu-ring.act{box-shadow:0 0 0 3px var(--focus),0 0 0 6px #000}
+:root[data-contrast="high"] #tutorial .tu-ring.show{box-shadow:0 0 0 2px var(--paper)}
+
+/* ---------- the callout: a small playbill card ---------- */
+#tutorial .tu-card{position:absolute;left:0;top:0;pointer-events:auto;max-width:calc(100% - 24px);
+  padding:12px 16px 12px;border-radius:14px;color:var(--paper);
+  background:radial-gradient(120% 60% at 50% 0%,rgba(242,193,78,.14),transparent 64%),linear-gradient(var(--surface-2),var(--surface-2)),var(--bg);
+  border:1px solid var(--brass);
+  box-shadow:inset 0 0 0 3px var(--surface-2),inset 0 0 0 4px rgba(201,162,39,.3),0 18px 48px rgba(0,0,0,.6);
+  transition:transform .24s var(--ease-out)}
+#tutorial .tu-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-4px 0 2px}
+#tutorial .tu-prog{display:inline-flex;align-items:center;gap:8px;min-width:0}
+#tutorial .tu-eyebrow{display:none;white-space:nowrap;font:700 16px/1.2 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--brass)}
+#tutorial .tu-count{white-space:nowrap;font:700 16px/1 var(--f-ui);color:var(--paper-dim);font-variant-numeric:tabular-nums}
+#tutorial .tu-dots{display:inline-flex;gap:4px}
+#tutorial .tu-dots i{width:6px;height:6px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--paper-dim);opacity:.7}
+#tutorial .tu-dots i.done{background:var(--brass);box-shadow:none;opacity:1}
+#tutorial .tu-dots i.now{background:var(--aah);box-shadow:0 0 6px 1px rgba(242,193,78,.75);opacity:1;transform:scale(1.3)}
+#tutorial .tu-title{margin:0 0 4px;font:600 var(--t-l)/1.15 var(--f-display);font-optical-sizing:auto;text-wrap:balance;color:var(--paper)}
+#tutorial .tu-text{margin:0;font:400 var(--t-m)/1.4 var(--f-ui);text-wrap:pretty}
+#tutorial .tu-note{margin:6px 0 0;font:700 var(--t-s)/1.35 var(--f-ui);color:var(--aah)}
+#tutorial .tu-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px;margin-top:10px}
+/* Skip: a quiet text button in the header, 36 px tall with a 44 px hit area */
+#tutorial .tu-skip{position:relative;flex:none;min-height:36px;margin-right:-4px;padding:0 4px;border:0;background:none;color:var(--paper-dim);
+  font:700 var(--t-s)/1 var(--f-ui);text-decoration:underline;text-decoration-color:rgba(185,178,199,.45);text-underline-offset:4px}
+#tutorial .tu-skip::before{content:"";position:absolute;inset:-4px -2px}
+#tutorial .tu-skip:hover{color:var(--paper)}
+#tutorial .tu-next{min-width:96px}
+#tutorial .tu-show{border-color:var(--brass);background:transparent;color:var(--aah)}
+#tutorial .tu-alt{background:var(--wood);border-color:var(--wood-hi)}
+#tutorial .tu-card[data-phase="finish"] .tu-actions .btn{flex:1 1 auto}
+#tutorial .tu-card[data-phase="finish"] .tu-head{min-height:36px}
+#tutorial .tu-card[data-phase="watch"] .tu-title{font-size:var(--t-m);margin-bottom:2px}
+#tutorial .tu-card[data-phase="watch"] .tu-text{font-size:var(--t-s);color:var(--paper-dim)}
+#tutorial .tu-card.tu-ok{border-color:var(--ok)}
+#tutorial .tu-card.tu-ok .tu-title::after{content:" \2713";color:var(--ok)}
+/* the tail points at the control the card talks about */
+#tutorial .tu-tail{position:absolute;display:none;width:14px;height:14px;margin-left:-7px;background:var(--surface-2);
+  border:1px solid var(--brass);transform:rotate(45deg)}
+#tutorial .tu-tail.up{display:block;top:-8px;border-right:0;border-bottom:0}
+#tutorial .tu-tail.down{display:block;bottom:-8px;border-left:0;border-top:0}
+#tutorial .tu-tail.left,#tutorial .tu-tail.right{display:block;margin:-7px 0 0}
+#tutorial .tu-tail.left{left:-8px;border-right:0;border-top:0}
+#tutorial .tu-tail.right{right:-8px;border-left:0;border-bottom:0}
+#tutorial .tu-card.tu-ok .tu-tail{border-color:var(--ok)}
+@media (min-width:480px){ #tutorial .tu-card[data-phase="finish"] .tu-eyebrow{display:inline} }
+@media (max-width:400px){
+  #tutorial .tu-card{padding:10px 14px}
+  #tutorial .tu-title{font-size:20px}
+  #tutorial .tu-text{font-size:var(--t-s)}
+}
+@media (max-height:619px){
+  #tutorial .tu-card{padding:8px 14px 9px}
+  #tutorial .tu-head{margin:-4px 0 0}
+  #tutorial .tu-title{font-size:19px;margin-bottom:2px}
+  #tutorial .tu-text{font-size:var(--t-s);line-height:1.3;text-wrap:wrap}
+  #tutorial .tu-skip{min-height:32px}
+  #tutorial .tu-skip::before{inset:-6px -2px}
+  #tutorial .tu-actions{margin-top:6px}
+}
+:root[data-contrast="high"] #tutorial .tu-card{background:#000;border:2px solid var(--paper);box-shadow:none}
+:root[data-contrast="high"] #tutorial .tu-eyebrow{color:var(--aah)}
+:root[data-contrast="high"] #tutorial .tu-skip{color:var(--paper)}
+:root[data-contrast="high"] #tutorial .tu-tail{background:#000;border-color:var(--paper)}
+
+/* ---------- the first-launch offer (in the sky; the rest of the screen stays live) ---------- */
+#tutorial .tu-offer{position:absolute;left:0;top:0;pointer-events:auto;padding:10px 12px 12px;border-radius:14px;
+  background:linear-gradient(rgba(27,20,64,.94),rgba(11,16,38,.94));border:1px solid rgba(201,162,39,.75);
+  box-shadow:inset 0 0 0 3px rgba(27,20,64,.94),inset 0 0 0 4px rgba(201,162,39,.25),0 12px 32px rgba(0,0,0,.5);
+  animation:tu-in .32s var(--ease-out) both}
+#tutorial .tu-offer-t{margin:0 0 8px;font:600 var(--t-m)/1.25 var(--f-display);text-align:center;text-wrap:balance}
+#tutorial .tu-offer-k{font-style:italic;color:var(--aah)}
+#tutorial .tu-offer-b{display:flex;gap:8px}
+#tutorial .tu-offer-b .btn{flex:1 1 0;white-space:nowrap}
+#tutorial .tu-offer-no{background:transparent}
+@keyframes tu-in{from{opacity:0;transform:translateY(8px)}}
+@media (max-height:619px){
+  #tutorial .tu-offer{padding:8px 10px 10px}
+  #tutorial .tu-offer-t{margin-bottom:6px;font-size:var(--t-s)}
+}
+:root[data-contrast="high"] #tutorial .tu-offer{background:#000;border:2px solid var(--paper);box-shadow:none}
+
+/* ---------- reduced motion: no pulse, no glide ---------- */
+:root[data-motion="reduced"] #tutorial .tu-ring.act::after,
+:root[data-motion="reduced"] #tutorial .tu-rings.tu-nudge .tu-ring.act{animation:none;display:none}
+:root[data-motion="reduced"] #tutorial .tu-card,
+:root[data-motion="reduced"] #tutorial .tu-scrim{transition:none}
+:root[data-motion="reduced"] #tutorial .tu-offer{animation:none}
+@media (prefers-reduced-motion: reduce){
+  #tutorial .tu-ring.act::after{animation:none;display:none}
+  #tutorial .tu-card,#tutorial .tu-scrim{transition:none}
+}
 </style>
 <div id="app" data-ui="BOOT">
   <canvas id="backdrop" aria-hidden="true"></canvas>
@@ -1613,6 +1740,7 @@ button{cursor:pointer;touch-action:manipulation}
   <section id="help" class="overlay" role="dialog" aria-modal="true" aria-label="How to play" hidden></section>
   <section id="inspect" class="sheet" role="dialog" aria-modal="true" aria-label="Inspect" hidden></section>
   <div id="tap-continue" class="overlay" hidden></div>
+  <div id="tutorial" hidden></div>
   <div id="toasts" aria-hidden="true"></div>
   <pre id="debug" hidden></pre>
   <pre id="sim-out" hidden></pre>
@@ -1969,11 +2097,48 @@ function OohSim() {
   const MOODS = ['restless', 'hopeful', 'eager'];
   const MOOD_NAMES = { restless: 'Restless', hopeful: 'Hopeful', eager: 'Eager' };
 
+  // CONTRACT "Tutorial" (Rehearsal Night, spec §6.1): one step per instruction. `expect` completes the step (a list is
+  // a sequence of phases, each with its own `text`), `do` is the exact SIM action list that does it (the "Show me" path and tools/test-sim.mjs), `target` the CSS selectors to
+  // spotlight, and `state` says how the core enters the step: 'fresh' loads tutorialState(i); 'live' keeps the state
+  // the player's own actions made (it equals tutorialState(i) whenever the player did the step before). Tubes are
+  // 0-based in `expect` and `do`, 1-based in the text. Every number in the text is checked against the SIM.
+  const tubeSlot = i => ({ zone: 'tube', i });
+  const SWAP_TEXT = '✦ means two shells fuse when one fires right after the other. Drop Crossette on the Palm: it swaps in right after Strobe, and Palm moves to the Crate.';
+  const TUTORIAL = [
+    { id: 'fuse', title: 'Light the fuse', state: 'fresh', target: ['#fire'], expect: { type: 'result' }, do: [{ type: 'light' }],
+      text: 'Your rack holds three shells. Tap Light the fuse: the tubes fire left to right.' },
+    { id: 'applause', title: 'Ooh × Aah', state: 'live', target: ['#sky-overlay .res-card'], expect: { type: 'next' }, do: [],
+      text: 'Applause is Ooh × Aah: 50 × 3 = 150. It beat the target of 100, so the show passes.' },
+    { id: 'sky', title: 'The sky', state: 'live', target: ['button[data-tube="1"] .t-sees', 'button[data-tube="2"] .t-sees'], expect: { type: 'next' }, do: [],
+      text: 'Bursts hang in the sky for a while. Peony sees 1 burst still up, and Strobe sees 2. Some shells score more when more is up.' },
+    { id: 'buy', title: 'Buy a shell', state: 'live', target: ['button[data-card="1"]', 'button[data-tube="3"]'],
+      expect: { type: 'buy', card: 1, tube: 3 }, do: [{ type: 'buy', card: 1, to: tubeSlot(3) }],
+      text: 'Passing a show pays coins. Tap the Palm card, then tap the empty tube 4. The chips on the tube show what Palm adds there.' },
+    { id: 'order', title: 'Order matters', state: 'live', target: ['button[data-tube="3"]', 'button[data-tube="2"]'],
+      expect: { type: 'move', from: 3, to: 2 }, do: [{ type: 'move', from: tubeSlot(3), to: tubeSlot(2) }],
+      text: 'Palm is Red, so it adds 3 Aah when a Red burst is up. In tube 4 the Peony is already gone. Tap Palm, then tap tube 3 to fire it right after the Peony.' },
+    { id: 'payoff', title: 'Watch it pay off', state: 'live', target: ['#fire'], expect: { type: 'result' }, do: [{ type: 'light' }],
+      text: 'Light the fuse again and compare the Applause with the last show\'s 150.' },
+    { id: 'twins', title: 'Twins', state: 'fresh', target: ['button[data-card="0"]', 'button[data-tube="1"]'],
+      expect: { type: 'upgrade', card: 0, tube: 1 }, do: [{ type: 'upgrade', card: 0, to: tubeSlot(1) }],
+      text: 'Drop the Peony card on your Peony. Twins upgrade to ★2 and every number doubles.' },
+    // Two phases (an `expect` list, each with its own text): the swap-in, then the light that shows the fusion.
+    { id: 'swap', title: 'Fusions and swapping', state: 'live', target: ['button[data-card="1"]', 'button[data-tube="3"]', '#fire'],
+      expect: [{ type: 'buy', card: 1, tube: 3, displace: 'crate', text: SWAP_TEXT }, { type: 'fusion', key: 'strobe>crossette', text: 'Light the fuse to see the fusion.' }],
+      do: [{ type: 'buy', card: 1, to: tubeSlot(3), displace: 'crate' }, { type: 'light' }],
+      text: SWAP_TEXT },
+    { id: 'crate', title: 'The Crate and the Crowd', state: 'live', target: ['button[data-crate="0"]', '#hud .hud-crowd'], expect: { type: 'next' }, do: [],
+      text: 'Palm rests in the Crate. Crate shells don\'t fire; move them back any time. Every show you pass grows the Crowd, and the Crowd adds its size to Ooh.' },
+    { id: 'ready', title: 'Mood, Headliners and the rain check', state: 'live', target: ['#firebar .mood', '#hud .hud-head', '#hud .hud-rain'],
+      expect: { type: 'next' }, do: [], last: true,
+      text: 'The mood reads your rack against tonight\'s target. Every third show is a Headliner with a rule twist, announced a festival ahead. The umbrella is your rain check: you may miss one show per run. You\'re ready.' },
+  ];
+
   const DATA = {
     version: VERSION, TARGETS, AFTERPARTY_TARGETS, BASES, SHOW_MULTS, COUNTDOWN_R8, FESTIVALS, SHOW_NAMES,
     SHELLS, SHELL_IDS, ARCHETYPES, PATTERNS, FUSIONS, FUSION_KEYS, TECHNIQUES, RIGS, RIG_IDS,
     HEADLINERS, HEADLINER_IDS, RULE_INFO, TWISTS, KITS, KIT_IDS, SPONSORS, SPONSOR_KINDS, RENOWN,
-    MILESTONES, MILESTONE_IDS, LESSONS, TOOLTIPS, TOOLTIP_IDS, COLOURS, COL_IDS, RULES_CARD, GLOSSARY, RARITY, MOODS, MOOD_NAMES,
+    MILESTONES, MILESTONE_IDS, LESSONS, TOOLTIPS, TOOLTIP_IDS, COLOURS, COL_IDS, RULES_CARD, GLOSSARY, RARITY, MOODS, MOOD_NAMES, TUTORIAL,
   };
 
   /* ================================================================== 3 · SIM: resolver (spec §3) */
@@ -2372,6 +2537,42 @@ function OohSim() {
       S.crate[0] = { uid: S.nextUid++, id: ks.id, col, star: 1, paid: SH[ks.id].cost };
     }
     openBuild(S);
+    return S;
+  }
+
+  /* ================================================================== 3 · SIM: tutorial (CONTRACT "Tutorial", spec §6.1) */
+  // Rehearsal Night is one scripted run. It opens exactly like a first-ever run (show 1: Willow, Peony, Strobe; the curated
+  // show-2 shop with the Palm), and steps 1–6 are that run played as the text says. Step 7 opens a scripted show 4 (show 3,
+  // a Headwind Headliner, is left out: its dud would muddle the fusion lesson). Every state is a plain SIM state.
+  const TUTORIAL_SEED = 'rehearsal-night';
+  const TUTORIAL_SETUP = {
+    fuse: () => createState(TUTORIAL_SEED, { firstRun: true, kit: 'apprentice', unlocked: [], discovered: [], noSponsor: true }),
+    // Show 4 (May Fair, Twilight: no rule twist). The rack goes back to Willow, Peony, Strobe, Palm so that a Crossette
+    // dropped on the Palm fires right after the Strobe. The shop offers the Peony twin and the Crossette ($5 + $5 = $10).
+    twins: P => {
+      const own = id => ownedShells(P).find(x => x.id === id);
+      const card = (id, col) => ({ kind: 'shell', id, col, cost: SH[id].cost, tag: null, sold: false });
+      const S = P;
+      S.show = 3; S.phase = 'build';
+      S.tubes = ['willow', 'peony', 'strobe', 'palm'].map(id => ({ shell: own(id), rig: null }));
+      S.crate = [null, null];
+      S.coins = 10;
+      S.shop = { cards: [card('peony', 'R'), card('crossette', 'G'), card('comet', 'G')], rig: null, rerolls: 0 };
+      S.sponsor = null; S.lastOrder = null; S.dry = 0; S.rareNext = false;
+      S.runStats.buildStart = liteSnapshot(S);
+      S.mood = mood(S);
+      return S;
+    },
+  };
+  // The state at the start of step i: the previous step's state with its `do` actions played, or the step's own setup.
+  function tutorialState(i) {
+    const n = TUTORIAL.length;
+    i = Math.max(0, Math.min(n - 1, Math.floor(Number(i)) || 0));
+    let S = null;
+    for (let k = 0; k <= i; k++) {
+      if (k > 0) for (const a of TUTORIAL[k - 1].do) step(S, a);
+      if (TUTORIAL[k].state === 'fresh') S = TUTORIAL_SETUP[TUTORIAL[k].id](S);
+    }
     return S;
   }
 
@@ -3442,6 +3643,8 @@ function OohSim() {
     version: VERSION, DATA,
     // §11.4
     createState, step, legalActions, rulesFor, resolveShow, previewChips, mood, matchPerm, favourite, shapley, clone, hashState,
+    // CONTRACT "Tutorial"
+    tutorialState,
     // pure helpers (contract)
     target, baseTarget, fireOrder, seesPerTube, payoutPreview, nearMiss, nearMissAsync, lessonFor, milestoneProgress, nearestMilestones,
     fmt, fmtAah, describeShell, describeFusion, describeRule, inspectShell, shellLabel, colourName, showName, dailySeed,
@@ -5980,7 +6183,9 @@ const FX = (() => {
    - persistence (key oohxaah.v1), settings and meta (milestones,
      unlocks, Logbook, records, Renown, kits, keepsake, posters);
    - the overlay stack with focus trap, keyboard routing, lifecycle,
-     aria-live messages, haptics and the §11.6 hooks (window.__game).
+     aria-live messages, haptics and the §11.6 hooks (window.__game);
+   - the Rehearsal Night tutorial (startTutorial / tutorialGoto /
+     endTutorial): the run in progress is set aside in memory.
    Every call into OOH / FX / AUDIO / UI_* is guarded.
    GAME.state is always the live SIM state. After light() it is
    already post-show; 'change' is held back until the slam, and the
@@ -6009,6 +6214,8 @@ const GAME = (() => {
   const KIT_LOCK = {apprentice: null, salvo: 'm_busy', chemist: 'm_spectrum', market: 'm_rigger', showman: 'm_crowd'};
   const HAPTIC = {bought: 8, upgraded: 8, moved: 8, rigInstalled: 8, tubeAdded: 8, sold: 8, matched: 8,
     multAah: 15, fusion: [20, 30, 20], clear: 12, rainCheck: 40, relight: 20};
+  // Events the tutorial never emits: its bookkeeping lands in a scratch meta that is thrown away (CONTRACT "Tutorial").
+  const TUT_MUTED = ['meta', 'milestone', 'unlock', 'discover', 'toast', 'tip'];
   const DROP_TYPES = ['buy', 'upgrade', 'move', 'sell', 'buyRig', 'buyTube', 'reroll', 'sponsor', 'match', 'restore', 'setColour'];
 
   /* ---------- module state ---------- */
@@ -6022,6 +6229,7 @@ const GAME = (() => {
     lit: [], lastPreLight: null, runBest: {}, startProgress: {}, runUnlocks: [], counted: false,
     buildMs: 0, missPending: false, recordAtStart: 0, recordHit: false, posterAdded: false,
     lastChance: false, pendingToasts: [], tipQueue: [], tipShown: null, tipAt: 0, lastPay: null, heldProgress: null,
+    tut: null,   // the tutorial while it runs: {step, total, hasRun, saved: the run set aside + the real meta}
     layout: 'regular', gestured: false, unlocked: false, audioHeld: false, kickQueued: false, resizeQueued: false, ann: {polite: [], assertive: [], queued: false}, cache: {},
   };
 
@@ -6110,6 +6318,7 @@ const GAME = (() => {
     return () => { const l = S.listeners[name], i = l ? l.indexOf(fn) : -1; if (i >= 0) l.splice(i, 1); };
   }
   function emit(name, payload) {
+    if (S.tut && TUT_MUTED.includes(name)) return;
     const l = S.listeners[name];
     if (l) for (const fn of l.slice()) { try { fn(payload); } catch (e) { warn('listener ' + name, e); } }
     const w = S.listeners['*'];
@@ -6194,11 +6403,13 @@ const GAME = (() => {
     m.records.winsByKit = objOf(r.winsByKit, isInt);
     if (isInt(r.highestRenown)) m.records.highestRenown = r.highestRenown;
     if (Array.isArray(raw.posters)) m.posters = raw.posters.filter(isObj).slice(-5);
+    if (raw.tutorial === 'skipped' || raw.tutorial === 'done') m.tutorial = raw.tutorial;
     return m;
   }
   function setMeta(patch) {
     if (!isObj(patch)) return false;
     S.meta = cleanMeta({...S.meta, ...cloneJSON(patch)});
+    if (S.tut) S.tut.saved.meta = cleanMeta({...S.tut.saved.meta, ...cloneJSON(patch)});   // the scratch meta is thrown away at the end
     saveNow();
     emit('meta', {meta: S.meta});
     return true;
@@ -6229,10 +6440,16 @@ const GAME = (() => {
       best: S.runBest, startProgress: S.startProgress, unlocks: S.runUnlocks, missPending: S.missPending,
       recordAtStart: S.recordAtStart, recordHit: S.recordHit, posterAdded: S.posterAdded};
   }
-  const snapshot = () => ({v: 1, settings: {...S.settings, sfxVol: S.settings.soundVol}, meta: S.meta, run: runForSave()});
-  function saveNow() {
+  // While the tutorial runs, a save writes the settings and the real meta and keeps the stored run exactly as it is:
+  // the tutorial never writes a run save, meta progress, milestones, the Logbook or records.
+  function storedRun() {
+    try { const raw = localStorage.getItem(STORE_KEY); const o = raw ? JSON.parse(raw) : null; return isObj(o) && o.v === 1 && o.run !== undefined ? o.run : null; } catch (e) { return null; }
+  }
+  const snapshot = keepRun => ({v: 1, settings: {...S.settings, sfxVol: S.settings.soundVol},
+    meta: S.tut ? S.tut.saved.meta : S.meta, run: S.tut || keepRun ? storedRun() : runForSave()});
+  function saveNow(keepRun) {
     if (!S.booted || S.flags.fresh) return false;
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(snapshot())); return true; } catch (e) { return false; }
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(snapshot(keepRun === true))); return true; } catch (e) { return false; }
   }
   function validRun(r) {
     if (!isObj(r) || !isObj(r.state)) return false;
@@ -6250,6 +6467,7 @@ const GAME = (() => {
     let obj;
     try { obj = JSON.parse(decodeURIComponent(escape(atob(String(str || '').trim())))); } catch (e) { return false; }
     if (!isObj(obj) || obj.v !== 1) return false;
+    leaveTutorial();
     S.settings = cleanSettings(obj.settings);
     S.meta = cleanMeta(obj.meta);
     applySettings();
@@ -6261,6 +6479,7 @@ const GAME = (() => {
     return true;
   }
   function resetProgress() {
+    leaveTutorial();
     S.meta = defaultMeta();
     S.lastRun = null;
     emit('meta', {meta: S.meta});
@@ -6388,7 +6607,7 @@ const GAME = (() => {
     return st;
   }
   // Emit the run start and open its first build (the page is complete at rest).
-  function beginRun(restored) {
+  function beginRun(restored, extra) {
     setUI('BUILD');
     callFX('critical', isCritical());
     if (S.state) callFX('setSeed', S.state.seed);
@@ -6396,15 +6615,16 @@ const GAME = (() => {
     const bo = S.state ? safe(() => sim().describeBuild(S.state), null) : null;
     if (bo) callAudio('onEvent', bo);
     callAudio('setCrowd', S.state ? S.state.crowd : 0);
-    emit('runStart', {state: S.state, restored: !!restored});
+    emit('runStart', {state: S.state, restored: !!restored, ...(extra || {})});
     emit('change', {state: S.state});
     kick();
     codexScan(S.state);
     onBuildOpen();
-    if (!restored) saveNow();
+    if (!restored && !S.tut) saveNow();
   }
   function newRun(o = {}) {
     if (!isObj(o)) o = {};
+    leaveTutorial();
     const resolving = !!S.res;
     abortResolve();
     if (resolving) callFX('clearSky', {all: true});         // no popups / banners from the aborted show
@@ -6423,7 +6643,7 @@ const GAME = (() => {
     emit('meta', {meta: S.meta});
   }
   function abandon() {
-    if (!S.state || S.ui === 'END' || S.ui === 'BOOT') return false;
+    if (!S.state || S.ui === 'END' || S.ui === 'BOOT' || S.tut) return false;
     if (S.res) { completeNow(); callFX('clearSky', {all: true}); }
     if (S.ui === 'END' || S.state.phase !== 'build') return false;
     finalizeRun({abandoned: true});
@@ -6446,6 +6666,101 @@ const GAME = (() => {
     codexScan(S.state);
     onBuildOpen();
     saveNow();
+    return true;
+  }
+
+  /* ---------- the tutorial: Rehearsal Night (CONTRACT "Tutorial", spec §6.1) ----------
+     startTutorial() sets the run in progress aside in memory (never in storage) together with the real meta, and
+     gives the tutorial a scratch copy of the meta: its Logbook, records and milestone bookkeeping land there and
+     are thrown away. While it runs: no run save (a save keeps the stored run as it is), no finalizeRun and no END,
+     no tips, no toasts, and the meta-side events (TUT_MUTED) are muted; announce() still works. endTutorial()
+     puts the run back exactly as it was (or starts a new run) and records meta.tutorial. */
+  const RUN_KEYS = ['state', 'undo', 'rehearse', 'lit', 'lastPreLight', 'runBest', 'startProgress', 'runUnlocks', 'counted',
+    'buildMs', 'missPending', 'recordAtStart', 'recordHit', 'posterAdded', 'lastChance', 'pendingToasts', 'tipQueue',
+    'tipShown', 'tipAt', 'lastPay', 'heldProgress', 'runOpts', 'lastRun'];
+  const tutorialDefs = () => (Array.isArray(data().TUTORIAL) ? data().TUTORIAL : []);
+  const hashOf = st => safe(() => sim().hashState(st), null);
+  function emitTutorial() {
+    const t = S.tut, defs = tutorialDefs();
+    emit('tutorial', t ? {active: true, step: t.step, total: t.total, def: defs[t.step] || null, hasRun: t.hasRun}
+      : {active: false, step: -1, total: defs.length, def: null, hasRun: false});
+  }
+  // Load OOH.tutorialState(i) as the live state (ui BUILD), like a run start but with no save.
+  function tutLoad(i) {
+    const st = safe(() => sim().tutorialState(i), null);
+    if (!isObj(st)) return false;
+    if (S.res) abortResolve();
+    callFX('clearSky', {all: true});
+    closeAll();
+    resetRunFields();
+    S.recordAtStart = 0;   // no "new record" top tier from a scripted show
+    S.state = st;
+    beginRun(false, {tutorial: true});
+    return true;
+  }
+  function startTutorial() {
+    const defs = tutorialDefs();
+    if (!S.booted || !can(sim(), 'tutorialState') || !defs.length) return false;
+    if (S.tut) return tutorialGoto(0, {fresh: true});
+    if (S.res) completeNow();   // the show on screen finishes first; its bookkeeping was done at the light
+    dismissTip();
+    closeAll();
+    const saved = {meta: S.meta, ui: S.ui};
+    for (const k of RUN_KEYS) saved[k] = S[k];
+    S.tut = {step: 0, total: defs.length, hasRun: !!S.state && S.state.phase === 'build' && S.ui !== 'END', saved};
+    S.meta = cloneJSON(S.meta);
+    if (!tutLoad(0)) { leaveTutorial(); return false; }
+    emitTutorial();
+    return true;
+  }
+  // Enter step i. A 'live' step keeps the state the player's own actions made when it is the scripted one
+  // (same hashState as OOH.tutorialState(i)); otherwise, and for every 'fresh' step, the scripted state is loaded.
+  function tutorialGoto(i, o = {}) {
+    if (!S.tut) return false;
+    const defs = tutorialDefs();
+    i = Math.max(0, Math.min(defs.length - 1, Math.floor(Number(i)) || 0));
+    let keep = false;
+    if (defs[i].state === 'live' && !(isObj(o) && o.fresh) && S.state && S.state.phase === 'build') {
+      const want = safe(() => sim().tutorialState(i), null), h = want && hashOf(want);
+      keep = !!h && h === hashOf(S.state);
+    }
+    S.tut.step = i;
+    if (!keep) tutLoad(i);
+    emitTutorial();
+    return true;
+  }
+  // Put the run set aside back (its fields and the real meta) without presenting it; emits only 'tutorial' {active: false}.
+  function leaveTutorial() {
+    const t = S.tut;
+    if (!t) return null;
+    abortResolve();
+    callFX('clearSky', {all: true});
+    closeAll();
+    S.tut = null;
+    for (const k of RUN_KEYS) S[k] = t.saved[k];
+    S.meta = t.saved.meta;
+    emitTutorial();
+    return t;
+  }
+  // endTutorial({startRun, done}): done defaults to "on the last step". Finishing sets meta.tutorial = 'done'; leaving
+  // early sets 'skipped' unless it is already set. startRun starts a new run (a first run while meta.runs is 0);
+  // otherwise the run set aside comes back exactly as it was, or its end screen if it had ended.
+  function endTutorial(o = {}) {
+    if (!S.tut) return false;
+    if (!isObj(o)) o = {};
+    const t = S.tut, done = o.done != null ? !!o.done : t.step >= t.total - 1;
+    const meta = t.saved.meta;
+    meta.tutorial = done ? 'done' : meta.tutorial || 'skipped';
+    leaveTutorial();
+    saveNow(true);   // settings + meta only: the stored run stays the one from before the tutorial
+    emit('meta', {meta: S.meta});
+    if (o.startRun || !S.state) { newRun({}); return true; }
+    if (t.saved.ui === 'END') {
+      setUI('END');
+      emit('change', {state: S.state});
+      emit('runEnd', {won: !!(S.lastRun && S.lastRun.won), lastRun: S.lastRun});
+      if (top() !== 'end') open('end', {focus: '#run-it-back'});
+    } else beginRun(true);
     return true;
   }
 
@@ -6690,7 +7005,7 @@ const GAME = (() => {
     const imm = r.instant || !S.loopOn;
     if (S.state.phase !== 'build') {
       if (S.state.phase === 'lost' && !r.dimmed) callFX('dim');
-      after(imm ? 0 : ticks(S.state.phase === 'lost' ? 0.9 : 1.0), () => { if (S.res === r) { S.res = null; goEnd(); } });   // a win: the finale (~2.2 s) already played out before onDone
+      after(imm ? 0 : ticks(S.state.phase === 'lost' ? 0.9 : 1.0), () => { if (S.res === r) { S.res = null; endOrRescue(); } });   // a win: the finale (~2.2 s) already played out before onDone
     } else {
       after(imm ? 0 : Math.max(0, ticks(0.6) - (S.tick - r.slamTick)), () => { if (S.res === r) { S.res = null; toResult(r.buffer); } });
     }
@@ -6701,7 +7016,7 @@ const GAME = (() => {
     r.instant = true;
     if (r.handle && !r.done) { try { if (can(r.handle, 'skip')) r.handle.skip(); } catch (e) { warn('skip', e); } }
     chainDone(r.token);
-    if (S.res === r) { S.res = null; if (S.state.phase === 'build') toResult(r.buffer); else goEnd(); }
+    if (S.res === r) { S.res = null; if (S.state.phase === 'build') toResult(r.buffer); else endOrRescue(); }
   }
   function abortResolve() {
     if (!S.res) return;
@@ -6731,6 +7046,10 @@ const GAME = (() => {
     flushToasts();
     onBuildOpen();
     if (buffered) for (const b of buffered) if (b.until >= S.tick && (S.ui === 'RESULT' || S.ui === 'BUILD')) dispatch(b.action);
+  }
+  // The tutorial never reaches END: a show that ended the run (it cannot, by design) reloads the step's scripted state.
+  function endOrRescue() {
+    if (S.tut) { tutLoad(S.tut.step); emitTutorial(); } else goEnd();
   }
   function goEnd() {
     closeAll();
@@ -6805,7 +7124,7 @@ const GAME = (() => {
     if (st.phase === 'won') topTier = 'runWon';
     else if (pass && pre.show % 3 === 2) topTier = pre.show === 23 ? 'countdown' : 'headliner';
     else if (pass && record) topTier = 'record';
-    if (st.phase !== 'build') finalizeRun({});
+    if (st.phase !== 'build' && !S.tut) finalizeRun({});
     return {entry, summary, topTier};
   }
   function finalizeRun(o) {
@@ -7068,11 +7387,13 @@ const GAME = (() => {
     q.splice(i, 0, id);
   }
   function queueTip(id) {
+    if (S.tut) return;
     if (S.meta.seenTips.includes(id) || S.tipQueue.includes(id) || S.tipShown === id || !tipText(id)) return;
     enqueueTip(id);
   }
   // UI_PLAY's triggers. Returns true if the tip is now shown or queued.
   function tip(id) {
+    if (S.tut) return false;
     if (S.tipShown === id) return true;
     if (S.meta.seenTips.includes(id) || !tipText(id)) return false;
     S.tipQueue = S.tipQueue.filter(x => x !== id);
@@ -7092,7 +7413,7 @@ const GAME = (() => {
     return true;
   }
   function showNextTip() {
-    if (S.tipShown || !S.tipQueue.length || S.ui === 'RESOLVING' || S.ui === 'END') return;
+    if (S.tut || S.tipShown || !S.tipQueue.length || S.ui === 'RESOLVING' || S.ui === 'END') return;
     const st = S.state, k = S.tipQueue.findIndex(x => tipLive(x, st));
     if (k < 0) return;
     const id = S.tipQueue.splice(k, 1)[0];
@@ -7156,7 +7477,7 @@ const GAME = (() => {
     }
   }
   function toast(text, o = {}) {
-    if (!text) return;
+    if (!text || S.tut) return;
     const p = {text: String(text), kind: o.kind || 'info'};
     if (o.id) p.id = o.id;
     emit('toast', p);
@@ -7344,6 +7665,7 @@ const GAME = (() => {
     if (e.key === 'Escape') {
       e.preventDefault();
       if (t) { if (t.name !== 'end') close(t.name); }
+      else if (S.tut) endTutorial({startRun: false});
       else if (S.ui === 'BUILD' || S.ui === 'RESULT' || S.ui === 'RESOLVING') open('pause');
       return;
     }
@@ -7643,7 +7965,8 @@ const GAME = (() => {
     S.booted = true;
     // UI modules render into their containers.
     const mods = [typeof UI_PLAY !== 'undefined' ? UI_PLAY : null, typeof UI_PANELS !== 'undefined' ? UI_PANELS : null,
-      typeof UI_END !== 'undefined' ? UI_END : null, typeof UI_MENUS !== 'undefined' ? UI_MENUS : null];
+      typeof UI_END !== 'undefined' ? UI_END : null, typeof UI_MENUS !== 'undefined' ? UI_MENUS : null,
+      typeof UI_TUTORIAL !== 'undefined' ? UI_TUTORIAL : null];
     for (const m of mods) if (can(m, 'init')) { try { m.init(api); } catch (e) { console.error('[core] UI init', e); } }
     // Input and lifecycle.
     window.addEventListener('keydown', onKeyDown);
@@ -7688,6 +8011,8 @@ const GAME = (() => {
     get critical() { return {on: isCritical(), lastChance: S.lastChance}; },
     get layout() { return S.layout; },
     get lastLit() { return S.lit.length ? S.lit[S.lit.length - 1] : null; },
+    get tutorial() { return S.tut ? {step: S.tut.step, total: S.tut.total, hasRun: S.tut.hasRun} : null; },
+    startTutorial, tutorialGoto, endTutorial,
     boot, dispatch, undo, canUndo, light, fastForward, skip,
     newRun, abandon, enterAfterparty, startDaily, setKeepsake, setRehearse, dismissResult,
     setSetting, setMeta, saveNow, exportSave, importSave, resetProgress,
@@ -9620,8 +9945,10 @@ const UI_PLAY = (() => {
     t_match: '[data-act="match"]', t_rain: '.hud-rain', t_count: '.hud-head',
   };
   function seen(id) { const m = G.meta; return seenLocal.has(id) || !!(m && Array.isArray(m.seenTips) && m.seenTips.includes(id)); }
+  // Rehearsal Night (CONTRACT "Tutorial") queues no first-run tips and marks none as seen.
+  const tutorialOn = () => !!(G && safe(() => G.tutorial, null));
   function queueTip(id) {
-    if (!G || seen(id)) return;
+    if (!G || tutorialOn() || seen(id)) return;
     if (fnIn(G, 'tip')) { seenLocal.add(id); G.tip(id); return; }
     if ((tip && tip.id === id) || tipQueue.includes(id) || !tipText(id)) return;
     tipQueue.push(id);
@@ -9629,7 +9956,7 @@ const UI_PLAY = (() => {
   }
   // A tip this screen shows itself (in the sky), once ever, until the next action or the end of the hold.
   function showOwnTip(id) {
-    if (!G || seen(id) || !tipText(id)) return;
+    if (!G || tutorialOn() || seen(id) || !tipText(id)) return;
     tipQueue.length = 0;
     tipQueue.push(id);
     nextTip();
@@ -12042,6 +12369,7 @@ const UI_MENUS = (() => {
     lock: '<path d="M6 11h12v10H6zM9 11V7a3 3 0 0 1 6 0v4"/>',
     unlock: '<path d="M6 11h12v10H6zM9 11V7a3 3 0 0 1 5.8-1"/>',
     spark: '<path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/>',
+    rehearse: '<path d="M4 20V9l8-5 8 5v11M9 20v-6h6v6"/><path d="M12 7.5v2.5"/>',
     umbrella: '<path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9zM12 12v7a2 2 0 0 0 4 0"/>',
     // Headliners (§4.7 telegraph motifs)
     headwind: '<path d="M3 8h10a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h6"/>',
@@ -12257,7 +12585,8 @@ const UI_MENUS = (() => {
       h('header', { class: 'm-head pm-head' }, h('div', { class: 'm-titles' }, eyebrow('Intermission'), h('h2', { class: 'display', id: 'pause-menu-title' }, 'Paused'), P.where)),
       h('div', { class: 'm-body pm-body' },
         P.resume,
-        h('div', { class: 'pm-tiles' }, tile('pause-settings', 'gear', 'Settings', 'settings'), tile('pause-logbook', 'book', 'Logbook', 'logbook'), tile('pause-help', 'help', 'Help', 'help')),
+        h('div', { class: 'pm-tiles' + (can(G, 'startTutorial') ? ' pm-tiles-4' : '') }, tile('pause-settings', 'gear', 'Settings', 'settings'), tile('pause-logbook', 'book', 'Logbook', 'logbook'), tile('pause-help', 'help', 'Help', 'help'),
+          can(G, 'startTutorial') ? h('button', { type: 'button', id: 'pause-tutorial', class: 'btn pm-tile', onclick: startTutorial }, icon('rehearse'), h('span', null, 'Tutorial')) : null),
         h('div', { class: 'pm-ticket' }, h('div', { class: 'pm-ticket-v' }, h('label', { for: 'pause-seed', class: 'pm-ticket-k' }, 'Seed'), P.seed), P.copy, P.copyNote),
         P.tags,
         P.abandon));
@@ -12288,6 +12617,12 @@ const UI_MENUS = (() => {
     P.tags.replaceChildren(...tags.map((t) => h('span', { class: 'chip pm-chip' }, t)));
     P.abandon.hidden = !(st.phase === 'build' && G.ui !== 'END');
     if (!keepArmed) P.abandon._disarm();
+  }
+
+  // Help and Pause both start "Rehearsal Night": close the menus first, then the core sets the run aside.
+  function startTutorial() {
+    for (let n = 0; n < 8 && call(G, 'top') && call(G, 'top') !== 'end'; n++) call(G, 'close');
+    call(G, 'startTutorial');
   }
 
   /* ======================================================================
@@ -12783,7 +13118,11 @@ const UI_MENUS = (() => {
     let rules = DATA().RULES_CARD;
     rules = Array.isArray(rules) ? rules : typeof rules === 'string' ? rules.split(/\n+/).map((s) => s.replace(/^\s*\d+[.)]\s*/, '')).filter(Boolean) : [];
     const gl = rows(DATA().GLOSSARY).map((g) => Array.isArray(g) ? g : [g.term || g.id || g.name, g.meaning || g.text || g.def]).filter((g) => g[0]);
+    const tut = can(G, 'startTutorial') ? h('div', { class: 'hp-tut' },
+      h('p', { class: 'hp-tut-t' }, h('span', { class: 'display-italic' }, 'Rehearsal Night'), h('span', null, 'Learn by playing, in about 2 minutes.')),
+      h('button', { type: 'button', id: 'help-tutorial', class: 'btn hp-tut-b', onclick: startTutorial }, icon('rehearse'), h('span', null, 'Play the tutorial'))) : null;
     const body = h('div', { class: 'm-body hp-body', tabindex: '0', role: 'region', 'aria-label': 'Rules, glossary and keys' },
+      tut,
       h('ol', { class: 'hp-card', 'aria-label': 'The rules' }, rules.slice(0, 3).map((t, i) => h('li', null, h('span', { class: 'hp-n display-italic', 'aria-hidden': 'true' }, String(i + 1)), h('span', null, t)))),
       gl.length ? h('section', { class: 'hp-sec', 'aria-labelledby': 'hp-gl' }, h('h3', { class: 'display', id: 'hp-gl' }, h('span', null, 'Glossary'), rule()),
         h('dl', { class: 'hp-gloss' }, gl.map(([t, d]) => h('div', null, h('dt', null, t), h('dd', null, d))))) : null,
@@ -12833,7 +13172,8 @@ const UI_MENUS = (() => {
   // Held: not at the play screen (a show, the end, boot) or something is open over it.
   function toastsHeld() {
     const app = $('app'), ui = app ? app.dataset.ui : '';
-    return (ui !== 'BUILD' && ui !== 'RESULT') || !!topName() || document.hidden;
+    // Rehearsal Night shows no toasts: any queued from the run set aside wait for its return.
+    return (ui !== 'BUILD' && ui !== 'RESULT') || !!topName() || document.hidden || !!(G && G.tutorial);
   }
   function kick() {
     if (!T.raf && (T.cur || T.q.length)) T.raf = requestAnimationFrame(toastFrame);
@@ -13065,6 +13405,8 @@ const UI_MENUS = (() => {
     call(G, 'on', 'tipDone', tipDone);
     call(G, 'on', 'resize', () => { requeue(); kick(); if (isOpen('logbook')) tabEdges(); });
     call(G, 'on', 'ui', kick);
+    // Rehearsal Night starts: the toast on screen (or fading out) leaves at once; the queue waits for the run's return.
+    call(G, 'on', 'tutorial', (p) => { if (p && p.active) { requeue(); const box = $('toasts'); if (box) box.replaceChildren(); } kick(); });
     const settled = (e) => { if ((T.cur || T.q.length) && e.target && e.target.closest && e.target.closest('#sky-wrap, #sponsor, #hud')) kick(); };
     if ($('play')) for (const ev of ['transitionend', 'animationend']) $('play').addEventListener(ev, settled, { passive: true });
     call(G, 'on', 'change', kick);
@@ -13093,6 +13435,834 @@ const UI_MENUS = (() => {
   }
 
   return { init, toast, openLogbook, renderLogbook: () => { if (L.panel) renderLogbook(); }, syncSettings };
+})();
+// ==== ui-tutorial.js ====
+/* ============================================================
+   ui-tutorial.js — UI_TUTORIAL: "Rehearsal Night", the optional
+   2-minute tutorial (CONTRACT.md, last section).
+   Renders into #tutorial:
+     - the coach-mark layer: a scrim with cut-outs, a brass ring on
+       each spotlit control, and one callout card (title, text,
+       progress, Next / Show me / Skip tutorial);
+     - the first-launch offer ("New here? …"), a small card in the
+       sky that never blocks play.
+   Reads GAME.tutorial and the 'tutorial' event; advances with
+   GAME.tutorialGoto(i); exits with GAME.endTutorial({startRun}).
+   Step text comes from OOH.DATA.TUTORIAL (one table); this module
+   only decides where to point and what input to let through.
+============================================================ */
+const UI_TUTORIAL = (() => {
+  let G = null;
+  const E = {};
+  const HELP_MS = 8000;          // "Show me" / Next fallback delay
+  const BEAT_MS = 650;           // the tick of success before the next step loads
+  const T = {
+    active: false, step: -1, total: 0, def: null, xs: [], phase: 0,
+    watching: false,             // a show is playing: the callout steps aside, no scrim
+    satisfied: false,            // the show's expectation was met: advance when RESULT opens
+    fusionSeen: false, fusion: null,   // the fusion event the 'fusion' phase is waiting for
+    hold: false,                 // expectation met, waiting on Next (a recap is showing)
+    beat: 0, help: false, helpTimer: 0, nudge: '',
+    aside: false, asideGuess: false, results: [], runTouched: false, stuck: false, reverting: false,
+    offerGone: false, offerKey: '',
+    raf: 0, key: '', lastFocusPhase: '',
+  };
+
+  /* ---------- small helpers ---------- */
+  const fnIn = (o, k) => !!o && typeof o[k] === 'function';
+  const safe = (fn, d) => { try { const v = fn(); return v === undefined ? d : v; } catch (e) { return d; } };
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+  const sim = () => (typeof OOH !== 'undefined' ? OOH : null);
+  const defs = () => { const d = safe(() => sim().DATA.TUTORIAL, null); return Array.isArray(d) ? d : []; };
+  const num = n => safe(() => String(sim().fmt(n)), String(Math.floor(Number(n) || 0)));
+  const announce = t => { if (fnIn(G, 'announce')) safe(() => G.announce(t)); };
+  const ui = () => (G && G.ui) || 'BOOT';
+  const building = () => ui() === 'BUILD' || ui() === 'RESULT';
+  const topOverlay = () => (fnIn(G, 'top') ? safe(() => G.top(), null) : null);
+  const reduced = () => !!(G && G.reducedMotion);
+  const slotOf = v => (v == null ? null : typeof v === 'number' ? { zone: 'tube', i: v } : v);
+  const sameSlot = (a, b) => !!a && !!b && (a.zone || 'tube') === (b.zone || 'tube') && a.i === b.i;
+  const visible = el => { if (!el || !el.isConnected || el.closest('[hidden]')) return false; const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+  const tubeEl = i => (i == null ? null : $(`#rack [data-tube="${i}"]`));
+  const cardEl = i => (i == null ? null : $(`#shop [data-card="${i}"]`));
+
+  /* ---------- step model ---------- */
+  // A step's `expect` may be one expectation or a short sequence (an array, or {…, then:[…]}).
+  // Each expectation may carry its own `text` for its phase.
+  function expectsOf(def) {
+    const x = def && def.expect;
+    if (Array.isArray(x)) return x.length ? x : [{ type: 'next' }];
+    if (x && Array.isArray(x.then)) return [x, ...x.then];
+    return [x || { type: 'next' }];
+  }
+  const X = () => T.xs[Math.min(T.phase, T.xs.length - 1)] || { type: 'next' };
+  const isShowX = x => x && (x.type === 'light' || x.type === 'result' || x.type === 'fusion');
+  const isLast = () => !!(T.def && T.def.last) || T.step >= T.total - 1;
+  // The live numbers any step text may quote: {ooh} {aah} {applause} {target} {first}.
+  function fill(s) {
+    const r = T.results[T.results.length - 1] || {}, f = T.results[0] || {};
+    return String(s || '').replace(/\{(ooh|aah|applause|target|first)\}/g, (m, k) =>
+      k === 'first' ? (f.applause != null ? num(f.applause) : m) : r[k] != null ? (k === 'aah' ? String(r.aah) : num(r[k])) : m);
+  }
+  function tubeOfShell(id) {
+    const st = G && G.state, tubes = (st && st.tubes) || [];
+    for (let i = 0; i < tubes.length; i++) if (tubes[i] && tubes[i].shell && tubes[i].shell.id === id) return i;
+    return null;
+  }
+  function cardOfShell(id) {
+    const cards = safe(() => G.state.shop.cards, []) || [];
+    for (let i = 0; i < cards.length; i++) if (cards[i] && cards[i].id === id && !cards[i].sold) return i;
+    return null;
+  }
+  // Normalised expectation: {type, card, tube, from, to, displace, id, key}
+  function norm(x) {
+    const o = { ...x };
+    if (o.type === 'buy' || o.type === 'upgrade') {
+      if (o.tube == null && o.to != null) o.tube = slotOf(o.to).i;
+      if (o.card == null && o.id) o.card = cardOfShell(o.id);
+    }
+    if (o.type === 'move') {
+      o.to = slotOf(o.to);
+      o.from = slotOf(o.from);
+      if (!o.from && o.id) { const i = tubeOfShell(o.id); if (i != null) o.from = { zone: 'tube', i }; }
+    }
+    return o;
+  }
+
+  /* ---------- which controls to spotlight ---------- */
+  // Steps that only explain (expect 'next') point at what they explain. A def may name its own
+  // selectors in `spot`; otherwise its id/title picks a row here.
+  function crateSel() {
+    const c = safe(() => G.state.crate, []) || [];
+    const k = c.findIndex(Boolean);
+    return `#tools [data-crate="${k < 0 ? 0 : k}"]`;
+  }
+  const SPOT = [
+    [/result|ooh|applause|score/i, () => ['#sky-overlay .res-card']],
+    [/sky|sees|hang/i, () => ['#rack .t-sees']],
+    [/crate|crowd/i, () => [crateSel(), '#hud [data-hud="crowd"]']],
+    [/mood|headliner|rain|ready|finish/i, () => ['#firebar .mood', '#hud [data-hud="head"]', '#hud [data-hud="rain"]']],
+  ];
+  function spotFor(def) {
+    if (def && Array.isArray(def.target) && def.target.length) return def.target;
+    if (def && Array.isArray(def.spot)) return def.spot;
+    const key = ((def && def.id) || '') + ' ' + ((def && def.title) || '');
+    for (const [re, f] of SPOT) if (re.test(key)) return f();
+    return [];
+  }
+  // A positioned wrapper much larger than its one visible child (the result card's frame) lights the child instead.
+  function tighten(el) {
+    const kids = [...el.children].filter(visible);
+    if (kids.length !== 1 || el.tagName === 'BUTTON' || [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return el;
+    if (safe(() => getComputedStyle(el).position, '') !== 'absolute') return el;
+    const a = el.getBoundingClientRect(), b = kids[0].getBoundingClientRect();
+    return b.width * b.height < 0.6 * a.width * a.height ? kids[0] : el;
+  }
+  const els = list => {
+    const out = [];
+    for (const s of list) {
+      if (!s) continue;
+      const found = typeof s === 'string' ? safe(() => $$(s), []) : [s];
+      for (let el of found) {
+        if (!visible(el) || !(el.childElementCount || el.textContent.trim() || el.tagName === 'BUTTON')) continue;
+        el = tighten(el);
+        if (!out.includes(el)) out.push(el);
+      }
+    }
+    return out;
+  };
+  // {act: elements the player may use, show: elements lit for reading, avoid: extra rects the callout keeps clear of}
+  function view() {
+    if (!T.active) return null;
+    if (T.watching) return { act: [], show: [], avoid: els(['#sky-wrap', '#rack', '#firebar']), dim: false, phase: 'watch' };
+    if (T.hold) return { act: [], show: els(['#sky-overlay .res-card']), avoid: [], dim: true, phase: 'hold' };
+    const x = norm(X());
+    if (isShowX(x)) return { act: els(['#fire']), show: [], avoid: [], dim: true, phase: 'fire' };
+    if ((x.type === 'buy' || x.type === 'upgrade') && !cardEl(x.card) || x.type === 'move' && !(x.from && tubeEl(x.from.i))) {
+      const t = els(spotFor(T.def));      // the step names its own controls
+      if (t.length) return { act: t, show: [], avoid: [], dim: true, phase: 'pick' };
+    }
+    if (x.type === 'buy' || x.type === 'upgrade') {
+      const card = cardEl(x.card), tube = tubeEl(x.tube);
+      const cards = card ? [card] : $$('#shop [data-card]').filter(b => !b.disabled);
+      const held = cards.some(b => b.classList.contains('sel'));
+      const tubes = tube ? [tube] : $$('#rack [data-tube]');
+      return held ? { act: els([...cards, ...tubes]), show: els(['#rack .tubes']), avoid: [], dim: true, phase: 'drop' }
+        : { act: els(cards), show: els(tubes), avoid: [], dim: true, phase: 'pick' };
+    }
+    if (x.type === 'move') {
+      const from = x.from ? tubeEl(x.from.i) : null, to = x.to ? tubeEl(x.to.i) : null;
+      const froms = from ? [from] : $$('#rack [data-tube]');
+      const held = froms.some(b => b.classList.contains('sel'));
+      return held ? { act: els([...froms, to || $$('#rack [data-tube]')].flat()), show: [], avoid: [], dim: true, phase: 'drop' }
+        : { act: els(froms), show: els([to]), avoid: [], dim: true, phase: 'pick' };
+    }
+    if (isLast()) return { act: [], show: els(spotFor(T.def)), avoid: [], dim: true, phase: 'finish' };
+    return { act: [], show: els(spotFor(T.def)), avoid: [], dim: true, phase: 'next' };
+  }
+
+  /* ---------- DOM ---------- */
+  function build() {
+    const root = E.root = document.getElementById('tutorial');
+    if (!root) return false;
+    root.hidden = false;
+    root.innerHTML =
+      '<svg class="tu-scrim" aria-hidden="true" focusable="false"><defs><mask id="tu-mask" maskUnits="userSpaceOnUse">' +
+        '<rect class="tu-m-all" x="0" y="0" width="100%" height="100%" fill="#fff"/><g class="tu-holes"></g></mask></defs>' +
+        '<rect class="tu-dim" x="0" y="0" width="100%" height="100%" mask="url(#tu-mask)"/></svg>' +
+      '<div class="tu-rings" aria-hidden="true"></div>' +
+      '<section class="tu-card" role="group" aria-roledescription="tutorial step" aria-labelledby="tu-title" aria-describedby="tu-text" hidden>' +
+        '<i class="tu-tail" aria-hidden="true"></i>' +
+        '<header class="tu-head"><span class="tu-prog"><span class="tu-eyebrow">Rehearsal Night</span>' +
+          '<span class="tu-dots" aria-hidden="true"></span><span class="tu-count num"></span></span>' +
+          '<button type="button" class="tu-skip" data-tu="skip" aria-keyshortcuts="Escape">Skip tutorial</button></header>' +
+        '<h2 id="tu-title" class="tu-title"></h2>' +
+        '<p id="tu-text" class="tu-text"></p>' +
+        '<p class="tu-note" hidden></p>' +
+        '<div class="tu-actions" hidden>' +
+          '<button type="button" class="btn tu-show" data-tu="show" hidden>Show me</button>' +
+          '<button type="button" class="btn tu-alt" data-tu="back" hidden>Start a new run</button>' +
+          '<button type="button" class="btn btn-primary tu-next" data-tu="next" hidden>Next</button>' +
+        '</div>' +
+      '</section>' +
+      '<section class="tu-offer" aria-labelledby="tu-offer-t" hidden>' +
+        '<p id="tu-offer-t" class="tu-offer-t"><span class="tu-offer-k">New here?</span> Play the 2-minute tutorial</p>' +
+        '<div class="tu-offer-b">' +
+          '<button type="button" class="btn btn-primary" data-tu="offer-play">Play tutorial</button>' +
+          '<button type="button" class="btn tu-offer-no" data-tu="offer-no">No thanks</button>' +
+        '</div>' +
+      '</section>';
+    E.scrim = $('.tu-scrim', root); E.holes = $('.tu-holes', root);
+    E.rings = $('.tu-rings', root);
+    E.card = $('.tu-card', root); E.tail = $('.tu-tail', root);
+    E.dots = $('.tu-dots', root); E.count = $('.tu-count', root);
+    E.title = $('.tu-title', root); E.text = $('.tu-text', root); E.note = $('.tu-note', root);
+    E.skip = $('[data-tu="skip"]', root); E.show = $('[data-tu="show"]', root);
+    E.back = $('[data-tu="back"]', root); E.next = $('[data-tu="next"]', root);
+    E.offer = $('.tu-offer', root);
+    E.actions = $('.tu-actions', root);
+    root.addEventListener('click', onOwnClick);
+    window.addEventListener('keydown', gateKey, true);
+    return true;
+  }
+
+  function onOwnClick(e) {
+    const b = e.target instanceof Element ? e.target.closest('[data-tu]') : null;
+    if (!b) return;
+    const k = b.dataset.tu;
+    if (k === 'skip') return skipTutorial();
+    if (k === 'next') return onNext();
+    if (k === 'back') return finish(true);
+    if (k === 'show') return showMe();
+    if (k === 'offer-play') return start();
+    if (k === 'offer-no') return declineOffer();
+  }
+
+  /* ---------- callout content ---------- */
+  function renderCard() {
+    if (!E.card) return;
+    const def = T.def || {}, x = X();
+    const n = T.total || defs().length || 1, i = Math.max(0, T.step);
+    let dots = '';
+    for (let j = 0; j < n; j++) dots += `<i class="${j < i ? 'done' : j === i ? 'now' : ''}"></i>`;
+    E.dots.innerHTML = dots;
+    E.count.textContent = `${i + 1} / ${n}`;
+    E.title.textContent = fill(def.title || '');
+    let text = fill((x && x.text) || def.text || '');
+    if (T.watching) text = T.satisfied ? 'That was it. Here comes the result.' : 'Watch the sky. Each burst adds its Ooh and Aah.';
+    if (T.hold) text = holdText();
+    E.text.textContent = text;
+    E.note.hidden = !T.nudge;
+    E.note.textContent = T.nudge;
+    const x0 = norm(x);
+    const finishing = isLast() && x0.type === 'next' && !T.watching;
+    const isNext = (x0.type === 'next' && !finishing) || T.hold;
+    const stuck = !T.watching && (T.stuck || (T.help && !isNext && !finishing && !canDo(x0)));
+    E.next.hidden = !(isNext || finishing || stuck);
+    E.next.textContent = finishing ? (T.aside ? 'Back to my run' : startLabel()) : 'Next';
+    E.back.textContent = startLabel();
+    E.back.hidden = !(finishing && T.aside);
+    E.show.hidden = !(T.help && !stuck && !T.watching && !T.hold && !isNext && !finishing && canDo(x0));
+    E.skip.hidden = finishing;
+    E.actions.hidden = E.show.hidden && E.back.hidden && E.next.hidden;
+    E.card.dataset.phase = T.watching ? 'watch' : finishing ? 'finish' : isNext ? 'next' : 'do';
+    E.card.classList.toggle('tu-ok', !!T.beat);
+    E.card.hidden = false;
+    T.key = '';   // re-place
+    if (testMode()) loop();
+  }
+  function holdText() {
+    const r = T.results[T.results.length - 1], f = T.results[0];
+    if (!r) return 'Nice.';
+    const fu = X().type === 'fusion' && T.fusion;
+    if (fu) {
+      const nm = id => safe(() => G.label.shell(id), '') || id;
+      const [a, b] = String(fu.key || '').split('>');
+      const how = r.pass ? 'beat' : 'against';
+      return `${a && b ? `${nm(a)} and ${nm(b)} fused into a ${fu.name}.` : `${fu.name}!`} Applause ${num(r.applause)} ${how} the target of ${num(r.target)}.`;
+    }
+    if (f && f !== r && r.applause > f.applause) return `Applause ${num(r.applause)}, up from ${num(f.applause)} in your first show.`;
+    return `Applause ${num(r.applause)} against a target of ${num(r.target)}.`;
+  }
+  function startLabel() {
+    const runs = safe(() => G.meta.runs, 0) || 0;
+    return runs === 0 && !T.aside ? 'Start your first run' : 'Start a new run';
+  }
+
+  /* ---------- stepping ---------- */
+  function onTutorialEvent(p) {
+    if (!p || !p.active) return teardown();
+    const step = Number.isInteger(p.step) ? p.step : safe(() => G.tutorial.step, 0);
+    const def = p.def || defs()[step] || null;
+    const total = safe(() => G.tutorial.total, 0) || (p.total | 0) || defs().length || 1;
+    if (!T.active) begin();
+    setStep(step, def, total);
+  }
+  function begin() {
+    T.active = true;
+    T.results = [];
+    T.offerGone = true;
+    // "Back to my run" when there is a run to go back to (the core's hasRun). A brand-new player's untouched first
+    // run does not count ("Start your first run" makes the same run); any run of a returning player does.
+    const t = safe(() => G.tutorial, null) || {}, ta = t.aside != null ? t.aside : t.hasRun;
+    const veteran = (safe(() => G.meta.runs, 0) | 0) > 0;
+    T.aside = typeof ta === 'boolean' ? ta && (T.asideGuess || veteran) : T.asideGuess;
+    E.root.dataset.on = '1';
+    document.getElementById('app')?.setAttribute('data-tutorial', 'on');
+    E.offer.hidden = true;
+    addGates();
+    loop();
+  }
+  function setStep(step, def, total) {
+    clearTimeout(T.helpTimer); clearTimeout(T.beat); T.beat = 0;
+    // a card or shell still held from the last step is put down
+    if (fnIn(UI_PLAY_ref(), 'clearSelection')) safe(() => UI_PLAY_ref().clearSelection());
+    T.step = step; T.def = def; T.total = total;
+    T.xs = expectsOf(def); T.phase = 0;
+    T.satisfied = false; T.fusionSeen = false; T.fusion = null; T.hold = false; T.help = false; T.stuck = false; T.nudge = '';
+    T.watching = ui() === 'RESOLVING';
+    T.lastFocusPhase = '';
+    renderCard();
+    armHelp();
+    const x = norm(X());
+    announce(`Tutorial, step ${step + 1} of ${total}. ${fill(def && def.title || '')}. ${fill((x && x.text) || (def && def.text) || '')}`);
+    requestAnimationFrame(() => focusNow(true));
+  }
+  function nextPhase() {
+    T.phase++;
+    T.satisfied = false; T.fusionSeen = false; T.fusion = null; T.help = false; T.stuck = false; T.nudge = '';
+    T.watching = ui() === 'RESOLVING';
+    T.lastFocusPhase = '';
+    renderCard();
+    armHelp();
+    const x = X();
+    if (x && x.text) announce(fill(x.text));
+    requestAnimationFrame(() => focusNow(true));
+  }
+  function armHelp() {
+    clearTimeout(T.helpTimer);
+    const x = X();
+    if (!x || x.type === 'next') return;
+    T.helpTimer = setTimeout(() => { if (!T.active || T.watching || T.hold) return; T.help = true; renderCard(); }, HELP_MS);
+  }
+  function goto(i) {
+    if (!T.active) return;
+    if (i >= T.total) return finish(false);
+    if (fnIn(G, 'tutorialGoto')) safe(() => G.tutorialGoto(i));
+  }
+  // The expectation of the current phase has happened.
+  function satisfied() {
+    clearTimeout(T.helpTimer);
+    T.help = false; T.nudge = '';
+    if (T.phase < T.xs.length - 1) {
+      T.beat = setTimeout(() => { T.beat = 0; nextPhase(); }, reduced() ? 0 : BEAT_MS / 2);
+      E.card && E.card.classList.add('tu-ok');
+      return;
+    }
+    const nd = defs()[T.step + 1];
+    const showStep = isShowX(norm(X()));
+    // A show that ends the step: hold on its result (with a recap and Next) unless the next step explains it anyway.
+    // A fusion show always holds: the next step moves on to other things, and the recap names the fusion.
+    if (showStep && nd && (X().type === 'fusion' || (expectsOf(nd)[0] && expectsOf(nd)[0].type !== 'next'))) {
+      T.hold = true;
+      renderCard();
+      announce(holdText());
+      requestAnimationFrame(() => focusNow(true));
+      return;
+    }
+    E.card && E.card.classList.add('tu-ok');
+    T.beat = setTimeout(() => { T.beat = 0; goto(T.step + 1); }, showStep || reduced() ? 0 : BEAT_MS);
+  }
+  function onNext() {
+    if (!T.active) return;
+    const x = norm(X());
+    if (isLast() && x.type === 'next' && !T.hold) return finish(!T.aside);
+    goto(T.step + 1);
+  }
+  // Can the current phase's action still be done on the live state? A step's own `do` list wins.
+  // Legality is asked of the SIM itself (a step on a copy), so a swap-in (`displace`) counts too.
+  function legalNow(a) {
+    const st = G && G.state;
+    if (!a || !st) return false;
+    if (a.type === 'light') return building() && st.phase === 'build';
+    if (!building()) return false;
+    const ev = safe(() => sim().step(sim().clone(st), a), null);
+    return Array.isArray(ev) && !(ev[0] && ev[0].type === 'illegal');
+  }
+  function actionFor(x) {
+    const d = T.def && Array.isArray(T.def.do) ? T.def.do : [];
+    const own = d.length === T.xs.length ? d[T.phase] : T.xs.length === 1 ? d[0] : null;   // `do` runs phase by phase
+    if (own && legalNow(own)) return own;
+    const to = x.tube != null ? { zone: 'tube', i: x.tube } : null;
+    let a = null;
+    if (isShowX(x)) a = { type: 'light' };
+    else if (x.type === 'buy' && x.card != null && to) a = { type: 'buy', card: x.card, to, ...(x.displace ? { displace: x.displace } : {}) };
+    else if (x.type === 'upgrade' && x.card != null && to) a = { type: 'upgrade', card: x.card, to };
+    else if (x.type === 'move' && x.from && x.to) a = { type: 'move', from: x.from, to: x.to };
+    return legalNow(a) ? a : null;
+  }
+  const canDo = x => !!actionFor(x);
+  function showMe() {
+    const x = norm(X()), a = actionFor(x);
+    if (!a) { renderCard(); return; }
+    if (fnIn(UI_PLAY_ref(), 'clearSelection')) safe(() => UI_PLAY_ref().clearSelection());
+    if (a.type === 'light') { if (fnIn(G, 'light')) G.light(); return; }
+    if (fnIn(G, 'dispatch')) G.dispatch(a);
+  }
+  const UI_PLAY_ref = () => (typeof UI_PLAY !== 'undefined' ? UI_PLAY : null);
+
+  /* ---------- matching GAME events ---------- */
+  function matchSim(x, events) {
+    for (const e of events || []) {
+      if (!e) continue;
+      if (x.type === 'buy' && e.type === 'bought' && (x.card == null || e.card === x.card) &&
+        (x.tube == null || (e.to && e.to.zone === 'tube' && e.to.i === x.tube)) && (!x.displace || e.displace === x.displace) && (!x.id || e.id === x.id)) return true;
+      if (x.type === 'upgrade' && e.type === 'upgraded' && (x.card == null || e.card === x.card) &&
+        (x.tube == null || (e.to && e.to.zone === 'tube' && e.to.i === x.tube))) return true;
+      if (x.type === 'move' && e.type === 'moved' && !e.displaced && (!x.to || sameSlot(e.to, x.to)) && (!x.from || sameSlot(e.from, x.from)) && (!x.id || e.id === x.id)) return true;
+    }
+    return false;
+  }
+  function onSim(p) {
+    if (!T.active || T.reverting) return;
+    const a = p && p.action;
+    if (!a || a.type === 'light') return;
+    const x = norm(X());
+    if (!T.hold && !T.watching && !T.beat && (x.type === 'buy' || x.type === 'upgrade' || x.type === 'move') && (matchSim(x, p.events) || sameAsScript())) return satisfied();
+    // Anything else is not this step's move: take it back so the script stays on its rails.
+    revert();
+  }
+  // Another way to the same place counts (e.g. the Strobe moved onto the Palm's tube instead of the Palm onto the
+  // Strobe's): the state now equals the script's state after this phase's own action.
+  function sameAsScript() {
+    const S = sim(), d = T.def && Array.isArray(T.def.do) ? T.def.do : [];
+    if (!S || !fnIn(S, 'tutorialState') || !fnIn(S, 'hashState') || d.length !== T.xs.length) return false;
+    return safe(() => {
+      const want = S.tutorialState(T.step);
+      for (let k = 0; k <= T.phase; k++) S.step(want, d[k]);
+      return S.hashState(want) === S.hashState(G.state);
+    }, false);
+  }
+  function revert() {
+    T.reverting = true;
+    setTimeout(() => {
+      if (fnIn(G, 'canUndo') && G.canUndo() && fnIn(G, 'undo')) safe(() => G.undo());
+      else goto(T.step);
+      T.reverting = false;
+      T.nudge = 'Not that one yet. Follow the glowing ring.';
+      if (T.active) { renderCard(); announce(T.nudge + ' ' + E.text.textContent); }
+    }, 0);
+  }
+  function onPresent(ev) {
+    if (!T.active || !ev || ev.type !== 'fusion') return;
+    const x = X();
+    if (x && x.type === 'fusion' && (!x.key || ev.key === x.key)) { T.fusionSeen = true; T.fusion = ev; }
+  }
+  function onResult(p) {
+    const sm = p && p.summary;
+    if (T.active && sm) T.results.push({ applause: sm.applause, ooh: sm.ooh, aah: sm.aah, target: sm.target, pass: sm.pass });
+    if (!T.active) return;
+    const x = X();
+    if (!isShowX(x)) return;
+    if (x.type === 'fusion') {
+      const evs = (p && p.events) || [];
+      const fe = evs.find(e => e && e.type === 'fusion' && (!x.key || e.key === x.key));
+      if (fe && !T.fusion) T.fusion = fe;
+      if (!T.fusionSeen && !fe) {
+        T.nudge = 'No fusion this time. Tap Next to go on.';
+        T.stuck = true;    // Next becomes the way on
+        return;
+      }
+    }
+    T.satisfied = true;
+    renderCard();
+  }
+  function onUi(p) {
+    const to = p && p.to;
+    if (!T.active) {
+      if (to === 'RESOLVING') T.offerGone = true;
+      return;
+    }
+    const was = T.watching;
+    T.watching = to === 'RESOLVING';
+    if (T.watching) { clearTimeout(T.helpTimer); T.help = false; T.nudge = ''; renderCard(); return; }
+    if (was && (to === 'RESULT' || to === 'BUILD')) {
+      if (T.satisfied) { T.satisfied = false; satisfied(); return; }
+      renderCard();
+      if (T.help || T.stuck) return;
+      armHelp();
+    }
+  }
+
+  /* ---------- entry and exit ---------- */
+  function closeOverlays() {
+    for (let n = 0; n < 8 && topOverlay() && topOverlay() !== 'end'; n++) safe(() => G.close());
+  }
+  function start() {
+    if (!G || !fnIn(G, 'startTutorial')) return false;
+    trackRun();
+    closeOverlays();
+    safe(() => G.startTutorial());
+    return true;
+  }
+  // A run is "set aside" when there is something to go back to: a show already played or a change made.
+  function runWorthKeeping() {
+    const st = G && G.state;
+    if (!st || st.phase !== 'build') return false;
+    return (st.show | 0) > 0 || T.runTouched;
+  }
+  function trackRun() { if (!T.active && G && !safe(() => G.tutorial, null)) T.asideGuess = runWorthKeeping(); }
+  function end(o) {
+    if (fnIn(G, 'endTutorial')) safe(() => G.endTutorial(o));
+    else teardown();
+  }
+  function skipTutorial() {
+    if (!T.active) return;
+    const last = isLast();
+    end({ startRun: false, done: last });
+    setMetaOnce(last ? 'done' : 'skipped');
+    focusGame();
+  }
+  function finish(startRun) {
+    if (!T.active) return;
+    end({ startRun: !!startRun, done: true });
+    setMetaOnce('done');
+    focusGame();
+  }
+  function setMetaOnce(v) {
+    const cur = safe(() => G.meta.tutorial, null);
+    if (cur === 'done' || cur === v) return;
+    if (fnIn(G, 'setMeta')) safe(() => G.setMeta({ tutorial: v }));
+  }
+  function focusGame() {
+    requestAnimationFrame(() => { const f = document.getElementById('fire'); if (f && !topOverlay()) safe(() => f.focus({ preventScroll: true })); });
+  }
+  function teardown() {
+    const was = T.active;
+    T.active = false; T.step = -1; T.def = null; T.xs = []; T.hold = false; T.watching = false; T.help = false;
+    clearTimeout(T.helpTimer); clearTimeout(T.beat); T.beat = 0;
+    removeGates();
+    if (E.root) {
+      delete E.root.dataset.on;
+      E.card.hidden = true;
+      E.holes.innerHTML = ''; E.rings.innerHTML = '';
+      E.scrim.classList.remove('on');
+    }
+    document.getElementById('app')?.removeAttribute('data-tutorial');
+    T.key = '';
+    if (was) { T.runTouched = false; }
+    syncOffer();
+  }
+  function declineOffer() {
+    setMetaOnce('skipped');
+    T.offerGone = true;
+    const hadFocus = E.offer.contains(document.activeElement);
+    syncOffer();
+    if (hadFocus) focusGame();
+  }
+
+  /* ---------- the first-launch offer ---------- */
+  function offerWanted() {
+    if (!G || T.active || T.offerGone || !fnIn(G, 'startTutorial')) return false;
+    const m = G.meta || {};
+    // "New here?": only a player who has not finished a run yet, and only until they answer
+    if (m.tutorial != null || (m.runs | 0) > 0) return false;
+    const st = G.state;
+    if (!st || (st.show | 0) !== 0 || st.phase !== 'build' || !building()) return false;
+    return !topOverlay();
+  }
+  function syncOffer() {
+    if (!E.offer) return;
+    const want = offerWanted();
+    if (want === !E.offer.hidden) return;
+    E.offer.hidden = !want;
+    if (want) { T.offerKey = ''; loop(); }
+  }
+
+  /* ---------- input gating (capture phase, before every other listener) ---------- */
+  let gatesOn = false;
+  const PTR = ['pointerdown', 'mousedown', 'click', 'dblclick', 'auxclick', 'contextmenu'];
+  function addGates() {
+    if (gatesOn) return;
+    gatesOn = true;
+    for (const t of PTR) window.addEventListener(t, gatePointer, true);
+  }
+  function removeGates() {
+    if (!gatesOn) return;
+    gatesOn = false;
+    for (const t of PTR) window.removeEventListener(t, gatePointer, true);
+  }
+  function overlayEl() {
+    const t = topOverlay();
+    if (!t) return null;
+    const id = { pause: 'pause-menu', tapContinue: 'tap-continue' }[t] || t;
+    return document.getElementById(id);
+  }
+  let allowed = [];
+  // The controls in play right now (asked of view() at each event, so a tap never meets last frame's list).
+  function liveAllowed() { const v = view(); allowed = v ? v.act : []; return allowed; }
+  function isAllowed(el) {
+    if (!(el instanceof Element)) return false;
+    if (E.card && E.card.contains(el)) return true;
+    const ov = overlayEl();
+    if (ov && ov.contains(el)) return true;
+    if (!T.active) return true;
+    if (T.beat) return false;                                // the step is done: nothing more until the next one loads
+    if (T.watching) return !!el.closest('#play') && !el.closest('[data-act="pause"]'); // Skip / tap to hurry the show
+    return liveAllowed().some(a => a === el || a.contains(el));
+  }
+  function swallow(e) { e.preventDefault(); e.stopImmediatePropagation(); }
+  function gatePointer(e) {
+    if (!T.active) return;
+    const t = e.target instanceof Element ? e.target : null;
+    if (t && isAllowed(t)) return;
+    // An open sheet (e.g. Inspect from a long press) closes on an outside tap, as it always does.
+    const top = topOverlay();
+    if (top && (top === 'inspect' || top === 'showlog') && e.type === 'pointerdown') { safe(() => G.close(top)); swallow(e); return; }
+    swallow(e);
+    if (e.type === 'click' && !T.watching) pulse();
+  }
+  // Always on (the offer needs it too): Enter / Space on this module's own buttons is theirs alone, so the
+  // play keys (which send Enter to the rack when focus is outside #play) never swallow the native click.
+  function gateKey(e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const own = document.activeElement;
+    if (E.root && own && own !== document.body && E.root.contains(own) && (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar')) { e.stopImmediatePropagation(); return; }
+    if (!T.active) return;
+    const k = e.key, top = topOverlay();
+    if (k === 'Escape' || k === 'Esc') {
+      if (top === 'inspect' || top === 'showlog') return;    // Esc closes the sheet first; the next Esc skips
+      if (top) return;
+      swallow(e);
+      if (isLast()) finish(false); else skipTutorial();
+      return;
+    }
+    if (top) return;                                        // the overlay's own keys (Tap to continue, a sheet)
+    const a = document.activeElement;
+    if (k === 'Tab') { swallow(e); cycleFocus(e.shiftKey ? -1 : 1); return; }
+    if ((k === 'Enter' || k === ' ' || k === 'Spacebar') && a && a !== document.body && isAllowed(a)) return;
+    swallow(e);
+  }
+  function focusables() {
+    const own = [E.skip, E.show, E.back, E.next].filter(b => b && !b.hidden && !b.disabled);
+    const act = liveAllowed().filter(el => el.tagName === 'BUTTON' && !el.disabled);
+    return [...act, ...own.filter(b => b !== E.skip), E.skip].filter(b => b && !b.hidden);
+  }
+  function cycleFocus(dir) {
+    const list = focusables();
+    if (!list.length) return;
+    const i = list.indexOf(document.activeElement);
+    const j = i < 0 ? (dir > 0 ? 0 : list.length - 1) : (i + dir + list.length) % list.length;
+    safe(() => list[j].focus());
+  }
+  function focusNow(force) {
+    if (!T.active || topOverlay()) return;
+    const v = view();
+    if (!v) return;
+    const tag = T.step + ':' + T.phase + ':' + v.phase + ':' + T.hold;
+    if (!force && tag === T.lastFocusPhase) return;
+    T.lastFocusPhase = tag;
+    let el = null;
+    if (v.phase === 'watch') return;
+    if (v.phase === 'drop') el = v.act[v.act.length - 1];
+    else if (v.act.length) el = v.act[0];
+    if (!el || v.phase === 'next' || v.phase === 'hold' || v.phase === 'finish') el = !E.next.hidden ? E.next : el;
+    if (!el) return;
+    safe(() => el.focus({ preventScroll: true }));
+    if (force && el !== E.next) safe(() => el.scrollIntoView({ block: 'nearest', inline: 'nearest' }));
+  }
+  function pulse() {
+    if (!E.rings) return;
+    E.rings.classList.remove('tu-nudge');
+    void E.rings.offsetWidth;
+    E.rings.classList.add('tu-nudge');
+  }
+
+  /* ---------- layout: scrim holes, rings, callout placement (one rAF loop while needed) ---------- */
+  // ?test=1 runs no rAF loop (spec §11.6): there, one frame is drawn per change instead (see init).
+  const testMode = () => !!(G && G.flags && G.flags.test);
+  function loop() {
+    if (T.raf) return;
+    const tick = () => {
+      T.raf = 0;
+      if (!E.root) return;
+      if (T.active) frameTutorial();
+      if (!E.offer.hidden) frameOffer();
+      if ((T.active || !E.offer.hidden) && !testMode()) T.raf = requestAnimationFrame(tick);
+    };
+    T.raf = requestAnimationFrame(tick);
+  }
+  const rectOf = el => { const r = el.getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom }; };
+  const inflate = (r, p) => ({ l: r.l - p, t: r.t - p, r: r.r + p, b: r.b + p });
+  const overlap = (a, b) => Math.max(0, Math.min(a.r, b.r) - Math.max(a.l, b.l)) * Math.max(0, Math.min(a.b, b.b) - Math.max(a.t, b.t));
+  const rk = r => `${r.l | 0},${r.t | 0},${r.r | 0},${r.b | 0}`;
+  function frameTutorial() {
+    const v = view();
+    if (!v) return;
+    allowed = v.act;
+    const lr = E.root.getBoundingClientRect();
+    const off = r => ({ l: r.l - lr.left, t: r.t - lr.top, r: r.r - lr.left, b: r.b - lr.top });
+    const act = v.act.map(el => off(rectOf(el))), show = v.show.map(el => off(rectOf(el)));
+    const avoid = v.avoid.map(el => off(rectOf(el)));
+    const cw = E.card.offsetWidth, ch = E.card.offsetHeight;
+    const key = [v.phase, v.dim, act.map(rk).join(';'), show.map(rk).join(';'), avoid.map(rk).join(';'), cw, ch, lr.width | 0, lr.height | 0, E.card.dataset.phase].join('|');
+    if (key === T.key) return;
+    T.key = key;
+    // scrim + holes
+    const pad = r => inflate(r, 6);
+    let holes = '';
+    for (const r of [...show, ...act].map(pad)) holes += `<rect x="${r.l}" y="${r.t}" width="${r.r - r.l}" height="${r.b - r.t}" rx="12" ry="12" fill="#000"/>`;
+    E.holes.innerHTML = holes;
+    E.scrim.classList.toggle('on', !!v.dim);
+    // rings: act = strong, show = quiet
+    let rings = '';
+    const ringHTML = (r, cls) => { const p = pad(r); return `<i class="tu-ring ${cls}" style="left:${p.l}px;top:${p.t}px;width:${p.r - p.l}px;height:${p.b - p.t}px"></i>`; };
+    for (const r of show) rings += ringHTML(r, 'show');
+    for (const r of act) rings += ringHTML(r, 'act');
+    E.rings.innerHTML = rings;
+    // callout: keep clear of every lit rect; sit as near as possible to the first control to use
+    // unlit shells and cards cost a little to cover, so an equally near spot in the open sky wins
+    const soft = v.phase === 'watch' ? [] : $$('#rack .tube, #shop .card').filter(el => visible(el) && !v.act.includes(el) && !v.show.includes(el)).map(el => off(rectOf(el)));
+    const keep = [...act.map(r => ({ ...r, w: 12 })), ...show.map(r => ({ ...r, w: 3 })), ...avoid.map(r => ({ ...r, w: 1 })), ...soft.map(r => ({ ...r, w: 0.02 }))];
+    const anchor = act[0] || show[0] || avoid[0] || null;
+    placeCard(E.card, keep, anchor, lr, v.phase === 'watch');
+    if (!T.hold && !T.watching) focusNow(false);
+  }
+  const H_SHORT = () => innerHeight < 620;
+  function insets() {
+    const cs = safe(() => getComputedStyle(document.getElementById('app')), null);
+    const px = s => parseFloat(s) || 0;
+    return cs ? { t: px(cs.paddingTop), b: px(cs.paddingBottom), l: px(cs.paddingLeft), r: px(cs.paddingRight) } : { t: 0, b: 0, l: 0, r: 0 };
+  }
+  // Scan positions for the card: no overlap with `keep` first, then the smallest distance to `anchor`.
+  function bestSpot(w, h, keep, anchor, box, preferBelow, gap = 10) {
+    const xs = [];
+    const clampX = x => Math.min(Math.max(x, box.l), box.r - w);
+    if (anchor) xs.push(clampX((anchor.l + anchor.r) / 2 - w / 2));
+    xs.push(clampX((box.l + box.r) / 2 - w / 2));
+    if (anchor) { xs.push(clampX(anchor.l - 16 - w)); xs.push(clampX(anchor.r + 16)); }
+    let best = null;
+    for (let xi = 0; xi < xs.length; xi++) {
+      const x = xs[xi];
+      for (let y = box.t; y <= box.b - h + 0.5; y += 4) {
+        const r = { l: x, t: y, r: x + w, b: y + h };
+        let ov = 0;
+        for (const k of keep) ov += overlap(r, inflate(k, gap)) * (k.w || 1);
+        let d = 0;
+        if (anchor) {
+          const dx = Math.max(0, anchor.l - r.r, r.l - anchor.r), dy = Math.max(0, anchor.t - r.b, r.t - anchor.b);
+          d = Math.hypot(dx, dy) + (preferBelow && r.t < anchor.b ? 40 : 0);
+        } else d = Math.abs(y - box.t);
+        const score = ov * 4 + d + xi * 6;
+        if (!best || score < best.score) best = { x, y, score, ov };
+      }
+    }
+    return best || { x: box.l, y: box.t, ov: 0 };
+  }
+  function placeCard(card, keep, anchor, lr, watch) {
+    const ins = insets(), m = H_SHORT() ? 8 : 12;
+    const W = lr.width, H = lr.height;
+    const side = W - ins.l - ins.r < 400 ? 12 : 16;
+    const w = Math.min(400, W - ins.l - ins.r - 2 * side);
+    card.style.width = w + 'px';
+    const h = card.offsetHeight;
+    const box = { l: ins.l + side, r: W - ins.r - side, t: ins.t + m, b: H - ins.b - m };
+    const a = watch && anchor ? { l: anchor.l, r: anchor.r, t: anchor.b, b: anchor.b } : anchor;
+    const s = bestSpot(w, h, keep, a, box, false, H_SHORT() ? 6 : 10);
+    card.dataset.clash = s.ov > 0 ? '1' : '0';
+    card.style.transform = `translate(${Math.round(s.x)}px,${Math.round(s.y)}px)`;
+    // the tail points at the control when the card sits right above or below it
+    const tail = E.tail;
+    tail.className = 'tu-tail';
+    tail.style.left = tail.style.top = '';
+    if (anchor && !watch) {
+      const cx = (anchor.l + anchor.r) / 2 - s.x, cy = (anchor.t + anchor.b) / 2 - s.y;
+      if (cx > 22 && cx < w - 22 && s.y >= anchor.b - 2 && s.y - anchor.b < 60) { tail.classList.add('up'); tail.style.left = cx + 'px'; }
+      else if (cx > 22 && cx < w - 22 && s.y + h <= anchor.t + 2 && anchor.t - (s.y + h) < 60) { tail.classList.add('down'); tail.style.left = cx + 'px'; }
+      else if (cy > 22 && cy < h - 22 && s.x + w <= anchor.l + 2 && anchor.l - (s.x + w) < 60) { tail.classList.add('right'); tail.style.top = cy + 'px'; }
+      else if (cy > 22 && cy < h - 22 && s.x >= anchor.r - 2 && s.x - anchor.r < 60) { tail.classList.add('left'); tail.style.top = cy + 'px'; }
+    }
+  }
+  function frameOffer() {
+    if (!offerWanted()) { syncOffer(); return; }
+    const sky = document.getElementById('sky-wrap');
+    if (!sky || !visible(sky)) return;
+    const lr = E.root.getBoundingClientRect(), sr = sky.getBoundingClientRect();
+    const box = { l: sr.left - lr.left + 12, r: sr.right - lr.left - 12, t: sr.top - lr.top + 8, b: sr.bottom - lr.top - 8 };
+    const obst = $$('#sky-overlay .sky-top, #sky-overlay .tip, #sky-overlay .info, #sky-overlay .legend, #sky-overlay .result, #sky-overlay .lastchance, #sponsor, #toasts > *')
+      .filter(visible).map(el => { const r = el.getBoundingClientRect(); return { l: r.left - lr.left, t: r.top - lr.top, r: r.right - lr.left, b: r.bottom - lr.top }; });
+    const w = Math.min(360, box.r - box.l);
+    E.offer.style.width = w + 'px';
+    const h = E.offer.offsetHeight;
+    const key = [rk(box), obst.map(rk).join(';'), w, h].join('|');
+    if (key === T.offerKey) return;
+    T.offerKey = key;
+    // Prefer the low sky (just above the rack), clear of the tips and labels up top.
+    const anchor = { l: (box.l + box.r) / 2, r: (box.l + box.r) / 2, t: box.b, b: box.b };
+    const s = bestSpot(w, h, obst, anchor, box, false);
+    E.offer.style.left = Math.round(s.x) + 'px';
+    E.offer.style.top = Math.round(s.y) + 'px';
+    E.offer.dataset.crowded = s.ov > 0 ? '1' : '0';
+  }
+
+  /* ---------- init ---------- */
+  function init(game) {
+    G = game;
+    if (!G || !build()) return;
+    const on = (n, f) => { if (fnIn(G, 'on')) G.on(n, x => { try { f(x); } catch (e) { if (G.flags && (G.flags.debug || G.flags.test)) console.warn('[tutorial]', n, e); } }); };
+    on('tutorial', onTutorialEvent);
+    on('sim', p => { if (!T.active && p && p.action && p.action.type !== 'light') T.runTouched = true; trackRun(); onSim(p); });
+    on('present', onPresent);
+    on('result', onResult);
+    on('ui', onUi);
+    on('runStart', p => { if (!T.active && !safe(() => G.tutorial, null) && !(p && p.restored)) T.runTouched = false; trackRun(); syncOffer(); });
+    on('meta', syncOffer);
+    on('overlay', () => { syncOffer(); if (T.active) T.key = ''; });
+    on('change', () => { if (!T.active) { trackRun(); syncOffer(); } });
+    on('resize', () => { T.key = ''; T.offerKey = ''; });
+    on('settings', () => { T.key = ''; T.offerKey = ''; });
+    if (testMode()) {
+      // no loop under ?test=1: draw one frame after anything that can move the layout
+      const once = () => { if (T.active || (E.offer && !E.offer.hidden)) loop(); };
+      for (const n of ['change', 'ui', 'overlay', 'resize', 'settings', 'tutorial', 'sim', 'result']) on(n, once);
+      for (const t of ['click', 'keyup', 'pointerup']) window.addEventListener(t, once);
+    }
+    // A tutorial already running (a module initialised late) picks up where the core is.
+    const cur = safe(() => G.tutorial, null);
+    if (cur && Number.isInteger(cur.step)) onTutorialEvent({ active: true, step: cur.step, def: defs()[cur.step] });
+    // the offer waits for the first render of the play screen
+    requestAnimationFrame(syncOffer);
+  }
+
+  return {
+    init,
+    start,
+    get active() { return T.active; },
+    // read-only snapshot for harnesses: the step, its phase and what completes it
+    state: () => ({ active: T.active, step: T.step, phase: T.phase, expect: T.active ? X() : null, watching: T.watching, hold: T.hold, help: T.help }),
+    skip: skipTutorial,
+  };
 })();
 GAME.boot();
 </script>
