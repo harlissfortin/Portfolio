@@ -528,6 +528,7 @@ const GAME = (() => {
     if (S.res) completeNow();   // the show on screen finishes first; its bookkeeping was done at the light
     dismissTip();
     closeAll();
+    saveNow();   // the run in progress as it is now (what a page hide would write), so a tab closed mid-tutorial keeps it
     const saved = {meta: S.meta, ui: S.ui};
     for (const k of RUN_KEYS) saved[k] = S[k];
     S.tut = {step: 0, total: defs.length, hasRun: !!S.state && S.state.phase === 'build' && S.ui !== 'END', saved};

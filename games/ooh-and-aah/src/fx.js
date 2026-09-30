@@ -1298,7 +1298,7 @@ const FX = (() => {
       const a = p.prev, b = p.cur;
       if (a && b) { const br = BRAIDS.find(q => !q.on) || BRAIDS[0]; br.on = true; br.x0 = a.x; br.y0 = a.y; br.x1 = b.x; br.y1 = b.y; br.t0 = T; braidPath(br); }
       const nm = e.name || (e.key ? String(e.key).replace('>', ' → ') : 'Fusion');
-      banner(nm + (e.first ? ' · new!' : ''), 'fusion', 0.9, clamp(rTop * 0.2, 34, 90));
+      banner(nm + (e.first ? ' · new!' : ''), 'fusion', 0.9, clamp(rTop * 0.2, 64, 96) /* below the live Ooh × Aah counter (about 10–36 px) on phones */);
       addHitStop(100, b ? b.x : W / 2, b ? b.y : rTop * 0.4);
     },
     clear(e, p, silent) {

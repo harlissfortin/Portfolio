@@ -873,11 +873,12 @@ An optional, interactive tutorial of about 2 minutes. The player plays a scripte
 
 **Rules while it runs:**
 - The run in progress is set aside in memory (never in storage), with the undo stack and every per-run field, and comes back exactly as it was (same `hashState`). A show that is resolving finishes first. A run that had ended comes back to its end screen.
+- Entering saves the run in progress once, as a page hide would, so a tab closed mid-tutorial keeps the player's last moves. From then on the stored run never changes.
 - It writes no run save: a save during the tutorial writes the settings and the real meta and keeps the stored run as it is.
 - It records no meta progress, milestones, Logbook entries or records, and shows no first-run tips or toasts. Its bookkeeping lands in a scratch copy of the meta that is thrown away, and the `meta`, `milestone`, `unlock`, `discover`, `toast` and `tip` events are muted. `announce()` still speaks.
 - The show flow is the normal one (light → FX → RESULT → BUILD) but never reaches END.
 - Only the step's action is allowed (the UI swallows every other input). If the action cannot happen, a "Show me" / Next fallback appears after a short delay, so nothing soft-locks.
-- Finishing sets `meta.tutorial = 'done'` and offers **Start your first run** (a new run; a first run while `meta.runs` is 0) or **Back to my run** (only when a run was set aside). Leaving early sets `'skipped'` unless it is already set. Setting it writes the meta only, never a run save.
+- Finishing sets `meta.tutorial = 'done'`. With no run set aside it offers **Start your first run** (a first run while `meta.runs` is 0). With a run set aside it offers only **Back to my run**, because a one-tap new run there would throw away the set-aside run unrecorded; ending a run stays a Pause decision. The tutorial can't be entered while a show is resolving. Leaving early sets `'skipped'` unless it is already set. Setting it writes the meta only, never a run save.
 
 **The scripted run** (seed `rehearsal-night`, Apprentice, first-run flags). Steps 1–6 are exactly the first-ever run's opening (§6): show 1 with Willow (Gold), Peony (Red) and Strobe, then the curated show-2 shop (Crossette, Palm, Comet). Show 3 is left out: it is the Headwind Headliner, and a dud would muddle the fusion lesson. Step 7 opens a scripted show 4 (May Fair Twilight, no rule twist, $10, Crowd 4) with the rack Willow, Peony, Strobe, Palm, so that a Crossette dropped on the Palm fires right after the Strobe. Every number below is the SIM's, and `tools/test-sim.mjs` checks each one against the step text.
 
@@ -889,7 +890,7 @@ An optional, interactive tutorial of about 2 minutes. The player plays a scripte
 | 4 | Buy a shell | the Palm card, then tube 4 | buys the Palm (Red, $3) into the empty tube 4 | Palm in tube 4 sees only the Willow: +12 Ooh and no Aah (a 189 rack). Swap-ins are off here (first run, show 2). |
 | 5 | Order matters | Palm, then tube 3 | moves the Palm to tube 3 (it swaps with the Strobe) | Palm now fires right after the Red Peony: +3 Aah. The rack reads 378 (was 189). |
 | 6 | Watch it pay off | Light the fuse | lights show 2 (target 130) | **63 × 6 = 378**, an Encore. Crowd 4, $10. |
-| 7 | Twins | the Peony card, then the Peony | drops the Peony card on the Peony | Peony ★2: +40 Ooh. $5 left. |
+| 7 | Twins | the Peony card, then the Peony | taps the Peony card, then the Peony | Peony ★2: +20 Ooh becomes +40 (the text quotes both). $5 left. |
 | 8 | Fusions and swapping | the Crossette card, then the Palm; then Light the fuse | swaps the Crossette in for the Palm (`displace: 'crate'`), then lights show 4 (target 330) | Palm goes to the Crate. Strobe → Crossette fuses (**Strobing Crossette**, +1 Aah per burst up): **74 × 8 = 592**, pass. Crowd 5. |
 | 9 | The Crate and the Crowd | the Crate slot and the HUD Crowd | taps Next | Palm rests in the Crate; the Crowd added its size (4) to Ooh. |
 | 10 | Mood, Headliners and the rain check | the mood, the Headliner chip and the umbrella | taps a finish button | Show 5 (target 430): the mood reads Eager; the Headliner (show 6) is posted; the rain check is unspent. |

@@ -691,7 +691,8 @@ async function tutorialChecks({ check, section, log, args }) {
   check(`step 6: the Applause beats step 1's (${s2.ap.score} > ${s1.ap.score}) and the text quotes ${s1.ap.score}`, s2.ap.score > s1.ap.score && txt(5).includes(String(s1.ap.score)));
   { const S = st(6), c = S.shop.cards[0], up = st(7);
     const o1 = OOH.previewChips(S)[1].ooh, o2 = OOH.previewChips(up)[1].ooh;
-    check(`step 7: the Peony card is the Peony's twin and every number doubles (+${o1} → +${o2} Ooh)`, c.id === 'peony' && S.tubes[1].shell.id === 'peony' && o2 === 2 * o1 && S.coins >= OOH.upCost('peony', 1) + S.shop.cards[1].cost);
+    check(`step 7: the Peony card is the Peony's twin and what it adds doubles, as the text says (+${o1} → +${o2} Ooh)`, c.id === 'peony' && S.tubes[1].shell.id === 'peony' && o2 === 2 * o1
+      && txt(6).includes(`+${o1} Ooh becomes +${o2}`) && S.coins >= OOH.upCost('peony', 1) + S.shop.cards[1].cost);
     check('step 7: a plain show (no rule twist, not a Headliner) with swap-ins on', OOH.rulesFor(S).length === 0 && S.show % 3 !== 2 && !(S.firstRun && S.show < 2)); }
   { const S = st(7), c = S.shop.cards[1];
     check('step 8: Crossette swaps in on the Palm, right after the Strobe', c.id === 'crossette' && S.tubes[3].shell.id === 'palm' && S.tubes[2].shell.id === 'strobe' && S.crate.every(x => !x));
@@ -743,6 +744,7 @@ async function tutorialBrowserCheck({ check, log }) {
     });
     const snap = page => page.evaluate(() => { const st = JSON.parse(localStorage.getItem('oohxaah.v1') || 'null');
       return { hash: __game.hash(), ui: GAME.ui, undo: GAME.canUndo(), stored: st ? JSON.stringify(st.run) : null, storedTut: st && st.meta.tutorial, meta: JSON.stringify(GAME.meta),
+        storedHash: st && st.run && st.run.state ? OOH.hashState(st.run.state) : null,
         tutorial: GAME.tutorial }; });
 
     // 1. A run in progress (show 1 lit and saved, then an unsaved buy), the whole tutorial, then back to the run.
@@ -753,6 +755,10 @@ async function tutorialBrowserCheck({ check, log }) {
       await spy(page);
       check('in the page: startTutorial() starts at step 1 on tutorialState(0)', await page.evaluate(() => GAME.startTutorial() && GAME.tutorial.step === 0 && GAME.tutorial.hasRun === true
         && OOH.hashState(GAME.state) === OOH.hashState(OOH.tutorialState(0))));
+      // Entering saves the run in progress once, as a page hide would (a tab closed mid-tutorial keeps it); after that the stored run never changes.
+      const entry = await snap(page);
+      check('in the page: entering saves the run in progress first (the unsaved buy included)', entry.storedHash === before.hash && before.storedHash !== before.hash,
+        JSON.stringify([before.hash, before.storedHash, entry.storedHash]));
       const T = await page.evaluate(() => OOH.DATA.TUTORIAL), bad = [];
       for (let i = 0; i < T.length; i++) {
         const r = await page.evaluate(i => ({ step: GAME.tutorial && GAME.tutorial.step, same: OOH.hashState(GAME.state) === OOH.hashState(OOH.tutorialState(i)) }), i);
@@ -769,7 +775,7 @@ async function tutorialBrowserCheck({ check, log }) {
       const after = await snap(page), w = await page.evaluate(() => ({ w: window.__w, ev: window.__ev, uis: window.__uis }));
       check('in the page: endTutorial() restores the exact previous run (same hash, BUILD, undo kept)', after.hash === before.hash && after.ui === 'BUILD' && after.undo === before.undo && after.tutorial === null,
         JSON.stringify([before.hash, after.hash, after.ui]));
-      check(`in the page: the tutorial wrote no run save (${w.w.length} writes, each keeps the stored run)`, after.stored === before.stored && w.w.every(v => JSON.stringify(JSON.parse(v).run) === before.stored));
+      check(`in the page: the tutorial wrote no run save (${w.w.length} writes, each keeps the run saved on entry)`, after.stored === entry.stored && w.w.every(v => JSON.stringify(JSON.parse(v).run) === entry.stored));
       check('in the page: no toast, meta, milestone, Logbook, unlock, tip or runEnd event, and never END', !w.ev.length && !w.uis.includes('END'), JSON.stringify([w.ev, [...new Set(w.uis)]]));
       const m0 = JSON.parse(before.meta), m1 = JSON.parse(after.meta);
       check('in the page: finishing sets meta.tutorial = "done" (stored too) and changes nothing else in the meta', m1.tutorial === 'done' && after.storedTut === 'done'
@@ -813,15 +819,21 @@ async function tutorialBrowserCheck({ check, log }) {
           const vis = el => !!el && !el.hidden && el.getClientRects().length > 0;
           (function poll() { if (GAME.tutorial) { const t = document.querySelector('#sky-overlay .tip'); if (vis(t)) U.tips.push('tip: ' + t.textContent); for (const x of document.querySelectorAll('#toasts .toast')) if (vis(x)) U.tips.push('toast: ' + x.textContent); } requestAnimationFrame(poll); })();
         });
-        const clickRinged = async sel => {   // a real click, and only where the spotlight's ring says
+        // A real click, and only where the spotlight's ring says. `at` is the step snapshot the click was chosen from: when the
+        // tutorial has moved on since (the snapshot is stale), the click is not made and the loop polls again.
+        const clickRinged = async (sel, at) => {
           await page.waitForFunction(sel => { const el = document.querySelector(sel); if (!el) return false; if (el.closest('#tutorial')) return true; const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
-            return [...document.querySelectorAll('#tutorial .tu-ring.act')].some(q => { const b = q.getBoundingClientRect(); return x > b.left && x < b.right && y > b.top && y < b.bottom; }); }, sel, { timeout: 1500 }).catch(() => {});
-          const p = await page.evaluate(sel => { const el = document.querySelector(sel); if (!el) return null; const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
-            const own = !!el.closest('#tutorial'), ring = [...document.querySelectorAll('#tutorial .tu-ring.act')].some(q => { const b = q.getBoundingClientRect(); return x > b.left && x < b.right && y > b.top && y < b.bottom; });
-            return { x, y, ok: own || ring }; }, sel);
+            return [...document.querySelectorAll('#tutorial .tu-ring.act')].some(q => { const b = q.getBoundingClientRect(); return x > b.left && x < b.right && y > b.top && y < b.bottom; }); }, sel, { timeout: 3000 }).catch(() => {});
+          const p = await page.evaluate(([sel, at]) => { const el = document.querySelector(sel); if (!el) return null; const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+            const s = UI_TUTORIAL.state(), now = `${s.step}:${s.phase}:${s.hold}:${s.watching}`;
+            if (at && now !== at) return { stale: true };
+            const rings = [...document.querySelectorAll('#tutorial .tu-ring.act')];
+            const own = !!el.closest('#tutorial'), ring = rings.some(q => { const b = q.getBoundingClientRect(); return x > b.left && x < b.right && y > b.top && y < b.bottom; });
+            return { x, y, ok: own || ring, why: `(state ${now}, ${rings.length} act rings, card ${document.querySelector('#tutorial .tu-card').dataset.phase})` }; }, [sel, at || '']);
           if (!p) return `${sel} missing`;
+          if (p.stale) return '';
           await page.mouse.click(p.x, p.y);
-          return p.ok ? '' : `${sel} is not ringed`;
+          return p.ok ? '' : `${sel} is not ringed ${p.why}`;
         };
         const bad = [];
         bad.push(await clickRinged('#tutorial [data-tu="offer-play"]'));
@@ -833,7 +845,7 @@ async function tutorialBrowserCheck({ check, log }) {
             return { step: t.step, ui: GAME.ui, s: UI_TUTORIAL.state(), next: b('next'), sel: document.querySelectorAll('#rack .sel, #shop .sel').length }; });
           if (!u) break;
           if (u.s.watching || u.ui === 'RESOLVING') continue;
-          const x = u.s.expect || {}, at = (sel) => clickRinged(sel).then(m => m && bad.push(`step ${u.step + 1}: ${m}`));
+          const x = u.s.expect || {}, snap = `${u.s.step}:${u.s.phase}:${u.s.hold}:${u.s.watching}`, at = (sel) => clickRinged(sel, snap).then(m => m && bad.push(`step ${u.step + 1}: ${m}`));
           if (u.next) { if (/run/.test(u.next)) { finish = u.next; await at('#tutorial [data-tu="next"]'); } else await at('#tutorial [data-tu="next"]'); }
           else if (x.type === 'result' || x.type === 'fusion' || x.type === 'light') await at('#fire');
           else if (x.type === 'buy' || x.type === 'upgrade') await at(u.sel ? `#rack [data-tube="${x.tube}"]` : `#shop [data-card="${x.card}"]`);

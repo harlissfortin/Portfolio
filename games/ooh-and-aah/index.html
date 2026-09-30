@@ -2103,7 +2103,7 @@ function OohSim() {
   // the player's own actions made (it equals tutorialState(i) whenever the player did the step before). Tubes are
   // 0-based in `expect` and `do`, 1-based in the text. Every number in the text is checked against the SIM.
   const tubeSlot = i => ({ zone: 'tube', i });
-  const SWAP_TEXT = '✦ means two shells fuse when one fires right after the other. Drop Crossette on the Palm: it swaps in right after Strobe, and Palm moves to the Crate.';
+  const SWAP_TEXT = '✦ means two shells fuse when one fires right after the other. Tap Crossette, then tap Palm. Crossette swaps in after Strobe, and Palm goes to the Crate.';
   const TUTORIAL = [
     { id: 'fuse', title: 'Light the fuse', state: 'fresh', target: ['#fire'], expect: { type: 'result' }, do: [{ type: 'light' }],
       text: 'Your rack holds three shells. Tap Light the fuse: the tubes fire left to right.' },
@@ -2113,25 +2113,25 @@ function OohSim() {
       text: 'Bursts hang in the sky for a while. Peony sees 1 burst still up, and Strobe sees 2. Some shells score more when more is up.' },
     { id: 'buy', title: 'Buy a shell', state: 'live', target: ['button[data-card="1"]', 'button[data-tube="3"]'],
       expect: { type: 'buy', card: 1, tube: 3 }, do: [{ type: 'buy', card: 1, to: tubeSlot(3) }],
-      text: 'Passing a show pays coins. Tap the Palm card, then tap the empty tube 4. The chips on the tube show what Palm adds there.' },
+      text: 'Passing a show pays coins. Tap the Palm card, then tap tube 4, the empty one. The chips on tube 4 show what Palm adds there.' },
     { id: 'order', title: 'Order matters', state: 'live', target: ['button[data-tube="3"]', 'button[data-tube="2"]'],
       expect: { type: 'move', from: 3, to: 2 }, do: [{ type: 'move', from: tubeSlot(3), to: tubeSlot(2) }],
-      text: 'Palm is Red, so it adds 3 Aah when a Red burst is up. In tube 4 the Peony is already gone. Tap Palm, then tap tube 3 to fire it right after the Peony.' },
+      text: 'Palm is Red, like the Peony, so it adds 3 Aah when a Red burst is up. In tube 4 the Peony is already gone. Tap Palm, then tap tube 3 to fire it right after the Peony.' },
     { id: 'payoff', title: 'Watch it pay off', state: 'live', target: ['#fire'], expect: { type: 'result' }, do: [{ type: 'light' }],
       text: 'Light the fuse again and compare the Applause with the last show\'s 150.' },
     { id: 'twins', title: 'Twins', state: 'fresh', target: ['button[data-card="0"]', 'button[data-tube="1"]'],
       expect: { type: 'upgrade', card: 0, tube: 1 }, do: [{ type: 'upgrade', card: 0, to: tubeSlot(1) }],
-      text: 'Drop the Peony card on your Peony. Twins upgrade to ★2 and every number doubles.' },
+      text: 'Later, at the May Fair. Tap the Peony card, then tap your Peony. The twin upgrades it to ★2, and what it adds doubles: +20 Ooh becomes +40.' },
     // Two phases (an `expect` list, each with its own text): the swap-in, then the light that shows the fusion.
     { id: 'swap', title: 'Fusions and swapping', state: 'live', target: ['button[data-card="1"]', 'button[data-tube="3"]', '#fire'],
       expect: [{ type: 'buy', card: 1, tube: 3, displace: 'crate', text: SWAP_TEXT }, { type: 'fusion', key: 'strobe>crossette', text: 'Light the fuse to see the fusion.' }],
       do: [{ type: 'buy', card: 1, to: tubeSlot(3), displace: 'crate' }, { type: 'light' }],
       text: SWAP_TEXT },
     { id: 'crate', title: 'The Crate and the Crowd', state: 'live', target: ['button[data-crate="0"]', '#hud .hud-crowd'], expect: { type: 'next' }, do: [],
-      text: 'Palm rests in the Crate. Crate shells don\'t fire; move them back any time. Every show you pass grows the Crowd, and the Crowd adds its size to Ooh.' },
+      text: 'Palm waits in the Crate. Crate shells don\'t fire until you move them back. Every show you pass grows the Crowd, and the Crowd adds its size to Ooh.' },
     { id: 'ready', title: 'Mood, Headliners and the rain check', state: 'live', target: ['#firebar .mood', '#hud .hud-head', '#hud .hud-rain'],
       expect: { type: 'next' }, do: [], last: true,
-      text: 'The mood reads your rack against tonight\'s target. Every third show is a Headliner with a rule twist, announced a festival ahead. The umbrella is your rain check: you may miss one show per run. You\'re ready.' },
+      text: 'The mood reads your rack against tonight\'s target. Every third show is a Headliner with a rule twist; the ringed badge shows the next one. The umbrella is your rain check: you may miss one show per run. You\'re ready.' },
   ];
 
   const DATA = {
@@ -5283,7 +5283,7 @@ const FX = (() => {
       const a = p.prev, b = p.cur;
       if (a && b) { const br = BRAIDS.find(q => !q.on) || BRAIDS[0]; br.on = true; br.x0 = a.x; br.y0 = a.y; br.x1 = b.x; br.y1 = b.y; br.t0 = T; braidPath(br); }
       const nm = e.name || (e.key ? String(e.key).replace('>', ' → ') : 'Fusion');
-      banner(nm + (e.first ? ' · new!' : ''), 'fusion', 0.9, clamp(rTop * 0.2, 34, 90));
+      banner(nm + (e.first ? ' · new!' : ''), 'fusion', 0.9, clamp(rTop * 0.2, 64, 96) /* below the live Ooh × Aah counter (about 10–36 px) on phones */);
       addHitStop(100, b ? b.x : W / 2, b ? b.y : rTop * 0.4);
     },
     clear(e, p, silent) {
@@ -6705,6 +6705,7 @@ const GAME = (() => {
     if (S.res) completeNow();   // the show on screen finishes first; its bookkeeping was done at the light
     dismissTip();
     closeAll();
+    saveNow();   // the run in progress as it is now (what a page hide would write), so a tab closed mid-tutorial keeps it
     const saved = {meta: S.meta, ui: S.ui};
     for (const k of RUN_KEYS) saved[k] = S[k];
     S.tut = {step: 0, total: defs.length, hasRun: !!S.state && S.state.phase === 'build' && S.ui !== 'END', saved};
@@ -12621,8 +12622,17 @@ const UI_MENUS = (() => {
 
   // Help and Pause both start "Rehearsal Night": close the menus first, then the core sets the run aside.
   function startTutorial() {
+    if (G && G.ui === 'RESOLVING') return; // a show in flight would finish off-screen; the buttons say "after this show"
     for (let n = 0; n < 8 && call(G, 'top') && call(G, 'top') !== 'end'; n++) call(G, 'close');
     call(G, 'startTutorial');
+  }
+  // The tutorial sets the run aside, so it waits for a show in flight to finish.
+  function syncTutorialButtons() {
+    const busy = !!G && G.ui === 'RESOLVING';
+    for (const [id, idle, wait] of [['pause-tutorial', 'Tutorial', 'After this show'], ['help-tutorial', 'Play the tutorial', 'Play it after this show']]) {
+      const b = document.getElementById(id); if (!b) continue;
+      b.disabled = busy; const sp = b.querySelector('span'); if (sp) sp.textContent = busy ? wait : idle;
+    }
   }
 
   /* ======================================================================
@@ -13421,6 +13431,7 @@ const UI_MENUS = (() => {
     noteBuild();
     call(G, 'on', 'ui', (p) => { if (p && p.to === 'BUILD') noteBuild(); if (isOpen('pause-menu')) renderPause(true); });
     call(G, 'on', 'runStart', () => { P.lastBuild = null; noteBuild(); T.q = []; if (T.cur) retire(T.cur, true); }); // a new run never inherits the last run's waiting tips
+    call(G, 'on', 'overlay', syncTutorialButtons); call(G, 'on', 'ui', syncTutorialButtons);
     call(G, 'onKey', 'global', globalKey);
     call(G, 'onKey', 'pause', scoped());
     call(G, 'onKey', 'settings', scoped());
@@ -13588,14 +13599,14 @@ const UI_TUTORIAL = (() => {
       const cards = card ? [card] : $$('#shop [data-card]').filter(b => !b.disabled);
       const held = cards.some(b => b.classList.contains('sel'));
       const tubes = tube ? [tube] : $$('#rack [data-tube]');
-      return held ? { act: els([...cards, ...tubes]), show: els(['#rack .tubes']), avoid: [], dim: true, phase: 'drop' }
+      return held ? { act: els([...cards, ...tubes]), show: els(['#rack .tubes']), avoid: els(['#sky-overlay .info']), dim: true, phase: 'drop' }
         : { act: els(cards), show: els(tubes), avoid: [], dim: true, phase: 'pick' };
     }
     if (x.type === 'move') {
       const from = x.from ? tubeEl(x.from.i) : null, to = x.to ? tubeEl(x.to.i) : null;
       const froms = from ? [from] : $$('#rack [data-tube]');
       const held = froms.some(b => b.classList.contains('sel'));
-      return held ? { act: els([...froms, to || $$('#rack [data-tube]')].flat()), show: [], avoid: [], dim: true, phase: 'drop' }
+      return held ? { act: els([...froms, to || $$('#rack [data-tube]')].flat()), show: [], avoid: els(['#sky-overlay .info']), dim: true, phase: 'drop' }
         : { act: els(froms), show: els([to]), avoid: [], dim: true, phase: 'pick' };
     }
     if (isLast()) return { act: [], show: els(spotFor(T.def)), avoid: [], dim: true, phase: 'finish' };
@@ -13652,6 +13663,9 @@ const UI_TUTORIAL = (() => {
     if (!b) return;
     const k = b.dataset.tu;
     if (k === 'skip') return skipTutorial();
+    // Keyboard activation (detail 0) of Next or finish within 400 ms of a new step is the second press of a quick
+    // double Enter landing on the new step's button: ignore it. A pointer can't double-hit, since the button moves.
+    if ((k === 'next' || k === 'back') && e.detail === 0 && performance.now() - (T.shownAt || 0) < 400) return;
     if (k === 'next') return onNext();
     if (k === 'back') return finish(true);
     if (k === 'show') return showMe();
@@ -13682,7 +13696,7 @@ const UI_TUTORIAL = (() => {
     E.next.hidden = !(isNext || finishing || stuck);
     E.next.textContent = finishing ? (T.aside ? 'Back to my run' : startLabel()) : 'Next';
     E.back.textContent = startLabel();
-    E.back.hidden = !(finishing && T.aside);
+    E.back.hidden = true; // with a run set aside the only exit is back to it; ending a run stays a Pause decision (2 taps, recorded)
     E.show.hidden = !(T.help && !stuck && !T.watching && !T.hold && !isNext && !finishing && canDo(x0));
     E.skip.hidden = finishing;
     E.actions.hidden = E.show.hidden && E.back.hidden && E.next.hidden;
@@ -13743,6 +13757,7 @@ const UI_TUTORIAL = (() => {
     T.satisfied = false; T.fusionSeen = false; T.fusion = null; T.hold = false; T.help = false; T.stuck = false; T.nudge = '';
     T.watching = ui() === 'RESOLVING';
     T.lastFocusPhase = '';
+    T.shownAt = performance.now();
     renderCard();
     armHelp();
     const x = norm(X());
@@ -13754,6 +13769,7 @@ const UI_TUTORIAL = (() => {
     T.satisfied = false; T.fusionSeen = false; T.fusion = null; T.help = false; T.stuck = false; T.nudge = '';
     T.watching = ui() === 'RESOLVING';
     T.lastFocusPhase = '';
+    T.shownAt = performance.now();
     renderCard();
     armHelp();
     const x = X();
@@ -13997,7 +14013,7 @@ const UI_TUTORIAL = (() => {
     const want = offerWanted();
     if (want === !E.offer.hidden) return;
     E.offer.hidden = !want;
-    if (want) { T.offerKey = ''; loop(); }
+    if (want) { T.offerKey = ''; loop(); if (!T.offerSaid) { T.offerSaid = true; announce('New here? You can play a 2-minute tutorial now, or later from Help.'); } }
   }
 
   /* ---------- input gating (capture phase, before every other listener) ---------- */
@@ -14107,8 +14123,8 @@ const UI_TUTORIAL = (() => {
     const tick = () => {
       T.raf = 0;
       if (!E.root) return;
-      if (T.active) frameTutorial();
-      if (!E.offer.hidden) frameOffer();
+      // a layout error must never stop the loop (the rings would freeze where the last step left them)
+      try { if (T.active) frameTutorial(); if (!E.offer.hidden) frameOffer(); } catch (e) { T.key = ''; T.offerKey = ''; }
       if ((T.active || !E.offer.hidden) && !testMode()) T.raf = requestAnimationFrame(tick);
     };
     T.raf = requestAnimationFrame(tick);

@@ -352,7 +352,7 @@ function OohSim() {
   // the player's own actions made (it equals tutorialState(i) whenever the player did the step before). Tubes are
   // 0-based in `expect` and `do`, 1-based in the text. Every number in the text is checked against the SIM.
   const tubeSlot = i => ({ zone: 'tube', i });
-  const SWAP_TEXT = '✦ means two shells fuse when one fires right after the other. Drop Crossette on the Palm: it swaps in right after Strobe, and Palm moves to the Crate.';
+  const SWAP_TEXT = '✦ means two shells fuse when one fires right after the other. Tap Crossette, then tap Palm. Crossette swaps in after Strobe, and Palm goes to the Crate.';
   const TUTORIAL = [
     { id: 'fuse', title: 'Light the fuse', state: 'fresh', target: ['#fire'], expect: { type: 'result' }, do: [{ type: 'light' }],
       text: 'Your rack holds three shells. Tap Light the fuse: the tubes fire left to right.' },
@@ -362,25 +362,25 @@ function OohSim() {
       text: 'Bursts hang in the sky for a while. Peony sees 1 burst still up, and Strobe sees 2. Some shells score more when more is up.' },
     { id: 'buy', title: 'Buy a shell', state: 'live', target: ['button[data-card="1"]', 'button[data-tube="3"]'],
       expect: { type: 'buy', card: 1, tube: 3 }, do: [{ type: 'buy', card: 1, to: tubeSlot(3) }],
-      text: 'Passing a show pays coins. Tap the Palm card, then tap the empty tube 4. The chips on the tube show what Palm adds there.' },
+      text: 'Passing a show pays coins. Tap the Palm card, then tap tube 4, the empty one. The chips on tube 4 show what Palm adds there.' },
     { id: 'order', title: 'Order matters', state: 'live', target: ['button[data-tube="3"]', 'button[data-tube="2"]'],
       expect: { type: 'move', from: 3, to: 2 }, do: [{ type: 'move', from: tubeSlot(3), to: tubeSlot(2) }],
-      text: 'Palm is Red, so it adds 3 Aah when a Red burst is up. In tube 4 the Peony is already gone. Tap Palm, then tap tube 3 to fire it right after the Peony.' },
+      text: 'Palm is Red, like the Peony, so it adds 3 Aah when a Red burst is up. In tube 4 the Peony is already gone. Tap Palm, then tap tube 3 to fire it right after the Peony.' },
     { id: 'payoff', title: 'Watch it pay off', state: 'live', target: ['#fire'], expect: { type: 'result' }, do: [{ type: 'light' }],
       text: 'Light the fuse again and compare the Applause with the last show\'s 150.' },
     { id: 'twins', title: 'Twins', state: 'fresh', target: ['button[data-card="0"]', 'button[data-tube="1"]'],
       expect: { type: 'upgrade', card: 0, tube: 1 }, do: [{ type: 'upgrade', card: 0, to: tubeSlot(1) }],
-      text: 'Drop the Peony card on your Peony. Twins upgrade to ★2 and every number doubles.' },
+      text: 'Later, at the May Fair. Tap the Peony card, then tap your Peony. The twin upgrades it to ★2, and what it adds doubles: +20 Ooh becomes +40.' },
     // Two phases (an `expect` list, each with its own text): the swap-in, then the light that shows the fusion.
     { id: 'swap', title: 'Fusions and swapping', state: 'live', target: ['button[data-card="1"]', 'button[data-tube="3"]', '#fire'],
       expect: [{ type: 'buy', card: 1, tube: 3, displace: 'crate', text: SWAP_TEXT }, { type: 'fusion', key: 'strobe>crossette', text: 'Light the fuse to see the fusion.' }],
       do: [{ type: 'buy', card: 1, to: tubeSlot(3), displace: 'crate' }, { type: 'light' }],
       text: SWAP_TEXT },
     { id: 'crate', title: 'The Crate and the Crowd', state: 'live', target: ['button[data-crate="0"]', '#hud .hud-crowd'], expect: { type: 'next' }, do: [],
-      text: 'Palm rests in the Crate. Crate shells don\'t fire; move them back any time. Every show you pass grows the Crowd, and the Crowd adds its size to Ooh.' },
+      text: 'Palm waits in the Crate. Crate shells don\'t fire until you move them back. Every show you pass grows the Crowd, and the Crowd adds its size to Ooh.' },
     { id: 'ready', title: 'Mood, Headliners and the rain check', state: 'live', target: ['#firebar .mood', '#hud .hud-head', '#hud .hud-rain'],
       expect: { type: 'next' }, do: [], last: true,
-      text: 'The mood reads your rack against tonight\'s target. Every third show is a Headliner with a rule twist, announced a festival ahead. The umbrella is your rain check: you may miss one show per run. You\'re ready.' },
+      text: 'The mood reads your rack against tonight\'s target. Every third show is a Headliner with a rule twist; the ringed badge shows the next one. The umbrella is your rain check: you may miss one show per run. You\'re ready.' },
   ];
 
   const DATA = {

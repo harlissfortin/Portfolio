@@ -189,7 +189,9 @@ An optional, interactive tutorial of about 2 minutes. The player plays scripted 
 **Rules while it runs:**
 - It never writes a run save, meta progress, milestones, the Logbook or records, and it queues no first-run tips or toasts.
 - The run in progress is set aside in memory and restored on exit. Exit comes from finishing, Skip or Esc.
-- Finishing sets `meta.tutorial = 'done'` and offers "Start your first run" (a fresh first run) or "Back to my run".
+- Entering saves the run once, as hiding the page would, so a tab closed mid-tutorial loses nothing. After that, storage is untouched until the tutorial ends.
+- The tutorial can't be entered while a show is resolving: the Help and Pause entries read "after this show".
+- Finishing sets `meta.tutorial = 'done'`. With no run set aside, it offers "Start your first run". With a run set aside, it offers only "Back to my run"; ending that run stays a Pause decision (two taps, and the run is recorded).
 
 **SIM (`sim.js`):**
 - `DATA.TUTORIAL` is an array of step definitions `{id, title, text, expect}`, one per step, with player-facing text in plain words. `expect` is what completes the step:

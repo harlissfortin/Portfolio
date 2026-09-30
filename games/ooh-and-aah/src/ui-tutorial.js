@@ -149,14 +149,14 @@ const UI_TUTORIAL = (() => {
       const cards = card ? [card] : $$('#shop [data-card]').filter(b => !b.disabled);
       const held = cards.some(b => b.classList.contains('sel'));
       const tubes = tube ? [tube] : $$('#rack [data-tube]');
-      return held ? { act: els([...cards, ...tubes]), show: els(['#rack .tubes']), avoid: [], dim: true, phase: 'drop' }
+      return held ? { act: els([...cards, ...tubes]), show: els(['#rack .tubes']), avoid: els(['#sky-overlay .info']), dim: true, phase: 'drop' }
         : { act: els(cards), show: els(tubes), avoid: [], dim: true, phase: 'pick' };
     }
     if (x.type === 'move') {
       const from = x.from ? tubeEl(x.from.i) : null, to = x.to ? tubeEl(x.to.i) : null;
       const froms = from ? [from] : $$('#rack [data-tube]');
       const held = froms.some(b => b.classList.contains('sel'));
-      return held ? { act: els([...froms, to || $$('#rack [data-tube]')].flat()), show: [], avoid: [], dim: true, phase: 'drop' }
+      return held ? { act: els([...froms, to || $$('#rack [data-tube]')].flat()), show: [], avoid: els(['#sky-overlay .info']), dim: true, phase: 'drop' }
         : { act: els(froms), show: els([to]), avoid: [], dim: true, phase: 'pick' };
     }
     if (isLast()) return { act: [], show: els(spotFor(T.def)), avoid: [], dim: true, phase: 'finish' };
@@ -213,6 +213,9 @@ const UI_TUTORIAL = (() => {
     if (!b) return;
     const k = b.dataset.tu;
     if (k === 'skip') return skipTutorial();
+    // Keyboard activation (detail 0) of Next or finish within 400 ms of a new step is the second press of a quick
+    // double Enter landing on the new step's button: ignore it. A pointer can't double-hit, since the button moves.
+    if ((k === 'next' || k === 'back') && e.detail === 0 && performance.now() - (T.shownAt || 0) < 400) return;
     if (k === 'next') return onNext();
     if (k === 'back') return finish(true);
     if (k === 'show') return showMe();
@@ -243,7 +246,7 @@ const UI_TUTORIAL = (() => {
     E.next.hidden = !(isNext || finishing || stuck);
     E.next.textContent = finishing ? (T.aside ? 'Back to my run' : startLabel()) : 'Next';
     E.back.textContent = startLabel();
-    E.back.hidden = !(finishing && T.aside);
+    E.back.hidden = true; // with a run set aside the only exit is back to it; ending a run stays a Pause decision (2 taps, recorded)
     E.show.hidden = !(T.help && !stuck && !T.watching && !T.hold && !isNext && !finishing && canDo(x0));
     E.skip.hidden = finishing;
     E.actions.hidden = E.show.hidden && E.back.hidden && E.next.hidden;
@@ -304,6 +307,7 @@ const UI_TUTORIAL = (() => {
     T.satisfied = false; T.fusionSeen = false; T.fusion = null; T.hold = false; T.help = false; T.stuck = false; T.nudge = '';
     T.watching = ui() === 'RESOLVING';
     T.lastFocusPhase = '';
+    T.shownAt = performance.now();
     renderCard();
     armHelp();
     const x = norm(X());
@@ -315,6 +319,7 @@ const UI_TUTORIAL = (() => {
     T.satisfied = false; T.fusionSeen = false; T.fusion = null; T.help = false; T.stuck = false; T.nudge = '';
     T.watching = ui() === 'RESOLVING';
     T.lastFocusPhase = '';
+    T.shownAt = performance.now();
     renderCard();
     armHelp();
     const x = X();
@@ -558,7 +563,7 @@ const UI_TUTORIAL = (() => {
     const want = offerWanted();
     if (want === !E.offer.hidden) return;
     E.offer.hidden = !want;
-    if (want) { T.offerKey = ''; loop(); }
+    if (want) { T.offerKey = ''; loop(); if (!T.offerSaid) { T.offerSaid = true; announce('New here? You can play a 2-minute tutorial now, or later from Help.'); } }
   }
 
   /* ---------- input gating (capture phase, before every other listener) ---------- */
@@ -668,8 +673,8 @@ const UI_TUTORIAL = (() => {
     const tick = () => {
       T.raf = 0;
       if (!E.root) return;
-      if (T.active) frameTutorial();
-      if (!E.offer.hidden) frameOffer();
+      // a layout error must never stop the loop (the rings would freeze where the last step left them)
+      try { if (T.active) frameTutorial(); if (!E.offer.hidden) frameOffer(); } catch (e) { T.key = ''; T.offerKey = ''; }
       if ((T.active || !E.offer.hidden) && !testMode()) T.raf = requestAnimationFrame(tick);
     };
     T.raf = requestAnimationFrame(tick);

@@ -305,8 +305,17 @@ const UI_MENUS = (() => {
 
   // Help and Pause both start "Rehearsal Night": close the menus first, then the core sets the run aside.
   function startTutorial() {
+    if (G && G.ui === 'RESOLVING') return; // a show in flight would finish off-screen; the buttons say "after this show"
     for (let n = 0; n < 8 && call(G, 'top') && call(G, 'top') !== 'end'; n++) call(G, 'close');
     call(G, 'startTutorial');
+  }
+  // The tutorial sets the run aside, so it waits for a show in flight to finish.
+  function syncTutorialButtons() {
+    const busy = !!G && G.ui === 'RESOLVING';
+    for (const [id, idle, wait] of [['pause-tutorial', 'Tutorial', 'After this show'], ['help-tutorial', 'Play the tutorial', 'Play it after this show']]) {
+      const b = document.getElementById(id); if (!b) continue;
+      b.disabled = busy; const sp = b.querySelector('span'); if (sp) sp.textContent = busy ? wait : idle;
+    }
   }
 
   /* ======================================================================
@@ -1105,6 +1114,7 @@ const UI_MENUS = (() => {
     noteBuild();
     call(G, 'on', 'ui', (p) => { if (p && p.to === 'BUILD') noteBuild(); if (isOpen('pause-menu')) renderPause(true); });
     call(G, 'on', 'runStart', () => { P.lastBuild = null; noteBuild(); T.q = []; if (T.cur) retire(T.cur, true); }); // a new run never inherits the last run's waiting tips
+    call(G, 'on', 'overlay', syncTutorialButtons); call(G, 'on', 'ui', syncTutorialButtons);
     call(G, 'onKey', 'global', globalKey);
     call(G, 'onKey', 'pause', scoped());
     call(G, 'onKey', 'settings', scoped());
