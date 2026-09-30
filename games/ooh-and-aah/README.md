@@ -17,6 +17,17 @@ Ooh × Aah is a turn-based engine-builder roguelite for the browser. A river tow
 
 The page opens straight into the first show's build, with no menu in front of it. Sound starts on your first tap or key press. Progress is saved in `localStorage` under the key `oohxaah.v1`, and the game also runs with storage blocked.
 
+**Tutorial.** *Rehearsal Night* is an optional 10-step tutorial you play, about two minutes long. It is offered on first launch and can be replayed any time from Help or Pause. Each step runs a scripted show you can't fail, with a spotlight on the one control to use:
+1. Lighting the fuse, and reading Applause as Ooh × Aah.
+2. The sky and "sees".
+3. Buying a card.
+4. Why order matters.
+5. Twins.
+6. A fusion made with the swap-in and the Crate.
+7. The Crowd, the mood, Headliners and the rain check.
+
+Nothing is saved while it runs, and a run in progress is set aside and restored exactly ([DESIGN.md §6.1](DESIGN.md)).
+
 **Controls.** Tap a shop card, then tap a tube to buy the shell into that tube, or drag the card onto the tube. Drop a card on a tube that holds its twin to upgrade the twin. Press **Light the fuse** when the rack is ready. Every action has a key; press `?` in the game for the full map.
 
 **URL flags** (useful for demos and testing):
