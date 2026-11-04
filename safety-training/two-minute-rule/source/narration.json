@@ -1,0 +1,397 @@
+{
+ "fps": 30,
+ "scenes": [
+  {
+   "id": "cold-open-title",
+   "chapter": "",
+   "cues": [
+    {
+     "id": "s1-1",
+     "text": "Every job comes with a plan, written earlier, somewhere else."
+    },
+    {
+     "id": "s1-2",
+     "text": "But the job is here, now. It may not match the plan.",
+     "after": 0.8
+    },
+    {
+     "id": "s1-3",
+     "text": "The 2-minute rule is how you catch the difference.",
+     "tts": "The two-minute rule is how you catch the difference."
+    }
+   ],
+   "pre": 0.8,
+   "post": 1.2
+  },
+  {
+   "id": "what-it-is",
+   "chapter": "What it is",
+   "cues": [
+    {
+     "id": "s2-1",
+     "text": "It's a short, deliberate pause you take where you do the work."
+    },
+    {
+     "id": "s2-2",
+     "text": "Take it right before you start, and again after a break, a handover, or any change.",
+     "after": 0.7
+    },
+    {
+     "id": "s2-3",
+     "text": "It adds to your SOPs, permits, lockout, and confined-space programs. It never replaces them.",
+     "tts": "It adds to your S O P's, permits, lockout, and confined-space programs. It never replaces them."
+    },
+    {
+     "id": "s2-4",
+     "text": "Two minutes is a rule of thumb. What matters is the pause."
+    },
+    {
+     "id": "s2-5",
+     "text": "It's not the productivity tip about doing quick tasks right away."
+    }
+   ]
+  },
+  {
+   "id": "line-clearance",
+   "chapter": "Line clearance",
+   "cues": [
+    {
+     "id": "s3-1",
+     "text": "You already do this for product. It's called line clearance."
+    },
+    {
+     "id": "s3-2",
+     "text": "Right before use, you inspect the packaging line so nothing from the last run remains.",
+     "after": 0.6
+    },
+    {
+     "id": "s3-3",
+     "text": "21 CFR 211.130(e) requires it, and the results go in the batch record.",
+     "tts": "Twenty-one C F R, two-eleven point one-thirty E, requires it, and the results go in the batch record."
+    },
+    {
+     "id": "s3-4",
+     "text": "The 2-minute rule is line clearance for people.",
+     "tts": "The two-minute rule is line clearance for people.",
+     "after": 0.7
+    },
+    {
+     "id": "s3-5",
+     "text": "Same discipline, aimed at the hazards around you."
+    }
+   ],
+   "post": 0.8
+  },
+  {
+   "id": "how-it-works",
+   "chapter": "How it works",
+   "cues": [
+    {
+     "id": "s4-1",
+     "text": "In your two minutes: stop, look, ask, decide.",
+     "after": 0.7
+    },
+    {
+     "id": "s4-2",
+     "text": "Stop before you touch anything. Look around the job, and next to it."
+    },
+    {
+     "id": "s4-3",
+     "text": "Then ask: What's different from the plan, or last time? What could hurt us?"
+    },
+    {
+     "id": "s4-4",
+     "text": "Are the controls checked, or assumed? What if it goes wrong?",
+     "after": 0.5
+    },
+    {
+     "id": "s4-5",
+     "text": "Then decide: go, fix it if it's safe, or stop and get help.",
+     "after": 1.0
+    }
+   ],
+   "post": 0.8
+  },
+  {
+   "id": "on-the-floor",
+   "chapter": "On the floor",
+   "cues": [
+    {
+     "id": "s5-1",
+     "text": "What's different? First run after a tooling change on the tablet press."
+    },
+    {
+     "id": "s5-2",
+     "text": "What could hurt us? Clean- or steam-in-place: hot caustic and steam.",
+     "tts": "What could hurt us? Clean-in-place or steam-in-place: hot caustic and steam."
+    },
+    {
+     "id": "s5-3",
+     "text": "Checked or assumed? The blister packer is locked out. Did you verify it yourself?"
+    },
+    {
+     "id": "s5-4",
+     "text": "What if it goes wrong while you're charging a reactor? What's your next move?"
+    },
+    {
+     "id": "s5-5",
+     "text": "Rushed, tired, or distracted? Check yourself, too."
+    }
+   ],
+   "post": 0.9
+  },
+  {
+   "id": "the-case",
+   "chapter": "The case",
+   "cues": [
+    {
+     "id": "s6-1",
+     "text": "A real case: a biopharmaceutical plant in Los Angeles, January 2011.",
+     "tts": "A real case: a biopharmaceutical plant in Los Angeles, January twenty eleven.",
+     "after": 0.7
+    },
+    {
+     "id": "s6-2",
+     "text": "Nitrogen bubbles through plasma in a 6,000-liter tank, as part of the process.",
+     "tts": "Nitrogen bubbles through plasma in a six-thousand-liter tank, as part of the process."
+    },
+    {
+     "id": "s6-3",
+     "text": "The nitrogen has pushed out the oxygen, and the air is untested.",
+     "after": 0.7
+    },
+    {
+     "id": "s6-4",
+     "text": "A technician goes in to take a temperature reading. He collapses.",
+     "after": 0.9
+    },
+    {
+     "id": "s6-5",
+     "text": "Two coworkers go in to bring him out, with no air test and no proper rescue gear provided."
+    },
+    {
+     "id": "s6-6",
+     "text": "Both of them collapse too.",
+     "after": 0.9
+    },
+    {
+     "id": "s6-7",
+     "text": "Firefighters bring them out. The technician dies.",
+     "after": 3.0
+    },
+    {
+     "id": "s6-8",
+     "text": "This isn't about careless people. It's about the gaps around them.",
+     "after": 0.8
+    }
+   ],
+   "pre": 1.0,
+   "post": 1.0
+  },
+  {
+   "id": "pause-one",
+   "chapter": "Pause one",
+   "cues": [
+    {
+     "id": "s7-1",
+     "text": "At two moments, a pause could have changed the outcome. First, before entry.",
+     "after": 0.7
+    },
+    {
+     "id": "s7-2",
+     "text": "What's different? Nitrogen is still flowing in, and it isn't isolated."
+    },
+    {
+     "id": "s7-3",
+     "text": "What could hurt us? The air: nitrogen has no color and no smell."
+    },
+    {
+     "id": "s7-4",
+     "text": "Oxygen-poor air can knock you out in one or two breaths.",
+     "after": 0.6
+    },
+    {
+     "id": "s7-5",
+     "text": "Checked or assumed? Has anyone measured the oxygen? Does entry need a permit?"
+    },
+    {
+     "id": "s7-6",
+     "text": "The only way to know is to isolate and test.",
+     "after": 0.6
+    },
+    {
+     "id": "s7-7",
+     "text": "Can I take the reading from outside instead?"
+    },
+    {
+     "id": "s7-8",
+     "text": "What if it goes wrong? Who's watching me, and what's the rescue plan?"
+    },
+    {
+     "id": "s7-9",
+     "text": "No test, no plan: stop and get help.",
+     "after": 1.0
+    }
+   ],
+   "pre": 0.4,
+   "post": 0.9
+  },
+  {
+   "id": "pause-two",
+   "chapter": "Pause two",
+   "cues": [
+    {
+     "id": "s8-1",
+     "text": "Second: someone is down inside a vessel."
+    },
+    {
+     "id": "s8-2",
+     "text": "Wanting to rush in is human. Run the questions anyway, even in seconds.",
+     "after": 0.6
+    },
+    {
+     "id": "s8-3",
+     "text": "What could hurt us? Assume the air did this."
+    },
+    {
+     "id": "s8-4",
+     "text": "What if it goes wrong? More people go down.",
+     "after": 0.8
+    },
+    {
+     "id": "s8-5",
+     "text": "Don't go in. Call trained rescue, keep others out, use retrieval gear.",
+     "after": 0.6
+    },
+    {
+     "id": "s8-6",
+     "text": "That only works if the plan and gear exist beforehand."
+    }
+   ],
+   "post": 0.9
+  },
+  {
+   "id": "what-they-found",
+   "chapter": "What they found",
+   "cues": [
+    {
+     "id": "s9-1",
+     "text": "Cal/OSHA issued 11 citations, four of them willful.",
+     "tts": "Cal OSHA issued eleven citations, four of them willful.",
+     "after": 0.6
+    },
+    {
+     "id": "s9-2",
+     "text": "It found the employer didn't test the tank's air."
+    },
+    {
+     "id": "s9-3",
+     "text": "The employer's confined-space program fell short on air testing, protective gear, and rescue."
+    },
+    {
+     "id": "s9-4",
+     "text": "Those findings are about the employer's program, not about the technician.",
+     "after": 0.9
+    },
+    {
+     "id": "s9-5",
+     "text": "There's a design lesson, too: a reading shouldn't require going inside."
+    },
+    {
+     "id": "s9-6",
+     "text": "An installed probe or a sample port means no one has to.",
+     "after": 0.6
+    },
+    {
+     "id": "s9-7",
+     "text": "A pause can't supply a gas meter, a permit system, or a rescue team."
+    }
+   ],
+   "post": 0.8
+  },
+  {
+   "id": "what-makes-it-work",
+   "chapter": "What makes it work",
+   "cues": [
+    {
+     "id": "s10-1",
+     "text": "The rule works when the organization gives you tools, time, and authority to stop."
+    },
+    {
+     "id": "s10-2",
+     "text": "That means stopping with no reprisal."
+    },
+    {
+     "id": "s10-3",
+     "text": "Leaders who thank you, then fix what you found."
+    },
+    {
+     "id": "s10-4",
+     "text": "Near-miss reports that lead to learning, not discipline."
+    },
+    {
+     "id": "s10-5",
+     "text": "And hazards engineered out, so the pause isn't your only defense.",
+     "after": 0.7
+    },
+    {
+     "id": "s10-6",
+     "text": "One 2022 study of Take 5 pre-task cards found no evidence the cards made work safer.",
+     "tts": "One twenty twenty-two study of Take Five pre-task cards found no evidence the cards made work safer.",
+     "after": 0.6
+    },
+    {
+     "id": "s10-7",
+     "text": "So the pause is a professional habit, and a gateway to stopping."
+    },
+    {
+     "id": "s10-8",
+     "text": "Not a check-the-box form, and never a tool for blame.",
+     "after": 0.6
+    }
+   ],
+   "post": 0.8
+  },
+  {
+   "id": "your-two-minutes",
+   "chapter": "Your two minutes",
+   "cues": [
+    {
+     "id": "s11-1",
+     "text": "Before you start, and whenever things change: stop, look, and ask.",
+     "after": 0.9
+    },
+    {
+     "id": "s11-2",
+     "text": "What's different? What could hurt us?"
+    },
+    {
+     "id": "s11-3",
+     "text": "Are the controls checked, or assumed? What if it goes wrong?",
+     "after": 0.5
+    },
+    {
+     "id": "s11-4",
+     "text": "Then go, fix it if it's safe, or stop and get help."
+    }
+   ],
+   "post": 1.0
+  },
+  {
+   "id": "closing-card",
+   "chapter": "",
+   "cues": [
+    {
+     "id": "s12-1",
+     "text": "You know this work best.",
+     "after": 0.7
+    },
+    {
+     "id": "s12-2",
+     "text": "You clear the line for product. Clear it for people, too."
+    }
+   ],
+   "post": 10.5
+  }
+ ]
+}

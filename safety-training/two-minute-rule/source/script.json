@@ -1,0 +1,563 @@
+{
+ "title": "The 2-Minute Rule",
+ "angle": "The questions-spine structure is unchanged, and every reviewer fix is applied. The must-fix is done: the recap, the s11 buttons and the printable closing card now all read 'Fix it, if safe', so the global button rule holds in every scene.\n\nShould-fix items, applied:\n- Q3 is spoken as 'Are the controls checked, or assumed?'.\n- The missing air test now first appears in s6-3 as a condition of the tank ('the air is untested', tagged on the tank). The rescuers' cue now states only the system gap ('no rescue plan or equipment').\n- The s6-3 corner gauge is gone. The first gauge is in s7-5, greyed with '?'.\n- Pause one has a layout rule with a single right-hand panel. The gauge carries only 20.9% / 19.5% / 'Too little O₂', and the checkboxes 'Isolate N₂ · Test the air' swap into the same slot.\n- s7-4 on-screen text keeps the 'can'.\n- Scene 9 is reordered so every line the regulator is credited with sits under the 'Cal/OSHA findings' credit. The design point now comes after the credit fades, as 'There's a design lesson, too', because in the brief it is the systemic picture, not a Cal/OSHA finding. s9-3 says 'The employer's'.\n- In s10-6 the on-screen text says 'Cards as paperwork', the authors' names come off the screen, and the narration introduces Take 5 as 'pre-task cards'.\n- The NIOSH card is one line, dated, and placed apart from the silhouettes so it does not suggest the rescuers in this case died.\n- The s11-1 vignette now shows an outside temperature reading, with no gas meter and no 20.9%.\n- s2-1 is in second person, s3-3 is active voice, the s2-3 TTS is fixed, and s5-5 is tied to Q4.\n\nJudgment calls:\n- s7-2 uses the pedagogy reviewer's Q1 line but says 'it isn't isolated' rather than 'nothing is isolated', because the brief says only that the gas was not isolated.\n- s6-3 uses 'the air is untested' rather than 'no one has tested the air', to avoid a people-failure reading (the style reviewer's concern).\n- s6-7 follows the brief: 'Firefighters bring them out.' The past-tense memorial card appears only after the caption clears, which fixes the tense clash.\n- s5-5 takes the pedagogy wording ('Check yourself, too') over the style alternative.\n- The facts reviewer's 'construction site' detail did not fit in s10-6 under the 95-character limit together with the Take 5 introduction, so it is in the on-screen credit line instead.\n\nNice-to-haves applied: s1-2 clarity, s2-4 jargon chips cut (other names are no longer listed; Take 5 is now introduced in s10-6), the s2-5 stamp, a green 'Go' modelled in s5-3, US 'check-the-box', the s7-3 dashed 'invisible' outline in place of a tint, and no paper title on the end card.\n\nOther wording changes:\n- To keep 'right before you start' in s2-2 without repeating 'right', s2-1 drops it.\n- s10-7 says 'the pause' to fix an unclear 'it'.\n- Four small cuts (s5-4, s6-8, s7-5, s9-2) bring the written narration to 730 words, so the spoken form, with spelled-out numbers and the CFR reference, stays near 740.\n- All 67 captions are 94 characters or fewer.",
+ "scenes": [
+  {
+   "id": "cold-open-title",
+   "chapter": "",
+   "purpose": "Hook without fear: name the gap between the plan written earlier and the job as it is now, then land the title.",
+   "visual": "GLOBAL STYLE (whole video): 1920x1080 flat vector, no photos. Teaching scenes use a warm off-white field with navy type. Case scenes (6 to 8) shift to muted slate with off-white type and slower motion, with no stings. People are neutral grey-blue rounded silhouettes with no facial features, never colour-coded. The four question cards each keep one non-traffic hue and one icon all video: Q1 blue, Q2 violet, Q3 teal, Q4 plum. The three decision buttons are always green 'Go', amber 'Fix it, if safe' and red 'Stop & get help', in every scene including the recap and closing card. Muted red appears otherwise only on hazard labels. No author or person's name and no logo appears mid-video; sources live on the end card. From scene 2 on, a small chapter header with a stopwatch icon sits top-left. SCENE: s1-1: a flat document icon labelled 'PLAN' slides in from the left onto a desk line, with a small tag 'Written earlier'. Its sketch shows a pipe, a CLOSED valve and a small vessel. s1-2: the screen splits. The right panel draws the same pipe, valve and vessel as a live work area labelled 'NOW', but here the valve is OPEN and a soft pulsing ring marks the mismatch. s1-3: the panels slide together and the pulsing ring grows into a circular two-minute arc that sweeps once. The bold kinetic title 'The 2-Minute Rule' stamps in at centre, and the subtitle 'A pause at the point of work' fades in beneath. The stopwatch then shrinks and docks top-left as the chapter-header icon.",
+   "cues": [
+    {
+     "id": "s1-1",
+     "text": "Every job comes with a plan, written earlier, somewhere else.",
+     "on_screen": "PLAN · Written earlier"
+    },
+    {
+     "id": "s1-2",
+     "text": "But the job is here, now. It may not match the plan.",
+     "on_screen": "NOW"
+    },
+    {
+     "id": "s1-3",
+     "text": "The 2-minute rule is how you catch the difference.",
+     "tts": "The two-minute rule is how you catch the difference.",
+     "on_screen": "The 2-Minute Rule"
+    }
+   ]
+  },
+  {
+   "id": "what-it-is",
+   "chapter": "What it is",
+   "purpose": "Define the rule: a short pause you take where you do the work, before starting and again when things change. It adds to SOPs and permits and never replaces them. Two minutes is a rule of thumb, and it is not the productivity tip.",
+   "visual": "s2-1: a neutral silhouette stands at a simple workstation (a boxy machine with a control panel). A large two-bar pause icon drops in above it and settles. Text: 'A deliberate pause' / 'At the point of work'. s2-2: a horizontal shift timeline draws left to right beneath. Small pause icons pop onto four markers in time with the narration: 'Before you start', 'After a break', 'After handover', 'Any change'. s2-3: four document blocks stack up like a wall at left: 'SOP', 'Permit', 'Lockout', 'Confined space'. A thin glowing layer labelled '2-minute pause' slides onto the top with a small '+'. Nothing in the stack is crossed out. Text: 'Adds to. Never replaces.' s2-4: a stopwatch reading '2:00' appears. A hand-drawn tilde stamps in front of it ('~2:00') with the label 'Rule of thumb', then the face dissolves into the plain pause icon. Nothing else is added on this beat. s2-5: a generic to-do checklist card labelled 'Productivity tip' slides in at right. A neat stamp 'Not this rule' lands on it, and it slides away.",
+   "cues": [
+    {
+     "id": "s2-1",
+     "text": "It's a short, deliberate pause you take where you do the work.",
+     "on_screen": "A deliberate pause · At the point of work"
+    },
+    {
+     "id": "s2-2",
+     "text": "Take it right before you start, and again after a break, a handover, or any change.",
+     "on_screen": "Before you start · After a break · After handover · Any change"
+    },
+    {
+     "id": "s2-3",
+     "text": "It adds to your SOPs, permits, lockout, and confined-space programs. It never replaces them.",
+     "tts": "It adds to your S O P's, permits, lockout, and confined-space programs. It never replaces them.",
+     "on_screen": "Adds to. Never replaces."
+    },
+    {
+     "id": "s2-4",
+     "text": "Two minutes is a rule of thumb. What matters is the pause.",
+     "on_screen": "~2:00 · Rule of thumb"
+    },
+    {
+     "id": "s2-5",
+     "text": "It's not the productivity tip about doing quick tasks right away.",
+     "on_screen": "Productivity tip · Not this rule"
+    }
+   ]
+  },
+  {
+   "id": "line-clearance",
+   "chapter": "Line clearance",
+   "purpose": "Link the rule to a regulated habit pharma staff already practice: line clearance, applied to people.",
+   "visual": "s3-1: a flat packaging line draws itself across the lower third (conveyor, blister-packer box, carton stack). Title: 'Line clearance'. s3-2: two leftover items from the previous run glow, a stray carton and a label roll tinted a different colour. A magnifier sweeps the line left to right, and the two items lift off and vanish. Text: 'Immediately before use' / 'Nothing left behind'. s3-3: a batch-record page slides up from the bottom and its 'Line clearance' row ticks. A small tag in the corner reads '21 CFR 211.130(e)'. s3-4: the conveyor morphs into the space around the silhouette from scene 2, and the leftover-item slots become four hazard icons (energy bolt, chemical drop, O₂ cloud, moving gear). Bold kinetic headline: 'Line clearance for people'. s3-5: a clean circle draws around each hazard icon in turn, with the labels 'Energy', 'Chemicals', 'Atmosphere', 'Moving parts'.",
+   "cues": [
+    {
+     "id": "s3-1",
+     "text": "You already do this for product. It's called line clearance.",
+     "on_screen": "Line clearance"
+    },
+    {
+     "id": "s3-2",
+     "text": "Right before use, you inspect the packaging line so nothing from the last run remains.",
+     "on_screen": "Immediately before use · Nothing left behind"
+    },
+    {
+     "id": "s3-3",
+     "text": "21 CFR 211.130(e) requires it, and the results go in the batch record.",
+     "tts": "Twenty-one C F R, two-eleven point one-thirty E, requires it, and the results go in the batch record.",
+     "on_screen": "21 CFR 211.130(e) · Batch record"
+    },
+    {
+     "id": "s3-4",
+     "text": "The 2-minute rule is line clearance for people.",
+     "tts": "The two-minute rule is line clearance for people.",
+     "on_screen": "Line clearance for people"
+    },
+    {
+     "id": "s3-5",
+     "text": "Same discipline, aimed at the hazards around you.",
+     "on_screen": "Energy · Chemicals · Atmosphere · Moving parts"
+    }
+   ]
+  },
+  {
+   "id": "how-it-works",
+   "chapter": "How it works",
+   "purpose": "Teach the method as one memorable set: four moves (stop, look, ask, decide), four short questions, and three decisions. These return all through the video.",
+   "visual": "s4-1: four large tiles drop in left to right, each on its spoken word: STOP (raised hand), LOOK (eye), ASK (question mark), DECIDE (signpost). s4-2: the STOP tile pulses and a gloved hand lifts away from a valve ('Hands off'). Then the LOOK tile pulses and scan rings spread around a small job icon and the area beside it ('Look around, and next to it'). s4-3: the ASK tile opens into a header 'Four questions', and two cards flip in side by side, each with its number, hue and icon: '1 What's different?' (blue, two overlapping documents with a small mismatch mark) and '2 What could hurt us?' (violet, a hazard triangle with two small silhouettes). s4-4: cards 3 and 4 flip in: '3 Checked or assumed?' (teal, a circle split between a tick and a question mark, with a small valve-and-lock glyph to show it is about controls) and '4 What if it goes wrong?' (plum, a branching arrow). s4-5: the DECIDE tile splits into three buttons that light in order with the narration: green 'Go', amber 'Fix it, if safe', red 'Stop & get help'. The four cards then shrink and dock in a vertical question rail on the left edge. The rail stays on screen through scene 5, hides for scene 6, and returns in scenes 7 and 8.",
+   "cues": [
+    {
+     "id": "s4-1",
+     "text": "In your two minutes: stop, look, ask, decide.",
+     "on_screen": "Stop · Look · Ask · Decide"
+    },
+    {
+     "id": "s4-2",
+     "text": "Stop before you touch anything. Look around the job, and next to it.",
+     "on_screen": "Hands off · Look around, and next to it"
+    },
+    {
+     "id": "s4-3",
+     "text": "Then ask: What's different from the plan, or last time? What could hurt us?",
+     "on_screen": "1 What's different? · 2 What could hurt us?"
+    },
+    {
+     "id": "s4-4",
+     "text": "Are the controls checked, or assumed? What if it goes wrong?",
+     "on_screen": "3 Checked or assumed? · 4 What if it goes wrong?"
+    },
+    {
+     "id": "s4-5",
+     "text": "Then decide: go, fix it if it's safe, or stop and get help.",
+     "on_screen": "Go · Fix it, if safe · Stop & get help"
+    }
+   ]
+  },
+  {
+   "id": "on-the-floor",
+   "chapter": "On the floor",
+   "purpose": "Make each question concrete with a quick, familiar pharma moment, so the set feels like everyday work and not theory. Model one verified 'Go' so the rule doesn't always end in stopping.",
+   "visual": "The question rail sits at left. On each cue the matching card lights and the others dim. s5-1 (Q1 lit): a flat tablet-press icon with a new tooling set sliding into place. Tag: 'First run after tooling change'. s5-2 (Q2 lit): a clean-in-place skid with pipes. Soft steam puffs and a caustic-drop icon pulse, labelled 'Clean-in-place', 'Hot caustic', 'Steam'. s5-3 (Q3 lit): a blister-packer icon with a lock and tag on its disconnect. A hand icon presses a 'START' test button, nothing moves, and a tick appears. Text: 'Locked out. Tested by you?'. Right after the tick, the green 'Go' button lights briefly at the bottom of the frame, then fades. s5-4 (Q4 lit): a reactor with a powder-charging chute. A dotted route arrow draws to an exit sign and a phone icon. Text: 'Charging a reactor' / 'Your next move?'. s5-5 (Q4 stays lit): the silhouette returns at centre with three small status chips floating beside it: 'Rushed', 'Tired', 'Distracted'.",
+   "cues": [
+    {
+     "id": "s5-1",
+     "text": "What's different? First run after a tooling change on the tablet press.",
+     "on_screen": "First run after tooling change"
+    },
+    {
+     "id": "s5-2",
+     "text": "What could hurt us? Clean- or steam-in-place: hot caustic and steam.",
+     "on_screen": "Clean- or steam-in-place · Hot caustic · Steam",
+     "tts": "What could hurt us? Clean-in-place or steam-in-place: hot caustic and steam."
+    },
+    {
+     "id": "s5-3",
+     "text": "Checked or assumed? The blister packer is locked out. Did you verify it yourself?",
+     "on_screen": "Locked out. Tested by you?"
+    },
+    {
+     "id": "s5-4",
+     "text": "What if it goes wrong while you're charging a reactor? What's your next move?",
+     "on_screen": "Charging a reactor · Your next move?"
+    },
+    {
+     "id": "s5-5",
+     "text": "Rushed, tired, or distracted? Check yourself, too.",
+     "on_screen": "Rushed · Tired · Distracted"
+    }
+   ]
+  },
+  {
+   "id": "the-case",
+   "chapter": "The case",
+   "purpose": "Tell the 2011 nitrogen-tank incident plainly and respectfully. Name no one, do not say who ordered the rescue, state no disputed injury outcome, show no body, and present the untested air and missing rescue plan as conditions the system left people in.",
+   "visual": "The palette shifts to muted slate and soft blue, motion slows, and there are no stings. The question rail hides. s6-1: a simple map pin drops on a flat outline labelled 'Los Angeles · January 2011'. Beside it sits a generic plant icon with no logo and no name, tagged 'Biopharmaceutical plant'. s6-2: a cross-section tank schematic draws itself: depth marker '7 ft deep', volume tag '6,000 L', pale liquid labelled 'Plasma', and a side inlet labelled 'N₂'. Small bubbles rise steadily. s6-3: small O₂ dots drift up and out of the opening while N₂ dots fill the headspace. Text: 'Oxygen pushed out'. A grey tag attaches to the tank itself, not to any person: 'Air not tested'. No gauge or meter appears anywhere in this scene. s6-4: a neutral silhouette appears at the rim with a small thermometer icon. Tag: 'Entry to take a reading'. The silhouette steps behind the rim and out of view. On 'He collapses', a soft amber ring pulses once at the hatch and the frame dims slightly. Nothing inside the tank is ever shown. s6-5: two silhouettes approach the rim, and a second grey tag appears beside the tank: 'No rescue plan or equipment'. s6-6: the two silhouettes pass behind the rim and out of view, and the amber ring widens gently. s6-7: a simple fire-helmet icon appears at the hatch with the tag 'Brought out by firefighters'. After the caption clears, the scene fades to a still slate card with one quiet line, 'The technician died.', held for about 2 seconds of silence. s6-8: the card text cross-fades to 'Not careless people. Gaps in the system.'",
+   "cues": [
+    {
+     "id": "s6-1",
+     "text": "A real case: a biopharmaceutical plant in Los Angeles, January 2011.",
+     "tts": "A real case: a biopharmaceutical plant in Los Angeles, January twenty eleven.",
+     "on_screen": "Los Angeles · January 2011"
+    },
+    {
+     "id": "s6-2",
+     "text": "Nitrogen bubbles through plasma in a 6,000-liter tank, as part of the process.",
+     "tts": "Nitrogen bubbles through plasma in a six-thousand-liter tank, as part of the process.",
+     "on_screen": "6,000 L · 7 ft deep · N₂"
+    },
+    {
+     "id": "s6-3",
+     "text": "The nitrogen has pushed out the oxygen, and the air is untested.",
+     "on_screen": "Oxygen pushed out · Air not tested"
+    },
+    {
+     "id": "s6-4",
+     "text": "A technician goes in to take a temperature reading. He collapses.",
+     "on_screen": "Entry to take a reading"
+    },
+    {
+     "id": "s6-5",
+     "text": "Two coworkers go in to bring him out, with no air test and no proper rescue gear provided.",
+     "on_screen": "No rescue plan or equipment"
+    },
+    {
+     "id": "s6-6",
+     "text": "Both of them collapse too."
+    },
+    {
+     "id": "s6-7",
+     "text": "Firefighters bring them out. The technician dies.",
+     "on_screen": "Brought out by firefighters"
+    },
+    {
+     "id": "s6-8",
+     "text": "This isn't about careless people. It's about the gaps around them.",
+     "on_screen": "Not careless people. Gaps in the system."
+    }
+   ]
+  },
+  {
+   "id": "pause-one",
+   "chapter": "Pause one",
+   "purpose": "Run the four questions at the moment before entry. Show the live stop conditions (gas still flowing and not isolated, air untested), teach why nitrogen gives no warning and why only isolating and testing tells you, and land the honest counterfactual: stop and get help, framed as 'could have'.",
+   "visual": "LAYOUT RULE for this scene: the tank sits left of centre and the question rail at the far left. A single right-hand panel swaps its content per question, so only one panel's worth of text is ever on screen. s7-1: a timeline scrubber runs backward across the bottom with a soft rewind motion and settles with two markers, 'Before entry' and 'Before rescue'. On 'First, before entry', the camera zooms into the first marker. The tank returns to its pre-entry state: bubbles still rising, hatch open, and the silhouette standing outside the rim under a pause icon. Header: 'Pause one: before entry'. The question rail slides back in. s7-2 (Q1 lit): on the tank, the N₂ inlet arrow pulses with the callout 'N₂ still flowing', and an open valve on the N₂ line gets a small tag 'Not isolated'. s7-3 (Q2 lit): a thin dashed outline traces the headspace, labelled 'N₂ (invisible)', with no tint. An eye icon and a nose icon each get a thin strike line. Callout: 'No color. No smell.' The s7-2 and s7-3 callouts fade out at the start of s7-4. s7-4: in the right panel, a small breath icon with '1–2 breaths can knock you out' / 'No warning'. It clears fully before s7-5, so it is never paired with the gauge threshold. s7-5 (Q3 lit): the panel shows an oxygen gauge with only two tick labels, '20.9% normal' and '19.5%', and the band below 19.5% labelled 'Too little O₂ (OSHA)'. The needle is greyed and shows '?', because nothing has been measured. Two empty checkboxes sit under it: 'O₂ measured?' and 'Permit needed?'. s7-6: in the same slot, those two checkboxes are replaced by 'Isolate N₂' and 'Test the air'. They stay unticked, and no gas meter is drawn. s7-7: on the tank, a dotted outline of an external probe sketches onto the outside wall with a small '?', labelled 'Reading from outside?'. This sets up the design lesson in scene 9. s7-8 (Q4 lit): on the tank, two empty dashed slots appear beside the rim, 'Watcher?' and 'Rescue plan?'. s7-9: everything except the tank, silhouette and rail fades out, and the decision row rises. 'Stop & get help' lights red while 'Go' and 'Fix it, if safe' dim. The silhouette stays on the platform, outside the tank.",
+   "cues": [
+    {
+     "id": "s7-1",
+     "text": "At two moments, a pause could have changed the outcome. First, before entry.",
+     "on_screen": "Before entry · Before rescue"
+    },
+    {
+     "id": "s7-2",
+     "text": "What's different? Nitrogen is still flowing in, and it isn't isolated.",
+     "on_screen": "N₂ still flowing · Not isolated"
+    },
+    {
+     "id": "s7-3",
+     "text": "What could hurt us? The air: nitrogen has no color and no smell.",
+     "on_screen": "N₂ (invisible) · No color. No smell."
+    },
+    {
+     "id": "s7-4",
+     "text": "Oxygen-poor air can knock you out in one or two breaths.",
+     "on_screen": "1–2 breaths can knock you out · No warning"
+    },
+    {
+     "id": "s7-5",
+     "text": "Checked or assumed? Has anyone measured the oxygen? Does entry need a permit?",
+     "on_screen": "20.9% normal · 19.5% · O₂ measured? · Permit needed?"
+    },
+    {
+     "id": "s7-6",
+     "text": "The only way to know is to isolate and test.",
+     "on_screen": "Isolate N₂ · Test the air"
+    },
+    {
+     "id": "s7-7",
+     "text": "Can I take the reading from outside instead?",
+     "on_screen": "Reading from outside?"
+    },
+    {
+     "id": "s7-8",
+     "text": "What if it goes wrong? Who's watching me, and what's the rescue plan?",
+     "on_screen": "Watcher? · Rescue plan?"
+    },
+    {
+     "id": "s7-9",
+     "text": "No test, no plan: stop and get help.",
+     "on_screen": "Stop & get help"
+    }
+   ]
+  },
+  {
+   "id": "pause-two",
+   "chapter": "Pause two",
+   "purpose": "Apply the questions in seconds before a rescue. Honour the instinct to help, teach the non-entry response, and point to the plan and gear that must exist beforehand. Do not blame the rescuers or imply anything about their outcome.",
+   "visual": "The same tank, now seen from outside. Inside there is only a soft amber glow labelled 'Someone down', with no figure drawn. Two neutral silhouettes stand on the platform near the rim. The question rail is at left. s8-1: header 'Pause two: before rescue', and the second timeline marker lights. s8-2: the two-minute arc from the title compresses into a small seconds ring that ticks quickly. Text: 'Even in seconds'. The question rail flashes through all four cards fast. s8-3 (Q2 lit): the oxygen gauge reappears in the right panel with its needle greyed and the tag 'Not tested'. Text: 'Assume the air did this'. s8-4 (Q4 lit): the gauge clears. One small warning ring at the rim splits into three. Text: 'More people at risk'. Only after the split finishes, a one-line source card slides up along the bottom edge, set well apart from the two silhouettes: 'NIOSH, 1983–1993: some who died were rescuers'. s8-5: the source card clears. Four action icons line up outside the tank, one per phrase: raised hand 'Don't go in', phone 'Call trained rescue', barrier 'Keep others out', tripod and winch 'Retrieval gear'. The two silhouettes step back from the rim. s8-6: a solid base slab slides in under the four icons, labelled 'Plan and gear, in place beforehand'.",
+   "cues": [
+    {
+     "id": "s8-1",
+     "text": "Second: someone is down inside a vessel.",
+     "on_screen": "Pause two: before rescue"
+    },
+    {
+     "id": "s8-2",
+     "text": "Wanting to rush in is human. Run the questions anyway, even in seconds.",
+     "on_screen": "Even in seconds"
+    },
+    {
+     "id": "s8-3",
+     "text": "What could hurt us? Assume the air did this.",
+     "on_screen": "Not tested · Assume the air did this"
+    },
+    {
+     "id": "s8-4",
+     "text": "What if it goes wrong? More people go down.",
+     "on_screen": "More people at risk · NIOSH, 1983–1993: some who died were rescuers"
+    },
+    {
+     "id": "s8-5",
+     "text": "Don't go in. Call trained rescue, keep others out, use retrieval gear.",
+     "on_screen": "Don't go in · Call trained rescue · Keep others out · Retrieval gear"
+    },
+    {
+     "id": "s8-6",
+     "text": "That only works if the plan and gear exist beforehand.",
+     "on_screen": "Plan and gear, in place beforehand"
+    }
+   ]
+  },
+  {
+   "id": "what-they-found",
+   "chapter": "What they found",
+   "purpose": "Keep Cal/OSHA's findings against the employer's program visible under the regulator's credit, place responsibility on the program, then separately present the design lesson and its fix (from the systemic picture, not credited to Cal/OSHA), and state what a worker's pause cannot supply. State no penalty amount.",
+   "visual": "A clean card layout. The palette returns partway to the warm teaching colours. s9-1: a text credit 'Cal/OSHA findings' (no logo) sits at the top. Large counter numerals tick up to '11 citations', with '4 willful' beneath. s9-2: a checklist titled 'Employer's program' starts, and its first item lands with a muted X: 'Air not tested'. s9-3: the next item, 'Confined-space program fell short', expands into three sub-items, each with an X: 'Air testing', 'Protective equipment', 'Rescue equipment & procedures'. s9-4: the checklist slides aside and bold kinetic type sets: 'The program, not the technician'. The 'Cal/OSHA findings' credit stays on screen through this cue. s9-5: the credit fades out and the header changes to 'The design lesson', with no regulator credit. The tank schematic returns small at right. A dashed arrow runs from a thermometer icon down through the open hatch, labelled 'Reading required entry', and the hatch gets a thin strike line. No person is drawn. s9-6: an external temperature probe and a small sample-port valve draw onto the outside of the tank wall in teal (completing the dotted outline from scene 7), labelled 'Outside probe or sample port'. s9-7: a balance scale. The small pan holds one pause icon, labelled 'Worker's pause'. The large pan stacks a gas meter, a permit document and a rescue team (three rounded silhouettes with a helmet badge), labelled 'What the system supplies'. The heavy side settles down.",
+   "cues": [
+    {
+     "id": "s9-1",
+     "text": "Cal/OSHA issued 11 citations, four of them willful.",
+     "tts": "Cal OSHA issued eleven citations, four of them willful.",
+     "on_screen": "Cal/OSHA findings · 11 citations · 4 willful"
+    },
+    {
+     "id": "s9-2",
+     "text": "It found the employer didn't test the tank's air.",
+     "on_screen": "Employer's program · Air not tested"
+    },
+    {
+     "id": "s9-3",
+     "text": "The employer's confined-space program fell short on air testing, protective gear, and rescue.",
+     "on_screen": "Air testing · Protective equipment · Rescue equipment & procedures"
+    },
+    {
+     "id": "s9-4",
+     "text": "Those findings are about the employer's program, not about the technician.",
+     "on_screen": "The program, not the technician"
+    },
+    {
+     "id": "s9-5",
+     "text": "There's a design lesson, too: a reading shouldn't require going inside.",
+     "on_screen": "The design lesson · Reading required entry"
+    },
+    {
+     "id": "s9-6",
+     "text": "An installed probe or a sample port means no one has to.",
+     "on_screen": "Outside probe or sample port"
+    },
+    {
+     "id": "s9-7",
+     "text": "A pause can't supply a gas meter, a permit system, or a rescue team.",
+     "on_screen": "Worker's pause · What the system supplies"
+    }
+   ]
+  },
+  {
+   "id": "what-makes-it-work",
+   "chapter": "What makes it work",
+   "purpose": "State the conditions that make the rule work: tools, time, real authority to stop without reprisal, leaders who respond well, learning over discipline, and hazards engineered out. Be honest that pre-task cards as paperwork showed no evidence, and present the pause as a habit and a gateway to stopping, not a check-the-box form or a tool for blame.",
+   "visual": "Warm teaching palette. s10-1: the pause icon floats at top centre over an empty dashed base. Three bold icons build beside it in turn: wrench 'Tools', clock 'Time', raised hand 'Authority to stop'. s10-2 to s10-5: four foundation blocks stack under the pause icon, one per cue. 'Stop without reprisal' (raised hand). 'Leaders thank, then fix' (a leader silhouette with a small clipboard and a speech bubble 'Thanks for stopping', then a wrench). 'Near misses = learning' (a report card turning into a lightbulb). 'Engineer the hazard out' (a guard icon replacing a hazard icon). The pause icon settles onto the finished stack. s10-6: a small fanned stack of paper cards labelled 'Take 5' slides in at the side, with the neutral tag 'Cards as paperwork: no evidence (2022)' and a tiny line beneath, 'Construction-project trial · see sources'. No author names appear. s10-7: the cards fade back. The pause icon becomes a badge reading 'A habit.' next to a gateway arch icon labelled 'A gateway to stopping.' s10-8: a check-the-box form icon slides in and takes one light strike line. Kinetic text in two beats: 'Not a form.' / 'Not blame.'",
+   "cues": [
+    {
+     "id": "s10-1",
+     "text": "The rule works when the organization gives you tools, time, and authority to stop.",
+     "on_screen": "Tools · Time · Authority to stop"
+    },
+    {
+     "id": "s10-2",
+     "text": "That means stopping with no reprisal.",
+     "on_screen": "Stop without reprisal"
+    },
+    {
+     "id": "s10-3",
+     "text": "Leaders who thank you, then fix what you found.",
+     "on_screen": "Leaders thank, then fix"
+    },
+    {
+     "id": "s10-4",
+     "text": "Near-miss reports that lead to learning, not discipline.",
+     "on_screen": "Near misses = learning"
+    },
+    {
+     "id": "s10-5",
+     "text": "And hazards engineered out, so the pause isn't your only defense.",
+     "on_screen": "Engineer the hazard out"
+    },
+    {
+     "id": "s10-6",
+     "text": "One 2022 study of Take 5 pre-task cards found no evidence the cards made work safer.",
+     "tts": "One twenty twenty-two study of Take Five pre-task cards found no evidence the cards made work safer.",
+     "on_screen": "Cards as paperwork: no evidence (2022)"
+    },
+    {
+     "id": "s10-7",
+     "text": "So the pause is a professional habit, and a gateway to stopping.",
+     "on_screen": "A habit. A gateway to stopping."
+    },
+    {
+     "id": "s10-8",
+     "text": "Not a check-the-box form, and never a tool for blame.",
+     "on_screen": "Not a form. Not blame."
+    }
+   ]
+  },
+  {
+   "id": "your-two-minutes",
+   "chapter": "Your two minutes",
+   "purpose": "Recap: when to pause, the four moves, the four questions and the three decisions (with 'if safe' kept). Show a calm, safe-future echo of the tank in which no one needs to go inside.",
+   "visual": "The silhouette stands at the workstation from scene 2. s11-1: the shift timeline returns briefly with its 'Before you start' and 'Any change' markers glowing. Header: 'Before you start. When things change.' As the timeline clears, a small callback vignette fades in at lower right: the case tank, hatch closed, fitted with the teal external probe, and a neutral silhouette standing outside it reading a small temperature display labelled 'Reading from outside'. No gas meter and no oxygen figure. The vignette fades out before s11-2 so the grid has the screen to itself. s11-2: question cards 1 and 2 return full size in their hues and icons as each is spoken, top row of a 2x2 grid. s11-3: cards 3 and 4 fill the bottom row. s11-4: the decision row rises beneath the grid, and each button lights in turn: green 'Go', amber 'Fix it, if safe', red 'Stop & get help'.",
+   "cues": [
+    {
+     "id": "s11-1",
+     "text": "Before you start, and whenever things change: stop, look, and ask.",
+     "on_screen": "Before you start. When things change."
+    },
+    {
+     "id": "s11-2",
+     "text": "What's different? What could hurt us?",
+     "on_screen": "What's different? · What could hurt us?"
+    },
+    {
+     "id": "s11-3",
+     "text": "Are the controls checked, or assumed? What if it goes wrong?",
+     "on_screen": "Checked or assumed? · What if it goes wrong?"
+    },
+    {
+     "id": "s11-4",
+     "text": "Then go, fix it if it's safe, or stop and get help.",
+     "on_screen": "Go · Fix it, if safe · Stop & get help"
+    }
+   ]
+  },
+  {
+   "id": "closing-card",
+   "chapter": "",
+   "purpose": "A poster-like closing card with the core questions and decisions that people can screenshot or print. It respects frontline expertise and ends on the line-clearance callback, followed by sources.",
+   "visual": "The grid tightens into one clean card on the warm background. Top: 'The 2-Minute Rule' with the stopwatch icon. Middle: 'Stop · Look · Ask · Decide', then the four numbered questions in their hues: '1 What's different?', '2 What could hurt us?', '3 Checked or assumed?', '4 What if it goes wrong?'. Below them: 'Go · Fix it, if safe · Stop & get help'. s12-1: the line 'You know this work best.' fades in under the card. s12-2: the card shrinks slightly and 'Line clearance for people' sets in bold kinetic type beneath it. Hold about 3 seconds after the narration, then slide up to a small, plain sources list (outlets, documents and dates as listed; no news headlines and no penalty figures) held for about 6 seconds before the fade to black.",
+   "cues": [
+    {
+     "id": "s12-1",
+     "text": "You know this work best.",
+     "on_screen": "You know this work best."
+    },
+    {
+     "id": "s12-2",
+     "text": "You clear the line for product. Clear it for people, too.",
+     "on_screen": "Line clearance for people"
+    }
+   ]
+  }
+ ],
+ "facts_used": [
+  {
+   "claim": "The 2-minute rule is a short, deliberate pause by the people about to do the work, at the place the work happens, right before starting and again after a break, interruption or handover, and whenever something changes.",
+   "brief_section": "What the 2-minute rule is (consensus across sources)"
+  },
+  {
+   "claim": "In the pause you stop before touching anything, look around the job and next to it, compare reality with what the plan assumed, name what could hurt you, and confirm controls are really in place, verified not assumed. Then you decide: go, fix it (if safe to), or stop and get help.",
+   "brief_section": "What the 2-minute rule is (consensus across sources)"
+  },
+  {
+   "claim": "It adds to SOPs, permits, lockout/tagout and confined-space programs and does not replace them. It catches the gap between the plan written earlier and the job as it is now.",
+   "brief_section": "What the 2-minute rule is (consensus across sources)"
+  },
+  {
+   "claim": "'Two minutes' is a rule of thumb, and what matters is the pause.",
+   "brief_section": "What the 2-minute rule is (consensus across sources)"
+  },
+  {
+   "claim": "It is not the productivity tip 'if it takes less than two minutes, do it now' (paraphrased in the narration as doing quick tasks right away).",
+   "brief_section": "What the 2-minute rule is (consensus across sources)"
+  },
+  {
+   "claim": "The four questions are condensed from the typical set: what's different from the plan or last time; what could hurt me or someone nearby; are the controls really in place, verified not assumed; what to do if it goes wrong, and am I rushed, tired or distracted (placed under Q4). If a safeguard can't be confirmed: stop and get help.",
+   "brief_section": "Typical questions in the two minutes"
+  },
+  {
+   "claim": "21 CFR 211.130(e) requires packaging and labeling facilities to be inspected immediately before use so nothing from the previous operation remains, with results documented in the batch record. The 2-minute rule is line clearance for people.",
+   "brief_section": "Pharma framing that resonates"
+  },
+  {
+   "claim": "Pharma moments used: tablet-press tooling change (first run after a change), CIP with hot caustic and steam, a blister packer under lockout, and charging a reactor.",
+   "brief_section": "Pharma framing that resonates; Typical questions in the two minutes"
+  },
+  {
+   "claim": "A biopharmaceutical plant in Los Angeles, January 2011. Nitrogen was being bubbled through plasma in a seven-foot-deep, 6,000-liter process tank as part of a protein-extraction process, and the nitrogen displaced the oxygen.",
+   "brief_section": "THE CASE"
+  },
+  {
+   "claim": "The tank's air was untested (Cal/OSHA found the employer did not test the tank's atmosphere). This is presented as a tank condition before any entry, not as an individual's failure.",
+   "brief_section": "THE CASE"
+  },
+  {
+   "claim": "The technician entered the vessel to take a temperature reading (federal OSHA accident summary) and collapsed.",
+   "brief_section": "THE CASE"
+  },
+  {
+   "claim": "Two coworkers went into the tank to get him out with no rescue plan or equipment provided, and collapsed too. The fire department brought them out, and the technician died. Who ordered the rescue and the rescuers' injuries are deliberately not stated, per the verification correction.",
+   "brief_section": "THE CASE (VERIFICATION CORRECTION; Systemic picture: no planned rescue)"
+  },
+  {
+   "claim": "Pause 1 stop conditions: nitrogen gas still flowing and not isolated, air not tested, no permit, watcher or rescue plan. Nothing shows a gas meter was available, so the honest counterfactual is 'stop and get help', framed as 'could have'.",
+   "brief_section": "Where two minutes plausibly could have changed the outcome (VERIFICATION CORRECTION)"
+  },
+  {
+   "claim": "Pause 1 questions: has anyone measured the oxygen; is this a confined space that needs a permit; can I take the reading from outside; who's watching and what's the rescue plan.",
+   "brief_section": "Where two minutes plausibly could have changed the outcome (Pause 1)"
+  },
+  {
+   "claim": "Nitrogen is colorless and odorless, so your senses give no warning. The only way to know is to isolate and test.",
+   "brief_section": "Where two minutes plausibly could have changed the outcome (Pause 1)"
+  },
+  {
+   "claim": "Breathing oxygen-deficient air can cause unconsciousness after one or two breaths, with no warning (on screen with 'can' kept, and shown separately from the 19.5% threshold).",
+   "brief_section": "Background facts (CSB Safety Bulletin 2003-10-B)"
+  },
+  {
+   "claim": "Normal air is about 20.9% oxygen, and OSHA defines oxygen-deficient as below 19.5% (on screen only).",
+   "brief_section": "Background facts (29 CFR 1910.146)"
+  },
+  {
+   "claim": "Pause 2: when someone collapses inside a vessel, assume the air did it. Don't go in, call trained rescue, keep others out, and use retrieval equipment. The rule applies to emergencies too, even for a few seconds.",
+   "brief_section": "Where two minutes plausibly could have changed the outcome (Pause 2)"
+  },
+  {
+   "claim": "NIOSH Pub. 94-103 covers confined-space deaths from 1983 to 1993, and some of the dead were would-be rescuers (a one-line on-screen source card, dated so it is not read as this case).",
+   "brief_section": "Background facts (citable)"
+  },
+  {
+   "claim": "Cal/OSHA issued 11 citations, 4 of them willful. No penalty amount is stated.",
+   "brief_section": "THE CASE"
+  },
+  {
+   "claim": "Cal/OSHA found the employer did not test the tank's atmosphere, and its confined-space program did not meet requirements, including atmospheric testing, protective equipment, and rescue equipment and procedures.",
+   "brief_section": "THE CASE"
+  },
+  {
+   "claim": "Investigators placed responsibility on the employer's program, not on the technician.",
+   "brief_section": "Where two minutes plausibly could have changed the outcome (Limits)"
+  },
+  {
+   "claim": "Design lesson (presented after the regulator's credit fades, not as a Cal/OSHA finding): the process required a person to go inside the vessel to take a reading, and an external probe or sample port removes that need.",
+   "brief_section": "THE CASE (Systemic picture)"
+  },
+  {
+   "claim": "A worker's pause cannot supply a gas meter, a permit system or a rescue team. The rule works when the organization gives people the tools, the time and the authority to stop.",
+   "brief_section": "Where two minutes plausibly could have changed the outcome (Limits)"
+  },
+  {
+   "claim": "What makes it work: real stop-work authority with no reprisal; leaders who thank people for stopping and fix what was found; near-miss reporting that is learning, not discipline; and hazards engineered out rather than relying on the pause.",
+   "brief_section": "Evidence and failure modes"
+  },
+  {
+   "claim": "Take 5 is a name used for pre-task checks and cards. A 2022 trial of Take 5 cards on a construction project found no evidence they worked as paperwork. So the pause is a professional habit and a gateway to stopping, not a form, a check-the-box exercise or proof of blame.",
+   "brief_section": "Evidence and failure modes; What the 2-minute rule is (other names)"
+  }
+ ],
+ "end_card_sources": [
+  "Cal/OSHA announcement, July 21, 2011, as reported by Fierce Pharma and CBS Los Angeles",
+  "Federal OSHA accident summary 202542296",
+  "U.S. Chemical Safety Board, Safety Bulletin 2003-10-B: Hazards of Nitrogen Asphyxiation",
+  "21 CFR 211.130(e) (line clearance)",
+  "29 CFR 1910.146 (permit-required confined spaces)",
+  "NIOSH Pub. 94-103, Worker Deaths in Confined Spaces",
+  "IOGP Start Work Checks (Report 459-1) and Process Safety Fundamentals",
+  "SLAM toolkit (Stop, Look, Assess, Manage), hosted by UK HSE",
+  "Havinga, Shire & Rae (2022), Safety 8(2):27"
+ ],
+ "word_count": 730
+}

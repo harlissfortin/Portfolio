@@ -1,0 +1,551 @@
+{
+ "voice": "af_heart",
+ "speed": 0.85,
+ "fps": 30,
+ "scenes": [
+  {
+   "id": "cold-open-title",
+   "chapter": "",
+   "start": 0.0,
+   "end": 13.784
+  },
+  {
+   "id": "what-it-is",
+   "chapter": "What it is",
+   "start": 13.784,
+   "end": 39.868
+  },
+  {
+   "id": "line-clearance",
+   "chapter": "Line clearance",
+   "start": 39.868,
+   "end": 65.45
+  },
+  {
+   "id": "how-it-works",
+   "chapter": "How it works",
+   "start": 65.45,
+   "end": 88.444
+  },
+  {
+   "id": "on-the-floor",
+   "chapter": "On the floor",
+   "start": 88.444,
+   "end": 113.061
+  },
+  {
+   "id": "the-case",
+   "chapter": "The case",
+   "start": 113.061,
+   "end": 157.522
+  },
+  {
+   "id": "pause-one",
+   "chapter": "Pause one",
+   "start": 157.522,
+   "end": 198.271
+  },
+  {
+   "id": "pause-two",
+   "chapter": "Pause two",
+   "start": 198.271,
+   "end": 223.104
+  },
+  {
+   "id": "what-they-found",
+   "chapter": "What they found",
+   "start": 223.104,
+   "end": 257.368
+  },
+  {
+   "id": "what-makes-it-work",
+   "chapter": "What makes it work",
+   "start": 257.368,
+   "end": 294.448
+  },
+  {
+   "id": "your-two-minutes",
+   "chapter": "Your two minutes",
+   "start": 294.448,
+   "end": 310.602
+  },
+  {
+   "id": "closing-card",
+   "chapter": "",
+   "start": 310.602,
+   "end": 328.076
+  }
+ ],
+ "cues": [
+  {
+   "id": "s1-1",
+   "scene": "cold-open-title",
+   "start": 1.4,
+   "end": 5.059,
+   "text": "Every job comes with a plan, written earlier, somewhere else."
+  },
+  {
+   "id": "s1-2",
+   "scene": "cold-open-title",
+   "start": 5.439,
+   "end": 8.597,
+   "text": "But the job is here, now. It may not match the plan."
+  },
+  {
+   "id": "s1-3",
+   "scene": "cold-open-title",
+   "start": 9.397,
+   "end": 12.204,
+   "text": "The 2-minute rule is how you catch the difference."
+  },
+  {
+   "id": "s2-1",
+   "scene": "what-it-is",
+   "start": 13.784,
+   "end": 17.141,
+   "text": "It's a short, deliberate pause you take where you do the work."
+  },
+  {
+   "id": "s2-2",
+   "scene": "what-it-is",
+   "start": 17.521,
+   "end": 22.778,
+   "text": "Take it right before you start, and again after a break, a handover, or any change."
+  },
+  {
+   "id": "s2-3",
+   "scene": "what-it-is",
+   "start": 23.478,
+   "end": 30.656,
+   "text": "It adds to your SOPs, permits, lockout, and confined-space programs. It never replaces them."
+  },
+  {
+   "id": "s2-4",
+   "scene": "what-it-is",
+   "start": 31.036,
+   "end": 34.727,
+   "text": "Two minutes is a rule of thumb. What matters is the pause."
+  },
+  {
+   "id": "s2-5",
+   "scene": "what-it-is",
+   "start": 35.107,
+   "end": 39.088,
+   "text": "It's not the productivity tip about doing quick tasks right away."
+  },
+  {
+   "id": "s3-1",
+   "scene": "line-clearance",
+   "start": 39.868,
+   "end": 43.359,
+   "text": "You already do this for product. It's called line clearance."
+  },
+  {
+   "id": "s3-2",
+   "scene": "line-clearance",
+   "start": 43.739,
+   "end": 49.276,
+   "text": "Right before use, you inspect the packaging line so nothing from the last run remains."
+  },
+  {
+   "id": "s3-3",
+   "scene": "line-clearance",
+   "start": 49.876,
+   "end": 57.297,
+   "text": "21 CFR 211.130(e) requires it, and the results go in the batch record."
+  },
+  {
+   "id": "s3-4",
+   "scene": "line-clearance",
+   "start": 57.677,
+   "end": 60.563,
+   "text": "The 2-minute rule is line clearance for people."
+  },
+  {
+   "id": "s3-5",
+   "scene": "line-clearance",
+   "start": 61.263,
+   "end": 64.27,
+   "text": "Same discipline, aimed at the hazards around you."
+  },
+  {
+   "id": "s4-1",
+   "scene": "how-it-works",
+   "start": 65.45,
+   "end": 68.673,
+   "text": "In your two minutes: stop, look, ask, decide."
+  },
+  {
+   "id": "s4-2",
+   "scene": "how-it-works",
+   "start": 69.373,
+   "end": 73.443,
+   "text": "Stop before you touch anything. Look around the job, and next to it."
+  },
+  {
+   "id": "s4-3",
+   "scene": "how-it-works",
+   "start": 73.823,
+   "end": 78.11,
+   "text": "Then ask: What's different from the plan, or last time? What could hurt us?"
+  },
+  {
+   "id": "s4-4",
+   "scene": "how-it-works",
+   "start": 78.49,
+   "end": 82.113,
+   "text": "Are the controls checked, or assumed? What if it goes wrong?"
+  },
+  {
+   "id": "s4-5",
+   "scene": "how-it-works",
+   "start": 82.613,
+   "end": 86.644,
+   "text": "Then decide: go, fix it if it's safe, or stop and get help."
+  },
+  {
+   "id": "s5-1",
+   "scene": "on-the-floor",
+   "start": 88.444,
+   "end": 92.85,
+   "text": "What's different? First run after a tooling change on the tablet press."
+  },
+  {
+   "id": "s5-2",
+   "scene": "on-the-floor",
+   "start": 93.23,
+   "end": 98.095,
+   "text": "What could hurt us? Clean- or steam-in-place: hot caustic and steam."
+  },
+  {
+   "id": "s5-3",
+   "scene": "on-the-floor",
+   "start": 98.475,
+   "end": 103.795,
+   "text": "Checked or assumed? The blister packer is locked out. Did you verify it yourself?"
+  },
+  {
+   "id": "s5-4",
+   "scene": "on-the-floor",
+   "start": 104.175,
+   "end": 108.044,
+   "text": "What if it goes wrong while you're charging a reactor? What's your next move?"
+  },
+  {
+   "id": "s5-5",
+   "scene": "on-the-floor",
+   "start": 108.424,
+   "end": 111.781,
+   "text": "Rushed, tired, or distracted? Check yourself, too."
+  },
+  {
+   "id": "s6-1",
+   "scene": "the-case",
+   "start": 114.061,
+   "end": 120.238,
+   "text": "A real case: a biopharmaceutical plant in Los Angeles, January 2011."
+  },
+  {
+   "id": "s6-2",
+   "scene": "the-case",
+   "start": 120.938,
+   "end": 126.679,
+   "text": "Nitrogen bubbles through plasma in a 6,000-liter tank, as part of the process."
+  },
+  {
+   "id": "s6-3",
+   "scene": "the-case",
+   "start": 127.059,
+   "end": 131.357,
+   "text": "The nitrogen has pushed out the oxygen, and the air is untested."
+  },
+  {
+   "id": "s6-4",
+   "scene": "the-case",
+   "start": 132.057,
+   "end": 136.254,
+   "text": "A technician goes in to take a temperature reading. He collapses."
+  },
+  {
+   "id": "s6-5",
+   "scene": "the-case",
+   "start": 137.154,
+   "end": 143.042,
+   "text": "Two coworkers go in to bring him out, with no air test and no proper rescue gear provided."
+  },
+  {
+   "id": "s6-6",
+   "scene": "the-case",
+   "start": 143.422,
+   "end": 145.0,
+   "text": "Both of them collapse too."
+  },
+  {
+   "id": "s6-7",
+   "scene": "the-case",
+   "start": 145.9,
+   "end": 149.076,
+   "text": "Firefighters bring them out. The technician dies."
+  },
+  {
+   "id": "s6-8",
+   "scene": "the-case",
+   "start": 152.076,
+   "end": 155.722,
+   "text": "This isn't about careless people. It's about the gaps around them."
+  },
+  {
+   "id": "s7-1",
+   "scene": "pause-one",
+   "start": 157.922,
+   "end": 162.69,
+   "text": "At two moments, a pause could have changed the outcome. First, before entry."
+  },
+  {
+   "id": "s7-2",
+   "scene": "pause-one",
+   "start": 163.39,
+   "end": 167.909,
+   "text": "What's different? Nitrogen is still flowing in, and it isn't isolated."
+  },
+  {
+   "id": "s7-3",
+   "scene": "pause-one",
+   "start": 168.289,
+   "end": 172.63,
+   "text": "What could hurt us? The air: nitrogen has no color and no smell."
+  },
+  {
+   "id": "s7-4",
+   "scene": "pause-one",
+   "start": 173.01,
+   "end": 176.429,
+   "text": "Oxygen-poor air can knock you out in one or two breaths."
+  },
+  {
+   "id": "s7-5",
+   "scene": "pause-one",
+   "start": 177.029,
+   "end": 182.292,
+   "text": "Checked or assumed? Has anyone measured the oxygen? Does entry need a permit?"
+  },
+  {
+   "id": "s7-6",
+   "scene": "pause-one",
+   "start": 182.672,
+   "end": 185.754,
+   "text": "The only way to know is to isolate and test."
+  },
+  {
+   "id": "s7-7",
+   "scene": "pause-one",
+   "start": 186.354,
+   "end": 188.863,
+   "text": "Can I take the reading from outside instead?"
+  },
+  {
+   "id": "s7-8",
+   "scene": "pause-one",
+   "start": 189.243,
+   "end": 193.184,
+   "text": "What if it goes wrong? Who's watching me, and what's the rescue plan?"
+  },
+  {
+   "id": "s7-9",
+   "scene": "pause-one",
+   "start": 193.564,
+   "end": 196.371,
+   "text": "No test, no plan: stop and get help."
+  },
+  {
+   "id": "s8-1",
+   "scene": "pause-two",
+   "start": 198.271,
+   "end": 200.842,
+   "text": "Second: someone is down inside a vessel."
+  },
+  {
+   "id": "s8-2",
+   "scene": "pause-two",
+   "start": 201.222,
+   "end": 206.294,
+   "text": "Wanting to rush in is human. Run the questions anyway, even in seconds."
+  },
+  {
+   "id": "s8-3",
+   "scene": "pause-two",
+   "start": 206.894,
+   "end": 209.361,
+   "text": "What could hurt us? Assume the air did this."
+  },
+  {
+   "id": "s8-4",
+   "scene": "pause-two",
+   "start": 209.741,
+   "end": 212.325,
+   "text": "What if it goes wrong? More people go down."
+  },
+  {
+   "id": "s8-5",
+   "scene": "pause-two",
+   "start": 213.125,
+   "end": 217.776,
+   "text": "Don't go in. Call trained rescue, keep others out, use retrieval gear."
+  },
+  {
+   "id": "s8-6",
+   "scene": "pause-two",
+   "start": 218.376,
+   "end": 221.824,
+   "text": "That only works if the plan and gear exist beforehand."
+  },
+  {
+   "id": "s9-1",
+   "scene": "what-they-found",
+   "start": 223.104,
+   "end": 227.021,
+   "text": "Cal/OSHA issued 11 citations, four of them willful."
+  },
+  {
+   "id": "s9-2",
+   "scene": "what-they-found",
+   "start": 227.621,
+   "end": 230.02,
+   "text": "It found the employer didn't test the tank's air."
+  },
+  {
+   "id": "s9-3",
+   "scene": "what-they-found",
+   "start": 230.4,
+   "end": 236.554,
+   "text": "The employer's confined-space program fell short on air testing, protective gear, and rescue."
+  },
+  {
+   "id": "s9-4",
+   "scene": "what-they-found",
+   "start": 236.934,
+   "end": 241.358,
+   "text": "Those findings are about the employer's program, not about the technician."
+  },
+  {
+   "id": "s9-5",
+   "scene": "what-they-found",
+   "start": 242.258,
+   "end": 246.671,
+   "text": "There's a design lesson, too: a reading shouldn't require going inside."
+  },
+  {
+   "id": "s9-6",
+   "scene": "what-they-found",
+   "start": 247.051,
+   "end": 250.843,
+   "text": "An installed probe or a sample port means no one has to."
+  },
+  {
+   "id": "s9-7",
+   "scene": "what-they-found",
+   "start": 251.443,
+   "end": 256.188,
+   "text": "A pause can't supply a gas meter, a permit system, or a rescue team."
+  },
+  {
+   "id": "s10-1",
+   "scene": "what-makes-it-work",
+   "start": 257.368,
+   "end": 262.747,
+   "text": "The rule works when the organization gives you tools, time, and authority to stop."
+  },
+  {
+   "id": "s10-2",
+   "scene": "what-makes-it-work",
+   "start": 263.127,
+   "end": 265.371,
+   "text": "That means stopping with no reprisal."
+  },
+  {
+   "id": "s10-3",
+   "scene": "what-makes-it-work",
+   "start": 265.751,
+   "end": 268.613,
+   "text": "Leaders who thank you, then fix what you found."
+  },
+  {
+   "id": "s10-4",
+   "scene": "what-makes-it-work",
+   "start": 268.993,
+   "end": 272.411,
+   "text": "Near-miss reports that lead to learning, not discipline."
+  },
+  {
+   "id": "s10-5",
+   "scene": "what-makes-it-work",
+   "start": 272.791,
+   "end": 276.841,
+   "text": "And hazards engineered out, so the pause isn't your only defense."
+  },
+  {
+   "id": "s10-6",
+   "scene": "what-makes-it-work",
+   "start": 277.541,
+   "end": 284.698,
+   "text": "One 2022 study of Take 5 pre-task cards found no evidence the cards made work safer."
+  },
+  {
+   "id": "s10-7",
+   "scene": "what-makes-it-work",
+   "start": 285.298,
+   "end": 289.305,
+   "text": "So the pause is a professional habit, and a gateway to stopping."
+  },
+  {
+   "id": "s10-8",
+   "scene": "what-makes-it-work",
+   "start": 289.685,
+   "end": 293.048,
+   "text": "Not a check-the-box form, and never a tool for blame."
+  },
+  {
+   "id": "s11-1",
+   "scene": "your-two-minutes",
+   "start": 294.448,
+   "end": 298.618,
+   "text": "Before you start, and whenever things change: stop, look, and ask."
+  },
+  {
+   "id": "s11-2",
+   "scene": "your-two-minutes",
+   "start": 299.518,
+   "end": 301.39,
+   "text": "What's different? What could hurt us?"
+  },
+  {
+   "id": "s11-3",
+   "scene": "your-two-minutes",
+   "start": 301.77,
+   "end": 305.393,
+   "text": "Are the controls checked, or assumed? What if it goes wrong?"
+  },
+  {
+   "id": "s11-4",
+   "scene": "your-two-minutes",
+   "start": 305.893,
+   "end": 309.222,
+   "text": "Then go, fix it if it's safe, or stop and get help."
+  },
+  {
+   "id": "s12-1",
+   "scene": "closing-card",
+   "start": 310.602,
+   "end": 312.037,
+   "text": "You know this work best."
+  },
+  {
+   "id": "s12-2",
+   "scene": "closing-card",
+   "start": 312.737,
+   "end": 316.196,
+   "text": "You clear the line for product. Clear it for people, too."
+  }
+ ],
+ "duration": 328.076
+}
