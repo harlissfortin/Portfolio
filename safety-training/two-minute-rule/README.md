@@ -1,116 +1,101 @@
-# The 2-Minute Rule — safety training video
+# The 2-Minute Rule: six saves on a pharma floor
 
-A five-and-a-half-minute narrated motion-graphics video that teaches the workplace-safety **2-minute rule**:
-a short pause at the point of work, before you start and again whenever something changes.
-It is built around a real pharmaceutical-manufacturing fatality where that pause could have
-changed the outcome.
+A 5¾-minute (5:41) narrated motion-graphics safety training video about the **2-minute rule**: a short, deliberate pause
+at the point of work, right before you start and again whenever something changes. It teaches the rule, then shows
+six practical **two-minute saves** from pharmaceutical manufacturing. Each one is impactful without being morbid:
+what the pause caught, the call, and what it prevented.
 
-**▶ [`two-minute-rule.mp4`](two-minute-rule.mp4)** · 1920×1080, 30 fps, H.264 + AAC, 5:28, open captions burned in, audio at −16 LUFS
-· [`transcript.md`](transcript.md) · [`captions.vtt`](captions.vtt) · [`storyboard.md`](storyboard.md) · [`poster.png`](poster.png) (thumbnail)
+**▶ [`two-minute-rule.mp4`](two-minute-rule.mp4)** · 1920×1080, 30 fps, H.264 + AAC, open captions burned in, audio at
+−16 LUFS · [`transcript.md`](transcript.md) · [`captions.vtt`](captions.vtt) · [`storyboard.md`](storyboard.md) ·
+[`poster.png`](poster.png)
 
-**Audience:** frontline staff in pharmaceutical manufacturing (operators, technicians, maintenance,
-cleaning, supervisors).
+**Rollout:** [`stakeholder-review.md`](stakeholder-review.md) has a review of the script from three perspectives
+(safety manager, operations director, site lead), the script changes it drove, and a merged rollout guide. Read it
+before showing the video. The reviews were simulated, role-based perspective reviews written by AI reviewers. They are
+not sign-off by real site staff, so the video still needs your own SME, QA and leadership review.
+
+**Audience:** frontline staff in pharmaceutical manufacturing (operators, technicians, maintenance, cleaning,
+packaging) and their supervisors.
 
 **By the end, the learner can:**
-- say when to take the pause: before starting, and again after a break, a handover or any change
-- run the four questions on a real task: *What's different? What could hurt us? Checked or assumed? What if it goes wrong?*
-- choose **Go**, **Fix it, if safe**, or **Stop & get help**, and give the stop condition for a vessel that hasn't been isolated or tested
-- say why you don't go in after a person who has collapsed inside a vessel, and what to do instead
-- explain why the rule depends on the organization (authority to stop, leaders who respond, hazards engineered out)
+- say when to run the pause: before starting, and after a break, a handover, an interruption or any change
+- run Stop · Look · Ask · Decide with the four questions: *What's different? What could hurt us? Checked or assumed?
+  What if it goes wrong?*
+- choose **Go**, **Fix it, if safe** (only if trained, authorized and in procedure) or **Stop & get help**
+- give an example from their own area where a gauge, indicator, note or glove would be the catch (practised in the
+  huddle discussion; the video models it six times)
 
 ## What's in it
 
-| Time | Section | What it teaches |
+| Time | Chapter | What it teaches |
 |---|---|---|
-| 0:00 | Title | The plan was written earlier; the job is happening now |
-| 0:13 | What it is | A deliberate pause at the point of work. It adds to SOPs, permits, lockout and confined-space programs, and never replaces them. "Two minutes" is a rule of thumb. Not the productivity tip. |
-| 0:39 | Line clearance | Pharma staff already do this for product (21 CFR 211.130(e)). The 2-minute rule is **line clearance for people**. |
-| 1:05 | How it works | Stop · Look · Ask · Decide, the four questions, and the three decisions |
-| 1:28 | On the floor | One quick pharma moment per question: tablet-press tooling change, clean- or steam-in-place, blister-packer lockout, reactor charging, and checking yourself |
-| 1:53 | The case | A nitrogen-filled process tank, Los Angeles, 2011 |
-| 2:37 | Pause one | The four questions run before entry, ending at a stop condition |
-| 3:18 | Pause two | The four questions run before a rescue: don't go in, call trained rescue |
-| 3:43 | What they found | Cal/OSHA's findings against the employer's program; a design lesson; what a pause can't supply |
-| 4:17 | What makes it work | Stop without reprisal, leaders who thank you then fix it, learning from near misses, engineering hazards out. Not a form, not blame. |
-| 4:54 | Your two minutes | Recap of the questions and decisions |
-| 5:10 | Close | One card to remember, then the sources |
+| 0:00 | Intro | A jam to clear, a line to break, a vessel to open. Before your hands move, give it two minutes. |
+| 0:11 | The rule | A pause at the point of work: before you start, and after any break, handover, interruption or change. Two minutes is a rule of thumb. |
+| 0:25 | Line clearance for people | You already clear the line for product; this is the same habit for people. It adds to SOPs, permits, lockout and guards, and never replaces them. |
+| 0:43 | Stop · Look · Ask · Decide | The four questions and three decisions, with the limit on fixes |
+| 1:02 | Six saves | Most pauses end in Go, and on a repeat task it takes seconds. The cases are illustrative composites. |
+| 1:16 | Save 1 · Tablet press handover | **What's different?** The last shift left a tooling change half done. → Stop & get help |
+| 1:47 | Save 2 · Powder charge | **What could hurt us? / Checked or assumed?** Static at an open manway: the earth clamp is off and the indicator is red. → Fix it |
+| 2:16 | Save 3 · Inerted filter dryer | **What could hurt us? / Checked or assumed?** Low-oxygen air, with no test and no permit. → Stop & get help |
+| 2:56 | Save 4 · Blister packer jam | **Checked or assumed?** Stopped isn't isolated, and trapped air shows on the gauge. → Fix it (bleed to zero) |
+| 3:21 | Save 5 · Isolator glove | **Checked or assumed?** A cut in a glove at a potent-API isolator. → Stop & get help |
+| 3:48 | Save 6 · Line break after CIP | **What if it goes wrong?** The screen says complete; the gauge says pressure, and the line is hot. → Fix it |
+| 4:21 | All six end in Go | Three fixes, three calls for help, and all six end in Go |
+| 4:29 | What leaders commit to | Anyone can stop a job. Leaders come quickly, thank you, fix the cause and tell you what changed. It's not a form. |
+| 4:51 | Recap card | The card, then a localizable "Your site" slate (5:13) and the sources (5:23) |
 
-## The pharmaceutical example: how it was handled
+Each save follows the same template so a facilitator can show it on its own:
+1. A one-second Stop · Look · Ask · Decide sting.
+2. The question that catches it, lit on the rail.
+3. A red ring on the concrete catch.
+4. The call.
+5. The steps, in the correct order.
+6. "What it prevented", stated plainly.
 
-On January 21, 2011, at a plant in Los Angeles making plasma-derived therapeutics, a technician
-entered a seven-foot-deep, 6,000-liter process tank to take a temperature reading. Nitrogen was
-being bubbled through the batch and had displaced the oxygen. He collapsed. Two coworkers went in
-after him, with no air test and no proper rescue equipment provided, and they collapsed too.
-Firefighters brought all three out; the technician died.
-Cal/OSHA issued 11 citations (four willful). It found that the employer did not test the tank's
-atmosphere, and that its confined-space program fell short on atmospheric testing, protective
-equipment, and rescue equipment and procedures.
+## Design choices
 
-Choices made in telling it, following this portfolio's
-[authoring style guide](../../lean-six-sigma-training-program/program-operations/content-authoring-style-guide.md):
-
-- **No employer or person is named** in the video. Sources are listed at the end and below.
-- **Nothing in the video blames a worker.** Findings are framed as the system's gaps, and the
-  rescuers are shown as people trying to save a colleague with no plan or equipment provided.
-- **"Could have," never "would have."** Nothing in the record shows a gas meter was available. So
-  the honest counterfactual is that a pause could have surfaced the **stop condition**: gas still
-  flowing and not isolated, air untested, a whole body going inside. It does not claim a pause
-  would have found the low reading.
-- **Conflicting official accounts are left out rather than resolved.** Cal/OSHA says a supervisor
-  ordered the rescue entry and that both rescuers were seriously injured. The OSHA accident
-  summary says the coworkers entered "as the supervisor sought help" and records different
-  injuries. The video says only what both accounts support.
-- **No penalty amount** is given. $371,250 was proposed; the final figure is unconfirmed.
-- **The evidence on the rule itself is stated honestly.** A 2022 study of Take 5 pre-task cards
-  found no evidence the cards made work safer. So the video presents the rule as a professional
-  habit and a gateway to stopping, not as a form and not as proof of blame.
-
-Other candidates were researched and set aside. In a 2008 runaway reaction at an API plant in Cork,
-the investigators' central finding was that the system relied on operators never making an error.
-Telling it as a story about a worker's pause would repeat that mistake. A 2021 dust-collector hand
-injury in Mississauga fits only moderately, and it can't be told without focusing on what the
-worker did.
+- **Focused on the rule.** Every scene teaches the rule or applies it, and the four questions stay on screen through
+  each save.
+- **Impactful, not morbid.** No death, injury, collapse or rescue is shown or described. The impact comes from the
+  moment of the catch and a plain line on what it prevented, such as "Your hand stays out of a machine that still had
+  stored energy" or "Nobody leans into air with too little oxygen".
+- **Proportionate.** Most pauses end in Go. The six saves split three fixes and three calls for help, and every one ends
+  in Go once it's safe.
+- **Bounded.** "Fix it, if safe" is limited on screen to *trained, authorized & in procedure*, and each fix save
+  shows its basis (your lock, trained and in procedure, or the line-break permit). The pause never replaces a permit,
+  lockout or gas test.
+- **Illustrative and unnamed.** The use cases are composites built from verified pharma hazards. No employer or
+  person is named, and no failure is pinned on a worker.
+- **An earlier version** used a real 2011 fatality as its example. It was replaced at the user's request with this
+  focused, non-morbid set of use cases.
 
 ## Sources
 
-- Cal/OSHA citation announcement, July 21, 2011, as reported by
-  [Fierce Pharma](https://www.fiercepharma.com/pharma/cal-osha-fines-prominent-pharmaceutical-firm-371-000-for-safety-violations-leading-to-worker)
-  and [CBS Los Angeles](https://www.cbsnews.com/losangeles/news/pharmaceutical-firm-fined-for-safety-violations-leading-to-worker-fatality/)
-- [OSHA accident summary 202542296](https://www.osha.gov/ords/imis/accidentsearch.accident_detail?id=202542296) (event date January 21, 2011)
-- U.S. Chemical Safety Board, Safety Bulletin 2003-10-B,
-  [*Hazards of Nitrogen Asphyxiation*](https://www.csb.gov/hazards-of-nitrogen-asphyxiation/). It
-  reports 85 incidents, 80 deaths and 50 injuries from 1992 to 2002, and warns that
-  unconsciousness can follow one or two breaths with no warning.
-- [21 CFR 211.130(e)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211/subpart-G/section-211.130)
-  (inspection of packaging and labeling facilities immediately before use) ·
-  [29 CFR 1910.146](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.146)
-  (permit-required confined spaces; oxygen-deficient means below 19.5%)
-- NIOSH Publication 94-103, [*Worker Deaths in Confined Spaces*](https://www.cdc.gov/niosh/docs/94-103/default.html) (1994)
-- IOGP Report 459-1, [*Start Work Checks*](https://www.iogp.org/bookstore/product/life-saving-rules-start-work-checks/), and IOGP *Process Safety Fundamentals*
-- SLAM (Stop, Look, Assess, Manage), Leadership and Worker Involvement Toolkit hosted by UK HSE
-- Havinga, Shire & Rae (2022), "Should We Cut the Cards? Assessing the Influence of 'Take 5'
-  Pre-Task Risk Assessments on Safety", *Safety* 8(2):27, [doi:10.3390/safety8020027](https://doi.org/10.3390/safety8020027)
+- [21 CFR 211.130(e)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211/subpart-G/section-211.130), packaging and labeling facilities inspected immediately before use (line clearance)
+- [OSHA 29 CFR 1910.147](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147), control of hazardous energy (lockout/tagout), including stored pneumatic, chemical and thermal energy, and OSHA interpretations on minor servicing
+- [OSHA 29 CFR 1910.212](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.212), machine guarding · [OSHA 29 CFR 1910.146](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.146), permit-required confined spaces (oxygen-deficient is below 19.5%)
+- U.S. Chemical Safety Board, Safety Bulletin 2003-10-B, [*Hazards of Nitrogen Asphyxiation*](https://www.csb.gov/hazards-of-nitrogen-asphyxiation/): nitrogen has no color or smell, and oxygen-poor air can cause unconsciousness within one or two breaths
+- NFPA 77, *Recommended Practice on Static Electricity* · CCPS Process Safety Beacon, March 2025 (static during solids charging)
+- Isolator glove programs: visual check at each use and physical integrity (leak) testing; EU GMP Annex 1 (2022) for aseptic isolators
 
 ## How it was made
 
-1. **Research.** Parallel researchers covered the rule's definitions and variants, pharma incidents
-   in North America and internationally, and pharma task hazards. Each shortlisted incident was
-   then checked by two independent verifiers: one re-checked the facts, the other judged whether a
-   task-level pause really fits without blaming anyone. The official pages (the Cal/OSHA release and
-   OSHA accident summary 202542296) could not be opened from the build environment. So the facts were
-   cross-checked across multiple independent reports and excerpts of those records, not against the
-   records themselves. See *Before deployment*.
-2. **Script.** Three full drafts were written from different angles (story-first, teach-then-apply,
-   questions as the spine) and scored by two independent judges. Both picked the questions-spine
-   draft. It was merged with the best of the others, reviewed through three lenses (fact-check,
-   house style and no-blame, safety pedagogy and production), and revised.
-3. **Narration.** [Kokoro](https://github.com/thewh1teagle/kokoro-onnx) TTS, the same voice and
-   pipeline as the White Belt Module 1 build. Each caption line is synthesized separately, so
-   caption times are measured, not estimated.
-4. **Picture.** Each scene is HTML/SVG in [`source/`](source/). Every frame is a pure function of
-   time (`window.seek(t)`) and is screenshotted with Playwright, then encoded with ffmpeg.
-   Animations are anchored to the measured cue times, down to estimated word positions within a
-   line.
+1. **Research.** Parallel researchers mapped the rule's variants and evidence, and the pharma task hazards with their
+   controls and citations. Candidate incidents were independently verified for facts and fit. That work supplied the
+   v1 case and, for v2, the verified hazard bank.
+2. **Script.** Three full drafts were written from different angles ("six saves", "one shift", question-led) and scored
+   by two independent judges. The best was merged with ideas from the others, then reviewed for technical accuracy,
+   tone and pedagogy and revised.
+3. **Stakeholder review.** AI reviewers read the script from the seat of a safety manager, an operations director and
+   a site lead. Their must-fixes and should-fixes were applied, with conflicts resolved as described in
+   [`stakeholder-review.md`](stakeholder-review.md). This was a simulated perspective review, not real site sign-off.
+4. **Narration.** [Kokoro](https://github.com/thewh1teagle/kokoro-onnx) TTS (voice `af_heart`). Each caption line is
+   synthesized separately, so caption times are measured, not estimated.
+5. **Picture.** Each scene is HTML/SVG in [`source/`](source/) (`scenes-a.js` shared helpers and the save template,
+   `scenes-b.js` the six saves, `scenes-c.js` the closing scenes and hooks). Every frame is a pure function of time,
+   screenshotted with Playwright and encoded with ffmpeg.
+6. **QA.** Contact sheets and frames pulled from the encoded MP4 were reviewed for layout, accuracy and accessibility.
+   Audio-to-caption sync was checked with silence detection. The MP4 carries chapter markers matching the table above.
 
 ### Rebuild
 
@@ -121,28 +106,28 @@ python tooling/from_script.py source/script.json   # script + source/pacing.json
 python tooling/synth.py                            # narration -> build/narration.wav, source/timing.json, captions.vtt
 python tooling/transcript.py                       # transcript.md from measured timings
 node tooling/stills.js                             # optional: one still per caption line, as contact sheets in build/sheets/
-node tooling/render.js --workers 3                 # frames + audio (two-pass loudnorm to -16 LUFS) -> two-minute-rule.mp4 + poster.png
-python tooling/qa_frames.py                        # optional: frames pulled from the encoded MP4 for review, in build/qa/
+node tooling/render.js --workers 3                 # frames + audio (two-pass loudnorm, -16 LUFS) -> two-minute-rule.mp4 + poster.png
+python tooling/qa_frames.py                        # optional: frames pulled from the encoded MP4, in build/qa/
 ```
 
-To use a studio voice instead, record one file per line, fill in `source/timing.json` with the real
-cue times, and render. The scenes follow the timings automatically.
+- **Localize the "Your site" slate.** Edit the slate text in `source/scenes-c.js` (scene 14) with the area contacts,
+  nights and weekends cover, reporting route and permit names, then re-render.
+- **Change the narration.** Edit `source/script.json` and re-run from `from_script.py`; the animation follows the new
+  timings.
+- **Use a studio voice.** Record one file per line, fill in `source/timing.json` with the real cue times, and render.
 
-**Captions.** The master has open captions burned into a reserved band, so they show in any player.
-Don't also attach `captions.vtt` as a captions track to this file, or learners will see every line
-twice. Use the VTT for search, indexing and the transcript. If your LMS needs player-drawn captions
-that viewers can switch off, render a caption-free master with
-`node tooling/render.js --clean --out two-minute-rule-clean.mp4` and attach `captions.vtt` to that
-file.
+**Captions.** The master has open captions burned in, so they show in any player. Don't also attach `captions.vtt`
+as a captions track to this file, or every line will show twice. For player-drawn captions in other languages, render a
+caption-free master with `node tooling/render.js --clean --out two-minute-rule-clean.mp4` and attach a VTT per language.
 
 ## Before deployment
 
-This is a production-ready draft. Before it is shown to learners:
+Work through the rollout guide in [`stakeholder-review.md`](stakeholder-review.md). Three items are prerequisites:
 
-1. **Open the two primary records directly**, the Cal/OSHA release of July 21, 2011 and OSHA
-   accident summary 202542296. Confirm the case wording at 1:53–2:37 and the findings at 3:43
-   against them. They could not be reached from the build environment, so they were checked
-   through multiple reports instead.
-2. Under the portfolio's review gates, get a named **SME review** (EHS / confined-space), an
-   **instructional-design review**, and an **accessibility review**. A site deploying it should also add its
-own stop-work and confined-space contacts to the closing card.
+1. **A signed stop-work and non-retaliation policy.** It must cover contractors.
+2. **A response standard.** Set who comes when someone stops, and how fast.
+3. **A QA position.** A safety hold is not a deviation in itself.
+
+Then run the portfolio's SME, instructional-design and accessibility review gates, with real people in those three
+roles. The perspective review in this folder is a starting point for them, not a substitute. Record the video as awareness
+training, not lockout or confined-space training.

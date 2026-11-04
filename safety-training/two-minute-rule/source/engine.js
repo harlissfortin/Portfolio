@@ -54,7 +54,7 @@
 
   const anims = [];
   const lits = [];
-  let marks = [];
+  let marks = [], lightFrom = [];
   const scenes = [];
   const DEF = { fade: 0.5, up: 0.6, down: 0.6, left: 0.6, right: 0.6, pop: 0.55, zoom: 0.7, draw: 1.2, wipe: 0.8, wipeup: 0.8, grow: 0.8, growy: 0.8, type: 1.2, count: 1.2, blur: 0.7 };
 
@@ -87,6 +87,7 @@
       });
     });
     marks = (window.CHAPTER_MARKS || []).map(([r, sc, label]) => ({ t: parseRef(r, sc), scene: sc, label }));
+    lightFrom = (window.CHROME_LIGHT || []).map(([r, sc]) => ({ t: parseRef(r, sc), scene: sc }));
     const missing = T.scenes.filter(s => !scenes.find(x => x.id === s.id)).map(s => s.id);
     if (missing.length) throw new Error('scenes without markup: ' + missing.join(','));
   };
@@ -180,6 +181,7 @@
       if (l.kind === 'lit') l.el.style.opacity = lerp(l.dim, 1, on).toFixed(4);
       l.el.style.setProperty('--on', on.toFixed(4));
     }
+    if (window.HOOKS['*']) window.HOOKS['*'](t, api);
     for (const sc of scenes) {
       const h = window.HOOKS[sc.id];
       if (h && sc.el.style.display !== 'none') h(t, t - sc.s.start, api);
@@ -192,7 +194,8 @@
     }
     const cur = [...T.scenes].reverse().find(s => t >= s.start) || T.scenes[0];
     const curSc = scenes.find(x => x.id === cur.id);
-    const dark = curSc && curSc.el.classList.contains('dark');
+    let dark = curSc && curSc.el.classList.contains('dark');
+    for (const l of lightFrom) if (l.scene === cur.id && t >= l.t) dark = false;   // light slates inside a dark scene
     document.body.classList.toggle('on-dark', !!dark);
     const ch = document.getElementById('chapter');
     if (ch) {

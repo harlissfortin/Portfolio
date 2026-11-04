@@ -1,119 +1,124 @@
 # The 2-Minute Rule — transcript
 
-Runtime 5:28. Narration is a synthesized voice (Kokoro, `af_heart`, speed 0.85). Times are when each line starts in `two-minute-rule.mp4`; the same lines are in `captions.vtt`.
+Runtime 5:41. Narration is a synthesized voice (Kokoro, `af_heart`, speed 0.85). Times are when each line starts in `two-minute-rule.mp4`; the same lines are in `captions.vtt`.
 
-## 0:00 · Title
+## 0:00 · Intro
 
-**0:01** Every job comes with a plan, written earlier, somewhere else.  
-**0:05** But the job is here, now. It may not match the plan.  
-**0:09** The 2-minute rule is how you catch the difference.  
+**0:01** A jam to clear, a line to break, a vessel to open.  
+**0:04** You know the job. Before your hands move, give it two minutes.  
+**0:09** That's the 2-minute rule.  
 
-## 0:13 · What it is
+## 0:11 · The rule
 
-**0:13** It's a short, deliberate pause you take where you do the work.  
-**0:17** Take it right before you start, and again after a break, a handover, or any change.  
-**0:23** It adds to your SOPs, permits, lockout, and confined-space programs. It never replaces them.  
-**0:31** Two minutes is a rule of thumb. What matters is the pause.  
-**0:35** It's not the productivity tip about doing quick tasks right away.  
+**0:11** It's a short, deliberate pause at the point of work.  
+**0:15** Run it right before you start, and after any break, handover, interruption or change.  
+**0:20** Two minutes is a rule of thumb. What matters is the pause.  
 
-## 0:39 · Line clearance
+## 0:25 · Line clearance for people
 
-**0:39** You already do this for product. It's called line clearance.  
-**0:43** Right before use, you inspect the packaging line so nothing from the last run remains.  
-**0:49** 21 CFR 211.130(e) requires it, and the results go in the batch record.  
-**0:57** The 2-minute rule is line clearance for people.  
-**1:01** Same discipline, aimed at the hazards around you.  
+**0:25** You already do this for product: line clearance, right before each run.  
+**0:30** The 2-minute rule is line clearance for people.  
+**0:34** It adds to your SOPs, permits and lockout. It never replaces them.  
+**0:39** It catches what the plan missed, because you're there.  
 
-## 1:05 · How it works
+## 0:43 · Stop · Look · Ask · Decide
 
-**1:05** In your two minutes: stop, look, ask, decide.  
-**1:09** Stop before you touch anything. Look around the job, and next to it.  
-**1:13** Then ask: What's different from the plan, or last time? What could hurt us?  
-**1:18** Are the controls checked, or assumed? What if it goes wrong?  
-**1:22** Then decide: go, fix it if it's safe, or stop and get help.  
+**0:43** Stop: hands off.  
+**0:45** Look: around the job, next to it, and against the plan.  
+**0:48** Ask four questions: What's different? What could hurt us?  
+**0:52** Checked or assumed? What if it goes wrong?  
+**0:55** Decide: Go, fix it if safe and in your procedure, or stop and get help.  
 
-## 1:28 · On the floor
+## 1:02 · Six saves
 
-**1:28** What's different? First run after a tooling change on the tablet press.  
-**1:33** What could hurt us? Clean- or steam-in-place: hot caustic and steam.  
-**1:38** Checked or assumed? The blister packer is locked out. Did you verify it yourself?  
-**1:44** What if it goes wrong while you're charging a reactor? What's your next move?  
-**1:48** Rushed, tired, or distracted? Check yourself, too.  
+**1:02** Most pauses end in Go. On a repeat task with nothing different, it takes seconds.  
+**1:08** Sometimes a question catches something. Here are six saves.  
+**1:12** They're illustrative, built from common pharma hazards.  
 
-## 1:53 · The case
+## 1:16 · Save 1 · Tablet press handover
 
-**1:54** A real case: a biopharmaceutical plant in Los Angeles, January 2011.  
-**2:00** Nitrogen bubbles through plasma in a 6,000-liter tank, as part of the process.  
-**2:07** The nitrogen has pushed out the oxygen, and the air is untested.  
-**2:12** A technician goes in to take a temperature reading. He collapses.  
-**2:17** Two coworkers go in to bring him out, with no air test and no proper rescue gear provided.  
-**2:23** Both of them collapse too.  
-**2:25** Firefighters bring them out. The technician dies.  
-*On screen, held in three seconds of silence: “The technician died.”*  
-**2:32** This isn't about careless people. It's about the gaps around them.  
-*On screen: “Not careless people. Gaps in the system.”*  
+**1:18** Save one: you take over a tablet press at handover.  
+**1:22** What's different? The note says the last shift started a tooling change.  
+**1:26** The turret guard is off its interlock. The tooling is half in.  
+**1:31** So you stop and get help: you call your lead.  
+**1:34** You lock out, try START, finish the change, count the tooling and close the guard.  
+**1:39** You remove your lock and test the interlock. Then Go.  
+**1:43** Nobody starts that press with its tooling half in.  
 
-## 2:37 · Pause one
+## 1:47 · Save 2 · Powder charge
 
-**2:37** At two moments, a pause could have changed the outcome. First, before entry.  
-**2:43** What's different? Nitrogen is still flowing in, and it isn't isolated.  
-**2:48** What could hurt us? The air: nitrogen has no color and no smell.  
-**2:53** Oxygen-poor air can knock you out in one or two breaths.  
-**2:57** Checked or assumed? Has anyone measured the oxygen? Does entry need a permit?  
-**3:02** The only way to know is to isolate and test.  
-**3:06** Can I take the reading from outside instead?  
-**3:09** What if it goes wrong? Who's watching me, and what's the rescue plan?  
-**3:13** No test, no plan: stop and get help.  
+**1:49** Save two: you charge powder into an inerted reactor holding flammable solvent.  
+**1:54** What could hurt us? Static, at an open manway with solvent vapor.  
+**1:59** Checked or assumed? Oxygen is below the limit. But the earth indicator is red.  
+**2:06** So you fix it: clip the clamp on. The indicator turns green.  
+**2:10** Then Go, with the specified liner.  
+**2:13** The spark never happens.  
 
-## 3:18 · Pause two
+## 2:16 · Save 3 · Inerted filter dryer
 
-**3:18** Second: someone is down inside a vessel.  
-**3:21** Wanting to rush in is human. Run the questions anyway, even in seconds.  
-**3:26** What could hurt us? Assume the air did this.  
-**3:29** What if it goes wrong? More people go down.  
-**3:33** Don't go in. Call trained rescue, keep others out, use retrieval gear.  
-**3:38** That only works if the plan and gear exist beforehand.  
+**2:18** Save three: between campaigns, you open a nitrogen-inerted filter dryer to inspect it.  
+**2:24** What could hurt us? Low-oxygen air inside. Nitrogen has no color or smell.  
+**2:30** Checked or assumed? Is the nitrogen positively isolated, and the air tested?  
+**2:36** No test, no permit yet.  
+**2:39** So you stop and get help.  
+**2:41** Isolate, test, ventilate, retest oxygen and vapor, get the permit. Then Go.  
+**2:48** The pause never replaces the permit. No permit, no Go.  
+**2:52** Nobody leans into air with too little oxygen.  
 
-## 3:43 · What they found
+## 2:56 · Save 4 · Blister packer jam
 
-**3:43** Cal/OSHA issued 11 citations, four of them willful.  
-**3:47** It found the employer didn't test the tank's air.  
-**3:50** The employer's confined-space program fell short on air testing, protective gear, and rescue.  
-**3:56** Those findings are about the employer's program, not about the technician.  
-**4:02** There's a design lesson, too: a reading shouldn't require going inside.  
-**4:07** An installed probe or a sample port means no one has to.  
-**4:11** A pause can't supply a gas meter, a permit system, or a rescue team.  
+**2:58** Save four: a blister packer jams where your jam tool can't reach.  
+**3:02** Checked or assumed? Stopped isn't the same as isolated.  
+**3:06** You lock out power and air.  
+**3:09** But the gauge still shows trapped air.  
+**3:11** So you fix it: bleed to zero and try START. Nothing moves. Then Go.  
+**3:17** Your hand stays out of a machine that still had stored energy.  
 
-## 4:17 · What makes it work
+## 3:21 · Save 5 · Isolator glove
 
-**4:17** The rule works when the organization gives you tools, time, and authority to stop.  
-**4:23** That means stopping with no reprisal.  
-**4:25** Leaders who thank you, then fix what you found.  
-**4:28** Near-miss reports that lead to learning, not discipline.  
-**4:32** And hazards engineered out, so the pause isn't your only defense.  
-**4:37** One 2022 study of Take 5 pre-task cards found no evidence the cards made work safer.  
-**4:45** So the pause is a professional habit, and a gateway to stopping.  
-**4:49** Not a check-the-box form, and never a tool for blame.  
+**3:23** Save five: back from break, you dispense a potent API at an isolator.  
+**3:28** What's different? Nothing, and the pressure display is in range.  
+**3:32** Checked or assumed? You check each glove. One has a cut.  
+**3:37** So you stop and get help.  
+**3:39** Glove changed and leak-tested. Then Go.  
+**3:42** A compound that acts at very low doses stays inside the isolator.  
 
-## 4:54 · Your two minutes
+## 3:48 · Save 6 · Line break after CIP
 
-**4:54** Before you start, and whenever things change: stop, look, and ask.  
-**4:59** What's different? What could hurt us?  
-**5:01** Are the controls checked, or assumed? What if it goes wrong?  
-**5:05** Then go, fix it if it's safe, or stop and get help.  
+**3:49** Save six: the CIP screen says complete. You disconnect a transfer-panel elbow.  
+**3:56** What if it goes wrong? If the line's live, where does it spray?  
+**4:00** You lock out supply and pump, step aside, and check the gauge.  
+**4:04** It shows pressure, and the line is hot.  
+**4:07** So you fix it: wait, vent, confirm zero and cool. Then Go.  
+**4:13** The screen reports the cycle. The gauge reports your line.  
+**4:17** No spray of hot caustic or steam.  
 
-## 5:10 · Close
+## 4:21 · All six end in Go
 
-**5:10** You know this work best.  
-**5:12** You clear the line for product. Clear it for people, too.  
+**4:21** Three fixes, three calls for help. All six end in Go, once it's safe.  
 
-## Sources shown at the end
+## 4:29 · What leaders commit to
 
-1. Cal/OSHA citations announced July 2011, as reported by Fierce Pharma and CBS Los Angeles
-2. OSHA accident summary 202542296 (event date January 21, 2011)
-3. U.S. Chemical Safety Board, Safety Bulletin 2003-10-B, *Hazards of Nitrogen Asphyxiation*
-4. 21 CFR 211.130(e) (line clearance) · 29 CFR 1910.146 (permit-required confined spaces)
-5. NIOSH Publication 94-103, *Worker Deaths in Confined Spaces* (1994)
-6. IOGP Report 459-1, *Start Work Checks*; IOGP *Process Safety Fundamentals*
-7. SLAM (Stop, Look, Assess, Manage), Leadership and Worker Involvement Toolkit hosted by UK HSE
-8. Havinga, Shire & Rae (2022), “Should We Cut the Cards?”, *Safety* 8(2):27
+**4:30** Anyone can stop a job, staff or contractor, even on a late batch. No reprisal, no blame.  
+**4:37** Leaders come quickly, thank you, fix the cause, and tell you what changed.  
+**4:42** It's not a form. Report what you caught through your usual channels.  
+**4:46** The value is your expertise, at the point of work.  
+
+## 4:51 · Recap card
+
+**4:51** Before you start, and whenever things change: stop and look.  
+**4:55** Ask: What's different? What could hurt us?  
+**4:57** Checked or assumed? What if it goes wrong?  
+**5:01** Then decide: Go, fix it if safe and in your procedure, or stop and get help.  
+**5:07** Two minutes. Line clearance for people.  
+**5:24** Follow your site's procedures. This video is awareness training only.  
+
+## On screen at the end (not spoken)
+
+**Your site** slate (5:13). *Stop & get help:* Call your area lead. Ask them for the radio channel or extension. · Nights and weekends: call the on-call lead. · Report what you caught through your usual reporting route. · Ask your lead which permits apply in your area. Sites can localize this slate with named contacts (see README).
+
+**End card** (5:23), under the last spoken line: *Follow your site's SOPs, lockout and permit procedures. This video is awareness training, not lockout or confined-space training.*
+
+Sources: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147 (lockout/tagout) and OSHA interpretations on minor servicing; OSHA 29 CFR 1910.212 (machine guarding); OSHA 29 CFR 1910.146 (permit-required confined spaces); U.S. Chemical Safety Board Safety Bulletin 2003-10-B, *Hazards of Nitrogen Asphyxiation*; NFPA 77 and the CCPS Process Safety Beacon, March 2025 (static); isolator glove programs, including EU GMP Annex 1 (2022) for aseptic isolators.
+
+*Use cases are illustrative composites, not real incidents. Narration is a synthesized voice.*

@@ -36,10 +36,10 @@ window.ART = (function () {
       </g>
       <!-- shell -->
       <path d="M${cx - r} ${top} L${cx + r} ${top} L${cx + r} ${bot - 40} Q${cx + r} ${bot} ${cx + r - 40} ${bot} L${cx - r + 40} ${bot} Q${cx - r} ${bot} ${cx - r} ${bot - 40} Z" fill="none" stroke="${C.steel}" stroke-width="8"/>
-      <!-- manway opening + open lid -->
+      <!-- manway: open lid, or closed hatch with bolts -->
       <rect x="${cx - 70}" y="${top - 18}" width="140" height="22" rx="4" fill="${C.steelDark}" stroke="${C.steel}" stroke-width="5"/>
-      <rect x="${cx - 60}" y="${top - 14}" width="120" height="14" fill="#06101c"/>
-      <path d="M${cx + 70} ${top - 18} l52 -66" stroke="${C.steel}" stroke-width="9" stroke-linecap="round"/>
+      ${o.closed ? `<rect x="${cx - 80}" y="${top - 30}" width="160" height="16" rx="5" fill="${C.steel}"/>${[-60, -20, 20, 60].map(d => `<circle cx="${cx + d}" cy="${top - 22}" r="4" fill="${C.steelDark}"/>`).join('')}`
+        : `<rect x="${cx - 60}" y="${top - 14}" width="120" height="14" fill="#06101c"/><path d="M${cx + 70} ${top - 18} l52 -66" stroke="${C.steel}" stroke-width="9" stroke-linecap="round"/>`}
       <!-- nitrogen: supply line over the top head, dip tube to a sparger near the bottom -->
       <g id="${P}-n2line" ${o.n2 === false ? 'display="none"' : ''}>
         <path d="M${W + 40} 90 H${cx + 150} V${top}" stroke="${C.n2}" stroke-width="12" fill="none" stroke-linejoin="round"/>
@@ -81,13 +81,13 @@ window.ART = (function () {
   // Oxygen gauge: semicircle 0–25%. value in %, returns svg string; update with setGauge
   function gauge(id, o = {}) {
     return `<svg id="${id}" viewBox="0 0 420 300" width="${o.width || 420}" height="${o.height || 300}" style="${o.style || ''}" class="${o.cls || ''}">
-      <path d="M50 230 A160 160 0 0 1 370 230" fill="none" stroke="#24476b" stroke-width="28" stroke-linecap="round"/>
+      <path d="M50 230 A160 160 0 0 1 370 230" fill="none" stroke="var(--line)" stroke-width="28" stroke-linecap="round"/>
       <path class="g-red" d="" fill="none" stroke="${C.red}" stroke-width="28" stroke-linecap="butt" opacity=".9"/>
       <path class="g-ok" d="" fill="none" stroke="${C.teal}" stroke-width="28" stroke-linecap="butt" opacity=".9"/>
-      <line class="g-needle" x1="210" y1="230" x2="210" y2="96" stroke="${C.ink}" stroke-width="8" stroke-linecap="round"/>
-      <circle cx="210" cy="230" r="16" fill="${C.ink}"/>
-      <text class="g-val" x="210" y="292" text-anchor="middle" font-size="46" font-weight="800" fill="${C.ink}">20.9%</text>
-      <text x="210" y="40" text-anchor="middle" font-size="26" font-weight="700" fill="${C.muted}" letter-spacing="3">OXYGEN</text>
+      <line class="g-needle" x1="210" y1="230" x2="210" y2="96" stroke="var(--ink)" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="210" cy="230" r="16" fill="var(--ink)"/>
+      <text class="g-val" x="210" y="292" text-anchor="middle" font-size="46" font-weight="800" fill="var(--ink)">20.9%</text>
+      <text x="210" y="40" text-anchor="middle" font-size="26" font-weight="700" fill="var(--muted)" letter-spacing="3">OXYGEN</text>
     </svg>`;
   }
   function arc(v0, v1) { // percent 0..25 -> arc path
@@ -103,7 +103,7 @@ window.ART = (function () {
     const n = el.querySelector('.g-needle');
     n.setAttribute('x2', (210 + 134 * Math.cos(ang)).toFixed(1)); n.setAttribute('y2', (230 - 134 * Math.sin(ang)).toFixed(1));
     const tv = el.querySelector('.g-val'); tv.textContent = label != null ? label : v.toFixed(1) + '%';
-    tv.setAttribute('fill', v < 19.5 ? C.red : C.ink);
+    tv.setAttribute('fill', v < 19.5 ? 'var(--stop)' : 'var(--ink)');
   }
 
   // stopwatch ring: progress 0..1 (fraction of two minutes elapsed)
@@ -127,5 +127,65 @@ window.ART = (function () {
     }
   }
 
-  return { C, person, tank, bubbles, gauge, setGauge, stopwatch, setStopwatch };
+  // Drum on a pallet with a grounding clamp lead and a monitored earth indicator (id-earth: set red/green per frame).
+  function drum(id, o = {}) {
+    return `<svg viewBox="0 0 420 420" width="${o.width || 420}" height="${o.height || 420}" style="${o.style || ''}" overflow="visible">
+      <rect x="70" y="70" width="190" height="270" rx="16" fill="var(--panel)" stroke="var(--steel)" stroke-width="6"/>
+      <path d="M70 140 H260 M70 270 H260" stroke="var(--steel)" stroke-width="5"/>
+      <ellipse cx="165" cy="70" rx="95" ry="16" fill="var(--panel2)" stroke="var(--steel)" stroke-width="6"/>
+      <text x="165" y="215" text-anchor="middle" font-size="26" font-weight="800" fill="var(--muted)">POWDER</text>
+      <path d="M40 340 H300 M60 340 v26 M280 340 v26 M40 366 H300" stroke="var(--steel)" stroke-width="6" stroke-linecap="round"/>
+      <g id="${id}-clamp">
+        <path id="${id}-lead" d="M262 120 C 320 120, 330 200, 380 230" fill="none" stroke="#2f9e5a" stroke-width="6" stroke-linecap="round"/>
+        <path d="M250 110 l22 0 l0 24 l-22 0 z" fill="#2f9e5a"/>
+      </g>
+      <rect x="336" y="220" width="92" height="104" rx="10" fill="var(--panel)" stroke="var(--steel)" stroke-width="5"/>
+      <circle id="${id}-earth" cx="382" cy="256" r="20" fill="#cf3434"/>
+      <text x="382" y="308" text-anchor="middle" font-size="18" font-weight="800" fill="var(--muted)">EARTH</text>
+    </svg>`;
+  }
+  // Pipe with an in-line pressure gauge (needle angle set per frame via setNeedle(id, 0..1)).
+  function lineGauge(id, o = {}) {
+    return `<svg viewBox="0 0 520 360" width="${o.width || 520}" height="${o.height || 360}" style="${o.style || ''}" overflow="visible">
+      <path d="M0 270 H520" stroke="var(--steel)" stroke-width="22" stroke-linecap="round"/>
+      <path d="M260 270 V190" stroke="var(--steel)" stroke-width="12"/>
+      <circle cx="260" cy="120" r="86" fill="var(--panel)" stroke="var(--steel)" stroke-width="8"/>
+      ${Array.from({ length: 7 }, (_, i) => { const a = Math.PI * 1.25 - i * Math.PI * 0.25; return `<line x1="${(260 + 70 * Math.cos(a)).toFixed(1)}" y1="${(120 - 70 * Math.sin(a)).toFixed(1)}" x2="${(260 + 80 * Math.cos(a)).toFixed(1)}" y2="${(120 - 80 * Math.sin(a)).toFixed(1)}" stroke="var(--steel)" stroke-width="${i ? 4 : 7}"/>`; }).join('')}
+      <text x="226" y="166" text-anchor="middle" font-size="24" font-weight="800" fill="var(--ink)">0</text>
+      <line id="${id}-needle" x1="260" y1="120" x2="210" y2="160" stroke="var(--ink)" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="260" cy="120" r="10" fill="var(--ink)"/>
+      <text x="260" y="324" text-anchor="middle" font-size="20" font-weight="700" fill="var(--muted)">LOCAL GAUGE</text>
+    </svg>`;
+  }
+  function setNeedle(id, f) { // f: 0 (zero, lower-left) .. 1 (full, lower-right)
+    const el = document.getElementById(id + '-needle'); if (!el) return;
+    const a0 = Math.PI * 1.25, a = a0 - f * Math.PI * 1.5, L = 64;
+    el.setAttribute('x2', (260 + L * Math.cos(a)).toFixed(1)); el.setAttribute('y2', (120 - L * Math.sin(a)).toFixed(1));
+  }
+  // Containment isolator front with two glove ports and a pressure-differential display.
+  function isolator(id, o = {}) {
+    return `<svg viewBox="0 0 700 460" width="${o.width || 700}" height="${o.height || 460}" style="${o.style || ''}" overflow="visible">
+      <rect x="40" y="40" width="620" height="300" rx="22" fill="var(--panel)" stroke="var(--steel)" stroke-width="7"/>
+      <rect x="80" y="80" width="540" height="220" rx="14" fill="color-mix(in srgb, var(--n2) 10%, var(--panel))" stroke="var(--line)" stroke-width="4"/>
+      ${[220, 450].map(x => `<path d="M${x - 34} 262 V170 Q${x - 34} 140 ${x - 16} 140 H${x + 16} Q${x + 34} 140 ${x + 34} 170 V262" fill="color-mix(in srgb, var(--q3) 22%, var(--panel))" stroke="var(--steel)" stroke-width="4"/>${[-24, -8, 8, 24].map(d => `<path d="M${x + d} 142 V112" stroke="var(--steel)" stroke-width="12" stroke-linecap="round"/><path d="M${x + d} 142 V112" stroke="color-mix(in srgb, var(--q3) 22%, var(--panel))" stroke-width="5" stroke-linecap="round"/>`).join('')}<circle cx="${x}" cy="262" r="52" fill="none" stroke="var(--steel)" stroke-width="12"/>`).join('')}
+      <circle id="${id}-pin" cx="470" cy="176" r="8" fill="var(--stop)" opacity="0"/>
+      <rect x="506" y="96" width="112" height="54" rx="8" fill="#0b1420"/>
+      <text id="${id}-dp" x="562" y="132" text-anchor="middle" font-size="24" font-weight="800" fill="#43d17e">ΔP OK</text>
+      <path d="M90 340 v70 M610 340 v70 M60 410 H640" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
+      <text x="350" y="380" text-anchor="middle" font-size="22" font-weight="700" fill="var(--muted)">ISOLATOR</text>
+    </svg>`;
+  }
+  // Forklift carrying an IBC (position the group with a transform from the scene hook).
+  function forklift() {
+    return `<g>
+      <rect x="0" y="40" width="120" height="110" rx="10" fill="var(--panel)" stroke="var(--steel)" stroke-width="6"/>
+      <path d="M20 40 V0 H100 V40" fill="none" stroke="var(--steel)" stroke-width="6"/>
+      <path d="M120 10 V160 M120 150 H200" stroke="var(--steel)" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="30" cy="160" r="22" fill="var(--steel)"/><circle cx="100" cy="160" r="22" fill="var(--steel)"/>
+      <rect x="128" y="60" width="96" height="84" rx="6" fill="color-mix(in srgb, var(--n2) 18%, var(--panel))" stroke="var(--steel)" stroke-width="5"/>
+      <path d="M128 88 H224 M128 116 H224 M160 60 V144 M192 60 V144" stroke="var(--steel)" stroke-width="3"/>
+      <text x="176" y="56" text-anchor="middle" font-size="18" font-weight="800" fill="var(--muted)">IBC</text>
+    </g>`;
+  }
+  return { C, person, tank, bubbles, gauge, setGauge, stopwatch, setStopwatch, drum, lineGauge, setNeedle, isolator, forklift };
 })();

@@ -5,7 +5,7 @@
   --bg: #f3efe6; --bg2: #fbf9f4; --panel: #ffffff; --panel2: #f1ece1; --line: #ddd4c2;
   --ink: #14233a; --muted: #566377; --dim: #8792a2; --steel: #33465f; --person: #8193aa;
   --q1: #2f6fd6; --q2: #7a4fd0; --q3: #0e8a7b; --q4: #a3366f;
-  --go: #1e9a52; --fix: #b86e00; --stop: #cf3434;
+  --go: #17803f; --fix: #9a5b00; --stop: #cf3434;
   --amber: #e59a00; --amber-text: #9a5b00; --hazard: #cf3434; --n2: #2f6fd6; --ok-text: #0b7064;
   --cap-h: 168px;
 }
@@ -83,7 +83,7 @@ svg text { font-family: Inter, sans-serif; }
 .btn svg { width: 40px; height: 40px; }
 .btn.go { background: var(--go); } .btn.fix { background: var(--fix); } .btn.stop { background: var(--stop); }
 /* same three buttons in every scene: light-theme fills (white text passes contrast) */
-.dark .btn.go { background: #1e9a52; } .dark .btn.fix { background: #b86e00; } .dark .btn.stop { background: #cf3434; }
+.dark .btn.go, .dark .minibtn.go { background: #17803f; } .dark .btn.fix, .dark .minibtn.fix { background: #9a5b00; } .dark .btn.stop, .dark .minibtn.stop { background: #cf3434; }
 .dark .q .n { color: #0b1420; }
 
 /* step tiles */
@@ -101,3 +101,33 @@ svg text { font-family: Inter, sans-serif; }
 
 /* entrance transforms on SVG children scale/translate around their own box */
 svg [data-in], svg [data-out] { transform-box: fill-box; transform-origin: center; }
+
+/* ---- v2: save template ---- */
+.savetag { display: flex; align-items: center; gap: 16px; }
+.savetag .t { font-size: 34px; font-weight: 800; }
+.chip.trig { font-size: 24px; padding: 8px 18px; color: var(--ink); display: inline-flex; gap: 10px; align-items: center; }
+.chip.trig svg { width: 26px; height: 26px; color: var(--amber-text); }
+.hrail { display: flex; gap: 12px; }
+.hq { --c: var(--q1); display: flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; border-radius: 999px; border: 2.5px solid color-mix(in srgb, var(--c) calc(35% + var(--on, 0) * 65%), transparent); background: color-mix(in srgb, var(--c) calc(var(--on, 0) * 14%), var(--panel)); font-size: 22px; font-weight: 750; white-space: nowrap; color: var(--ink); }
+.hq .n { width: 34px; height: 34px; border-radius: 50%; background: var(--c); color: #fff; font-size: 20px; font-weight: 850; display: flex; align-items: center; justify-content: center; }
+.hq.q1 { --c: var(--q1); } .hq.q2 { --c: var(--q2); } .hq.q3 { --c: var(--q3); } .hq.q4 { --c: var(--q4); }
+.casecard { width: 560px; background: var(--panel); border: 2px solid var(--line); border-radius: 22px; padding: 26px 30px; box-shadow: 0 10px 30px rgba(20,35,58,.08); }
+.casecard .row { display: flex; gap: 18px; align-items: flex-start; padding: 18px 0; border-top: 2px solid var(--line); }
+.casecard .row:first-of-type { border-top: 0; }
+.casecard .row > svg { width: 44px; height: 44px; flex: none; color: var(--muted); margin-top: 2px; }
+.casecard .lab { font-size: 20px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.casecard .val { font-size: 32px; font-weight: 750; line-height: 1.2; margin-top: 6px; min-height: 40px; }
+.minibtn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; font-size: 24px; font-weight: 800; color: #fff; }
+.minibtn svg { width: 24px; height: 24px; }
+.minibtn.go { background: var(--go); } .minibtn.fix { background: var(--fix); } .minibtn.stop { background: var(--stop); }
+.note { background: #fff8d6; border: 2px solid #e2cf7a; border-radius: 10px; padding: 16px 20px; font-size: 26px; font-weight: 650; color: #3a3210; box-shadow: 0 6px 16px rgba(0,0,0,.08); transform: rotate(-2deg); }
+.check { display: flex; gap: 12px; align-items: center; font-size: 28px; font-weight: 750; }
+.check svg { width: 34px; height: 34px; flex: none; }
+.pulse { position: absolute; border: 5px solid var(--stop); border-radius: 50%; }
+
+/* light colours inside a dark scene (recap card, slate, end card) */
+.lightvars { --bg: #f3efe6; --panel: #ffffff; --panel2: #f1ece1; --line: #ddd4c2; --ink: #14233a; --muted: #566377; --dim: #8792a2; --steel: #33465f; --person: #8193aa;
+  --q1: #2f6fd6; --q2: #7a4fd0; --q3: #0e8a7b; --q4: #a3366f; --go: #17803f; --fix: #9a5b00; --stop: #cf3434; --amber: #e59a00; --amber-text: #9a5b00; --ok-text: #0b7064; color: var(--ink); }
+.lightvars .q .n { color: #fff; }
+.pill { display: inline-flex; align-items: center; gap: 12px; padding: 12px 26px; border-radius: 999px; background: var(--panel); border: 2px solid var(--line); font-size: 30px; font-weight: 750; color: var(--ink); }
+.pill svg { width: 34px; height: 34px; }

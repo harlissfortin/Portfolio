@@ -1,26 +1,159 @@
 {
- "_note": "Silent beats layered onto the script by tooling/from_script.py. scene: pre = silence before the first line, post = silence after the last. cue: after = silence after that line (default 0.38 s).",
+ "_note": "Silent beats layered onto the script by tooling/from_script.py. scene: pre = silence before the first line (saves: the 1 s Stop-Look-Ask-Decide sting), post = silence after the last. cue: after = silence after that line (default 0.38 s).",
  "scenes": {
-  "cold-open-title": {"pre": 0.8, "post": 1.2},
-  "line-clearance": {"post": 0.8},
-  "how-it-works": {"post": 0.8},
-  "on-the-floor": {"post": 0.9},
-  "the-case": {"pre": 1.0, "post": 1.0},
-  "pause-one": {"pre": 0.4, "post": 0.9},
-  "pause-two": {"post": 0.9},
-  "what-they-found": {"post": 0.8},
-  "what-makes-it-work": {"post": 0.8},
-  "your-two-minutes": {"post": 1.0},
-  "closing-card": {"post": 10.5}
+  "title-open": {
+   "pre": 0.6,
+   "post": 1.0
+  },
+  "the-rule": {
+   "post": 0.5
+  },
+  "line-clearance": {
+   "post": 0.6
+  },
+  "how-to-run-it": {
+   "post": 0.9
+  },
+  "six-saves": {
+   "post": 0.6
+  },
+  "save-1-tablet-press": {
+   "pre": 1.4,
+   "post": 0.9
+  },
+  "save-2-powder-charge": {
+   "pre": 1.4,
+   "post": 0.9
+  },
+  "save-3-inerted-vessel": {
+   "pre": 1.4,
+   "post": 0.9
+  },
+  "save-4-blister-jam": {
+   "pre": 1.4,
+   "post": 0.9
+  },
+  "save-5-isolator": {
+   "pre": 1.4,
+   "post": 0.9
+  },
+  "save-6-cip-line-break": {
+   "pre": 1.4,
+   "post": 0.9
+  },
+  "all-six-end-in-go": {
+   "post": 3.4
+  },
+  "what-makes-it-work": {
+   "pre": 0.3,
+   "post": 0.8
+  },
+  "close-recap": {
+   "post": 12.0
+  }
  },
  "cues": {
-  "s1-2": {"after": 0.8}, "s2-2": {"after": 0.7}, "s3-2": {"after": 0.6}, "s3-4": {"after": 0.7},
-  "s4-1": {"after": 0.7}, "s4-4": {"after": 0.5}, "s4-5": {"after": 1.0},
-  "s6-1": {"after": 0.7}, "s6-3": {"after": 0.7}, "s6-4": {"after": 0.9}, "s6-6": {"after": 0.9}, "s6-7": {"after": 3.0}, "s6-8": {"after": 0.8},
-  "s7-1": {"after": 0.7}, "s7-4": {"after": 0.6}, "s7-6": {"after": 0.6}, "s7-9": {"after": 1.0},
-  "s8-2": {"after": 0.6}, "s8-4": {"after": 0.8}, "s8-5": {"after": 0.6},
-  "s9-1": {"after": 0.6}, "s9-4": {"after": 0.9}, "s9-6": {"after": 0.6},
-  "s10-5": {"after": 0.7}, "s10-6": {"after": 0.6}, "s10-8": {"after": 0.6},
-  "s11-1": {"after": 0.9}, "s11-3": {"after": 0.5}, "s12-1": {"after": 0.7}
+  "s1-2": {
+   "after": 0.6
+  },
+  "s3-1": {
+   "after": 0.9
+  },
+  "s4-5": {
+   "after": 0.9
+  },
+  "s5-1": {
+   "after": 0.6
+  },
+  "s5-3": {
+   "after": 0.6
+  },
+  "s6-3": {
+   "after": 0.7
+  },
+  "s6-4": {
+   "after": 0.5
+  },
+  "s6-5": {
+   "after": 0.6
+  },
+  "s6-6": {
+   "after": 0.5
+  },
+  "s7-3": {
+   "after": 0.7
+  },
+  "s7-4": {
+   "after": 0.5
+  },
+  "s7-5": {
+   "after": 0.6
+  },
+  "s8-4": {
+   "after": 0.7
+  },
+  "s8-5": {
+   "after": 0.5
+  },
+  "s8-6": {
+   "after": 1.5
+  },
+  "s9-1": {
+   "after": 0.5
+  },
+  "s9-3": {
+   "after": 0.5
+  },
+  "s9-4": {
+   "after": 0.7
+  },
+  "s9-5": {
+   "after": 0.6
+  },
+  "s10-2": {
+   "after": 0.4
+  },
+  "s10-3": {
+   "after": 0.7
+  },
+  "s10-4": {
+   "after": 0.5
+  },
+  "s10-5": {
+   "after": 0.6
+  },
+  "s11-2": {
+   "after": 0.5
+  },
+  "s11-3": {
+   "after": 0.5
+  },
+  "s11-4": {
+   "after": 0.7
+  },
+  "s11-5": {
+   "after": 1.5
+  },
+  "s12-1": {
+   "after": 0.2
+  },
+  "s13-1": {
+   "after": 0.6
+  },
+  "s13-2": {
+   "after": 0.6
+  },
+  "s13-3": {
+   "after": 0.5
+  },
+  "s14-3": {
+   "after": 0.5
+  },
+  "s14-4": {
+   "after": 0.7
+  },
+  "s14-5": {
+   "after": 14.6
+  }
  }
 }
