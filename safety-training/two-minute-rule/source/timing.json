@@ -1,91 +1,97 @@
 {
  "voice": "af_heart",
- "speed": 0.85,
+ "speed": 0.8,
  "fps": 30,
  "scenes": [
   {
    "id": "title-open",
    "chapter": "Intro",
    "start": 0.0,
-   "end": 11.882
+   "end": 12.647
   },
   {
    "id": "the-rule",
    "chapter": "The rule",
-   "start": 11.882,
-   "end": 25.506
+   "start": 12.647,
+   "end": 32.246
   },
   {
    "id": "line-clearance",
    "chapter": "Line clearance for people",
-   "start": 25.506,
-   "end": 43.312
+   "start": 32.246,
+   "end": 52.13
   },
   {
    "id": "how-to-run-it",
    "chapter": "Stop · Look · Ask · Decide",
-   "start": 43.312,
-   "end": 62.405
+   "start": 52.13,
+   "end": 97.095
+  },
+  {
+   "id": "routine-go",
+   "chapter": "A routine Go",
+   "start": 97.095,
+   "end": 125.351
   },
   {
    "id": "six-saves",
    "chapter": "Six saves",
-   "start": 62.405,
-   "end": 76.994
+   "start": 125.351,
+   "end": 147.419
   },
   {
    "id": "save-1-tablet-press",
    "chapter": "Save 1 · Tablet press handover",
-   "start": 76.994,
-   "end": 107.667
+   "start": 147.419,
+   "end": 198.948
   },
   {
    "id": "save-2-powder-charge",
    "chapter": "Save 2 · Powder charge",
-   "start": 107.667,
-   "end": 136.783
+   "start": 198.948,
+   "end": 245.171
   },
   {
    "id": "save-3-inerted-vessel",
    "chapter": "Save 3 · Inerted filter dryer",
-   "start": 136.783,
-   "end": 176.676
+   "start": 245.171,
+   "end": 299.91
   },
   {
    "id": "save-4-blister-jam",
    "chapter": "Save 4 · Blister packer jam",
-   "start": 176.676,
-   "end": 201.676
+   "start": 299.91,
+   "end": 339.883
   },
   {
    "id": "save-5-isolator",
-   "chapter": "Save 5 · Isolator glove",
-   "start": 201.676,
-   "end": 228.544
+   "chapter": "Save 5 · Potent ingredient",
+   "start": 339.883,
+   "end": 384.538
   },
   {
    "id": "save-6-cip-line-break",
    "chapter": "Save 6 · Line break after CIP",
-   "start": 228.544,
-   "end": 261.329
+   "start": 384.538,
+   "end": 438.363
   },
   {
    "id": "all-six-end-in-go",
    "chapter": "All six end in Go",
-   "start": 261.329,
-   "end": 269.739
+   "start": 438.363,
+   "end": 446.964
   },
   {
    "id": "what-makes-it-work",
    "chapter": "What leaders commit to",
-   "start": 269.739,
-   "end": 291.129
+   "start": 446.964,
+   "end": 467.981
   },
   {
    "id": "close-recap",
    "chapter": "Recap card",
-   "start": 291.129,
-   "end": 341.913
+   "start": 467.981,
+   "end": 517.194
   }
  ],
  "cues": [
@@ -93,485 +99,667 @@
    "id": "s1-1",
    "scene": "title-open",
    "start": 1.2,
-   "end": 4.51,
+   "end": 4.924,
    "text": "A jam to clear, a line to break, a vessel to open."
   },
   {
    "id": "s1-2",
    "scene": "title-open",
-   "start": 4.89,
-   "end": 8.434,
+   "start": 5.264,
+   "end": 9.064,
    "text": "You know the job. Before your hands move, give it two minutes."
   },
   {
    "id": "s1-3",
    "scene": "title-open",
-   "start": 9.034,
-   "end": 10.502,
+   "start": 9.664,
+   "end": 11.307,
    "text": "That's the 2-minute rule."
   },
   {
    "id": "s2-1",
    "scene": "the-rule",
-   "start": 11.882,
-   "end": 14.845,
-   "text": "It's a short, deliberate pause at the point of work."
+   "start": 12.647,
+   "end": 18.367,
+   "text": "It's a short pause, on purpose, at the point of work: where you do the job."
   },
   {
    "id": "s2-2",
    "scene": "the-rule",
-   "start": 15.225,
-   "end": 20.555,
-   "text": "Run it right before you start, and after any break, handover, interruption or change."
+   "start": 18.707,
+   "end": 25.844,
+   "text": "Do it before you start, and again after any break, handover, interruption or change."
   },
   {
    "id": "s2-3",
    "scene": "the-rule",
-   "start": 20.935,
-   "end": 24.627,
-   "text": "Two minutes is a rule of thumb. What matters is the pause."
+   "start": 26.184,
+   "end": 31.406,
+   "text": "Two minutes is a guide, not an exact time. What matters is the pause."
   },
   {
    "id": "s3-1",
    "scene": "line-clearance",
-   "start": 25.506,
-   "end": 29.974,
+   "start": 32.246,
+   "end": 37.118,
    "text": "You already do this for product: line clearance, right before each run."
   },
   {
    "id": "s3-2",
    "scene": "line-clearance",
-   "start": 30.874,
-   "end": 33.76,
+   "start": 38.018,
+   "end": 41.342,
    "text": "The 2-minute rule is line clearance for people."
   },
   {
    "id": "s3-3",
    "scene": "line-clearance",
-   "start": 34.14,
-   "end": 39.056,
-   "text": "It adds to your SOPs, permits and lockout. It never replaces them."
+   "start": 41.682,
+   "end": 47.692,
+   "text": "It adds to your procedures, permits and lockout. It never replaces them."
   },
   {
    "id": "s3-4",
    "scene": "line-clearance",
-   "start": 39.436,
-   "end": 42.332,
+   "start": 48.032,
+   "end": 51.19,
    "text": "It catches what the plan missed, because you're there."
   },
   {
    "id": "s4-1",
    "scene": "how-to-run-it",
-   "start": 43.312,
-   "end": 44.684,
+   "start": 52.13,
+   "end": 53.598,
    "text": "Stop: hands off."
   },
   {
    "id": "s4-2",
    "scene": "how-to-run-it",
-   "start": 45.064,
-   "end": 48.46,
-   "text": "Look: around the job, next to it, and against the plan."
+   "start": 53.938,
+   "end": 58.008,
+   "text": "Look: around the job, and compare it with the plan."
   },
   {
    "id": "s4-3",
    "scene": "how-to-run-it",
-   "start": 48.84,
-   "end": 52.163,
+   "start": 58.348,
+   "end": 62.691,
    "text": "Ask four questions: What's different? What could hurt us?"
   },
   {
    "id": "s4-4",
    "scene": "how-to-run-it",
-   "start": 52.543,
-   "end": 55.253,
+   "start": 63.031,
+   "end": 65.95,
    "text": "Checked or assumed? What if it goes wrong?"
   },
   {
    "id": "s4-5",
    "scene": "how-to-run-it",
-   "start": 55.633,
-   "end": 60.605,
-   "text": "Decide: Go, fix it if safe and in your procedure, or stop and get help."
+   "start": 66.29,
+   "end": 72.515,
+   "text": "Checked or assumed? It means: did you look or test it yourself, or are you guessing?"
+  },
+  {
+   "id": "s4-6",
+   "scene": "how-to-run-it",
+   "start": 72.855,
+   "end": 77.44,
+   "text": "Decide: Go, fix it, or stop and get help."
+  },
+  {
+   "id": "s4-7",
+   "scene": "how-to-run-it",
+   "start": 78.34,
+   "end": 83.366,
+   "text": "Fix it only if you're trained and authorized, and it's a step in your procedure."
+  },
+  {
+   "id": "s4-8",
+   "scene": "how-to-run-it",
+   "start": 83.706,
+   "end": 90.599,
+   "text": "No permit yet? Someone else's unfinished work? Not authorized? Stop and get help."
+  },
+  {
+   "id": "s4-9",
+   "scene": "how-to-run-it",
+   "start": 90.939,
+   "end": 95.295,
+   "text": "Not sure, or the fix doesn't work? Stop and get help."
   },
   {
    "id": "s5-1",
-   "scene": "six-saves",
-   "start": 62.405,
-   "end": 67.881,
-   "text": "Most pauses end in Go. On a repeat task with nothing different, it takes seconds."
+   "scene": "routine-go",
+   "start": 97.495,
+   "end": 101.69,
+   "text": "First, a routine pause: you're about to clean a weighing booth."
   },
   {
    "id": "s5-2",
-   "scene": "six-saves",
-   "start": 68.481,
-   "end": 72.131,
-   "text": "Sometimes a question catches something. Here are six saves."
+   "scene": "routine-go",
+   "start": 102.03,
+   "end": 108.671,
+   "text": "What's different? Nothing. What could hurt us? Leftover powder and the cleaning chemical."
   },
   {
    "id": "s5-3",
-   "scene": "six-saves",
-   "start": 72.511,
-   "end": 75.794,
-   "text": "They're illustrative, built from common pharma hazards."
+   "scene": "routine-go",
+   "start": 109.011,
+   "end": 115.538,
+   "text": "Gloves and goggles: on. Checked or assumed? Checked: the airflow light is green."
+  },
+  {
+   "id": "s5-4",
+   "scene": "routine-go",
+   "start": 115.878,
+   "end": 119.136,
+   "text": "What if it goes wrong? The spill kit is right there."
+  },
+  {
+   "id": "s5-5",
+   "scene": "routine-go",
+   "start": 121.736,
+   "end": 123.851,
+   "text": "Go. That took a few seconds."
   },
   {
    "id": "s6-1",
-   "scene": "save-1-tablet-press",
-   "start": 78.394,
-   "end": 81.632,
-   "text": "Save one: you take over a tablet press at handover."
+   "scene": "six-saves",
+   "start": 125.351,
+   "end": 127.283,
+   "text": "Most pauses end like that."
   },
   {
    "id": "s6-2",
-   "scene": "save-1-tablet-press",
-   "start": 82.012,
-   "end": 86.148,
-   "text": "What's different? The note says the last shift started a tooling change."
+   "scene": "six-saves",
+   "start": 127.883,
+   "end": 133.394,
+   "text": "Sometimes a question catches a problem. That's a save. Here are six."
   },
   {
    "id": "s6-3",
-   "scene": "save-1-tablet-press",
-   "start": 86.528,
-   "end": 90.366,
-   "text": "The turret guard is off its interlock. The tooling is half in."
+   "scene": "six-saves",
+   "start": 133.734,
+   "end": 138.621,
+   "text": "They're examples built from common pharma hazards, not real events."
   },
   {
    "id": "s6-4",
-   "scene": "save-1-tablet-press",
-   "start": 91.066,
-   "end": 93.718,
-   "text": "So you stop and get help: you call your lead."
-  },
-  {
-   "id": "s6-5",
-   "scene": "save-1-tablet-press",
-   "start": 94.218,
-   "end": 99.25,
-   "text": "You lock out, try START, finish the change, count the tooling and close the guard."
-  },
-  {
-   "id": "s6-6",
-   "scene": "save-1-tablet-press",
-   "start": 99.85,
-   "end": 103.104,
-   "text": "You remove your lock and test the interlock. Then Go."
-  },
-  {
-   "id": "s6-7",
-   "scene": "save-1-tablet-press",
-   "start": 103.604,
-   "end": 106.387,
-   "text": "Nobody starts that press with its tooling half in."
+   "scene": "six-saves",
+   "start": 139.221,
+   "end": 146.219,
+   "text": "In each save, the video waits. Find the problem and pick your call, before we show it."
   },
   {
    "id": "s7-1",
-   "scene": "save-2-powder-charge",
-   "start": 109.067,
-   "end": 114.503,
-   "text": "Save two: you charge powder into an inerted reactor holding flammable solvent."
+   "scene": "save-1-tablet-press",
+   "start": 148.819,
+   "end": 152.469,
+   "text": "Save one: you take over a tablet press at handover."
   },
   {
    "id": "s7-2",
-   "scene": "save-2-powder-charge",
-   "start": 114.883,
-   "end": 119.485,
-   "text": "What could hurt us? Static, at an open manway with solvent vapor."
+   "scene": "save-1-tablet-press",
+   "start": 152.809,
+   "end": 154.433,
+   "text": "What would make you stop here?"
   },
   {
    "id": "s7-3",
-   "scene": "save-2-powder-charge",
-   "start": 119.865,
-   "end": 125.586,
-   "text": "Checked or assumed? Oxygen is below the limit. But the earth indicator is red."
+   "scene": "save-1-tablet-press",
+   "start": 157.433,
+   "end": 162.101,
+   "text": "What's different? The note says the last shift started a tooling change."
   },
   {
    "id": "s7-4",
-   "scene": "save-2-powder-charge",
-   "start": 126.286,
-   "end": 130.406,
-   "text": "So you fix it: clip the clamp on. The indicator turns green."
+   "scene": "save-1-tablet-press",
+   "start": 162.441,
+   "end": 167.086,
+   "text": "Guard open. Tooling half in. No lock on the power switch."
   },
   {
    "id": "s7-5",
-   "scene": "save-2-powder-charge",
-   "start": 130.906,
-   "end": 133.303,
-   "text": "Then Go, with the specified liner."
+   "scene": "save-1-tablet-press",
+   "start": 167.786,
+   "end": 168.706,
+   "text": "Your call?"
   },
   {
    "id": "s7-6",
-   "scene": "save-2-powder-charge",
-   "start": 133.903,
-   "end": 135.503,
-   "text": "The spark never happens."
+   "scene": "save-1-tablet-press",
+   "start": 171.106,
+   "end": 175.269,
+   "text": "Stop and get help, because it's someone else's unfinished work."
+  },
+  {
+   "id": "s7-7",
+   "scene": "save-1-tablet-press",
+   "start": 175.769,
+   "end": 179.547,
+   "text": "Your lead comes, thanks you, and checks with the last shift."
+  },
+  {
+   "id": "s7-8",
+   "scene": "save-1-tablet-press",
+   "start": 179.887,
+   "end": 186.473,
+   "text": "An authorized press setter locks out, tries START, then finishes and counts the tooling."
+  },
+  {
+   "id": "s7-9",
+   "scene": "save-1-tablet-press",
+   "start": 187.073,
+   "end": 194.033,
+   "text": "Guard closed, area clear, setter's lock removed, interlock tested. Then Go."
+  },
+  {
+   "id": "s7-10",
+   "scene": "save-1-tablet-press",
+   "start": 194.533,
+   "end": 197.708,
+   "text": "Nobody starts that press with its tooling half in."
   },
   {
    "id": "s8-1",
-   "scene": "save-3-inerted-vessel",
-   "start": 138.183,
-   "end": 144.417,
-   "text": "Save three: between campaigns, you open a nitrogen-inerted filter dryer to inspect it."
+   "scene": "save-2-powder-charge",
+   "start": 200.348,
+   "end": 205.265,
+   "text": "Save two: you add powder to a reactor that holds flammable solvent."
   },
   {
    "id": "s8-2",
-   "scene": "save-3-inerted-vessel",
-   "start": 144.797,
-   "end": 150.259,
-   "text": "What could hurt us? Low-oxygen air inside. Nitrogen has no color or smell."
+   "scene": "save-2-powder-charge",
+   "start": 205.605,
+   "end": 210.145,
+   "text": "It's inerted: filled with nitrogen to keep the oxygen out."
   },
   {
    "id": "s8-3",
-   "scene": "save-3-inerted-vessel",
-   "start": 150.639,
-   "end": 156.163,
-   "text": "Checked or assumed? Is the nitrogen positively isolated, and the air tested?"
+   "scene": "save-2-powder-charge",
+   "start": 210.485,
+   "end": 212.109,
+   "text": "What would make you stop here?"
   },
   {
    "id": "s8-4",
-   "scene": "save-3-inerted-vessel",
-   "start": 156.543,
-   "end": 158.488,
-   "text": "No test, no permit yet."
+   "scene": "save-2-powder-charge",
+   "start": 215.109,
+   "end": 220.598,
+   "text": "What could hurt us? A static spark at the open manway, with solvent vapor."
   },
   {
    "id": "s8-5",
-   "scene": "save-3-inerted-vessel",
-   "start": 159.188,
-   "end": 160.65,
-   "text": "So you stop and get help."
+   "scene": "save-2-powder-charge",
+   "start": 220.938,
+   "end": 227.092,
+   "text": "Checked or assumed? Oxygen is below the limit. But the grounding indicator is red."
   },
   {
    "id": "s8-6",
-   "scene": "save-3-inerted-vessel",
-   "start": 161.15,
-   "end": 166.618,
-   "text": "Isolate, test, ventilate, retest oxygen and vapor, get the permit. Then Go."
+   "scene": "save-2-powder-charge",
+   "start": 227.792,
+   "end": 228.712,
+   "text": "Your call?"
   },
   {
    "id": "s8-7",
-   "scene": "save-3-inerted-vessel",
-   "start": 168.118,
-   "end": 172.06,
-   "text": "The pause never replaces the permit. No permit, no Go."
+   "scene": "save-2-powder-charge",
+   "start": 231.112,
+   "end": 235.725,
+   "text": "Fix it: your procedure lets you clip the grounding clamp onto the drum."
   },
   {
    "id": "s8-8",
-   "scene": "save-3-inerted-vessel",
-   "start": 172.44,
-   "end": 175.396,
-   "text": "Nobody leans into air with too little oxygen."
+   "scene": "save-2-powder-charge",
+   "start": 236.225,
+   "end": 241.519,
+   "text": "The indicator turns green, and the drum liner is static-safe. Then Go."
+  },
+  {
+   "id": "s8-9",
+   "scene": "save-2-powder-charge",
+   "start": 242.119,
+   "end": 243.931,
+   "text": "The spark never happens."
   },
   {
    "id": "s9-1",
-   "scene": "save-4-blister-jam",
-   "start": 178.076,
-   "end": 182.16,
-   "text": "Save four: a blister packer jams where your jam tool can't reach."
+   "scene": "save-3-inerted-vessel",
+   "start": 246.571,
+   "end": 253.622,
+   "text": "Save three: you're a contractor. At a product change, you'll open a dryer full of nitrogen."
   },
   {
    "id": "s9-2",
-   "scene": "save-4-blister-jam",
-   "start": 182.66,
-   "end": 186.551,
-   "text": "Checked or assumed? Stopped isn't the same as isolated."
+   "scene": "save-3-inerted-vessel",
+   "start": 253.962,
+   "end": 255.585,
+   "text": "What would make you stop here?"
   },
   {
    "id": "s9-3",
-   "scene": "save-4-blister-jam",
-   "start": 186.931,
-   "end": 188.532,
-   "text": "You lock out power and air."
+   "scene": "save-3-inerted-vessel",
+   "start": 258.585,
+   "end": 264.862,
+   "text": "What could hurt us? Low-oxygen air inside. Nitrogen has no color or smell."
   },
   {
    "id": "s9-4",
-   "scene": "save-4-blister-jam",
-   "start": 189.032,
-   "end": 191.03,
-   "text": "But the gauge still shows trapped air."
+   "scene": "save-3-inerted-vessel",
+   "start": 265.202,
+   "end": 272.352,
+   "text": "Checked or assumed? Is the nitrogen line closed with a solid plate, and the air inside tested?"
   },
   {
    "id": "s9-5",
-   "scene": "save-4-blister-jam",
-   "start": 191.73,
-   "end": 196.469,
-   "text": "So you fix it: bleed to zero and try START. Nothing moves. Then Go."
+   "scene": "save-3-inerted-vessel",
+   "start": 272.692,
+   "end": 274.774,
+   "text": "No test, no permit yet."
   },
   {
    "id": "s9-6",
-   "scene": "save-4-blister-jam",
-   "start": 197.069,
-   "end": 200.396,
-   "text": "Your hand stays out of a machine that still had stored energy."
+   "scene": "save-3-inerted-vessel",
+   "start": 275.474,
+   "end": 276.394,
+   "text": "Your call?"
+  },
+  {
+   "id": "s9-7",
+   "scene": "save-3-inerted-vessel",
+   "start": 278.794,
+   "end": 283.513,
+   "text": "Stop and get help, because opening it needs a gas test and a permit."
+  },
+  {
+   "id": "s9-8",
+   "scene": "save-3-inerted-vessel",
+   "start": 284.013,
+   "end": 292.531,
+   "text": "An authorized team isolates, tests, ventilates and retests. The permit is issued. Then Go."
+  },
+  {
+   "id": "s9-9",
+   "scene": "save-3-inerted-vessel",
+   "start": 293.331,
+   "end": 294.98,
+   "text": "No permit, no Go."
+  },
+  {
+   "id": "s9-10",
+   "scene": "save-3-inerted-vessel",
+   "start": 295.32,
+   "end": 298.67,
+   "text": "Nobody leans into air with too little oxygen."
   },
   {
    "id": "s10-1",
-   "scene": "save-5-isolator",
-   "start": 203.076,
-   "end": 208.262,
-   "text": "Save five: back from break, you dispense a potent API at an isolator."
+   "scene": "save-4-blister-jam",
+   "start": 301.31,
+   "end": 306.071,
+   "text": "Save four: a blister packer jams where your jam tool can't reach."
   },
   {
    "id": "s10-2",
-   "scene": "save-5-isolator",
-   "start": 208.642,
-   "end": 212.474,
-   "text": "What's different? Nothing, and the pressure display is in range."
+   "scene": "save-4-blister-jam",
+   "start": 306.571,
+   "end": 309.082,
+   "text": "Stopped isn't the same as isolated."
   },
   {
    "id": "s10-3",
-   "scene": "save-5-isolator",
-   "start": 212.874,
-   "end": 216.371,
-   "text": "Checked or assumed? You check each glove. One has a cut."
+   "scene": "save-4-blister-jam",
+   "start": 309.422,
+   "end": 311.196,
+   "text": "You lock out power and air."
   },
   {
    "id": "s10-4",
-   "scene": "save-5-isolator",
-   "start": 217.071,
-   "end": 218.532,
-   "text": "So you stop and get help."
+   "scene": "save-4-blister-jam",
+   "start": 311.596,
+   "end": 313.22,
+   "text": "What would make you stop here?"
   },
   {
    "id": "s10-5",
-   "scene": "save-5-isolator",
-   "start": 219.032,
-   "end": 221.922,
-   "text": "Glove changed and leak-tested. Then Go."
+   "scene": "save-4-blister-jam",
+   "start": 316.22,
+   "end": 319.846,
+   "text": "Checked or assumed? The gauge still shows trapped air."
   },
   {
    "id": "s10-6",
-   "scene": "save-5-isolator",
-   "start": 222.522,
-   "end": 227.264,
-   "text": "A compound that acts at very low doses stays inside the isolator."
+   "scene": "save-4-blister-jam",
+   "start": 320.546,
+   "end": 321.466,
+   "text": "Your call?"
+  },
+  {
+   "id": "s10-7",
+   "scene": "save-4-blister-jam",
+   "start": 323.866,
+   "end": 328.598,
+   "text": "Fix it: your procedure lets you bleed the air, with your own lock on."
+  },
+  {
+   "id": "s10-8",
+   "scene": "save-4-blister-jam",
+   "start": 328.938,
+   "end": 334.203,
+   "text": "Bleed to zero and try START. Nothing moves. Then Go."
+  },
+  {
+   "id": "s10-9",
+   "scene": "save-4-blister-jam",
+   "start": 334.803,
+   "end": 338.643,
+   "text": "Your hand stays out of a machine that still had stored energy."
   },
   {
    "id": "s11-1",
-   "scene": "save-6-cip-line-break",
-   "start": 229.944,
-   "end": 235.786,
-   "text": "Save six: the CIP screen says complete. You disconnect a transfer-panel elbow."
+   "scene": "save-5-isolator",
+   "start": 341.283,
+   "end": 347.293,
+   "text": "Save five: after a break, you weigh a potent active ingredient at an isolator."
   },
   {
    "id": "s11-2",
-   "scene": "save-6-cip-line-break",
-   "start": 236.166,
-   "end": 239.683,
-   "text": "What if it goes wrong? If the line's live, where does it spray?"
+   "scene": "save-5-isolator",
+   "start": 347.633,
+   "end": 349.257,
+   "text": "What would make you stop here?"
   },
   {
    "id": "s11-3",
-   "scene": "save-6-cip-line-break",
-   "start": 240.183,
-   "end": 244.157,
-   "text": "You lock out supply and pump, step aside, and check the gauge."
+   "scene": "save-5-isolator",
+   "start": 352.257,
+   "end": 356.484,
+   "text": "What's different? Nothing, and the pressure display is in range."
   },
   {
    "id": "s11-4",
-   "scene": "save-6-cip-line-break",
-   "start": 244.657,
-   "end": 247.044,
-   "text": "It shows pressure, and the line is hot."
+   "scene": "save-5-isolator",
+   "start": 356.884,
+   "end": 360.772,
+   "text": "Checked or assumed? You check each glove. One has a cut."
   },
   {
    "id": "s11-5",
-   "scene": "save-6-cip-line-break",
-   "start": 247.744,
-   "end": 252.079,
-   "text": "So you fix it: wait, vent, confirm zero and cool. Then Go."
+   "scene": "save-5-isolator",
+   "start": 361.472,
+   "end": 362.391,
+   "text": "Your call?"
   },
   {
    "id": "s11-6",
-   "scene": "save-6-cip-line-break",
-   "start": 253.579,
-   "end": 257.379,
-   "text": "The screen reports the cycle. The gauge reports your line."
+   "scene": "save-5-isolator",
+   "start": 364.791,
+   "end": 371.395,
+   "text": "Stop and get help, because a cut glove is a break in the barrier. Your lead and QA must know."
   },
   {
    "id": "s11-7",
-   "scene": "save-6-cip-line-break",
-   "start": 257.759,
-   "end": 260.049,
-   "text": "No spray of hot caustic or steam."
+   "scene": "save-5-isolator",
+   "start": 371.895,
+   "end": 376.885,
+   "text": "An authorized person changes the glove and leak-tests it. Then Go."
+  },
+  {
+   "id": "s11-8",
+   "scene": "save-5-isolator",
+   "start": 377.485,
+   "end": 383.298,
+   "text": "That powder is strong, even in tiny amounts. It stays inside the isolator."
   },
   {
    "id": "s12-1",
-   "scene": "all-six-end-in-go",
-   "start": 261.329,
-   "end": 266.139,
-   "text": "Three fixes, three calls for help. All six end in Go, once it's safe."
+   "scene": "save-6-cip-line-break",
+   "start": 385.938,
+   "end": 392.135,
+   "text": "Save six: you're about to open a pipe at the transfer panel. That's a line break."
+  },
+  {
+   "id": "s12-2",
+   "scene": "save-6-cip-line-break",
+   "start": 392.475,
+   "end": 396.68,
+   "text": "The CIP screen says the cleaning cycle is complete."
+  },
+  {
+   "id": "s12-3",
+   "scene": "save-6-cip-line-break",
+   "start": 397.02,
+   "end": 398.644,
+   "text": "What would make you stop here?"
+  },
+  {
+   "id": "s12-4",
+   "scene": "save-6-cip-line-break",
+   "start": 401.644,
+   "end": 405.985,
+   "text": "What if it goes wrong? If the pipe still has pressure, where would it spray?"
+  },
+  {
+   "id": "s12-5",
+   "scene": "save-6-cip-line-break",
+   "start": 406.485,
+   "end": 411.843,
+   "text": "You lock out the supply valve and the pump, step to the side, and check the gauge."
+  },
+  {
+   "id": "s12-6",
+   "scene": "save-6-cip-line-break",
+   "start": 412.343,
+   "end": 415.062,
+   "text": "It shows pressure, and the line is hot."
+  },
+  {
+   "id": "s12-7",
+   "scene": "save-6-cip-line-break",
+   "start": 415.762,
+   "end": 416.682,
+   "text": "Your call?"
+  },
+  {
+   "id": "s12-8",
+   "scene": "save-6-cip-line-break",
+   "start": 419.082,
+   "end": 427.174,
+   "text": "Fix it. Your line-break procedure says: wait, vent, check for zero pressure and a cool line."
+  },
+  {
+   "id": "s12-9",
+   "scene": "save-6-cip-line-break",
+   "start": 428.374,
+   "end": 433.683,
+   "text": "Then Go. The screen reports the cycle. The gauge reports your line."
+  },
+  {
+   "id": "s12-10",
+   "scene": "save-6-cip-line-break",
+   "start": 434.023,
+   "end": 437.123,
+   "text": "No spray of hot cleaning chemical or steam."
   },
   {
    "id": "s13-1",
-   "scene": "what-makes-it-work",
-   "start": 270.039,
-   "end": 276.936,
-   "text": "Anyone can stop a job, staff or contractor, even on a late batch. No reprisal, no blame."
-  },
-  {
-   "id": "s13-2",
-   "scene": "what-makes-it-work",
-   "start": 277.536,
-   "end": 281.992,
-   "text": "Leaders come quickly, thank you, fix the cause, and tell you what changed."
-  },
-  {
-   "id": "s13-3",
-   "scene": "what-makes-it-work",
-   "start": 282.592,
-   "end": 286.386,
-   "text": "It's not a form. Report what you caught through your usual channels."
-  },
-  {
-   "id": "s13-4",
-   "scene": "what-makes-it-work",
-   "start": 286.886,
-   "end": 289.949,
-   "text": "The value is your expertise, at the point of work."
+   "scene": "all-six-end-in-go",
+   "start": 438.363,
+   "end": 443.764,
+   "text": "Three fixes, three calls for help. All six end in Go, once it's safe."
   },
   {
    "id": "s14-1",
-   "scene": "close-recap",
-   "start": 291.129,
-   "end": 294.697,
-   "text": "Before you start, and whenever things change: stop and look."
+   "scene": "what-makes-it-work",
+   "start": 447.264,
+   "end": 454.82,
+   "text": "Anyone can stop a job, staff or contractor, even on a late batch. No punishment, no blame."
   },
   {
    "id": "s14-2",
-   "scene": "close-recap",
-   "start": 295.077,
-   "end": 297.452,
-   "text": "Ask: What's different? What could hurt us?"
+   "scene": "what-makes-it-work",
+   "start": 455.42,
+   "end": 461.571,
+   "text": "Leaders come quickly and thank you. They fix the cause and tell you what changed."
   },
   {
    "id": "s14-3",
+   "scene": "what-makes-it-work",
+   "start": 462.171,
+   "end": 466.581,
+   "text": "The pause is not a form. Report what you caught the usual way."
+  },
+  {
+   "id": "s15-1",
    "scene": "close-recap",
-   "start": 297.832,
-   "end": 300.541,
+   "start": 467.981,
+   "end": 475.745,
+   "text": "Before you start, and after any break, handover, interruption or change: stop and look."
+  },
+  {
+   "id": "s15-2",
+   "scene": "close-recap",
+   "start": 476.085,
+   "end": 479.53,
+   "text": "Ask: What's different? What could hurt us?"
+  },
+  {
+   "id": "s15-3",
+   "scene": "close-recap",
+   "start": 479.87,
+   "end": 482.789,
    "text": "Checked or assumed? What if it goes wrong?"
   },
   {
-   "id": "s14-4",
+   "id": "s15-4",
    "scene": "close-recap",
-   "start": 301.041,
-   "end": 306.408,
-   "text": "Then decide: Go, fix it if safe and in your procedure, or stop and get help."
+   "start": 483.289,
+   "end": 492.483,
+   "text": "Decide: Go, fix it, or stop and get help. Fix it only if trained, authorized and in procedure."
   },
   {
-   "id": "s14-5",
+   "id": "s15-5",
    "scene": "close-recap",
-   "start": 307.108,
-   "end": 309.51,
+   "start": 493.183,
+   "end": 495.991,
    "text": "Two minutes. Line clearance for people."
   },
   {
-   "id": "s14-6",
+   "id": "s15-6",
    "scene": "close-recap",
-   "start": 324.11,
-   "end": 328.533,
+   "start": 498.591,
+   "end": 503.651,
+   "text": "Find out who to call for help: days, nights and weekends."
+  },
+  {
+   "id": "s15-7",
+   "scene": "close-recap",
+   "start": 507.251,
+   "end": 512.454,
    "text": "Follow your site's procedures. This video is awareness training only."
   }
  ],
- "duration": 341.913
+ "duration": 517.194
 }

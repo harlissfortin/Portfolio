@@ -2,13 +2,14 @@
 and tile them into labelled contact sheets for review: build/qa/sheet-NN.png (6 frames each)."""
 import json, pathlib, subprocess, sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-QA = ROOT / "build/qa"; QA.mkdir(parents=True, exist_ok=True)
+QA = ROOT / ("build/qa-mid" if "--at" in sys.argv and "mid" in sys.argv else "build/qa"); QA.mkdir(parents=True, exist_ok=True)
 for f in QA.glob("*.png"): f.unlink()
 t = json.loads((ROOT / "source/timing.json").read_text())
 AT = sys.argv[sys.argv.index("--at") + 1] if "--at" in sys.argv else "end"  # end | mid (mid-cue catches transitions)
 points = [(c["id"], (c["start"] + c["end"]) / 2 if AT == "mid" else max(0, c["end"] - 0.15)) for c in t["cues"]]
-cue = {c["id"]: c for c in t["cues"]}
-points += [("your-site-slate", cue["s14-5"]["end"] + 7.0), ("end-card", t["duration"] - 4.5)]  # on-screen only, no voice
+# the slate and end card are voiced, so they are covered; add the two prediction holds of every save, mid-hold
+for c in t["cues"]:
+    if c["text"] in ("What would make you stop here?", "Your call?"): points.append((c["id"] + "-hold", c["end"] + 1.2))
 points.sort(key=lambda p: p[1])
 frames = []
 for name, ts in points:

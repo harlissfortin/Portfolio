@@ -4,7 +4,8 @@ measure the real start/end of every cue, and write:
   build/narration.wav      continuous narration track (24 kHz mono)
   source/timing.json       global cue + scene times the renderer animates against
   captions.vtt             WebVTT captions with the measured times
-Each cue is synthesized separately so caption times are measured, not estimated.
+Each cue is synthesized separately so caption times are measured, not estimated. In a cue's "tts" text, " | " marks a
+short pause: each phrase is synthesized on its own and joined with PAUSE seconds of silence, so lists don't run together.
 
 Run from a directory containing kokoro/kokoro-v1.0.onnx and kokoro/voices-v1.0.bin
 (GitHub release thewh1teagle/kokoro-onnx model-files-v1.0); pip install kokoro-onnx soundfile.
@@ -18,9 +19,10 @@ ROOT  = pathlib.Path(__file__).resolve().parent.parent
 BUILD = ROOT / "build"; BUILD.mkdir(exist_ok=True)
 CACHE = BUILD / "cue-cache"; CACHE.mkdir(exist_ok=True)   # per-cue audio, keyed by voice+speed+text
 VOICE = sys.argv[1] if len(sys.argv) > 1 else "af_heart"
-SPEED = float(sys.argv[2]) if len(sys.argv) > 2 else 0.85
+SPEED = float(sys.argv[2]) if len(sys.argv) > 2 else 0.80
+PAUSE = 0.16  # seconds between " | " phrases inside a cue
 SR = 24000
-GAP_CUE, GAP_BEAT, LEAD, TAIL = 0.38, 0.8, 0.6, 1.0   # seconds; GAP_BEAT after cues marked "beat"
+GAP_CUE, GAP_BEAT, LEAD, TAIL = 0.34, 0.8, 0.6, 1.0   # seconds; GAP_BEAT after cues marked "beat"
 
 src = json.loads((ROOT / "source/narration.json").read_text())
 kok = Kokoro("kokoro/kokoro-v1.0.onnx", "kokoro/voices-v1.0.bin")
@@ -48,17 +50,21 @@ for si, scene in enumerate(src["scenes"]):
     if pre: parts.append(silence(pre)); t += pre
     s_start = 0.0 if si == 0 else t - pre
     for ci, c in enumerate(scene["cues"]):
-        key = hashlib.sha1(f"{VOICE}|{SPEED}|{tts_text(c)}".encode()).hexdigest()[:16]
-        cache = CACHE / f"{key}.npy"
-        if cache.exists():
-            samples = np.load(cache)
-        else:
-            samples, sr = kok.create(tts_text(c), voice=VOICE, speed=SPEED, lang="en-us")
-            assert sr == SR
-            np.save(cache, np.asarray(samples, dtype=np.float32))
-        x = fade(np.asarray(samples, dtype=np.float32).copy())
-        thr = 10 ** (-50 / 20); idx = np.where(np.abs(x) > thr)[0]
-        if len(idx): x = x[max(0, idx[0] - int(0.02 * SR)): idx[-1] + int(0.06 * SR)]
+        segs = []
+        for phrase in [p.strip() for p in tts_text(c).split("|") if p.strip()]:
+            key = hashlib.sha1(f"{VOICE}|{SPEED}|{phrase}".encode()).hexdigest()[:16]
+            cache = CACHE / f"{key}.npy"
+            if cache.exists():
+                samples = np.load(cache)
+            else:
+                samples, sr = kok.create(phrase, voice=VOICE, speed=SPEED, lang="en-us")
+                assert sr == SR
+                np.save(cache, np.asarray(samples, dtype=np.float32))
+            y = fade(np.asarray(samples, dtype=np.float32).copy())
+            thr = 10 ** (-50 / 20); idx = np.where(np.abs(y) > thr)[0]
+            if len(idx): y = y[max(0, idx[0] - int(0.02 * SR)): idx[-1] + int(0.06 * SR)]
+            segs += [y, silence(PAUSE)]
+        x = np.concatenate(segs[:-1])
         start = t; parts.append(x); t += len(x) / SR
         timing["cues"].append({"id": c["id"], "scene": scene["id"], "start": round(start, 3), "end": round(t, 3), "text": c["text"]})
         gap = c.get("after", GAP_BEAT if c.get("beat") else GAP_CUE)

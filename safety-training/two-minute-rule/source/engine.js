@@ -52,6 +52,7 @@
     return v;
   }
 
+  window.REF = parseRef;   // lets tooling/events.js resolve sound-cue times with the same grammar
   const anims = [];
   const lits = [];
   let marks = [], lightFrom = [];

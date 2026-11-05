@@ -4,11 +4,26 @@ window.ART = (function () {
   const C = { steel: '#6f93b8', steelDark: '#22405f', steelFill: '#173250', plasma: '#e7c46a', n2: '#6cb4ff', red: '#ff5f5f', teal: '#34d1bf', amber: '#ffb81c', ink: '#f2f6fa', muted: '#9fb3c8', person: '#cfd9e4' };
 
   // A person as a rounded silhouette. (x,y) = feet centre; h = height in px.
+  // opts: color, id, attrs; gown (cleanroom coverall + hood), mask, goggles, helmet (colour), shield (face shield),
+  // gloves (colour), vest (colour: a lead's hi-vis vest); ppeAttrs = attributes for the PPE layer (e.g. a fade-in).
   function person(x, y, h, opts = {}) {
-    const s = h / 200, col = opts.color || 'var(--person)', id = opts.id ? `id="${opts.id}"` : '', extra = opts.attrs || '';
+    const s = h / 200, id = opts.id ? `id="${opts.id}"` : '', extra = opts.attrs || '';
+    const col = opts.gown ? '#eef3f8' : (opts.color || 'var(--person)');
+    const line = opts.gown ? 'stroke="var(--steel)" stroke-width="2.4"' : '';
+    const body = `<path ${line} d="M-24 -156 Q0 -162 24 -156 Q32 -153 33 -144 L37 -92 Q38 -84 31 -83 Q25 -83 24 -90 L21 -128 L20 -76 L17 -6 Q16 0 9 0 Q3 0 3 -6 L0 -64 L-3 -6 Q-3 0 -9 0 Q-16 0 -17 -6 L-20 -76 L-21 -128 L-24 -90 Q-25 -83 -31 -83 Q-38 -84 -37 -92 L-33 -144 Q-32 -153 -24 -156 Z"/>`;
+    const head = opts.gown
+      ? `<path ${line} d="M-23 -158 Q-25 -205 0 -205 Q25 -205 23 -158 Z"/><ellipse cx="0" cy="-180" rx="12" ry="14" fill="var(--person)"/>`
+      : `<circle cx="0" cy="-180" r="17"/>`;
+    let ppe = '';
+    if (opts.vest) ppe += `<path d="M-22 -153 L22 -153 L20 -96 L-20 -96 Z" fill="${opts.vest}"/><path d="M-21 -128 H21 M-20.5 -112 H20.5" stroke="#f4f7fb" stroke-width="5"/>`;
+    if (opts.mask) ppe += `<rect x="-10" y="-178" width="20" height="10" rx="4" fill="#a9cbe8" stroke="var(--steel)" stroke-width="1.2"/>`;
+    if (opts.goggles) ppe += `<rect x="-15" y="-189" width="30" height="9" rx="4.5" fill="#2a3b4f"/><rect x="-11" y="-187" width="8" height="4" rx="2" fill="#9fd0ff"/><rect x="3" y="-187" width="8" height="4" rx="2" fill="#9fd0ff"/>`;
+    if (opts.helmet) ppe += `<path d="M-19 -190 Q-19 -208 0 -208 Q19 -208 19 -190 Z" fill="${opts.helmet}"/><rect x="-24" y="-192" width="48" height="5" rx="2.5" fill="${opts.helmet}"/>`;
+    if (opts.shield) ppe += `<rect x="-20" y="-194" width="40" height="5" rx="2" fill="var(--steel)"/><path d="M-21 -190 H21 V-168 Q21 -157 10 -157 H-10 Q-21 -157 -21 -168 Z" fill="rgba(170,215,250,.38)" stroke="var(--steel)" stroke-width="2.2"/>`;
+    if (opts.gloves) ppe += `<circle cx="-33" cy="-87" r="6.5" fill="${opts.gloves}"/><circle cx="33" cy="-87" r="6.5" fill="${opts.gloves}"/>`;
+    if (opts.ppeOnly) return `<g ${extra} transform="translate(${x},${y}) scale(${s})"><g ${opts.ppeAttrs || ''}>${ppe}</g></g>`;
     return `<g ${id} ${extra} transform="translate(${x},${y}) scale(${s})" style="fill:${col}">
-      <circle cx="0" cy="-180" r="17"/>
-      <path d="M-24 -156 Q0 -162 24 -156 Q32 -153 33 -144 L37 -92 Q38 -84 31 -83 Q25 -83 24 -90 L21 -128 L20 -76 L17 -6 Q16 0 9 0 Q3 0 3 -6 L0 -64 L-3 -6 Q-3 0 -9 0 Q-16 0 -17 -6 L-20 -76 L-21 -128 L-24 -90 Q-25 -83 -31 -83 Q-38 -84 -37 -92 L-33 -144 Q-32 -153 -24 -156 Z"/>
+      ${head}${body}${ppe ? `<g ${opts.ppeAttrs || ''}>${ppe}</g>` : ''}
     </g>`;
   }
 
@@ -169,8 +184,8 @@ window.ART = (function () {
       <rect x="80" y="80" width="540" height="220" rx="14" fill="color-mix(in srgb, var(--n2) 10%, var(--panel))" stroke="var(--line)" stroke-width="4"/>
       ${[220, 450].map(x => `<path d="M${x - 34} 262 V170 Q${x - 34} 140 ${x - 16} 140 H${x + 16} Q${x + 34} 140 ${x + 34} 170 V262" fill="color-mix(in srgb, var(--q3) 22%, var(--panel))" stroke="var(--steel)" stroke-width="4"/>${[-24, -8, 8, 24].map(d => `<path d="M${x + d} 142 V112" stroke="var(--steel)" stroke-width="12" stroke-linecap="round"/><path d="M${x + d} 142 V112" stroke="color-mix(in srgb, var(--q3) 22%, var(--panel))" stroke-width="5" stroke-linecap="round"/>`).join('')}<circle cx="${x}" cy="262" r="52" fill="none" stroke="var(--steel)" stroke-width="12"/>`).join('')}
       <circle id="${id}-pin" cx="470" cy="176" r="8" fill="var(--stop)" opacity="0"/>
-      <rect x="506" y="96" width="112" height="54" rx="8" fill="#0b1420"/>
-      <text id="${id}-dp" x="562" y="132" text-anchor="middle" font-size="24" font-weight="800" fill="#43d17e">ΔP OK</text>
+      <rect x="492" y="96" width="140" height="54" rx="8" fill="#0b1420"/>
+      <text id="${id}-dp" x="562" y="132" text-anchor="middle" font-size="21" font-weight="800" fill="#43d17e">IN RANGE</text>
       <path d="M90 340 v70 M610 340 v70 M60 410 H640" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
       <text x="350" y="380" text-anchor="middle" font-size="22" font-weight="700" fill="var(--muted)">ISOLATOR</text>
     </svg>`;

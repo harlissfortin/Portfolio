@@ -76,20 +76,21 @@ async function renderSegment(browser, i, f0, f1) {
   }
   const list = path.join(BUILD, 'segments.txt');
   fs.writeFileSync(list, segs.map(s => `file '${s}'`).join('\n'));
-  const wav = path.join(BUILD, 'narration.wav');
+  // the mixed soundtrack (tooling/mix.py: voice + music bed + cues) when present, else the bare narration
+  const wav = fs.existsSync(path.join(BUILD, 'mix.wav')) ? path.join(BUILD, 'mix.wav') : path.join(BUILD, 'narration.wav');
   // chapter markers from the scene list, for players and LMS navigation
   const chap = [';FFMETADATA1', 'title=The 2-Minute Rule'];
   const titleOf = sc => sc.chapter || (sc.id === timing.scenes[0].id ? 'Intro' : 'Close');
   timing.scenes.forEach(sc => chap.push('[CHAPTER]', 'TIMEBASE=1/1000', `START=${Math.round(sc.start * 1000)}`, `END=${Math.round(sc.end * 1000)}`, `title=${titleOf(sc)}`));
   const chapFile = path.join(BUILD, 'chapters.txt'); fs.writeFileSync(chapFile, chap.join('\n') + '\n');
-  // two-pass loudness normalization to -16 LUFS; the -2.0 dBTP ceiling leaves room for AAC overshoot so the file stays under -1.5 dBTP
-  const meas = require('child_process').spawnSync('ffmpeg', ['-hide_banner', '-i', wav, '-af', 'loudnorm=I=-16:TP=-2.0:LRA=11:print_format=json', '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
+  // two-pass loudness normalization to -16 LUFS; the -2.5 dBTP ceiling leaves room for AAC overshoot and cue transients so the file stays under -1.5 dBTP
+  const meas = require('child_process').spawnSync('ffmpeg', ['-hide_banner', '-i', wav, '-af', 'loudnorm=I=-16:TP=-2.5:LRA=11:print_format=json', '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
   const m = JSON.parse(meas.slice(meas.lastIndexOf('{'), meas.lastIndexOf('}') + 1));
-  const ln = `loudnorm=I=-16:TP=-2.0:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`;
+  const ln = `loudnorm=I=-16:TP=-2.5:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`;
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list,
     '-ss', String(from), '-t', String(to - from), '-i', wav, '-i', chapFile,
     '-map', '0:v', '-map', '1:a', '-map_metadata', '2', '-map_chapters', '2', '-metadata:s:a:0', 'language=eng', '-metadata:s:v:0', 'language=eng', '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-tune', 'animation', '-pix_fmt', 'yuv420p',
-    '-af', ln, '-c:a', 'aac', '-b:a', '128k', '-ar', '48000', '-movflags', '+faststart', '-shortest',
+    '-af', `${ln},aresample=48000,alimiter=limit=0.75:attack=1:release=50:level=0`, '-c:a', 'aac', '-b:a', '128k', '-ar', '48000', '-movflags', '+faststart', '-shortest',
     '-metadata', 'title=The 2-Minute Rule', out], { stdio: 'inherit' });
   console.log(`rendered ${n} frames in ${((Date.now() - t0) / 1000).toFixed(0)} s -> ${out}`);
   // poster / LMS thumbnail: the title card

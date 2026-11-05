@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>2-Minute Rule job aid</title>
+<!--
+  The 2-Minute Rule: point-of-work job aid, sorting cards, call cards and huddle sheet.
+  One self-contained page (inline CSS and script, no external requests). It builds every print layout from the text in
+  T, CARDS and HUDDLE and the local entries in LOCAL (all in the script at the bottom):
+    ?view=pocket         pocket card, A6 (105 x 148 mm), front and back: the main handout
+    ?view=pocket-front   pocket card, front only        ?view=pocket-back   back only
+    ?view=pocket-a4      pocket card, cut-and-fold on A4 landscape      ?view=pocket-letter   on US Letter landscape
+    ?view=badge          badge card, 85.6 x 54 mm (small print, optional), front and back
+    ?view=badge-front    ?view=badge-back
+    ?view=badge-a4       four badge cards, cut-and-fold on A4           ?view=badge-letter    on US Letter
+    ?view=sign-a4        sign for the point of work, A4 landscape       ?view=sign-letter     US Letter landscape
+    ?view=sorting        the ten sorting cards, four to an A4 page, fronts and backs for long-edge duplex
+    ?view=callcards      call cards (Go, Fix it, Stop & get help), four sets on A4
+    ?view=huddle         the huddle sheet: the six steps on one A4 page
+    no view              everything, for checking on screen
+  render.js turns these into the PDFs and PNGs in this folder.
+-->
+<style>
+  :root {
+    /* colour tokens from source/style.css (light teaching palette) */
+    --paper: #fbf9f4; --panel: #ffffff; --panel2: #f1ece1; --line: #ddd4c2;
+    --ink: #14233a; --muted: #566377; --dim: #8792a2;
+    --q1: #2f6fd6; --q2: #7a4fd0; --q3: #0e8a7b; --q4: #a3366f;
+    --go: #17803f; --fix: #9a5b00; --stop: #cf3434;
+    --amber: #e59a00; --amber-text: #9a5b00; --ok-text: #0b7064; /* darker teal for small text on paper */
+  }
+  * { box-sizing: border-box; }
+  @page { margin: 0; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, "DejaVu Sans", sans-serif;
+    color: var(--ink); -webkit-font-smoothing: antialiased; font-feature-settings: 'cv11' 1;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    background: #d9d3c6;
+  }
+  p { margin: 0; }
+  svg.i { display: block; flex: none; fill: none; stroke: currentColor; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- screen preview frame (hidden in print and in single-layout views) ---------- */
+  #app { display: flex; flex-direction: column; align-items: center; gap: 10mm; padding: 10mm 4mm; }
+  .label { font: 600 10pt/1.3 Inter, sans-serif; color: #33465f; margin-bottom: -7mm; }
+  .page { position: relative; overflow: hidden; background: var(--paper); box-shadow: 0 2px 10px rgba(20,35,58,.18); }
+  .duo { display: flex; gap: 6mm; }
+  body.single #app { display: block; padding: 0; }
+  body.single .label { display: none; }
+  body.single .duo { display: contents; }
+  body.single .page { box-shadow: none; break-after: page; }
+  body.single .page:last-child { break-after: auto; }
+  body.single { background: var(--paper); }
+  @media print {
+    body { background: none; }
+    #app { display: block; padding: 0; }
+    .label { display: none; }
+    .duo { display: contents; }
+    .page { box-shadow: none; break-after: page; }
+    .page:last-child { break-after: auto; }
+  }
+
+  /* ---------- shared pieces ---------- */
+  .kick { font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--amber-text); line-height: 1; }
+  .n { flex: none; border-radius: 50%; background: var(--c); color: #fff; font-weight: 850; display: flex; align-items: center; justify-content: center; line-height: 1; }
+  .q { --c: var(--q1); display: flex; align-items: center; border: solid color-mix(in srgb, var(--c) 60%, transparent); background: color-mix(in srgb, var(--c) 7%, var(--panel)); }
+  .q1 { --c: var(--q1); } .q2 { --c: var(--q2); } .q3 { --c: var(--q3); } .q4 { --c: var(--q4); }
+  .q3 .n { background: var(--ok-text); } /* white numeral keeps 4.5:1 at card size */
+  .qt { font-weight: 800; line-height: 1.1; }
+  .qg { color: var(--ink); font-weight: 500; line-height: 1.15; }
+  .pill { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #fff; white-space: nowrap; line-height: 1; }
+  .pill.go { background: var(--go); } .pill.fix { background: var(--fix); } .pill.stop { background: var(--stop); }
+  .pill svg { color: #fff; }
+  .step { display: inline-flex; align-items: center; border-radius: 999px; background: var(--panel); border: solid var(--line); font-weight: 800; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; line-height: 1; }
+  .step svg { color: var(--ink); }
+  .call b, .doubt { font-weight: 800; }
+  .trig .t { display: flex; align-items: center; background: var(--panel); border: solid var(--line); font-weight: 650; line-height: 1.08; }
+  .trig svg { color: var(--amber-text); }
+  .ln { display: flex; align-items: flex-end; border-bottom: solid var(--ink); font-weight: 500; white-space: nowrap; overflow: hidden; }
+  .who .bl { white-space: nowrap; line-height: 1; }
+
+  /* ---------- pocket card: A6 portrait, 105 x 148 mm, 9 pt minimum ---------- */
+  .pocket { width: 105mm; height: 148mm; padding: 5.5mm 6mm 5.5mm; display: flex; flex-direction: column; font-size: 10pt; line-height: 1.2; }
+  .pocket .hd { display: flex; align-items: center; gap: 2mm; }
+  .pocket .hd svg { width: 7.5mm; height: 7.5mm; color: var(--amber); stroke-width: 5; }
+  .pocket .hd .title { font-size: 18pt; font-weight: 850; letter-spacing: -.02em; line-height: 1; white-space: nowrap; }
+  .pocket .rule { margin-top: 2.2mm; font-size: 10.5pt; font-weight: 750; color: var(--ok-text); line-height: 1.15; }
+  .pocket .note { margin-top: .6mm; font-size: 9pt; font-weight: 600; color: var(--muted); }
+  .pocket .trig { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1mm 1.4mm; margin-top: 2.2mm; }
+  .pocket .trig .t { gap: 1.4mm; padding: 1.1mm 1.4mm; border-width: .25mm; border-radius: 1.6mm; font-size: 10pt; }
+  .pocket .trig svg { width: 4.6mm; height: 4.6mm; stroke-width: 5; }
+  .pocket .slad { display: grid; grid-template-columns: 20.5mm 1fr; gap: 1.8mm 2mm; align-items: center; margin-top: 3.2mm; }
+  .pocket .step { justify-content: flex-start; gap: 1mm; padding: .9mm 1.6mm .9mm 1.1mm; border-width: .25mm; font-size: 9pt; }
+  .pocket .step svg { width: 3.8mm; height: 3.8mm; stroke-width: 5; }
+  .pocket .sg { font-weight: 600; line-height: 1.15; }
+  .pocket .qs { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 1.3mm; }
+  .pocket .q { gap: 2mm; padding: 1.3mm 1.8mm; border-width: .3mm; border-radius: 2mm; }
+  .pocket .q .n { width: 5.2mm; height: 5.2mm; font-size: 10pt; }
+  .pocket .qt { font-size: 11pt; }
+  .pocket .qg { font-size: 10pt; margin-top: .3mm; }
+  .pocket .bhd { display: flex; align-items: baseline; gap: 2mm; }
+  .pocket .bhd .kick { font-size: 10pt; }
+  .pocket .bhd .sub { font-weight: 600; color: var(--muted); }
+  .pocket .calls { display: flex; flex-direction: column; gap: 2.8mm; margin-top: 3mm; }
+  .pocket .call .pill { height: 6.4mm; padding: 0 2.6mm 0 2mm; gap: 1.2mm; font-size: 10pt; }
+  .pocket .call .pill svg { width: 4mm; height: 4mm; stroke-width: 6; }
+  .pocket .call p { margin-top: 1.1mm; font-size: 10.5pt; line-height: 1.22; }
+  .pocket .base { margin-top: 3mm; padding-top: 1.8mm; border-top: .25mm solid var(--line); color: var(--muted); font-weight: 600; font-size: 9.5pt; line-height: 1.2; }
+  .pocket .who { margin-top: auto; display: grid; grid-template-columns: auto 1fr; column-gap: 2mm; align-items: end; }
+  .pocket .who .gl { grid-column: 1 / -1; font-weight: 800; line-height: 1; }
+  .pocket .who .bl { padding-bottom: .7mm; padding-left: 3mm; }
+  .pocket .who .bl.b { font-weight: 800; padding-left: 0; }
+  .pocket .who .ln { height: 7.6mm; border-bottom-width: .25mm; padding-bottom: .5mm; }
+  .pocket .who .sp { margin-top: 1.8mm; }
+
+  /* ---------- badge card: 85.6 x 54 mm, 6.5 pt minimum (small print: optional, on top of the pocket card) ---------- */
+  .badge { width: 85.6mm; height: 54mm; padding: 2.6mm 3mm 2.5mm; display: flex; flex-direction: column; font-size: 6.5pt; }
+  .badge .hd { display: flex; align-items: center; gap: 1.3mm; }
+  .badge .hd svg { width: 4.6mm; height: 4.6mm; color: var(--amber); stroke-width: 5; }
+  .badge .hd .title { font-size: 10.5pt; font-weight: 850; letter-spacing: -.02em; line-height: 1; white-space: nowrap; }
+  .badge .hd .rule { margin-left: auto; text-align: right; font-weight: 700; color: var(--ok-text); line-height: 1.1; max-width: 30mm; text-wrap: balance; }
+  .badge .trig { display: grid; grid-template-columns: repeat(5, 1fr); gap: .7mm; margin-top: 1.3mm; }
+  .badge .trig .t { flex-direction: column; justify-content: flex-start; text-align: center; gap: .45mm; padding: .7mm .3mm .8mm; border-width: .2mm; border-radius: 1.3mm; font-size: 6.5pt; }
+  .badge .trig svg { width: 3.3mm; height: 3.3mm; stroke-width: 5; }
+  .badge .slad { display: flex; align-items: center; justify-content: space-between; margin-top: 1.3mm; }
+  .badge .step { gap: .7mm; padding: .6mm 1.4mm .6mm .9mm; border-width: .2mm; font-size: 6.5pt; }
+  .badge .step svg { width: 2.9mm; height: 2.9mm; stroke-width: 5; }
+  .badge .slad .sep { color: var(--dim); font-weight: 800; font-size: 7pt; line-height: 1; }
+  .badge .qs { display: grid; grid-template-columns: 1fr 1fr; gap: .8mm; margin-top: 1.3mm; flex: 1; }
+  .badge .q { gap: 1.1mm; padding: .6mm .9mm; border-width: .25mm; border-radius: 1.6mm; }
+  .badge .q .n { width: 3.6mm; height: 3.6mm; font-size: 7pt; }
+  .badge .qt { font-size: 7pt; }
+  .badge .qg { font-size: 6.5pt; margin-top: .2mm; line-height: 1.1; }
+  .badge.back { padding-top: 2.4mm; }
+  .badge .bhd { display: flex; align-items: baseline; gap: 1.6mm; }
+  .badge .bhd .kick { font-size: 6.5pt; }
+  .badge .bhd .sub { font-weight: 600; color: var(--muted); }
+  .badge .calls { display: flex; flex-direction: column; gap: .9mm; margin-top: 1.1mm; }
+  .badge .call { display: flex; align-items: flex-start; gap: 1.5mm; line-height: 1.13; }
+  .badge .call .pill { width: 26.6mm; height: 4.2mm; gap: .8mm; font-size: 6.5pt; flex: none; }
+  .badge .call .pill svg { width: 2.8mm; height: 2.8mm; stroke-width: 6; }
+  .badge .call p { padding-top: .4mm; }
+  .badge .base { margin-top: 1mm; padding-top: .8mm; border-top: .2mm solid var(--line); color: var(--muted); font-weight: 600; line-height: 1.12; }
+  .badge .who { display: grid; grid-template-columns: auto 1fr auto 1fr; column-gap: 1.2mm; align-items: end; margin-top: auto; }
+  .badge .who .gl { grid-column: 1 / 3; font-weight: 800; line-height: 1; }
+  .badge .who .bl { font-weight: 600; padding-bottom: .5mm; }
+  .badge .who .bl.b { font-weight: 800; padding-left: 1.6mm; }
+  .badge .who .ln { height: 3.9mm; border-bottom-width: .2mm; font-size: 6.5pt; padding-bottom: .4mm; }
+
+  /* ---------- sign: A4 landscape (297 x 210 mm) or US Letter landscape, 16 pt body minimum ---------- */
+  .sign { width: 297mm; height: 210mm; padding: 7mm 8mm 6mm; display: flex; flex-direction: column; font-size: 17pt; line-height: 1.15; }
+  .sign.letter { width: 279.4mm; height: 215.9mm; }
+  .sign .hd { display: flex; align-items: center; gap: 2.6mm; padding-bottom: 3mm; border-bottom: .4mm solid var(--line); }
+  .sign .hd > svg { width: 11mm; height: 11mm; color: var(--amber); }
+  .sign .hd .title { font-size: 29pt; font-weight: 850; letter-spacing: -.02em; line-height: 1; white-space: nowrap; }
+  .sign .slad { margin-left: auto; display: flex; align-items: center; gap: 1.4mm; }
+  .sign .step { gap: 1.4mm; padding: 1.4mm 2.8mm 1.4mm 1.9mm; border-width: .4mm; font-size: 14pt; }
+  .sign .step svg { width: 5.4mm; height: 5.4mm; }
+  .sign .slad .sep { color: var(--dim); font-weight: 800; font-size: 14pt; line-height: 1; }
+  .sign .body { display: grid; grid-template-columns: 86mm minmax(0, 1fr); gap: 6mm; margin-top: 3.6mm; }
+  .sign .side { display: flex; flex-direction: column; }
+  .sign .rule { font-weight: 750; color: var(--ok-text); line-height: 1.12; }
+  .sign .tlist { display: flex; flex-direction: column; gap: 1.5mm; margin-top: 2.2mm; }
+  .sign .tlist .t { display: flex; align-items: center; gap: 2.4mm; font-weight: 650; line-height: 1.1; }
+  .sign .tlist svg { width: 7mm; height: 7mm; color: var(--amber-text); }
+  .sign .note { margin-top: 2.4mm; color: var(--muted); font-weight: 600; line-height: 1.12; }
+  .sign .qs { display: flex; flex-direction: column; gap: 1.6mm; }
+  .sign .q { gap: 3mm; padding: 1.3mm 3mm 1.4mm; border-width: .45mm; border-radius: 3mm; }
+  .sign .q .n { width: 9mm; height: 9mm; font-size: 18pt; }
+  .sign .qt { font-size: 19pt; line-height: 1.08; }
+  .sign .qg { font-size: 17pt; line-height: 1.12; margin-top: .2mm; }
+  .sign .calls { display: flex; flex-direction: column; gap: 2.4mm; margin-top: 4mm; padding-top: 3.4mm; border-top: .4mm solid var(--line); }
+  .sign .call { line-height: 1.22; }
+  .sign .call .pill { height: 8.2mm; padding: 0 2.8mm 0 2.2mm; gap: 1.4mm; font-size: 14pt; letter-spacing: .02em; vertical-align: -.6mm; margin-right: 1.6mm; }
+  .sign .call .pill svg { width: 5mm; height: 5mm; stroke-width: 6; }
+  .sign .ex { display: block; color: var(--muted); font-weight: 600; margin-top: .6mm; }
+  .sign .who { margin-top: auto; display: grid; grid-template-columns: auto auto minmax(45mm, 1fr) auto minmax(45mm, 1fr); column-gap: 2.4mm; row-gap: .4mm; align-items: end; padding: 2.4mm 3mm 2.6mm; border: .4mm solid var(--line); border-radius: 3mm; background: var(--panel); }
+  .sign .who .gl { grid-row: 1 / span 3; align-self: start; font-weight: 800; padding-top: 3.2mm; }
+  .sign .who .bl { font-weight: 600; padding-bottom: .9mm; }
+  .sign .who .bl.b { font-weight: 800; padding-left: 4mm; }
+  .sign .who .ln { height: 8.6mm; border-bottom-width: .45mm; padding-bottom: .7mm; }
+  .sign .base { margin-top: 2.2mm; color: var(--muted); font-weight: 600; font-size: 12pt; line-height: 1.1; }
+
+  /* ---------- cut-and-fold sheets ---------- */
+  .sheet { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; }
+  .sheet.a4 { width: 210mm; height: 297mm; }
+  .sheet.letter { width: 215.9mm; height: 279.4mm; }
+  .sheet.a4l { width: 297mm; height: 210mm; }
+  .sheet.letterl { width: 279.4mm; height: 215.9mm; }
+  .sheet .how { font-size: 9pt; line-height: 1.3; color: var(--muted); margin-bottom: 7mm; }
+  .sheet .how b { color: var(--ink); }
+  .sheet .pairs { display: flex; flex-direction: column; gap: 8mm; margin-bottom: 5.5mm; }
+  .sheet .pair { position: relative; display: flex; }
+  .sheet .pair .page { box-shadow: none; }
+  .sheet .cm { position: absolute; background: #6b7686; }
+  .sheet .cm.h { height: .15mm; width: 3.5mm; } .sheet .cm.v { width: .15mm; height: 3.5mm; }
+  .sheet .fold { position: absolute; width: 0; height: 4mm; border-left: .2mm dashed #6b7686; }
+
+  /* ---------- sorting cards: 95 x 132 mm, four to an A4 page ---------- */
+  .sortpage { width: 210mm; height: 297mm; background: #fff; display: grid; grid-template-columns: 95mm 95mm; grid-template-rows: 132mm 132mm; gap: 4mm; justify-content: center; align-content: center; }
+  .sc { position: relative; overflow: hidden; background: var(--paper); padding: 6mm 6.5mm 5.5mm; display: flex; flex-direction: column; font-size: 15.5pt; line-height: 1.27; }
+  .sortpage.front .sc { outline: .2mm dashed #9aa3b0; outline-offset: 0; }
+  .sc.blank { background: #fff; }
+  .sc .top { display: flex; align-items: center; justify-content: space-between; }
+  .sc .top .kick { font-size: 10pt; }
+  .sc .num { font-size: 22pt; font-weight: 850; color: var(--dim); line-height: 1; }
+  .sc .sit { margin-top: 4mm; font-weight: 550; }
+  .sc .ask { margin-top: auto; padding-top: 3mm; border-top: .3mm solid var(--line); }
+  .sc .ask .lbl { font-weight: 800; font-size: 11pt; }
+  .sc .ask .row { display: flex; gap: 1.4mm; margin-top: 1.8mm; }
+  .sc .ask .pill { height: 6.6mm; padding: 0 2.2mm 0 1.8mm; gap: .9mm; font-size: 10pt; opacity: .6; }
+  .sc .ask .pill svg { width: 3.8mm; height: 3.8mm; stroke-width: 6; }
+  .sc .ans { margin-top: 4mm; }
+  .sc .ans .pill { height: 9.6mm; padding: 0 3.4mm 0 2.8mm; gap: 1.6mm; font-size: 14pt; }
+  .sc .ans .pill svg { width: 5.6mm; height: 5.6mm; stroke-width: 6; }
+  .sc .why { margin-top: 4mm; font-size: 15pt; line-height: 1.28; }
+  .sc .flag { margin-top: auto; padding-top: 2.6mm; border-top: .3mm solid var(--line); font-size: 10.5pt; font-weight: 700; color: var(--muted); line-height: 1.2; }
+  .sc .flag.chk { color: var(--amber-text); }
+
+  /* ---------- call cards: 62 x 66 mm, three per set, four sets on A4 ---------- */
+  .callpage { width: 210mm; height: 297mm; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .callpage .how { width: 194mm; font-size: 10pt; line-height: 1.3; color: var(--muted); margin-bottom: 5mm; }
+  .callpage .how b { color: var(--ink); }
+  .callgrid { display: grid; grid-template-columns: repeat(3, 62mm); grid-auto-rows: 62mm; gap: 4mm; }
+  .cc { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4mm; color: #fff; outline: .2mm dashed #9aa3b0; text-align: center; padding: 4mm; }
+  .cc.go { background: var(--go); } .cc.fix { background: var(--fix); } .cc.stop { background: var(--stop); }
+  .cc svg { width: 24mm; height: 24mm; stroke-width: 5.5; color: #fff; }
+  .cc .w { font-size: 21pt; font-weight: 850; text-transform: uppercase; letter-spacing: .03em; line-height: 1.05; }
+
+  /* ---------- huddle sheet: A4 portrait, for the facilitator ---------- */
+  .huddle { width: 210mm; height: 297mm; padding: 10mm 12mm 9mm; display: flex; flex-direction: column; font-size: 9.2pt; line-height: 1.25; background: #fff; }
+  .huddle .hd { display: flex; align-items: center; gap: 2.4mm; padding-bottom: 2.4mm; border-bottom: .35mm solid var(--line); }
+  .huddle .hd svg { width: 8mm; height: 8mm; color: var(--amber); }
+  .huddle .hd .title { font-size: 18pt; font-weight: 850; letter-spacing: -.02em; line-height: 1; }
+  .huddle .hd .sub { margin-left: auto; font-weight: 700; color: var(--ok-text); text-align: right; }
+  .huddle h3 { margin: 2.8mm 0 1.2mm; font-size: 10pt; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--amber-text); line-height: 1; }
+  .huddle table { width: 100%; border-collapse: collapse; }
+  .huddle td, .huddle th { border-bottom: .25mm solid var(--line); padding: 1.1mm 1.6mm 1.2mm; vertical-align: top; text-align: left; }
+  .huddle th { font-size: 9pt; color: var(--muted); font-weight: 700; border-bottom-width: .4mm; }
+  .huddle td.s { width: 30mm; font-weight: 800; }
+  .huddle td.t { width: 15mm; white-space: nowrap; color: var(--muted); font-weight: 700; }
+  .huddle ul { margin: 0; padding-left: 4.2mm; }
+  .huddle li { margin: .5mm 0; }
+  .huddle .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6mm; }
+  .huddle .say { font-weight: 700; }
+  .huddle .foot { margin-top: auto; padding-top: 2mm; border-top: .35mm solid var(--line); color: var(--muted); font-weight: 600; font-size: 9pt; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-watch" viewBox="0 0 64 64"><circle cx="32" cy="36" r="22"/><path d="M26 6h12M32 6v8M50 16l4-4M32 36l9-9"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 64 64"><path d="M22 34V14a4 4 0 0 1 8 0v16M30 30V9a4 4 0 0 1 8 0v21M38 30V12a4 4 0 0 1 8 0v22M46 34v-12a4 4 0 0 1 8 0v18c0 12-8 20-19 20h-3c-7 0-11-3-15-9l-8-12a4 4 0 0 1 6-5l5 6"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 64 64"><path d="M4 32s10-18 28-18 28 18 28 18-10 18-28 18S4 32 4 32z"/><circle cx="32" cy="32" r="9"/></symbol>
+    <symbol id="i-ask" viewBox="0 0 64 64"><path d="M10 10h44a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H30L18 56V46h-8a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4z"/><path d="M26 22a6 6 0 1 1 8 6c-2 1-2 2-2 5"/><circle cx="32" cy="39" r="1" stroke-width="5"/></symbol>
+    <symbol id="i-sign" viewBox="0 0 64 64"><path d="M32 6v52M22 58h20"/><path d="M32 12h20l6 7-6 7H32zM32 30H12l-6 7 6 7h20z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 64 64"><path d="M12 34l13 13 27-29"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 64 64"><path d="M40 8a14 14 0 0 0-13 19L8 46l10 10 19-19a14 14 0 0 0 19-13l-8 8-9-1-1-9z"/></symbol>
+    <!-- handset for STOP & GET HELP, so it can't be confused with the STOP step (raised hand); path after Feather Icons (MIT) -->
+    <symbol id="i-phone" viewBox="0 0 64 64"><path d="M58.67 45.12v8a5.33 5.33 0 0 1-5.81 5.33 52.77 52.77 0 0 1-23.01-8.19 52 52 0 0 1-16-16 52.77 52.77 0 0 1-8.19-23.12A5.33 5.33 0 0 1 10.96 5.33h8a5.33 5.33 0 0 1 5.33 4.59 34.24 34.24 0 0 0 1.87 7.49 5.33 5.33 0 0 1-1.2 5.63L21.57 26.43a42.67 42.67 0 0 0 16 16l3.39-3.39a5.33 5.33 0 0 1 5.63-1.2 34.24 34.24 0 0 0 7.49 1.87A5.33 5.33 0 0 1 58.67 45.12z"/></symbol>
+    <symbol id="i-start" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26"/><path d="M26 20l18 12-18 12z"/></symbol>
+    <symbol id="i-cup" viewBox="0 0 64 64"><path d="M10 28h34v12a14 14 0 0 1-14 14h-6a14 14 0 0 1-14-14z"/><path d="M44 32h4a7 7 0 0 1 0 14h-5"/><path d="M20 6c-3 4 3 8 0 13M30 6c-3 4 3 8 0 13"/></symbol>
+    <symbol id="i-handover" viewBox="0 0 64 64"><circle cx="18" cy="16" r="7"/><circle cx="46" cy="16" r="7"/><path d="M5 46c0-9 6-15 13-15s13 6 13 15M33 46c0-9 6-15 13-15s13 6 13 15"/><path d="M22 56h20M36 51l6 5-6 5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 64 64"><path d="M32 8a15 15 0 0 0-15 15v11l-6 9h42l-6-9V23A15 15 0 0 0 32 8z"/><path d="M26 50a6 6 0 0 0 12 0"/><path d="M6 14l5 5M58 14l-5 5"/></symbol>
+    <symbol id="i-change" viewBox="0 0 64 64"><path d="M10 22h42M42 12l10 10-10 10"/><path d="M54 42H12M22 32L12 42l10 10"/></symbol>
+  </defs>
+</svg>
+<main id="app"></main>
+<script>
+/* ===== LOCAL: your area's entries. Leave a contact empty to print a blank line for handwriting.
+   names: the equipment and permit names on the sorting cards. Change them to yours; keep them short. ===== */
+const LOCAL = {
+  leadDays: '',
+  leadNights: '',
+  leadWeekends: '',
+  radio: '',
+  backup: '',      // who covers when your lead doesn't answer: shift manager, control room or on-call
+  report: '',
+  names: {
+    packer: 'blister packer', warehouse: 'warehouse', route: 'forklift route', drum: 'drum', solventLine: 'solvent line',
+    sampling: 'sampling from the reactor', cartoner: 'cartoner', labeler: 'labeler', granulator: 'granulator',
+    filler: 'capsule filler', reactor: 'reactor', isolator: 'isolator',
+  },
+};
+
+/* ===== T: every word on the pocket card, badge card, sign and call cards. To translate, change the text, not the keys
+   or icon names. LOCKED terms and the plain meanings must match the locked glossary (facilitator guide, section 10)
+   and the video captions word for word. Keep the <b> tags on the same idea. ===== */
+const T = {
+  lang: 'en',
+  title: 'The 2-Minute Rule',                                   // LOCKED
+  rule: 'A short pause at the point of work',
+  ruleNote: 'Two minutes is a guide. A repeat task takes seconds.',
+  triggers: [                                                   // LOCKED: the five times to pause
+    ['start', 'Before you start'],
+    ['cup', 'After a break'],
+    ['handover', 'At handover'],
+    ['bell', 'After an interruption'],
+    ['change', 'After any change'],
+  ],
+  steps: [                                                      // LOCKED step names (second item); third is the plain meaning
+    ['hand', 'Stop', 'Hands off.'],
+    ['eye', 'Look', 'Around the job, and compare it with the plan.'],
+    ['ask', 'Ask', 'Ask yourself the four questions.'],
+    ['sign', 'Decide', 'Make one of three calls.'],
+  ],
+  questions: [                                                  // LOCKED: the four questions (first item) and their plain meanings
+    ['What’s different?', 'Anything new, changed, or not as planned?'],
+    ['What could hurt us?', 'Moving parts, power, pressure, heat, sparks, chemicals, low oxygen?'],
+    ['Checked or assumed?', 'Did you look or test it yourself, or are you guessing?'],
+    ['What if it goes wrong?', 'Where does it go? Who is in the way?'],
+  ],
+  calls: [                                                      // LOCKED: the call names (third item) and the boundary rule (fourth)
+    ['go', 'check', 'Go', 'You found nothing wrong. Start the job.'],
+    ['fix', 'wrench', 'Fix it', '<b>Only if</b> you’re trained and authorized, <b>and</b> it’s a step in your procedure.'],
+    ['stop', 'phone', 'Stop & get help', '<b>Hands off. Leave it as it is. Call your lead.</b> No permit yet? Someone else’s unfinished work? Not authorized? The fix doesn’t work?'],
+  ],
+  stopExamples: 'For example: a glove change, guard or interlock work, opening a vessel.',   // sign only; check locally
+  doubt: 'When in doubt, get help.',                            // LOCKED
+  turn: 'See the back.',
+  base: 'This rule adds to your procedures, permits and lockout. It never replaces them.',
+  lead: 'Your lead',                                            // LOCKED
+  days: 'Days', nights: 'Nights', weekends: 'Weekends',
+  radio: 'Radio or phone',
+  backup: 'No answer? Call',
+  report: 'Report catches to',
+  howPocket: '<b>Pocket card.</b> Print at <b>Actual size (100%)</b> on 160–200 gsm card. Cut on the corner marks. Fold on the dashed line, printed sides out. Laminate in an A6 pouch.',
+  howBadge: '<b>Badge cards (small print).</b> Print at <b>Actual size (100%)</b> on 120–160 gsm paper or light card. Cut on the corner marks. Fold each pair on the dashed line, printed sides out. Laminate. Give these only as well as the pocket card.',
+  howCalls: '<b>Call cards.</b> One set of three for each person at a huddle. Print on card, single-sided, in colour if you can (the word and icon work without it). Cut on the dashed lines. Laminate. Collect them after each huddle.',
+  sortKick: 'Sorting card', sortAsk: 'Your call?', sortAnswer: 'Model answer',
+  namesOnly: 'Names only. These answers hold on any site.',
+  checkLocally: 'Check locally. Your area lead and EHS confirm this answer against your fix list before use.',
+};
+
+/* ===== CARDS: the ten sorting cards (facilitator guide, section 4). {name} is replaced from LOCAL.names.
+   call: go, fix or stop. local: true = "check locally", false = "names only". Translate like T. ===== */
+const CARDS = [
+  { call: 'go', local: false,
+    s: 'Start of shift. You run the same {packer} as yesterday. The handover note says nothing changed. You check: guards closed, interlock light green, no locks or tags, materials match the batch record.',
+    r: 'You looked and asked, and you checked instead of assuming. Nothing is different. Most pauses end like this, in seconds.' },
+  { call: 'go', local: false,
+    s: 'You’re a contractor painting in the {warehouse}. Your permit covers this area and says the {route} is closed. You check: permit in date, barrier up, route closed.',
+    r: 'The permit, your checks and what you see all match. Checked, not assumed.' },
+  { call: 'fix', local: true,
+    s: 'You’re about to fill a {drum} from a {solventLine}. Your procedure says: clip the grounding clamp to the drum, and check the indicator. You’re trained and authorized to fill drums. The clamp is hanging on its hook. The cable looks fine.',
+    r: 'Clipping on the clamp is a step in your own procedure, and you’re trained and authorized. Check the indicator, then Go. If the cable is damaged or the indicator stays red: Stop & get help.' },
+  { call: 'fix', local: true,
+    s: 'Your procedure for {sampling} says face shield and chemical gloves. You have your chemical gloves on, but only safety glasses. The face shield is on the rack beside you.',
+    r: 'The right PPE is part of your procedure. Put the face shield on over your glasses, then Go.' },
+  { call: 'fix', local: true,
+    s: 'A jam on the {cartoner} where your jam tool can’t reach. You’ve locked out power and air under your own lock. The gauge still shows air pressure. Your procedure says bleed it through the lockable dump valve, and you’re trained and authorized to do it.',
+    r: 'Bleeding to zero under your own lock is in your procedure. Stand clear while it bleeds. Bleed to zero, try START, nothing moves, then Go.' },
+  { call: 'stop', local: true,
+    s: 'The same kind of jam, on the {labeler}. You’ve locked out power and air. The gauge still shows pressure. There’s no lockable dump valve, and your procedure doesn’t say how to bleed it.',
+    r: 'It isn’t a step in your procedure. Don’t loosen fittings or make up a way to bleed it. Your lead gets maintenance.' },
+  { call: 'stop', local: false,
+    s: 'Night shift. You arrive to clean the {granulator}. Someone else’s lock and tag is on it. Nobody’s around, and your lead doesn’t answer the radio.',
+    r: 'Someone else’s lock means someone else’s unfinished work. Never remove or work around another person’s lock. Call the “No answer?” contact on your job aid. Don’t start until someone comes.' },
+  { call: 'stop', local: false,
+    s: 'Changeover on the {filler}. A guard won’t close fully, so the machine won’t start. A colleague says: “Just tape the switch. Maintenance knows.”',
+    r: 'Guard and interlock work needs someone authorized. Taping or bypassing an interlock is never a fix.' },
+  { call: 'stop', local: false,
+    s: 'After cleaning, the manway on the {reactor} is open. A gasket has dropped inside, an arm’s length away.',
+    r: 'Reaching or leaning into a vessel needs a gas test and a permit, whether it’s your arm or your whole body. No permit, no Go. Your lead also brings in QA, because the reactor may need re-cleaning.' },
+  { call: 'stop', local: false,
+    s: 'A glove finger on the {isolator} looks thin. Spare gloves are in the cabinet, and you’ve watched a glove change many times.',
+    r: 'A damaged glove may be a break in the barrier. Your lead and QA must know. An authorized person changes the glove and leak-tests it. Glove changes are always Stop & get help, however often you’ve watched one.' },
+];
+
+/* ===== HUDDLE: the facilitator's one-page huddle sheet (facilitator guide, section 3). English; translate only if your
+   supervisors need it. ===== */
+const HUDDLE = {
+  title: 'Run a huddle',
+  sub: '10–15 minutes, once a week, beside the machine<br>you’ll use for the talk-through',
+  bring: 'The save downloaded to the tablet (don’t stream it) · call cards for everyone · this week’s sorting cards, or a flipchart or whiteboard · this week’s huddle note · spare pocket cards. <b>When:</b> at shift start before the line runs, at a planned stop, or with the crew split in two so the line stays covered.',
+  steps: [
+    ['1. Recall', '1.5 min', 'Ask the whole crew: <span class="say">“When do we pause?” “What are the four questions?” “What are the three calls? When is it Fix it, and when is it Stop &amp; get help?”</span> Let them fill gaps for each other before you point to the job aid. First huddle: build the list together. From the third: <span class="say">“Name a time you paused this week. Which trigger was it? Which question did the work?”</span>'],
+    ['2. Play the save', '3–4 min', '<span class="say">“It will stop twice. Answer before it moves on.”</span> Pause at <b>“What would make you stop here?”</b>: get two or three answers, don’t say who’s right. Pause at <b>“Your call?”</b>: <span class="say">“On three, hold up your call.”</span> Ask a volunteer from each answer why. Play to the end of the chapter, then stop.'],
+    ['3. The reason and the twist', '2 min', '<span class="say">“Why that call, and not the other one?”</span> Bring it back to the boundary rule, using the reason in the note. Then read the <b>twist</b> (one changed fact). The crew votes again; one volunteer says why.'],
+    ['4. Cards or our version', '3 min', '<b>Saves 1, 4, 6:</b> three sorting cards; vote on each; for one card ask <span class="say">“What one change would flip this call?”</span> <b>Saves 2, 3, 5:</b> the prompt in the note; pairs talk for 30 seconds; write Clue · Our call · Who we’d call · Action needed on the flipchart. Ask: <span class="say">“What would make ours a Fix it, and what would make it Stop &amp; get help?”</span>'],
+    ['5. Talk-through at the machine', '3 min', 'A volunteer (rotate; own language, card in hand, or in pairs) talks through their two minutes aloud: Stop, Look, Ask, Decide. Then: <span class="say">“Now imagine you find this:”</span> and read the situation in the note. They stop and call. You answer: <span class="say">“Thanks. What did you see?”</span> Then to everyone: <span class="say">“At your station, do your two minutes before you start. I’ll come by and ask one of you.”</span>'],
+    ['6. Close', '1.5 min', 'What changed since last time. <span class="say">“Catch anything this week?”</span> Take one story. <span class="say">“Who do you call on this shift? And if they don’t answer?”</span> Thank the volunteer. Name the next save. Last huddle: <span class="say">“In the next two weeks, some of you will be asked three quick questions, one to one. No names.”</span>'],
+  ],
+  misses: [
+    'Stop &amp; get help where it was Fix it: <span class="say">“That’s safe. When in doubt, get help. Here’s why this one is in your procedure.”</span>',
+    'Go or Fix it where it was Stop &amp; get help: walk through the boundary rule again, kindly.',
+    'Go while something was still wrong: <span class="say">“Checked or assumed?”</span> Go back to the picture at hold 1 and find the clue together.',
+    '“No permit yet” means Stop &amp; get help. Hold the permit and the step is in it: it can be Fix it.',
+  ],
+  short: 'Recall 1.5 min · play the save with the reason in one line, no twist, 4 min · one card or one example 1.5 min · talk-through 2.5 min · close 0.5 min. <b>Never drop the talk-through.</b>',
+  safe: 'Talk only: nobody touches controls, guards, valves, locks or gloves. Use a stopped machine, or stand well back from a running one and don’t distract whoever runs it. Cleanrooms and potent-compound areas: a station outside, or a photo. If someone spots something real, treat it as a real catch.',
+  never: [
+    ['“Why is the line down?”', '“Thanks. What did you see?”'],
+    ['“Just get it running.” · “We’re behind.”', '“We’ll sort this, then we run.”'],
+    ['“You could have fixed that yourself.”', '“Thanks for checking.”'],
+    ['“Who left it like this?”', '“Let’s find out what happened at handover.”'],
+    ['“That light’s always red.”', '“Let’s check it.”'],
+  ],
+  after: 'After the huddle (2 min): record attendance, copy the flipchart into the local examples log, pass on any catch today.',
+  foot: 'Awareness training only: it never replaces your procedures, permits or lockout. Full notes: facilitator guide, section 3.',
+};
+
+/* ===== builder: no need to edit below this line ===== */
+const esc = s => String(s).replace(/&(?![a-z#0-9]+;)/gi, '&amp;');
+const I = (id, cls = '') => `<svg class="i ${cls}" viewBox="0 0 64 64" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+const steps = () => T.steps.map(([ic, w]) => `<span class="step">${I(ic)}${esc(w)}</span>`).join('<span class="sep" aria-hidden="true">›</span>');
+const qs = () => `<div class="qs">${T.questions.map(([q, g], i) => `<div class="q q${i + 1}"><span class="n">${i + 1}</span><div><div class="qt">${esc(q)}</div><div class="qg">${esc(g)}</div></div></div>`).join('')}</div>`;
+const pill = c => `<span class="pill ${c[0]}">${I(c[1])}${esc(c[2])}</span>`;
+const callOf = k => T.calls.find(c => c[0] === k);
+const ln = (v, cls = '') => `<span class="ln ${cls}">${v ? esc(v) : '&nbsp;'}</span>`;   // empty value = blank line to write on
+const named = s => s.replace(/\{(\w+)\}/g, (_, k) => esc(LOCAL.names[k] || k));
+const callText = c => `${esc(c[3])}${c[0] === 'stop' ? ` <span class="doubt">${esc(T.doubt)}</span>` : ''}`;
+
+function pocketFront() {
+  const [stop, look, ask, decide] = T.steps;
+  const row = ([ic, w, g]) => `<span class="step">${I(ic)}${esc(w)}</span><span class="sg">${esc(g)}</span>`;
+  return `<section class="page pocket front" data-kind="pocket" data-layout="pocket-front">
+    <div class="hd">${I('watch')}<div class="title">${esc(T.title)}</div></div>
+    <p class="rule">${esc(T.rule)}:</p>
+    <div class="trig">${T.triggers.map(([ic, w]) => `<div class="t">${I(ic)}<span>${esc(w)}</span></div>`).join('')}</div>
+    <p class="note">${esc(T.ruleNote)}</p>
+    <div class="slad">${row(stop)}${row(look)}${row(ask)}${qs()}<span class="step">${I(decide[0])}${esc(decide[1])}</span><span class="sg">${esc(decide[2])} ${esc(T.turn)}</span></div>
+  </section>`;
+}
+function pocketBack() {
+  const calls = T.calls.map(c => `<div class="call ${c[0]}">${pill(c)}<p>${callText(c)}</p></div>`).join('');
+  return `<section class="page pocket back" data-kind="pocket" data-layout="pocket-back">
+    <div class="bhd"><span class="kick">${esc(T.steps[3][1])}</span><span class="sub">${esc(T.steps[3][2])}</span></div>
+    <div class="calls">${calls}</div>
+    <p class="base">${esc(T.base)}</p>
+    <div class="who">
+      <span class="gl">${esc(T.lead)}</span>
+      <span class="bl">${esc(T.days)}</span>${ln(LOCAL.leadDays)}
+      <span class="bl">${esc(T.nights)}</span>${ln(LOCAL.leadNights)}
+      <span class="bl">${esc(T.weekends)}</span>${ln(LOCAL.leadWeekends)}
+      <span class="bl b sp">${esc(T.radio)}</span>${ln(LOCAL.radio, 'sp')}
+      <span class="bl b">${esc(T.backup)}</span>${ln(LOCAL.backup)}
+      <span class="bl b">${esc(T.report)}</span>${ln(LOCAL.report)}
+    </div>
+  </section>`;
+}
+function badgeFront() {
+  return `<section class="page badge front" data-kind="badge" data-layout="badge-front">
+    <div class="hd">${I('watch')}<div class="title">${esc(T.title)}</div><div class="rule">${esc(T.rule)}</div></div>
+    <div class="trig">${T.triggers.map(([ic, w]) => `<div class="t">${I(ic)}<span>${esc(w)}</span></div>`).join('')}</div>
+    <div class="slad">${steps()}</div>
+    ${qs()}
+  </section>`;
+}
+function badgeBack() {
+  const calls = T.calls.map(c => `<div class="call ${c[0]}">${pill(c)}<p>${callText(c)}</p></div>`).join('');
+  return `<section class="page badge back" data-kind="badge" data-layout="badge-back">
+    <div class="bhd"><span class="kick">${esc(T.steps[3][1])}</span><span class="sub">${esc(T.steps[3][2])}</span></div>
+    <div class="calls">${calls}</div>
+    <p class="base">${esc(T.base)}</p>
+    <div class="who">
+      <span class="gl">${esc(T.lead)}</span><span></span><span></span>
+      <span class="bl">${esc(T.days)}</span>${ln(LOCAL.leadDays)}<span class="bl b">${esc(T.radio)}</span>${ln(LOCAL.radio)}
+      <span class="bl">${esc(T.nights)}</span>${ln(LOCAL.leadNights)}<span class="bl b">${esc(T.backup)}</span>${ln(LOCAL.backup)}
+      <span class="bl">${esc(T.weekends)}</span>${ln(LOCAL.leadWeekends)}<span class="bl b">${esc(T.report)}</span>${ln(LOCAL.report)}
+    </div>
+  </section>`;
+}
+function sign(size) {
+  const calls = T.calls.map(c => `<p class="call ${c[0]}">${pill(c)}${callText(c)}${c[0] === 'stop' ? `<span class="ex">${esc(T.stopExamples)}</span>` : ''}</p>`).join('');
+  return `<section class="page sign ${size}" data-kind="sign" data-layout="sign-${size}">
+    <div class="hd">${I('watch')}<div class="title">${esc(T.title)}</div><div class="slad">${steps()}</div></div>
+    <div class="body">
+      <div class="side">
+        <p class="rule">${esc(T.rule)}:</p>
+        <div class="tlist">${T.triggers.map(([ic, w]) => `<div class="t">${I(ic)}<span>${esc(w)}</span></div>`).join('')}</div>
+        <p class="note">${esc(T.ruleNote)}</p>
+      </div>
+      ${qs()}
+    </div>
+    <div class="calls">${calls}</div>
+    <div class="who">
+      <span class="gl">${esc(T.lead)}</span>
+      <span class="bl">${esc(T.days)}</span>${ln(LOCAL.leadDays)}<span class="bl b">${esc(T.radio)}</span>${ln(LOCAL.radio)}
+      <span class="bl">${esc(T.nights)}</span>${ln(LOCAL.leadNights)}<span class="bl b">${esc(T.backup)}</span>${ln(LOCAL.backup)}
+      <span class="bl">${esc(T.weekends)}</span>${ln(LOCAL.leadWeekends)}<span class="bl b">${esc(T.report)}</span>${ln(LOCAL.report)}
+    </div>
+    <p class="base">${esc(T.base)}</p>
+  </section>`;
+}
+// corner marks and fold lines around one front+back pair of width W, height H (mm)
+function marks(W, H) {
+  const o = 1.5, L = 3.5, m = [];
+  for (const x of [0, W]) for (const y of [0, H]) {
+    const dx = x === 0 ? -(o + L) : o, dy = y === 0 ? -(o + L) : o;
+    m.push(`<i class="cm h" style="left:${x + dx}mm;top:${y}mm"></i>`, `<i class="cm v" style="left:${x}mm;top:${y + dy}mm"></i>`);
+  }
+  m.push(`<i class="fold" style="left:${W / 2}mm;top:-5.5mm"></i>`, `<i class="fold" style="left:${W / 2}mm;top:${H + 1.5}mm"></i>`);
+  return m.join('');
+}
+function pocketSheet(size) {
+  return `<section class="page sheet ${size === 'a4' ? 'a4l' : 'letterl'}" data-layout="pocket-${size}">
+    <p class="how" style="width:210mm">${T.howPocket}</p>
+    <div class="pairs"><div class="pair">${pocketFront()}${pocketBack()}${marks(210, 148)}</div></div></section>`;
+}
+function badgeSheet(size) {
+  const pairs = Array.from({ length: 4 }, () => `<div class="pair">${badgeFront()}${badgeBack()}${marks(171.2, 54)}</div>`).join('');
+  return `<section class="page sheet ${size}" data-layout="badge-${size}"><p class="how" style="width:171.2mm">${T.howBadge}</p><div class="pairs">${pairs}</div></section>`;
+}
+function sortFront(c, i) {
+  if (!c) return '<div class="sc blank"></div>';
+  const ask = T.calls.map(pill).join('');
+  return `<div class="sc"><div class="top"><span class="kick">${esc(T.sortKick)}</span><span class="num">${i + 1}</span></div>
+    <p class="sit">${named(c.s)}</p>
+    <div class="ask"><div class="lbl">${esc(T.sortAsk)}</div><div class="row">${ask}</div></div></div>`;
+}
+function sortBack(c, i) {
+  if (!c) return '<div class="sc blank"></div>';
+  return `<div class="sc"><div class="top"><span class="kick">${esc(T.sortAnswer)}</span><span class="num">${i + 1}</span></div>
+    <div class="ans">${pill(callOf(c.call))}</div>
+    <p class="why">${named(c.r)}</p>
+    <p class="flag ${c.local ? 'chk' : ''}">${esc(c.local ? T.checkLocally : T.namesOnly)}</p></div>`;
+}
+function sorting() {
+  const out = [];
+  for (let p = 0; p < CARDS.length; p += 4) {
+    const idx = [p, p + 1, p + 2, p + 3];
+    out.push(`<section class="page sortpage front" data-kind="sort" data-layout="sorting">${idx.map(i => sortFront(CARDS[i], i)).join('')}</section>`);
+    // long-edge duplex: swap left and right on the back so each answer lands behind its card
+    const back = [idx[1], idx[0], idx[3], idx[2]];
+    out.push(`<section class="page sortpage back" data-kind="sort" data-layout="sorting">${back.map(i => sortBack(CARDS[i], i)).join('')}</section>`);
+  }
+  return out.join('');
+}
+function callcards() {
+  const set = T.calls.map(c => `<div class="cc ${c[0]}">${I(c[1])}<div class="w">${esc(c[2])}</div></div>`).join('');
+  return `<section class="page callpage" data-kind="call" data-layout="callcards"><p class="how">${T.howCalls}</p>
+    <div class="callgrid">${set.repeat(4)}</div></section>`;
+}
+function huddle() {
+  const H = HUDDLE;
+  return `<section class="page huddle" data-kind="huddle" data-layout="huddle">
+    <div class="hd">${I('watch')}<div class="title">${H.title}</div><div class="sub">${H.sub}</div></div>
+    <h3>Bring</h3><p>${H.bring}</p>
+    <h3>The six steps</h3>
+    <table>${H.steps.map(([s, t, d]) => `<tr><td class="s">${s}</td><td class="t">${t}</td><td>${d}</td></tr>`).join('')}</table>
+    <div class="two">
+      <div><h3>When people miss</h3><ul>${H.misses.map(x => `<li>${x}</li>`).join('')}</ul></div>
+      <div><h3>Only 10 minutes?</h3><p>${H.short}</p><h3>Keep it safe</h3><p>${H.safe}</p></div>
+    </div>
+    <h3>Never say · say instead</h3>
+    <table>${H.never.map(([a, b]) => `<tr><td>${a}</td><td class="say">${b}</td></tr>`).join('')}</table>
+    <p style="margin-top:2.4mm">${H.after}</p>
+    <p class="foot">${H.foot}</p>
+  </section>`;
+}
+
+const LAYOUTS = {
+  'pocket': () => pocketFront() + pocketBack(),
+  'pocket-front': pocketFront,
+  'pocket-back': pocketBack,
+  'pocket-a4': () => pocketSheet('a4'),
+  'pocket-letter': () => pocketSheet('letter'),
+  'badge': () => badgeFront() + badgeBack(),
+  'badge-front': badgeFront,
+  'badge-back': badgeBack,
+  'badge-a4': () => badgeSheet('a4'),
+  'badge-letter': () => badgeSheet('letter'),
+  'sign-a4': () => sign('a4'),
+  'sign-letter': () => sign('letter'),
+  'sorting': sorting,
+  'callcards': callcards,
+  'huddle': huddle,
+};
+document.documentElement.lang = T.lang;
+const view = new URLSearchParams(location.search).get('view');
+const app = document.getElementById('app');
+if (view && LAYOUTS[view]) {
+  document.body.classList.add('single');
+  app.innerHTML = LAYOUTS[view]();
+} else {
+  app.innerHTML = [
+    ['Pocket card, A6 (105 × 148 mm): front and back', `<div class="duo">${pocketFront()}${pocketBack()}</div>`],
+    ['Sign, A4 landscape', sign('a4')],
+    ['Sign, US Letter landscape', sign('letter')],
+    ['Badge card (85.6 × 54 mm, optional): front and back', `<div class="duo">${badgeFront()}${badgeBack()}</div>`],
+    ['Sorting cards (A4, fronts then backs)', sorting()],
+    ['Call cards (A4)', callcards()],
+    ['Huddle sheet (A4)', huddle()],
+    ['Pocket card, cut-and-fold (A4 landscape)', pocketSheet('a4')],
+    ['Badge cards, cut-and-fold (A4)', badgeSheet('a4')],
+  ].map(([l, h]) => `<div class="label">${l}</div>${h}`).join('');
+}
+</script>
+</body>
+</html>

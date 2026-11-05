@@ -3,6 +3,11 @@
 The revised script, "Six saves on a pharma floor", was reviewed from three leadership perspectives at a
 multi-product pharmaceutical site.
 
+> **Version note.** The review below is the record for version 3 of the script. Version 4 then implemented a
+> master-trainer review (prediction holds, the Fix / Get help rule taught explicitly, a routine Go, Save 1's press setter,
+> a contractor in Save 3 and more); see [`trainer-review.md`](trainer-review.md). The **rollout guide** at the end of this
+> document is current for version 4 and matches [`facilitator-guide.md`](facilitator-guide.md).
+
 > **What this review is, and isn't.** The three reviews were simulated: independent AI reviewers, each briefed to read
 > the script as one of these roles. They are not the views or sign-off of real people at a real site. Use them to
 > prepare your own review with your site's EHS, operations, QA and area leads, who must approve the video before it is
@@ -59,68 +64,153 @@ not morbid), then operational realism, then adoption.
 
 ## Rollout guide
 
-The three reviewers' deployment advice overlapped heavily. It is merged here into one checklist. The video makes
-promises on leaders' behalf, so the first section has to be true before anyone sees it.
+The three reviewers' deployment advice overlapped heavily. It is merged here into one checklist that matches the
+[facilitator guide](facilitator-guide.md), which has the session scripts, huddle notes, sorting cards, decision check,
+observation checklist and glossary. The video makes promises on leaders' behalf, so the first section has to be true
+before anyone sees it.
 
 ### Before the first showing
 - **Stop-work and non-retaliation policy, signed.** Legal, HR and the site leader sign it. It covers employees,
   temporary staff and contractors, and says that stopping means stopping the job; running processes are shut down
   only under operating and emergency procedures.
 - **A response standard on every shift, nights and weekends included.** It says who comes when someone stops, how
-  fast, and the backup when they are tied up, and how quickly the person hears what changed. Supervisors rehearse
-  responding: go to the point of work, thank first, ask "What did you see?", decide, close the loop. Retire "Why is
-  the line down?".
+  fast, who covers when they are tied up or don't answer, and how quickly the person hears what changed. The cover goes
+  on the job aid as "No answer? Call". Every supervisor, lead and on-call leader does the response rehearsal in the
+  facilitator guide before launch: go to the point of work, thank first, ask "What did you see?", decide together,
+  close the loop. Retire "Why is the line down?".
 - **QA position, co-signed.** The video makes no SOP or batch-record change. A pause or a hold to get help is not
-  itself a deviation; a stop is recorded as a process event, never against a person. List the holds that do have GMP
-  consequences: validated hold times, aseptic interventions, glove breaches.
-- **Jam boundary per machine.** Each packaging and OSD area lists its high-frequency interventions and confirms which
-  fall under minor servicing with alternative protection and which need lockout. Mark the boundary on the machine.
-- **Role-based fix list at the line.** Operators may reattach a grounding clamp, or bleed pneumatics through a lockable
-  dump valve under their own lock. Stop & get help is always required for an interlock or guard bypass, entering or
-  leaning into a vessel, or breaking a line without a permit. "You" in Saves 1 and 4 means the person authorized for
-  that procedure.
-- **A safety-hold downtime code** ("Safety hold – get help") in MES/OEE, with no reduction target. Misses on schedule
-  adherence caused by a coded hold don't count against the shift.
+  itself a deviation; a stop is logged against the job, never against a person. List the holds that do have GMP
+  consequences: validated hold times, aseptic interventions, glove breaches. QA also approves the job-aid sign as a
+  controlled posting, including its material (laminated, wipe-clean or cleanroom paper). The site or area head says the
+  position live at launch.
+- **Change control first.** Make every change below through your site's change control: the safety-hold code and its
+  leader-arrival field in MES/OEE (a validated system), equipment labels and posted signs, and any SOP, permit or
+  handover-record change. Allow for the lead time before the four-week baseline.
+- **Jam boundary per machine, through change control.** Each packaging and OSD area lists its high-frequency
+  interventions and confirms which fall under minor servicing with alternative protection and which need lockout. Mark
+  the boundary on the machine.
+- **Role-based fix list in each area, written to the boundary rule.** **Fix it** yourself only if you're trained and
+  authorized, and it's a step in your procedure: for example, clip on a grounding clamp, bleed air to zero through the
+  lockable dump valve under your own lock, or vent a line under your lockout and permit. **Stop & get help** when
+  there's no permit yet, it's someone else's unfinished work, or you're not authorized for it: for example, glove
+  changes, guard or interlock work, opening or entering a vessel, or finishing another shift's tooling change. Not
+  sure, or the fix doesn't work? Stop & get help. In Save 1 an authorized press setter finishes the tooling change; in
+  Save 4 "you" means the person trained and authorized for the bleed; in Save 6, the operator whose line-break
+  procedure has the vent step (a contractor who finds a permitted line still under pressure goes back to the permit
+  issuer). Each area confirms its list. The sorting cards are built from it.
+- **A job aid for every person and every point of work.** Print the [job aid](job-aid/): an A6 pocket card for each
+  person, and a sign (A4 or US Letter) at each point of work. An optional badge card carries the same words in small
+  print. Fill in the local help: your lead (days, nights, weekends), radio or phone, who to call if there's no answer,
+  and where to report a catch. Contractors write the host area lead or their permit issuer. It is not a form: no
+  signatures, no tick boxes. In classified, aseptic or potent-compound areas, post the sign outside the gowning room or
+  airlock door, or outside the viewing window, or use a cleanroom-compatible version approved by QA that can be wiped
+  with your disinfectant. Pocket cards stay outside the gowning line unless your site has approved a cleanroom version.
+  The video's closing slate asks "Who do you call for help?", with blanks for days, nights, weekends and the radio
+  channel or extension, and says "Write it on your pocket card." The job aid is where the answer goes.
+- **Sorting cards and call cards printed, with local names.** Swap in your own equipment and permit names. The area
+  lead and EHS confirm the model answers on the cards marked "check locally" against the fix list. Each card set keeps
+  at least one Fix it and one Stop & get help.
+- **A safety-hold downtime code** ("Safety hold – get help") in MES/OEE, with no reduction target, and a field where the
+  leader enters the time they reached the point of work. Misses on schedule adherence caused by a coded hold don't
+  count against the shift. Switch it on in the pilot and comparison areas at least four weeks before launch, and
+  announce it in both with the same short shift briefing, separate from the video, so the baseline counts real holds.
+- **Baseline measures started.** In the pilot and comparison areas, before launch: handover observations, the decision
+  check (set A) on a sample of each shift, and the pulse question (see Measure). Trial the decision-check items first
+  with about five people from an area that is in neither group.
+- **Facilitators ready.** Each has watched the full video, read the facilitator guide, done the response rehearsal, and
+  has their sorting cards, call cards and the huddle sheet.
 - **Record it as awareness training only.** Don't credit it toward 1910.147 lockout, 1910.146 confined-space or 1910.178
   powered-truck training, or toward a procedure qualification.
-- **Localize.** Fill the "Your site" slate per area and shift. Use local permit and equipment names. Non-US sites swap
-  in their own line-clearance and lockout references (e.g. EU GMP Part I Ch. 5). Translate captions and voice with one
-  locked glossary for the four questions and three decisions.
+- **Localize and translate.** Use local permit and equipment names on the job aid and sorting cards. Non-US sites swap
+  in their own line-clearance and lockout references (e.g. EU GMP Part I Ch. 5). Translate captions, voice, job aid,
+  cards and decision check with the one locked glossary in the facilitator guide, and test each language with people
+  from the floor. Have a copy of the video with each language's captions burned in ready before launch, on the huddle
+  devices. Keep the plain wording: the floor is mixed-literacy and multilingual.
 
 ### Launch
-- **Pilot first** for 3–8 weeks on one packaging or OSD area and one API or sterile area. Cover all shifts, including
-  cleaning, maintenance and at least one contractor crew. Test three things: can people say the four questions; does
-  the equipment look like theirs; and do leaders show up when someone stops.
-- **Introduce it live.** The site head or area head opens each showing in about 30 seconds: *"I'd rather lose two
-  minutes than see anyone hurt or a batch lost. A stop to get help never counts against your shift."*
-- **Use a huddle series, not one viewing.** Launch with the full video (5:41) and five minutes of discussion. Then hold
-  six weekly huddles, each with the rule chapters plus one save and one question: *"Where could this happen here, and
-  what would our gauge, indicator or note be?"*
-- **Give each area its own playlist.** OSD and packaging: Saves 1 and 4. API and chemical: 2, 3 and 6. Sterile and
-  HPAPI: 5 and 6.
+- **Pilot first, for about eight weeks:** the launch session, six weekly huddles, then the decision check. Run it in
+  one packaging or OSD area and one API or sterile area, with a similar non-pilot area as the comparison. Cover all
+  shifts, including cleaning, maintenance and at least one contractor crew. Test three things: do people make the right
+  call (the 3-scenario decision check); does the equipment look like theirs; and do leaders show up when someone stops.
+- **A launch session of about 25 minutes, on every shift.** The site or area head opens it live, not on a recording,
+  and says the leader commitments and the QA position, as scripted in the facilitator guide: *"I'd rather lose two
+  minutes than see anyone hurt or a batch lost. Anyone can stop a job, staff or contractor, even on a late batch. No
+  punishment, no blame. When you stop, a leader comes quickly, thanks you, fixes the cause and tells you what changed.
+  A stop to get help never counts against your shift. It's not a form. Report what you caught the usual way."* Then the
+  head names who comes on each shift, and who to call if they don't answer, and says: *"A pause, or a hold to get help,
+  is not a deviation in itself. If you stop, it's logged against the job, never against you."* Then the full video, a
+  short discussion that ends with "What would make it hard to stop here?", and the pocket card handed out with the
+  contacts checked. With a large crew and no big screen, run it twice, in groups of up to six.
+- **Six weekly huddles, one save each: practice, not re-watching.** Each takes 10–15 minutes, held beside a real
+  machine so nobody walks: at shift start, at a planned stop, or with the crew split in two so the line stays covered.
+  Don't replay the rule chapters. The crew recalls the five triggers, the four questions and the three calls from
+  memory. Then it plays one save chapter and answers at the built-in holds ("What would make you stop here?", "Your
+  call?"), voting with call cards, with the facilitator pausing as long as needed. It talks through the reason, votes
+  again on a twist (one changed fact), and sorts three cards or captures a local example. Last, at the machine, one
+  operator talks through their two minutes aloud and the supervisor rehearses the response: *"Thanks. What did you
+  see?"* Everyone then does their two minutes at their own station before they start. With only 10 minutes, shorten
+  the other steps, but never drop the talk-through.
+- **Every area runs all six saves.** The default order is 1 to 6, which switches between Stop & get help and Fix it each
+  week. Areas may start with the saves closest to their work: OSD and packaging, 1 and 4; API and chemical, 2, 3 and 6;
+  sterile and HPAPI, 5 and 6. The huddle notes are written by save, so any order works.
 - **Contractors and new starters.** Add the video to contractor induction and permit-issue briefings; stop-work runs
-  both ways. Add it to new-starter induction with a buddy who demonstrates the pause at their first handover.
+  both ways. Add it to new-starter induction with a buddy who demonstrates the pause at their first handover. Give both
+  the pocket card with the local help filled in.
 
 ### Sustain
-- **Build the pause into existing procedures, without a new form.** Lockout, permit-to-work, line break, confined
-  space, handover and changeover. Permit issuers ask: *"Did you do your two minutes at the point of work?"* Where a
-  pre-task card already exists, keep it and coach the conversation, not the tick.
-- **Fix the handover.** Record lock, guard and interlock state and work in progress. Add the orderly transfer of
-  locks (1910.147(f)(4)) and schedule overlap time. Save 1 is exactly this gap.
+- **Keep practising.** After the six huddles, hold one practice huddle a month, with the same steps: a save, three
+  sorting cards, or a local Save 7. Don't fall back to re-showing the whole video.
+- **Build the pause into existing procedures, through change control and without a new form.** Lockout,
+  permit-to-work, line break, confined space, handover and changeover. At permit issue, permit issuers remind people:
+  *"Do your two minutes at the point of work, and call me if anything's different."* When they visit the job, they ask
+  an open question: *"What did your two minutes turn up?"* Don't add a 2-minute box to the permit. Where a pre-task card
+  already exists, keep it and coach the conversation, not the tick.
+- **Fix the handover, through change control.** Record lock, guard and interlock state and work in progress. Add the
+  orderly transfer of locks (1910.147(f)(4)) and schedule overlap time. Save 1 is exactly this gap, and the handover
+  observations show where it still breaks.
 - **Engineer catches out** under management of change. Examples: lockable auto-exhaust dump valves; a CIP recipe that
-  can't show "complete" until pressure and temperature permissives are met; earth clamps interlocked to the charge
+  can't show "complete" until pressure and temperature permissives are met; grounding clamps interlocked to the charge
   valve, or closed powder transfer.
 - **Recognize catches without a quota.** Thank people in the moment, share stories with consent, and post fixes on a
   "You caught it, we fixed it" board. No targets, prizes or league tables.
 - **Guard investigations against blame.** "Failed to perform the 2-minute rule" is not an acceptable root cause or a
-  reason for discipline. There are no signed 2-minute cards.
-- **Refresh.** Show it again at annual lockout and confined-space refreshers and at onboarding. After the first
-  quarter, build a local "Save 7" in the same template from a real good catch, used with consent and without names.
+  reason for discipline. There are no signed 2-minute cards. Decision-check and observation results are never used for
+  discipline, appraisal or qualification.
+- **Refresh.** Show the full video again at onboarding, and at annual lockout and confined-space refreshers as a
+  supplement: it doesn't count toward the lockout or confined-space refresher, and is recorded separately as awareness
+  training. After the first quarter, build a local "Save 7" in the same template from a real good catch, used with
+  consent and without names. The facilitator guide has the template.
 
-### Measure: the response, not the cards
-- Help-call response time, from call to a leader at the point of work (andon or radio logs).
+### Measure: the calls and the response, not signed cards
+Measure the pilot and the comparison area the same way, at the same times, from a baseline at least four weeks before
+launch to the end of the pilot. Report by area, never by name. Split by shift only where a group has at least five
+people, and don't report any group smaller than five.
+- **The right call.** The 3-scenario decision check, replacing "can people say the four questions". An EHS partner, a
+  trainer or a lead from another area runs it one to one, not the person's own supervisor, with a plain card of the
+  three calls and no job aid. Set A before launch, with no answer feedback; a parallel set B within two weeks after the
+  sixth huddle; set A again about three months later, in the pilot area only (the comparison area has had the video by
+  then). An answer is right when the call is right and the reason names the boundary: trained and authorized, and a step
+  in your procedure; or no permit yet, someone else's unfinished work, or not authorized for it; or nothing different,
+  and checked. An unsafe miss is Go when the answer is Fix it or Stop & get help, or Fix it
+  when the answer is Stop & get help. Report the share with all three right and the share with any unsafe miss. Pilot
+  guide: at least 8 in 10 all right, fewer than 1 in 10 with an unsafe miss, better than baseline, and better than any
+  change in the comparison area. No individual scoring is used for discipline.
+- **Own-area examples.** Local examples captured in the huddles, and the share of people who give a real example in
+  the decision check: one that names a specific piece of their own equipment, the clue and a call.
+- **The pause at handover and changeover.** Sampled, non-punitive observations by someone from outside the crew, two
+  per area per week across all shifts, with no names: the share with a pause before hands-on work, and the share with
+  lock, guard and interlock state handed over. Report by area in 4-week blocks, with shifts pooled (at least eight
+  observations per block). EHS holds the raw sheets, tallies them, then destroys them; they never go into the area file
+  or to the line supervisor.
+- **Safety-hold codes** by area, against the pre-pilot baseline and the comparison area. Both areas heard about the
+  code at the same time. Expect a rise.
+- Help-call response time, from the call to a leader at the point of work. The leader enters the arrival time in the
+  safety-hold entry in MES/OEE; the observers' "minutes to arrive" is a spot check.
 - Share of catches closed, with feedback to the finder, within target; median days to close.
 - Repeat findings with the same cause, a sign the catch was fixed but not engineered out.
 - Lockout and permit audit findings at handover and changeover.
-- Good-catch reports per 100 workers by area and shift. Expect an early rise and treat it as success.
-- One pulse-survey item: *"I can stop a job without blame."* Split it by shift and language group.
+- Good-catch reports per 100 workers by area. Expect an early rise and treat it as success.
+- One pulse-survey item: *"I can stop a job without blame."* Split it by shift and language group, at baseline and at
+  the end of the pilot.
+- **Cadence.** Weekly during the pilot for holds, response times, observations and huddles held; a monthly summary
+  shared with the crews; an end-of-pilot review against baseline and the comparison area before any wider rollout.
