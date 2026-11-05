@@ -43,7 +43,9 @@
         const w = mod.slice(1).toLowerCase(), txt = c.text.toLowerCase();
         const re = new RegExp('\\b' + w.replace(/[’']/g, "['’]") + '\\b'); const mm = txt.match(re);
         if (!mm) throw new Error('word "' + w + '" not in cue ' + m[1]);
-        v = c.start + (mm.index / txt.length) * (c.end - c.start);
+        // measured word times (synth.py aligns each line's phrases to the pauses in its audio); else estimate by position
+        const norm = s => s.replace(/’/g, "'"), hit = (c.words || []).find(([tok]) => { const k = norm(tok); return k === norm(w) || k.split(/[-']/).includes(norm(w)); });
+        v = hit ? hit[1] : c.start + (mm.index / txt.length) * (c.end - c.start);
       } else v = c.start;
     }
     else if (m[3]) v = m[3] === '^' ? SCN[scene].start + parseFloat(m[4] || 0) : SCN[scene].end - parseFloat(m[4] || 0);
@@ -190,7 +192,7 @@
     const c = captionAt(t), el = cap();
     if (el) {
       const txt = c ? c.text : '';
-      if (el.dataset.cur !== txt) { el.dataset.cur = txt; el.querySelector('span').textContent = txt; }
+      if (el.dataset.cur !== txt) { el.dataset.cur = txt; el.querySelector('span').textContent = txt.replace(/Stop & get help/g, 'Stop\u00a0&\u00a0get\u00a0help').replace(/Fix it/g, 'Fix\u00a0it').replace(/thank you/g, 'thank\u00a0you'); }
       el.querySelector('span').style.opacity = c ? 1 : 0;   // band stays; only the text clears between lines
     }
     const cur = [...T.scenes].reverse().find(s => t >= s.start) || T.scenes[0];

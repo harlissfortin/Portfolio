@@ -38,7 +38,7 @@
         <rect x="400" y="470" width="96" height="54" rx="10" fill="var(--go)"/><text x="448" y="505" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">START</text>
         <g data-in="down s7-8~start 0.4" data-out="fade s7-8~start+1.2 0.3" style="color:var(--ink)"><svg x="414" y="396" width="64" height="72"><use href="#i-point"/></svg></g>
         <g data-in="down s7-9~interlock+0.3 0.4" data-out="fade s7-9~interlock+1.5 0.3" style="color:var(--ink)"><svg x="414" y="396" width="64" height="72"><use href="#i-point"/></svg></g>
-        <path d="M530 470 H1070" stroke="var(--steel)" stroke-width="10"/><text x="880" y="450" text-anchor="end" font-size="20" font-weight="800" fill="var(--muted)">AIR</text>
+        <path d="M530 470 H940" stroke="var(--steel)" stroke-width="10"/><text x="880" y="450" text-anchor="end" font-size="20" font-weight="800" fill="var(--muted)">AIR</text>
         <path d="M740 452 L770 470 L740 488 Z M800 452 L770 470 L800 488 Z" fill="var(--panel)" stroke="var(--steel)" stroke-width="4"/>
         <rect x="600" y="250" width="90" height="130" rx="10" fill="var(--panel)" stroke="var(--steel)" stroke-width="5"/>
         <text x="645" y="240" text-anchor="middle" font-size="18" font-weight="800" fill="var(--muted)">DISCONNECT</text>
@@ -110,7 +110,7 @@
       ${A(440, 50, lab('Static', ''), 'data-in="up s8-4~static+0.2" data-out="fade s8-5 0.3"')}
       ${A(620, 184, `<span class="tag ok">Static-safe liner ✓</span>`, 'data-in="up s8-8~liner"')}
       ${A(850, 544, `<span class="tag grey" style="font-size:18px">Still red? Get help</span>`, 'data-in="up s8-8~green+0.5"')}
-      ${A(866, 374, lab('Trained · in procedure', '', 'font-size:20px'), 'data-in="up s8-7~clip+0.3"')}
+      ${A(856, 376, lab('Trained · in procedure', '', 'font-size:17px'), 'data-in="up s8-7~clip+0.3"')}
       <div class="abs" style="left:0;top:0" data-out="fade s8-7~clip 0.3">${ring(905, 590, 150, 's8-5~red')}</div>
     `)}
     ${SC.casecard({ catch: 'Clamp off, not grounded', catchAt: 's8-5~red', call: 'fix', callAt: 's8-7', why: 'A step in your procedure', goAt: 's8-8~go', prev: 'No spark at the manway', prevAt: 's8-9' })}
@@ -142,10 +142,10 @@
       ${A(40, 590, `<div style="display:flex;gap:28px">${people('Your lead', 'data-in="up s9-7+0.4"')}${people('Authorized team', 'data-in="up s9-8"')}</div>`)}
       ${A(700, 30, `<div class="card" style="padding:16px 22px;display:flex;flex-direction:column;gap:10px;font-size:26px;font-weight:750">
         <div style="display:flex;align-items:center;gap:12px">${I('form', '', 'width:36px;height:36px;color:var(--muted)')}Permit: <span style="color:var(--stop)">none yet</span></div>
-        <div style="display:flex;align-items:center;gap:12px">${I('meter', '', 'width:36px;height:36px;color:var(--muted)')}Gas test: <span style="color:var(--stop)">not done</span></div></div>`, 'data-in="fade ^1.3 0.4" data-out="fade s9-3~color-0.4 0.3"')}
-      <div class="abs" style="left:700px;top:20px;width:380px" data-in="fade s9-3~color 0.4" data-out="fade s9-4 0.3">
+        <div style="display:flex;align-items:center;gap:12px">${I('meter', '', 'width:36px;height:36px;color:var(--muted)')}Gas test: <span style="color:var(--stop)">not done</span></div></div>`, 'data-in="fade ^1.3 0.4" data-out="fade s9-3~see-0.4 0.3"')}
+      <div class="abs" style="left:700px;top:20px;width:380px" data-in="fade s9-3~see 0.4" data-out="fade s9-4 0.3">
         <div style="display:flex;gap:30px;color:var(--muted)">${['eye', 'nose'].map(ic => `<div style="position:relative">${I(ic, '', 'width:90px;height:90px')}<div class="abs" style="left:-4px;top:41px;width:98px;height:6px;background:var(--dim);transform:rotate(-35deg);border-radius:3px"></div></div>`).join('')}</div>
-        <div class="h4" style="margin-top:18px">Low O₂<br>No color · No smell</div></div>
+        <div class="h4" style="margin-top:18px">Low O₂<br>Can’t see it<br>Can’t smell it</div></div>
       <div class="abs" style="left:700px;top:20px;width:380px;display:flex;flex-direction:column;gap:20px" data-out="fade s9-8 0.3">
         ${[['lock', 'Solid plate on N₂ line?', 's9-4~solid'], ['meter', 'Air tested at opening?', 's9-4~tested'], ['form', 'Permit?', 's9-5~permit']].map(([ic, t, r]) => `<div data-in="up ${r}"><div style="display:flex;gap:14px;align-items:center;font-size:28px;font-weight:750">${I(ic, '', 'width:44px;height:44px;color:var(--muted)')}${t}</div>
           <div style="margin:6px 0 0 58px" data-in="pop s9-5+${r.endsWith('permit') ? '0.5' : r.endsWith('tested') ? '0.25' : '0'} 0.3"><span class="tag hz" style="font-size:20px">Not yet</span></div></div>`).join('')}
@@ -233,20 +233,20 @@
         <g transform="translate(20,60) scale(1.0857)">
           <rect x="300" y="200" width="70" height="80" rx="10" fill="var(--panel)" stroke="var(--steel)" stroke-width="4"/><rect x="300" y="200" width="70" height="22" rx="6" fill="var(--steel)"/>
           <path d="M310 240 h50" stroke="#c9b98a" stroke-width="16"/>
-          <path d="M455 150 l14 26" stroke="var(--stop)" stroke-width="6" stroke-linecap="round" data-in="fade ^1.3 0.3" data-out="fade s11-7 0.3"/>
-          <g data-in="fade s11-7 0.5"><path d="M416 262 V170 Q416 140 434 140 H466 Q484 140 484 170 V262" fill="color-mix(in srgb, var(--q3) 30%, var(--panel))" stroke="var(--steel)" stroke-width="4"/>${[-24, -8, 8, 24].map(d => `<path d="M${450 + d} 142 V112" stroke="var(--steel)" stroke-width="12" stroke-linecap="round"/><path d="M${450 + d} 142 V112" stroke="color-mix(in srgb, var(--q3) 30%, var(--panel))" stroke-width="5" stroke-linecap="round"/>`).join('')}</g>
+          <path d="M455 150 l14 26" stroke="var(--stop)" stroke-width="6" stroke-linecap="round" data-in="fade ^1.3 0.3" data-out="fade s11-7~changes 0.3"/>
+          <g data-in="fade s11-7~changes 0.5"><path d="M416 262 V170 Q416 140 434 140 H466 Q484 140 484 170 V262" fill="color-mix(in srgb, var(--q3) 30%, var(--panel))" stroke="var(--steel)" stroke-width="4"/>${[-24, -8, 8, 24].map(d => `<path d="M${450 + d} 142 V112" stroke="var(--steel)" stroke-width="12" stroke-linecap="round"/><path d="M${450 + d} 142 V112" stroke="color-mix(in srgb, var(--q3) 30%, var(--panel))" stroke-width="5" stroke-linecap="round"/>`).join('')}</g>
         </g>
         <g data-in="left ^1.3 0.6">${P(930, 600, 300, { gown: true, mask: true, gloves: 'var(--q3)' })}</g>
       `)}
-      ${A(20, 0, `<span class="tag" style="font-size:26px">Potent ingredient (API)</span>`, 'data-in="up s11-1~isolator"')}
+      ${A(20, 0, `<span class="tag" style="font-size:26px">Potent ingredient (API)</span>`, 'data-in="up s11-1~potent"')}
       ${A(560, 0, `<span class="tag ok">In range ✓</span>`, 'data-in="up s11-3~range"')}
       ${A(200, 90, I('mag', '', 'width:90px;height:90px;color:var(--ink)'), 'data-in="pop s11-4~check 0.3" data-out="fade s11-4~glove+0.5 0.2"')}
       ${A(232, 46, I('check', '', 'width:50px;height:50px;color:var(--go)'), 'data-in="pop s11-4~glove+0.4 0.3"')}
       ${A(484, 46, I('check', '', 'width:50px;height:50px;color:var(--go)'), 'data-in="pop s11-7~leak+0.4 0.3"')}
       ${A(440, 90, I('mag', '', 'width:90px;height:90px;color:var(--ink)'), 'data-in="pop s11-4~glove+0.6 0.3" data-out="fade s11-5 0.3"')}
-      ${A(452, 352, `<span class="tag hz" style="font-size:22px">Do not use</span>`, 'data-in="pop s11-6+0.2" data-out="fade s11-7 0.3"')}
+      ${A(452, 352, `<span class="tag hz" style="font-size:22px">Do not use</span>`, 'data-in="pop s11-6+0.2" data-out="fade s11-7~changes 0.3"')}
       ${A(780, 10, `<div style="display:flex;flex-direction:column;gap:8px">${people('Your lead + QA', 'data-in="up s11-6+0.4"')}
-        ${check('Glove changed', 'data-in="pop s11-7+0.2"')}${check('Leak-tested', 'data-in="pop s11-7~leak+0.2"')}${check('Pressure in range', 'data-in="pop s11-7~go-0.6"')}${check('Reported', 'data-in="pop s11-8+0.3"')}</div>`)}
+        ${check('Glove changed', 'data-in="pop s11-7~changes+0.2"')}${check('Leak-tested', 'data-in="pop s11-7~leak+0.2"')}${check('Pressure in range', 'data-in="pop s11-7~go-0.6"')}${check('Reported', 'data-in="pop s11-8+0.3"')}</div>`)}
       <div class="abs" style="left:0;top:0" data-out="fade s11-6 0.3">${ring(508, 242, 100, 's11-4~cut')}</div>
     `)}
     ${SC.casecard({ catch: 'Cut in a glove', catchAt: 's11-4~cut', call: 'stop', callAt: 's11-6', why: 'Not authorized · a break in the barrier: lead &amp; QA must know', goAt: 's11-7~go-0.4', prev: 'The powder stays inside', prevAt: 's11-8' })}
@@ -289,11 +289,12 @@
       ${A(60, 168, `<span class="tag grey" style="font-size:20px">CIP = cleaning cycle</span>`, 'data-in="up s12-2~cleaning" data-out="fade s12-4 0.3"')}
       ${A(830, 210, lab('Spray path?', '', 'color:var(--stop)'), 'data-in="up s12-4~spray+0.2" data-out="fade s12-5~step 0.3"')}
       ${A(240, 20, lab('Supply + pump locked · authorized', '', 'font-size:21px'), 'data-in="up s12-5~pump+0.4" data-out="fade s12-8 0.3"')}
-      ${A(800, 100, `<span class="tag ok" style="font-size:21px">Line-break permit ✓</span>`, 'data-in="up s12-1~line"')}
+      ${A(800, 100, `<span class="tag ok" style="font-size:21px">Line-break permit ✓</span>`, 'data-in="up s12-1~permit"')}
       ${A(800, 10, `<span class="tag grey" style="font-size:20px;display:block;line-height:1.35">Stand to the side<br>Face shield · Chem gloves</span>`, 'data-in="up s12-5~step+0.4" data-out="fade s12-9 0.3"')}
       ${A(240, 20, `<div style="display:flex;gap:10px;align-items:center">${I('clock', '', 'width:40px;height:40px;color:var(--ink)')}<span class="tag grey" style="font-size:20px">Wait · Vent · Zero &amp; cool</span></div>`, 'data-in="fade s12-8~wait 0.4" data-out="fade s12-9 0.3"')}
       ${A(440, 556, `<span class="tag ok" style="font-size:20px">Vent open · No flow</span>`, 'data-in="up s12-8~zero+0.4" data-out="fade s12-9 0.3"')}
-      ${A(240, 20, `<div style="display:flex;gap:18px">${lab(`${I('form', '', 'width:30px;height:30px')} Screen: reports the cycle`, '')}${lab(`${I('meter', '', 'width:30px;height:30px')} Gauge: reports your line`, '')}</div>`, 'data-in="up s12-9~screen"')}
+      ${A(240, 20, lab(`${I('form', '', 'width:30px;height:30px')} Screen: reports the cycle`, ''), 'data-in="up s12-9~screen"')}
+      ${A(590, 20, lab(`${I('meter', '', 'width:30px;height:30px')} Gauge: reports your line`, ''), 'data-in="up s12-9~gauge"')}
       <div class="abs" style="left:0;top:0" data-out="fade s12-8 0.3">${ring(582, 158, 108, 's12-6~pressure')}</div>
     `)}
     ${SC.casecard({ catch: 'Pressure on gauge, line hot', catchAt: 's12-6~pressure', call: 'fix', callAt: 's12-8', why: 'In your line-break procedure', goAt: 's12-9~go', prev: 'No hot chemical or steam', prevAt: 's12-10' })}

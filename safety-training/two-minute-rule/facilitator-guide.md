@@ -242,12 +242,12 @@ Use the chapter markers in your player to jump to the save. If your player doesn
 the save's start time in the table below. Each save stops twice:
 
 - **"What would make you stop here?"** A short hold, about 3 seconds. The clue is in the picture.
-- **"Your call?"** A short hold, about 2.5 seconds, with three dimmed buttons: Go, Fix it, Stop & get help.
+- **"Your call?"** A short hold, about 2.5 seconds, with three outlined buttons: Go, Fix it, Stop & get help. The right one fills in on the reveal.
 
 Pause the player at each one for as long as your crew needs.
 
 On screen and on the job aid, the button reads **"Fix it"**, and it always means the boundary rule: you're trained and
-authorized, and it's a step in your procedure. In the routine Go, the video also holds on "Your call?" with no narration,
+authorized, and it's a step in your procedure. In the routine Go, the video also asks "Your call?",
 and the right answer there is **Go**. Use it to show that most pauses end in Go.
 
 Chapter and hold times:
@@ -255,19 +255,19 @@ Chapter and hold times:
 <!-- PAUSE-POINTS -->
 | Chapter | Starts | Hold 1: “What would make you stop here?” | Hold 2: “Your call?” |
 |---|---|---|---|
-| Save 1 · Tablet press handover | 2:27 | 2:32 (holds to 2:37) | 2:47 (holds to 2:51) |
-| Save 2 · Powder charge | 3:18 | 3:30 (holds to 3:35) | 3:47 (holds to 3:51) |
-| Save 3 · Inerted filter dryer | 4:05 | 4:13 (holds to 4:18) | 4:35 (holds to 4:38) |
-| Save 4 · Blister packer jam | 4:59 | 5:11 (holds to 5:16) | 5:20 (holds to 5:23) |
-| Save 5 · Potent ingredient | 5:39 | 5:47 (holds to 5:52) | 6:01 (holds to 6:04) |
-| Save 6 · Line break after CIP | 6:24 | 6:37 (holds to 6:41) | 6:55 (holds to 6:59) |
+| Save 1 · Tablet press handover | 2:27 | 2:33 (holds to 2:37) | 2:49 (holds to 2:52) |
+| Save 2 · Powder charge | 3:19 | 3:32 (holds to 3:38) | 3:51 (holds to 3:55) |
+| Save 3 · Inerted filter dryer | 4:09 | 4:19 (holds to 4:24) | 4:40 (holds to 4:44) |
+| Save 4 · Blister packer jam | 5:04 | 5:18 (holds to 5:24) | 5:28 (holds to 5:31) |
+| Save 5 · Potent ingredient | 5:48 | 5:56 (holds to 6:02) | 6:11 (holds to 6:14) |
+| Save 6 · Line break after CIP | 6:34 | 6:47 (holds to 6:53) | 7:07 (holds to 7:11) |
 
-Other chapters: Intro 0:00 · The rule 0:12 · Line clearance for people 0:32 · Stop · Look · Ask · Decide 0:52 · A routine Go 1:37 · Six saves 2:05 · All six end in Go 7:18 · What leaders commit to 7:26 · Recap card 7:47. Full video: 8:37.
+Other chapters: Intro 0:00 · The rule 0:16 · Line clearance for people 0:34 · Stop · Look · Ask · Decide 0:53 · A routine Go 1:38 · Six saves 2:07 · All six end in Go 7:30 · What leaders commit to 7:45 · Recap card 8:07. Full video: 8:56.
 
 *Times come from `source/timing.json` (`python tooling/pause_points.py` refreshes them).*
 <!-- /PAUSE-POINTS -->
 
-Pause as soon as you hear the question. If you miss it, go back 5 seconds.
+Pause as soon as the question card appears. If you miss it, go back 5 seconds.
 
 **No device?** Read the save aloud from its huddle note: the setup line, then "What would make you stop here?" (wait
 for answers), then the clue; then "Your call?" (the crew votes), then the call and the reason.

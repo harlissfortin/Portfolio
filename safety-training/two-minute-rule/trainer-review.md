@@ -46,7 +46,7 @@ contractor. The EHS lens objected: a contractor who finds a permitted line still
 to the permit issuer, not fix it. Technical safety accuracy wins, so Save 6 stays an operator working under their own
 line-break procedure. The contractor went to Save 3, where the call is Stop & get help.
 
-**The cost.** The fixes add practice and plain language, so the video is longer: 8:37 instead of 5:41. The chapters
+**The cost.** The fixes add practice and plain language, so the video is longer: 8:56 instead of 5:41 (after the naturalness pass below). The chapters
 keep each save to about 45 seconds for huddle use. The facilitator guide plays the full video once at launch, then one
 save per huddle.
 
@@ -74,7 +74,7 @@ the "Your call?" options are readable outlines (they were about 1.8:1 contrast) 
 the contrast card's examples are no longer the saves themselves, so the hold tests the rule rather than recall; the recap
 shows the Stop & get help criteria; Save 5's reason names the "not authorized" category; Save 3 shows "Permit: none yet ·
 Gas test: not done" during the hold; the all-six tiles carry each call's reason; the prediction card tells solo viewers
-to pause; the routine Go has a silent "Your call?" where the answer is Go; the slate adds "No answer? Call" and "Report
+to pause; the routine Go has a "Your call?" hold where the answer is Go; the slate adds "No answer? Call" and "Report
 what I caught to"; Interruption uses a bell everywhere, so the phone only ever means calling for help; the limit on
 stopping running processes is larger; and Save 1 labels the disconnect as the power switch.
 
@@ -87,3 +87,33 @@ stopping running processes is larger; and Save 1 labels the disconnect as the po
 - **Pressure and speaking up** are stated ("even on a late batch") but never shown: no save models production pressure
   or one worker stopping another.
 - **Measurement fidelity:** huddle delivery is measured by attendance, and observations are few and uncalibrated.
+
+## Naturalness and flow pass
+
+After the version 4 rating, the delivery was reworked so it sounds like one calm person talking. A narration editor, a
+voice-delivery specialist, a whole-film flow editor and a terminology checker reviewed it (simulated, role-based
+reviews); their edits were merged under the same constraints (safety meaning, the master-trainer fixes, and wording
+quoted in print), and a verifier read the whole script aloud in order.
+
+- **Voice.** Lines had been split into separately voiced phrases (103 splits), which reset the intonation every few
+  words. Each line is now voiced in one pass and punctuation carries the pauses; two measured splits remain, so "Go,
+  fix it" doesn't run together. Speaking pace is about 155 words a minute.
+- **Wording.** Choppy fragments are joined into sentences ("The guard is open, the tooling is half in, and there's no
+  lock on the power switch"). The six spoken hold prompts vary their lead-ins ("Before you start…", "Look closely…",
+  "Your turn…") while the cards stay the same, and the save openings, Go endings and get-help reasons no longer repeat
+  word for word. Every save says its trigger out loud.
+- **Flow.** The opening sets calm stakes ("You know these jobs. But today, something might be different."). Bridges join
+  the scenes ("Here's how", "Let's try it on a routine job", "But sometimes…", "When you stop…"). The two silent
+  stretches are voiced: the routine Go's "Your call?" and the line after "All six end in Go". The recap speaks the full
+  Fix-it rule and "When in doubt, get help".
+- **Related words.** Captions name the calls as the buttons do ("Stop & get help", "Fix it"); "call" is defined once
+  ("make one of three calls"); the phone icon now always means calling for help, as on the pocket card; the slate's
+  labels match the pocket card; "SOPs" became "procedures" on the end card; Save 6 says its permit out loud, so it no
+  longer seems to clash with "No permit, no Go".
+- **Visuals on the word.** Beats are tied to words in the narration. They had been placed by estimating each word's time
+  from its position in the line, which drifted by up to 0.9 s once pauses became natural. The build now measures the
+  pauses in every line's audio and aligns the phrases to them, so buttons, checks and padlocks land on the word that
+  names them (checked against the audio to within about 0.3 s).
+- **A safety catch in the merge.** A shortened Save 3 line briefly read "you open a filter dryer full of nitrogen", the
+  very act the save stops; the verifier caught it and it reads "you'll open".
+

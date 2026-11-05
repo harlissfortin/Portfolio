@@ -5,17 +5,17 @@
   // 13 ─ all six end in Go ─────────────────────────────────────────────────
   const calls = ['stop', 'fix', 'stop', 'fix', 'stop', 'fix'];
   html.push(SC.scene('all-six-end-in-go', '', `
-    <div class="abs" style="inset:0" data-out="fade s13-1.end+0.2 0.5">
+    <div class="abs" style="inset:0" data-out="fade s13-2-0.85 0.5">
       ${A(0, 0, `<div class="h1">All six end in Go</div>`, 'data-in="up s13-1~all"')}
       <div class="abs" style="left:0;top:170px;display:flex;gap:28px">
         ${SAVES.map(([t, , , q, ic], i) => `<div class="card" style="width:256px;height:404px;padding:20px;border-top:10px solid var(--${q});display:flex;flex-direction:column;align-items:center;gap:14px" data-in="pop ^0.1+${(i * 0.08).toFixed(2)} 0.4">
           <div style="font-size:44px;font-weight:850;color:var(--${q})">${i + 1}</div>${I(ic, '', 'width:56px;height:56px;flex:none;color:var(--ink)')}<div class="h4" style="font-size:26px;text-align:center;height:64px;flex:none;display:flex;align-items:center;line-height:1.15">${t}</div>
-          <span class="minibtn ${calls[i]}" style="font-size:21px;padding:6px 12px" data-in="pop ${calls[i] === 'fix' ? 's13-1~fixes' : 's13-1~calls'}+${(Math.floor(i / 2) * 0.12).toFixed(2)} 0.3">${calls[i] === 'fix' ? 'Fix it' : 'Stop &amp; get help'}</span>
-          <div style="flex:none;height:44px;font-size:17px;font-weight:700;line-height:1.25;text-align:center;color:var(--ink)" data-in="fade s13-1~calls+0.4 0.4">${['Someone else’s work', 'In procedure', 'No permit yet', 'In procedure, own lock', 'Not authorized · barrier', 'In procedure, permit held'][i]}</div>
+          <span class="minibtn ${calls[i]}" style="font-size:21px;padding:6px 12px" data-in="pop ${calls[i] === 'fix' ? 's13-1~fix' : 's13-1~stop-0.25'}+${(Math.floor(i / 2) * 0.12).toFixed(2)} 0.3">${calls[i] === 'fix' ? 'Fix it' : 'Stop &amp; get help'}</span>
+          <div style="flex:none;height:44px;font-size:17px;font-weight:700;line-height:1.25;text-align:center;color:var(--ink)" data-in="fade s13-1~stop+0.4 0.4">${['Someone else’s unfinished work', 'In procedure', 'No permit yet', 'In procedure, own lock', 'Not authorized · barrier', 'In procedure, permit held'][i]}</div>
           <span class="minibtn go" style="font-size:21px;padding:6px 14px" data-in="pop s13-1~all+${(i * 0.13).toFixed(2)} 0.3">${I('check')}Go</span></div>`).join('')}
       </div>
     </div>
-    <div class="abs" style="inset:0" data-in="fade s13-1.end+0.75 0.6">
+    <div class="abs" style="inset:0" data-in="fade s13-2-0.3 0.6">
       ${A(0, 0, `<div class="h1">Most pauses end in Go</div>`)}
       ${A(0, 120, `<div class="h3 muted">Good for people, product and the line</div>`)}
       <svg id="a6-ticks" class="abs" style="left:40px;top:330px;overflow:visible" width="1600" height="200" viewBox="0 0 1600 200"></svg>
@@ -75,21 +75,21 @@
         ${[0, 1, 2, 3].map(i => `<div data-in="pop ${['s15-2~what\'s', 's15-2~could', 's15-3', 's15-3~what'][i]} 0.4">${SC.qcard(i, 'padding:15px 24px')}</div>`).join('')}
       </div>
       <div class="abs" style="left:0;top:452px;width:1560px;display:flex;justify-content:center">${SC.btns(['', '', ''], ['data-in="pop s15-4~go 0.4"', 'data-in="pop s15-4~fix 0.4"', 'data-in="pop s15-4~stop 0.4"'],
-        ['', '<div class="small" style="margin-top:10px;text-align:center;font-weight:700;color:var(--ink)" data-in="fade s15-4~procedure">Only if trained, authorized<br>&amp; in procedure</div>', '<div class="small" style="margin-top:10px;text-align:center;font-weight:700;color:var(--ink)" data-in="fade s15-4~stop+0.4">No permit · someone else’s work<br>not authorized · not sure → your lead</div>'])}</div>
+        ['', '<div class="small" style="margin:10px 18px 0;text-align:center;font-weight:700;color:var(--ink)" data-in="fade s15-5~trained">Only if trained,<br>authorized &amp; in procedure</div>', '<div class="small" style="margin:10px 18px 0;text-align:center;font-weight:700;color:var(--ink)" data-in="fade s15-4~stop+0.4">No permit yet · someone else’s unfinished work<br>not authorized · not sure → your lead</div>'])}</div>
     </div>
-    <div class="abs lightvars" style="inset:-110px -120px -198px -120px;background:#fbf9f4" data-in="up s15-6-0.5 0.6">
+    <div class="abs lightvars" style="inset:-110px -120px -198px -120px;background:#fbf9f4" data-in="up s15-7-0.5 0.6">
       <div class="abs" style="left:240px;top:170px;width:1440px">
         <div class="kicker">Your site · before your next shift</div>
         <div class="h2" style="margin-top:14px">Who do you call for help?</div>
         <div style="margin-top:26px;display:flex;flex-direction:column;gap:18px;font-size:34px;font-weight:650">
-          ${[['clock', 'Days'], ['clock', 'Nights'], ['clock', 'Weekends'], ['phone', 'Radio channel or extension'], ['phone', 'No answer? Call'], ['doc', 'Report what I caught to']].map(([ic, t]) => `<div style="display:flex;align-items:flex-end;gap:16px">${I(ic, '', 'width:44px;height:44px;color:var(--q1)')}<span>${t}:</span><span style="flex:none;width:420px;border-bottom:4px solid var(--line);height:40px"></span></div>`).join('')}
+          ${[['people', 'Your lead: days'], ['clock', 'Your lead: nights'], ['clock', 'Your lead: weekends'], ['phone', 'Radio or phone'], ['phone', 'No answer? Call'], ['doc', 'Report catches to']].map(([ic, t]) => `<div style="display:flex;align-items:flex-end;gap:16px">${I(ic, '', 'width:44px;height:44px;color:var(--q1)')}<span>${t}:</span><span style="flex:none;width:420px;border-bottom:4px solid var(--line);height:40px"></span></div>`).join('')}
         </div>
         <div class="h4" style="margin-top:34px;display:flex;align-items:center;gap:14px;color:var(--amber-text)">${I('form', '', 'width:44px;height:44px')}Write it on your pocket card.</div>
       </div>
     </div>
-    <div class="abs lightvars" style="inset:-110px -120px -198px -120px;background:#fbf9f4" data-in="up s15-7-0.6 0.6">
+    <div class="abs lightvars" style="inset:-110px -120px -198px -120px;background:#fbf9f4" data-in="up s15-8-0.6 0.6">
       <div class="abs" style="left:200px;top:140px;width:1520px">
-        <div class="h4">Follow your site’s SOPs, lockout and permit procedures. This video is awareness training, not lockout or confined-space training.</div>
+        <div class="h4">Follow your site’s procedures, permits and lockout. This video is awareness training, not lockout or confined-space training.</div>
         <div class="kicker" style="margin-top:34px">Sources</div>
         <ol style="margin:16px 0 0;padding-left:34px;font-size:25px;line-height:1.5;color:var(--ink)">
           <li>21 CFR 211.130(e), packaging and labeling operations (line clearance)</li>
@@ -106,8 +106,8 @@
   `));
 
   document.getElementById('stage').innerHTML = html.join('\n');
-  window.CHAPTER_MARKS = [['s15-6-0.5', 'close-recap', 'Your site'], ['s15-7-0.6', 'close-recap', 'Sources']];
-  window.CHROME_LIGHT = [['s15-6-0.5', 'close-recap']];
+  window.CHAPTER_MARKS = [['s15-7-0.5', 'close-recap', 'Your site'], ['s15-8-0.6', 'close-recap', 'Sources']];
+  window.CHROME_LIGHT = [['s15-7-0.5', 'close-recap']];
 
   // ---------- per-frame hooks ----------
   const H = window.HOOKS = window.HOOKS || {};
@@ -123,7 +123,7 @@
     }
     el.innerHTML = s;
   }
-  H['title-open'] = (t, lt, a) => ART.setStopwatch('sw1', a.ease.inOut(a.prog(t, a.ref('s1-3+0.1', 'title-open'), 2.2)), false);
+  H['title-open'] = (t, lt, a) => ART.setStopwatch('sw1', a.ease.inOut(a.prog(t, a.ref('s1-3~that', 'title-open'), 2.2)), false);
   H['the-rule'] = (t, lt, a) => { ART.setStopwatch('sw2', 1, false); const e = $('sw2'); if (e) e.querySelector('.sw-txt').style.opacity = (1 - a.prog(t, a.ref('s2-3~guide', 'the-rule'), 0.6)).toFixed(3); };
   H['line-clearance'] = (t, lt, a) => {
     ART.setStopwatch('sw3', 1, false);

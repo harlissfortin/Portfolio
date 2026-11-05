@@ -7,91 +7,91 @@
    "id": "title-open",
    "chapter": "Intro",
    "start": 0.0,
-   "end": 12.647
+   "end": 16.074
   },
   {
    "id": "the-rule",
    "chapter": "The rule",
-   "start": 12.647,
-   "end": 32.246
+   "start": 16.074,
+   "end": 34.278
   },
   {
    "id": "line-clearance",
    "chapter": "Line clearance for people",
-   "start": 32.246,
-   "end": 52.13
+   "start": 34.278,
+   "end": 53.715
   },
   {
    "id": "how-to-run-it",
    "chapter": "Stop · Look · Ask · Decide",
-   "start": 52.13,
-   "end": 97.095
+   "start": 53.715,
+   "end": 98.935
   },
   {
    "id": "routine-go",
    "chapter": "A routine Go",
-   "start": 97.095,
-   "end": 125.351
+   "start": 98.935,
+   "end": 127.005
   },
   {
    "id": "six-saves",
    "chapter": "Six saves",
-   "start": 125.351,
-   "end": 147.419
+   "start": 127.005,
+   "end": 147.607
   },
   {
    "id": "save-1-tablet-press",
    "chapter": "Save 1 · Tablet press handover",
-   "start": 147.419,
-   "end": 198.948
+   "start": 147.607,
+   "end": 199.614
   },
   {
    "id": "save-2-powder-charge",
    "chapter": "Save 2 · Powder charge",
-   "start": 198.948,
-   "end": 245.171
+   "start": 199.614,
+   "end": 249.934
   },
   {
    "id": "save-3-inerted-vessel",
    "chapter": "Save 3 · Inerted filter dryer",
-   "start": 245.171,
-   "end": 299.91
+   "start": 249.934,
+   "end": 304.127
   },
   {
    "id": "save-4-blister-jam",
    "chapter": "Save 4 · Blister packer jam",
-   "start": 299.91,
-   "end": 339.883
+   "start": 304.127,
+   "end": 348.378
   },
   {
    "id": "save-5-isolator",
    "chapter": "Save 5 · Potent ingredient",
-   "start": 339.883,
-   "end": 384.538
+   "start": 348.378,
+   "end": 394.987
   },
   {
    "id": "save-6-cip-line-break",
    "chapter": "Save 6 · Line break after CIP",
-   "start": 384.538,
-   "end": 438.363
+   "start": 394.987,
+   "end": 450.199
   },
   {
    "id": "all-six-end-in-go",
    "chapter": "All six end in Go",
-   "start": 438.363,
-   "end": 446.964
+   "start": 450.199,
+   "end": 465.552
   },
   {
    "id": "what-makes-it-work",
    "chapter": "What leaders commit to",
-   "start": 446.964,
-   "end": 467.981
+   "start": 465.552,
+   "end": 487.132
   },
   {
    "id": "close-recap",
    "chapter": "Recap card",
-   "start": 467.981,
-   "end": 517.194
+   "start": 487.132,
+   "end": 536.687
   }
  ],
  "cues": [
@@ -100,666 +100,5290 @@
    "scene": "title-open",
    "start": 1.2,
    "end": 4.924,
-   "text": "A jam to clear, a line to break, a vessel to open."
+   "text": "A jam to clear, a line to break, a vessel to open.",
+   "words": [
+    [
+     "a",
+     1.2
+    ],
+    [
+     "jam",
+     1.347
+    ],
+    [
+     "to",
+     1.643
+    ],
+    [
+     "clear",
+     1.864
+    ],
+    [
+     "a",
+     2.55
+    ],
+    [
+     "line",
+     2.659
+    ],
+    [
+     "to",
+     2.933
+    ],
+    [
+     "break",
+     3.097
+    ],
+    [
+     "a",
+     3.63
+    ],
+    [
+     "vessel",
+     3.774
+    ],
+    [
+     "to",
+     4.277
+    ],
+    [
+     "open",
+     4.493
+    ]
+   ]
   },
   {
    "id": "s1-2",
    "scene": "title-open",
    "start": 5.264,
-   "end": 9.064,
-   "text": "You know the job. Before your hands move, give it two minutes."
+   "end": 9.464,
+   "text": "You know these jobs. But today, something might be different.",
+   "words": [
+    [
+     "you",
+     5.264
+    ],
+    [
+     "know",
+     5.535
+    ],
+    [
+     "these",
+     5.873
+    ],
+    [
+     "jobs",
+     6.279
+    ],
+    [
+     "but",
+     7.104
+    ],
+    [
+     "today",
+     7.341
+    ],
+    [
+     "something",
+     7.934
+    ],
+    [
+     "might",
+     8.444
+    ],
+    [
+     "be",
+     8.75
+    ],
+    [
+     "different",
+     8.903
+    ]
+   ]
   },
   {
    "id": "s1-3",
    "scene": "title-open",
-   "start": 9.664,
-   "end": 11.307,
-   "text": "That's the 2-minute rule."
+   "start": 10.064,
+   "end": 14.734,
+   "text": "So before your hands move, give it two minutes. That's the 2-minute rule.",
+   "words": [
+    [
+     "so",
+     10.064
+    ],
+    [
+     "before",
+     10.243
+    ],
+    [
+     "your",
+     10.66
+    ],
+    [
+     "hands",
+     10.959
+    ],
+    [
+     "move",
+     11.316
+    ],
+    [
+     "give",
+     11.794
+    ],
+    [
+     "it",
+     12.025
+    ],
+    [
+     "two",
+     12.164
+    ],
+    [
+     "minutes",
+     12.348
+    ],
+    [
+     "that's",
+     13.264
+    ],
+    [
+     "the",
+     13.66
+    ],
+    [
+     "2-minute",
+     13.886
+    ],
+    [
+     "rule",
+     14.394
+    ]
+   ]
   },
   {
    "id": "s2-1",
    "scene": "the-rule",
-   "start": 12.647,
-   "end": 18.367,
-   "text": "It's a short pause, on purpose, at the point of work: where you do the job."
+   "start": 16.074,
+   "end": 21.525,
+   "text": "It's a short pause you take on purpose, at the point of work, where you do the job.",
+   "words": [
+    [
+     "it's",
+     16.074
+    ],
+    [
+     "a",
+     16.386
+    ],
+    [
+     "short",
+     16.511
+    ],
+    [
+     "pause",
+     16.886
+    ],
+    [
+     "you",
+     17.261
+    ],
+    [
+     "take",
+     17.511
+    ],
+    [
+     "on",
+     17.824
+    ],
+    [
+     "purpose",
+     18.011
+    ],
+    [
+     "at",
+     18.914
+    ],
+    [
+     "the",
+     19.058
+    ],
+    [
+     "point",
+     19.251
+    ],
+    [
+     "of",
+     19.54
+    ],
+    [
+     "work",
+     19.684
+    ],
+    [
+     "where",
+     20.314
+    ],
+    [
+     "you",
+     20.644
+    ],
+    [
+     "do",
+     20.864
+    ],
+    [
+     "the",
+     21.029
+    ],
+    [
+     "job",
+     21.25
+    ]
+   ]
   },
   {
    "id": "s2-2",
    "scene": "the-rule",
-   "start": 18.707,
-   "end": 25.844,
-   "text": "Do it before you start, and again after any break, handover, interruption or change."
+   "start": 21.865,
+   "end": 28.073,
+   "text": "Do it before you start, and again after any break, handover, interruption or change.",
+   "words": [
+    [
+     "do",
+     21.865
+    ],
+    [
+     "it",
+     22.045
+    ],
+    [
+     "before",
+     22.225
+    ],
+    [
+     "you",
+     22.645
+    ],
+    [
+     "start",
+     22.885
+    ],
+    [
+     "and",
+     23.595
+    ],
+    [
+     "again",
+     23.832
+    ],
+    [
+     "after",
+     24.187
+    ],
+    [
+     "any",
+     24.543
+    ],
+    [
+     "break",
+     24.78
+    ],
+    [
+     "handover",
+     25.525
+    ],
+    [
+     "interruption",
+     26.385
+    ],
+    [
+     "or",
+     27.299
+    ],
+    [
+     "change",
+     27.51
+    ]
+   ]
   },
   {
    "id": "s2-3",
    "scene": "the-rule",
-   "start": 26.184,
-   "end": 31.406,
-   "text": "Two minutes is a guide, not an exact time. What matters is the pause."
+   "start": 28.413,
+   "end": 33.438,
+   "text": "Two minutes is a guide, not an exact time. What matters is the pause.",
+   "words": [
+    [
+     "two",
+     28.413
+    ],
+    [
+     "minutes",
+     28.638
+    ],
+    [
+     "is",
+     29.088
+    ],
+    [
+     "a",
+     29.256
+    ],
+    [
+     "guide",
+     29.369
+    ],
+    [
+     "not",
+     29.983
+    ],
+    [
+     "an",
+     30.244
+    ],
+    [
+     "exact",
+     30.44
+    ],
+    [
+     "time",
+     30.831
+    ],
+    [
+     "what",
+     31.733
+    ],
+    [
+     "matters",
+     32.048
+    ],
+    [
+     "is",
+     32.554
+    ],
+    [
+     "the",
+     32.743
+    ],
+    [
+     "pause",
+     32.996
+    ]
+   ]
   },
   {
    "id": "s3-1",
    "scene": "line-clearance",
-   "start": 32.246,
-   "end": 37.118,
-   "text": "You already do this for product: line clearance, right before each run."
+   "start": 34.278,
+   "end": 38.544,
+   "text": "You already do line clearance for product, right before each run.",
+   "words": [
+    [
+     "you",
+     34.278
+    ],
+    [
+     "already",
+     34.516
+    ],
+    [
+     "do",
+     34.992
+    ],
+    [
+     "line",
+     35.171
+    ],
+    [
+     "clearance",
+     35.468
+    ],
+    [
+     "for",
+     36.064
+    ],
+    [
+     "product",
+     36.302
+    ],
+    [
+     "right",
+     37.218
+    ],
+    [
+     "before",
+     37.564
+    ],
+    [
+     "each",
+     37.967
+    ],
+    [
+     "run",
+     38.256
+    ]
+   ]
   },
   {
    "id": "s3-2",
    "scene": "line-clearance",
-   "start": 38.018,
-   "end": 41.342,
-   "text": "The 2-minute rule is line clearance for people."
+   "start": 39.444,
+   "end": 42.767,
+   "text": "The 2-minute rule is line clearance for people.",
+   "words": [
+    [
+     "the",
+     39.444
+    ],
+    [
+     "2-minute",
+     39.721
+    ],
+    [
+     "rule",
+     40.344
+    ],
+    [
+     "is",
+     40.69
+    ],
+    [
+     "line",
+     40.898
+    ],
+    [
+     "clearance",
+     41.244
+    ],
+    [
+     "for",
+     41.936
+    ],
+    [
+     "people",
+     42.213
+    ]
+   ]
   },
   {
    "id": "s3-3",
    "scene": "line-clearance",
-   "start": 41.682,
-   "end": 47.692,
-   "text": "It adds to your procedures, permits and lockout. It never replaces them."
+   "start": 43.107,
+   "end": 48.64,
+   "text": "It adds to your procedures, permits and lockout. It never replaces them.",
+   "words": [
+    [
+     "it",
+     43.107
+    ],
+    [
+     "adds",
+     43.307
+    ],
+    [
+     "to",
+     43.639
+    ],
+    [
+     "your",
+     43.838
+    ],
+    [
+     "procedures",
+     44.17
+    ],
+    [
+     "permits",
+     45.167
+    ],
+    [
+     "and",
+     45.689
+    ],
+    [
+     "lockout",
+     45.95
+    ],
+    [
+     "it",
+     47.067
+    ],
+    [
+     "never",
+     47.264
+    ],
+    [
+     "replaces",
+     47.657
+    ],
+    [
+     "them",
+     48.247
+    ]
+   ]
   },
   {
    "id": "s3-4",
    "scene": "line-clearance",
-   "start": 48.032,
-   "end": 51.19,
-   "text": "It catches what the plan missed, because you're there."
+   "start": 48.98,
+   "end": 52.775,
+   "text": "But you're the one at the job, so you can see what the plan missed.",
+   "words": [
+    [
+     "but",
+     48.98
+    ],
+    [
+     "you're",
+     49.169
+    ],
+    [
+     "the",
+     49.498
+    ],
+    [
+     "one",
+     49.687
+    ],
+    [
+     "at",
+     49.875
+    ],
+    [
+     "the",
+     50.017
+    ],
+    [
+     "job",
+     50.205
+    ],
+    [
+     "so",
+     50.8
+    ],
+    [
+     "you",
+     50.96
+    ],
+    [
+     "can",
+     51.174
+    ],
+    [
+     "see",
+     51.387
+    ],
+    [
+     "what",
+     51.601
+    ],
+    [
+     "the",
+     51.868
+    ],
+    [
+     "plan",
+     52.081
+    ],
+    [
+     "missed",
+     52.348
+    ]
+   ]
   },
   {
    "id": "s4-1",
    "scene": "how-to-run-it",
-   "start": 52.13,
-   "end": 53.598,
-   "text": "Stop: hands off."
+   "start": 53.715,
+   "end": 56.113,
+   "text": "Here's how. Stop: hands off.",
+   "words": [
+    [
+     "here's",
+     53.715
+    ],
+    [
+     "how",
+     54.17
+    ],
+    [
+     "stop",
+     54.725
+    ],
+    [
+     "hands",
+     55.215
+    ],
+    [
+     "off",
+     55.705
+    ]
+   ]
   },
   {
    "id": "s4-2",
    "scene": "how-to-run-it",
-   "start": 53.938,
-   "end": 58.008,
-   "text": "Look: around the job, and compare it with the plan."
+   "start": 56.453,
+   "end": 59.926,
+   "text": "Look: around the job, and compare it with the plan.",
+   "words": [
+    [
+     "look",
+     56.453
+    ],
+    [
+     "around",
+     57.013
+    ],
+    [
+     "the",
+     57.428
+    ],
+    [
+     "job",
+     57.666
+    ],
+    [
+     "and",
+     58.283
+    ],
+    [
+     "compare",
+     58.502
+    ],
+    [
+     "it",
+     58.94
+    ],
+    [
+     "with",
+     59.104
+    ],
+    [
+     "the",
+     59.378
+    ],
+    [
+     "plan",
+     59.597
+    ]
+   ]
   },
   {
    "id": "s4-3",
    "scene": "how-to-run-it",
-   "start": 58.348,
-   "end": 62.691,
-   "text": "Ask four questions: What's different? What could hurt us?"
+   "start": 60.266,
+   "end": 64.501,
+   "text": "Ask yourself four questions: What's different? What could hurt us?",
+   "words": [
+    [
+     "ask",
+     60.266
+    ],
+    [
+     "yourself",
+     60.525
+    ],
+    [
+     "four",
+     61.108
+    ],
+    [
+     "questions",
+     61.433
+    ],
+    [
+     "what's",
+     62.376
+    ],
+    [
+     "different",
+     62.722
+    ],
+    [
+     "what",
+     63.546
+    ],
+    [
+     "could",
+     63.784
+    ],
+    [
+     "hurt",
+     64.071
+    ],
+    [
+     "us",
+     64.31
+    ]
+   ]
   },
   {
    "id": "s4-4",
    "scene": "how-to-run-it",
-   "start": 63.031,
-   "end": 65.95,
-   "text": "Checked or assumed? What if it goes wrong?"
+   "start": 64.751,
+   "end": 67.701,
+   "text": "Checked or assumed? What if it goes wrong?",
+   "words": [
+    [
+     "checked",
+     64.751
+    ],
+    [
+     "or",
+     65.311
+    ],
+    [
+     "assumed",
+     65.521
+    ],
+    [
+     "what",
+     66.521
+    ],
+    [
+     "if",
+     66.777
+    ],
+    [
+     "it",
+     66.931
+    ],
+    [
+     "goes",
+     67.085
+    ],
+    [
+     "wrong",
+     67.342
+    ]
+   ]
   },
   {
    "id": "s4-5",
    "scene": "how-to-run-it",
-   "start": 66.29,
-   "end": 72.515,
-   "text": "Checked or assumed? It means: did you look or test it yourself, or are you guessing?"
+   "start": 68.201,
+   "end": 73.682,
+   "text": "“Checked or assumed” means: did you look or test it yourself, or are you guessing?",
+   "words": [
+    [
+     "checked",
+     68.201
+    ],
+    [
+     "or",
+     68.789
+    ],
+    [
+     "assumed",
+     68.985
+    ],
+    [
+     "means",
+     69.573
+    ],
+    [
+     "did",
+     70.581
+    ],
+    [
+     "you",
+     70.783
+    ],
+    [
+     "look",
+     70.986
+    ],
+    [
+     "or",
+     71.239
+    ],
+    [
+     "test",
+     71.39
+    ],
+    [
+     "it",
+     71.643
+    ],
+    [
+     "yourself",
+     71.795
+    ],
+    [
+     "or",
+     72.491
+    ],
+    [
+     "are",
+     72.661
+    ],
+    [
+     "you",
+     72.888
+    ],
+    [
+     "guessing",
+     73.115
+    ]
+   ]
   },
   {
    "id": "s4-6",
    "scene": "how-to-run-it",
-   "start": 72.855,
-   "end": 77.44,
-   "text": "Decide: Go, fix it, or stop and get help."
+   "start": 74.022,
+   "end": 79.999,
+   "text": "Then decide: make one of three calls. Go, Fix it, or Stop & get help.",
+   "words": [
+    [
+     "then",
+     74.022
+    ],
+    [
+     "decide",
+     74.372
+    ],
+    [
+     "make",
+     75.062
+    ],
+    [
+     "one",
+     75.298
+    ],
+    [
+     "of",
+     75.487
+    ],
+    [
+     "three",
+     75.629
+    ],
+    [
+     "calls",
+     75.912
+    ],
+    [
+     "go",
+     76.602
+    ],
+    [
+     "fix",
+     77.392
+    ],
+    [
+     "it",
+     77.782
+    ],
+    [
+     "or",
+     78.432
+    ],
+    [
+     "stop",
+     78.667
+    ],
+    [
+     "",
+     79.059
+    ],
+    [
+     "get",
+     79.216
+    ],
+    [
+     "help",
+     79.529
+    ]
+   ]
   },
   {
    "id": "s4-7",
    "scene": "how-to-run-it",
-   "start": 78.34,
-   "end": 83.366,
-   "text": "Fix it only if you're trained and authorized, and it's a step in your procedure."
+   "start": 80.899,
+   "end": 86.256,
+   "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
+   "words": [
+    [
+     "fix",
+     80.899
+    ],
+    [
+     "it",
+     81.16
+    ],
+    [
+     "only",
+     81.357
+    ],
+    [
+     "if",
+     81.684
+    ],
+    [
+     "you're",
+     81.88
+    ],
+    [
+     "trained",
+     82.338
+    ],
+    [
+     "and",
+     82.862
+    ],
+    [
+     "authorized",
+     83.123
+    ],
+    [
+     "and",
+     84.359
+    ],
+    [
+     "it's",
+     84.576
+    ],
+    [
+     "a",
+     84.847
+    ],
+    [
+     "step",
+     84.955
+    ],
+    [
+     "in",
+     85.226
+    ],
+    [
+     "your",
+     85.389
+    ],
+    [
+     "procedure",
+     85.66
+    ]
+   ]
   },
   {
    "id": "s4-8",
    "scene": "how-to-run-it",
-   "start": 83.706,
-   "end": 90.599,
-   "text": "No permit yet? Someone else's unfinished work? Not authorized? Stop and get help."
+   "start": 86.596,
+   "end": 92.958,
+   "text": "No permit yet? Someone else's unfinished work? Not authorized? Stop & get help.",
+   "words": [
+    [
+     "no",
+     86.596
+    ],
+    [
+     "permit",
+     86.822
+    ],
+    [
+     "yet",
+     87.35
+    ],
+    [
+     "someone",
+     88.066
+    ],
+    [
+     "else's",
+     88.534
+    ],
+    [
+     "unfinished",
+     88.943
+    ],
+    [
+     "work",
+     89.586
+    ],
+    [
+     "not",
+     90.136
+    ],
+    [
+     "authorized",
+     90.441
+    ],
+    [
+     "stop",
+     91.676
+    ],
+    [
+     "",
+     92.053
+    ],
+    [
+     "get",
+     92.204
+    ],
+    [
+     "help",
+     92.505
+    ]
+   ]
   },
   {
    "id": "s4-9",
    "scene": "how-to-run-it",
-   "start": 90.939,
-   "end": 95.295,
-   "text": "Not sure, or the fix doesn't work? Stop and get help."
+   "start": 93.298,
+   "end": 97.135,
+   "text": "Not sure, or the fix doesn't work? Stop & get help.",
+   "words": [
+    [
+     "not",
+     93.298
+    ],
+    [
+     "sure",
+     93.543
+    ],
+    [
+     "or",
+     93.912
+    ],
+    [
+     "the",
+     94.096
+    ],
+    [
+     "fix",
+     94.342
+    ],
+    [
+     "doesn't",
+     94.588
+    ],
+    [
+     "work",
+     95.079
+    ],
+    [
+     "stop",
+     95.838
+    ],
+    [
+     "",
+     96.219
+    ],
+    [
+     "get",
+     96.372
+    ],
+    [
+     "help",
+     96.677
+    ]
+   ]
   },
   {
    "id": "s5-1",
    "scene": "routine-go",
-   "start": 97.495,
-   "end": 101.69,
-   "text": "First, a routine pause: you're about to clean a weighing booth."
+   "start": 99.335,
+   "end": 103.95,
+   "text": "Let's try it on a routine job: you're about to clean a weighing booth.",
+   "words": [
+    [
+     "let's",
+     99.335
+    ],
+    [
+     "try",
+     99.763
+    ],
+    [
+     "it",
+     100.048
+    ],
+    [
+     "on",
+     100.262
+    ],
+    [
+     "a",
+     100.476
+    ],
+    [
+     "routine",
+     100.618
+    ],
+    [
+     "job",
+     101.189
+    ],
+    [
+     "you're",
+     102.025
+    ],
+    [
+     "about",
+     102.362
+    ],
+    [
+     "to",
+     102.651
+    ],
+    [
+     "clean",
+     102.795
+    ],
+    [
+     "a",
+     103.084
+    ],
+    [
+     "weighing",
+     103.18
+    ],
+    [
+     "booth",
+     103.613
+    ]
+   ]
   },
   {
    "id": "s5-2",
    "scene": "routine-go",
-   "start": 102.03,
-   "end": 108.671,
-   "text": "What's different? Nothing. What could hurt us? Leftover powder and the cleaning chemical."
+   "start": 104.29,
+   "end": 110.221,
+   "text": "What's different? Nothing. What could hurt us? Leftover powder and the cleaning chemical.",
+   "words": [
+    [
+     "what's",
+     104.29
+    ],
+    [
+     "different",
+     104.636
+    ],
+    [
+     "nothing",
+     105.38
+    ],
+    [
+     "what",
+     106.18
+    ],
+    [
+     "could",
+     106.395
+    ],
+    [
+     "hurt",
+     106.653
+    ],
+    [
+     "us",
+     106.868
+    ],
+    [
+     "leftover",
+     107.56
+    ],
+    [
+     "powder",
+     108.117
+    ],
+    [
+     "and",
+     108.55
+    ],
+    [
+     "the",
+     108.798
+    ],
+    [
+     "cleaning",
+     109.045
+    ],
+    [
+     "chemical",
+     109.602
+    ]
+   ]
   },
   {
    "id": "s5-3",
    "scene": "routine-go",
-   "start": 109.011,
-   "end": 115.538,
-   "text": "Gloves and goggles: on. Checked or assumed? Checked: the airflow light is green."
+   "start": 110.561,
+   "end": 116.772,
+   "text": "Gloves and goggles are on. Checked or assumed? Checked: the airflow light is green.",
+   "words": [
+    [
+     "gloves",
+     110.561
+    ],
+    [
+     "and",
+     110.988
+    ],
+    [
+     "goggles",
+     111.233
+    ],
+    [
+     "are",
+     111.722
+    ],
+    [
+     "on",
+     111.966
+    ],
+    [
+     "checked",
+     112.471
+    ],
+    [
+     "or",
+     113.035
+    ],
+    [
+     "assumed",
+     113.246
+    ],
+    [
+     "checked",
+     114.371
+    ],
+    [
+     "the",
+     115.041
+    ],
+    [
+     "airflow",
+     115.288
+    ],
+    [
+     "light",
+     115.782
+    ],
+    [
+     "is",
+     116.153
+    ],
+    [
+     "green",
+     116.339
+    ]
+   ]
   },
   {
    "id": "s5-4",
    "scene": "routine-go",
-   "start": 115.878,
-   "end": 119.136,
-   "text": "What if it goes wrong? The spill kit is right there."
+   "start": 117.112,
+   "end": 120.937,
+   "text": "What if it goes wrong? The spill kit is right there. Your call?",
+   "words": [
+    [
+     "what",
+     117.112
+    ],
+    [
+     "if",
+     117.355
+    ],
+    [
+     "it",
+     117.501
+    ],
+    [
+     "goes",
+     117.647
+    ],
+    [
+     "wrong",
+     117.891
+    ],
+    [
+     "the",
+     118.452
+    ],
+    [
+     "spill",
+     118.654
+    ],
+    [
+     "kit",
+     118.958
+    ],
+    [
+     "is",
+     119.161
+    ],
+    [
+     "right",
+     119.313
+    ],
+    [
+     "there",
+     119.617
+    ],
+    [
+     "your",
+     120.202
+    ],
+    [
+     "call",
+     120.536
+    ]
+   ]
   },
   {
    "id": "s5-5",
    "scene": "routine-go",
-   "start": 121.736,
-   "end": 123.851,
-   "text": "Go. That took a few seconds."
+   "start": 123.537,
+   "end": 126.005,
+   "text": "Go. That took just a few seconds.",
+   "words": [
+    [
+     "go",
+     123.537
+    ],
+    [
+     "that",
+     124.307
+    ],
+    [
+     "took",
+     124.59
+    ],
+    [
+     "just",
+     124.873
+    ],
+    [
+     "a",
+     125.156
+    ],
+    [
+     "few",
+     125.269
+    ],
+    [
+     "seconds",
+     125.496
+    ]
+   ]
   },
   {
    "id": "s6-1",
    "scene": "six-saves",
-   "start": 125.351,
-   "end": 127.283,
-   "text": "Most pauses end like that."
+   "start": 127.005,
+   "end": 128.937,
+   "text": "Most pauses end like that.",
+   "words": [
+    [
+     "most",
+     127.005
+    ],
+    [
+     "pauses",
+     127.363
+    ],
+    [
+     "end",
+     127.864
+    ],
+    [
+     "like",
+     128.15
+    ],
+    [
+     "that",
+     128.508
+    ]
+   ]
   },
   {
    "id": "s6-2",
    "scene": "six-saves",
-   "start": 127.883,
-   "end": 133.394,
-   "text": "Sometimes a question catches a problem. That's a save. Here are six."
+   "start": 129.537,
+   "end": 135.066,
+   "text": "But sometimes a question catches a problem. That's a save. Here are six.",
+   "words": [
+    [
+     "but",
+     129.537
+    ],
+    [
+     "sometimes",
+     129.799
+    ],
+    [
+     "a",
+     130.453
+    ],
+    [
+     "question",
+     130.584
+    ],
+    [
+     "catches",
+     131.173
+    ],
+    [
+     "a",
+     131.697
+    ],
+    [
+     "problem",
+     131.828
+    ],
+    [
+     "that's",
+     132.827
+    ],
+    [
+     "a",
+     133.275
+    ],
+    [
+     "save",
+     133.403
+    ],
+    [
+     "here",
+     134.127
+    ],
+    [
+     "are",
+     134.462
+    ],
+    [
+     "six",
+     134.731
+    ]
+   ]
   },
   {
    "id": "s6-3",
    "scene": "six-saves",
-   "start": 133.734,
-   "end": 138.621,
-   "text": "They're examples built from common pharma hazards, not real events."
+   "start": 135.406,
+   "end": 140.293,
+   "text": "They're examples built from common pharma hazards, not real events.",
+   "words": [
+    [
+     "they're",
+     135.406
+    ],
+    [
+     "examples",
+     135.88
+    ],
+    [
+     "built",
+     136.413
+    ],
+    [
+     "from",
+     136.768
+    ],
+    [
+     "common",
+     137.064
+    ],
+    [
+     "pharma",
+     137.478
+    ],
+    [
+     "hazards",
+     137.893
+    ],
+    [
+     "not",
+     138.796
+    ],
+    [
+     "real",
+     139.148
+    ],
+    [
+     "events",
+     139.589
+    ]
+   ]
   },
   {
    "id": "s6-4",
    "scene": "six-saves",
-   "start": 139.221,
-   "end": 146.219,
-   "text": "In each save, the video waits. Find the problem and pick your call, before we show it."
+   "start": 140.893,
+   "end": 146.407,
+   "text": "In each save, the video asks you twice: find the problem, then pick your call.",
+   "words": [
+    [
+     "in",
+     140.893
+    ],
+    [
+     "each",
+     141.087
+    ],
+    [
+     "save",
+     141.411
+    ],
+    [
+     "the",
+     141.8
+    ],
+    [
+     "video",
+     142.059
+    ],
+    [
+     "asks",
+     142.447
+    ],
+    [
+     "you",
+     142.771
+    ],
+    [
+     "twice",
+     143.03
+    ],
+    [
+     "find",
+     144.013
+    ],
+    [
+     "the",
+     144.324
+    ],
+    [
+     "problem",
+     144.573
+    ],
+    [
+     "then",
+     145.263
+    ],
+    [
+     "pick",
+     145.536
+    ],
+    [
+     "your",
+     145.808
+    ],
+    [
+     "call",
+     146.08
+    ]
+   ]
   },
   {
    "id": "s7-1",
    "scene": "save-1-tablet-press",
-   "start": 148.819,
-   "end": 152.469,
-   "text": "Save one: you take over a tablet press at handover."
+   "start": 149.007,
+   "end": 152.657,
+   "text": "Save one: you take over a tablet press at handover.",
+   "words": [
+    [
+     "save",
+     149.007
+    ],
+    [
+     "one",
+     149.407
+    ],
+    [
+     "you",
+     150.087
+    ],
+    [
+     "take",
+     150.332
+    ],
+    [
+     "over",
+     150.638
+    ],
+    [
+     "a",
+     150.944
+    ],
+    [
+     "tablet",
+     151.066
+    ],
+    [
+     "press",
+     151.494
+    ],
+    [
+     "at",
+     151.862
+    ],
+    [
+     "handover",
+     152.045
+    ]
+   ]
   },
   {
    "id": "s7-2",
    "scene": "save-1-tablet-press",
-   "start": 152.809,
-   "end": 154.433,
-   "text": "What would make you stop here?"
+   "start": 153.257,
+   "end": 154.881,
+   "text": "What would make you stop here?",
+   "words": [
+    [
+     "what",
+     153.257
+    ],
+    [
+     "would",
+     153.519
+    ],
+    [
+     "make",
+     153.833
+    ],
+    [
+     "you",
+     154.095
+    ],
+    [
+     "stop",
+     154.305
+    ],
+    [
+     "here",
+     154.567
+    ]
+   ]
   },
   {
    "id": "s7-3",
    "scene": "save-1-tablet-press",
-   "start": 157.433,
-   "end": 162.101,
-   "text": "What's different? The note says the last shift started a tooling change."
+   "start": 157.881,
+   "end": 163.065,
+   "text": "What's different? The handover note says the last shift started a tooling change.",
+   "words": [
+    [
+     "what's",
+     157.881
+    ],
+    [
+     "different",
+     158.254
+    ],
+    [
+     "the",
+     159.281
+    ],
+    [
+     "handover",
+     159.517
+    ],
+    [
+     "note",
+     160.05
+    ],
+    [
+     "says",
+     160.345
+    ],
+    [
+     "the",
+     160.641
+    ],
+    [
+     "last",
+     160.877
+    ],
+    [
+     "shift",
+     161.173
+    ],
+    [
+     "started",
+     161.528
+    ],
+    [
+     "a",
+     162.001
+    ],
+    [
+     "tooling",
+     162.119
+    ],
+    [
+     "change",
+     162.592
+    ]
+   ]
   },
   {
    "id": "s7-4",
    "scene": "save-1-tablet-press",
-   "start": 162.441,
-   "end": 167.086,
-   "text": "Guard open. Tooling half in. No lock on the power switch."
+   "start": 163.405,
+   "end": 168.923,
+   "text": "The guard is open, the tooling is half in, and there's no lock on the power switch.",
+   "words": [
+    [
+     "the",
+     163.405
+    ],
+    [
+     "guard",
+     163.675
+    ],
+    [
+     "is",
+     164.079
+    ],
+    [
+     "open",
+     164.281
+    ],
+    [
+     "the",
+     165.045
+    ],
+    [
+     "tooling",
+     165.282
+    ],
+    [
+     "is",
+     165.755
+    ],
+    [
+     "half",
+     165.933
+    ],
+    [
+     "in",
+     166.229
+    ],
+    [
+     "and",
+     166.705
+    ],
+    [
+     "there's",
+     166.922
+    ],
+    [
+     "no",
+     167.354
+    ],
+    [
+     "lock",
+     167.517
+    ],
+    [
+     "on",
+     167.787
+    ],
+    [
+     "the",
+     167.949
+    ],
+    [
+     "power",
+     168.166
+    ],
+    [
+     "switch",
+     168.49
+    ]
+   ]
   },
   {
    "id": "s7-5",
    "scene": "save-1-tablet-press",
-   "start": 167.786,
-   "end": 168.706,
-   "text": "Your call?"
+   "start": 169.623,
+   "end": 170.543,
+   "text": "Your call?",
+   "words": [
+    [
+     "your",
+     169.623
+    ],
+    [
+     "call",
+     170.041
+    ]
+   ]
   },
   {
    "id": "s7-6",
    "scene": "save-1-tablet-press",
-   "start": 171.106,
-   "end": 175.269,
-   "text": "Stop and get help, because it's someone else's unfinished work."
+   "start": 172.943,
+   "end": 176.786,
+   "text": "Stop & get help. It's someone else's unfinished work.",
+   "words": [
+    [
+     "stop",
+     172.943
+    ],
+    [
+     "",
+     173.243
+    ],
+    [
+     "get",
+     173.363
+    ],
+    [
+     "help",
+     173.603
+    ],
+    [
+     "it's",
+     174.043
+    ],
+    [
+     "someone",
+     174.414
+    ],
+    [
+     "else's",
+     175.007
+    ],
+    [
+     "unfinished",
+     175.526
+    ],
+    [
+     "work",
+     176.341
+    ]
+   ]
   },
   {
    "id": "s7-7",
    "scene": "save-1-tablet-press",
-   "start": 175.769,
-   "end": 179.547,
-   "text": "Your lead comes, thanks you, and checks with the last shift."
+   "start": 177.286,
+   "end": 181.537,
+   "text": "Your lead comes over, thanks you, and checks with the last shift.",
+   "words": [
+    [
+     "your",
+     177.286
+    ],
+    [
+     "lead",
+     177.572
+    ],
+    [
+     "comes",
+     177.859
+    ],
+    [
+     "over",
+     178.202
+    ],
+    [
+     "thanks",
+     178.886
+    ],
+    [
+     "you",
+     179.236
+    ],
+    [
+     "and",
+     179.766
+    ],
+    [
+     "checks",
+     179.987
+    ],
+    [
+     "with",
+     180.375
+    ],
+    [
+     "the",
+     180.651
+    ],
+    [
+     "last",
+     180.873
+    ],
+    [
+     "shift",
+     181.149
+    ]
+   ]
   },
   {
    "id": "s7-8",
    "scene": "save-1-tablet-press",
-   "start": 179.887,
-   "end": 186.473,
-   "text": "An authorized press setter locks out, tries START, then finishes and counts the tooling."
+   "start": 181.877,
+   "end": 188.35,
+   "text": "An authorized press setter locks out, tries START, then finishes and counts the tooling.",
+   "words": [
+    [
+     "an",
+     181.877
+    ],
+    [
+     "authorized",
+     182.069
+    ],
+    [
+     "press",
+     182.772
+    ],
+    [
+     "setter",
+     183.156
+    ],
+    [
+     "locks",
+     183.603
+    ],
+    [
+     "out",
+     183.987
+    ],
+    [
+     "tries",
+     184.597
+    ],
+    [
+     "start",
+     185.026
+    ],
+    [
+     "then",
+     185.987
+    ],
+    [
+     "finishes",
+     186.298
+    ],
+    [
+     "and",
+     186.857
+    ],
+    [
+     "counts",
+     187.106
+    ],
+    [
+     "the",
+     187.541
+    ],
+    [
+     "tooling",
+     187.79
+    ]
+   ]
   },
   {
    "id": "s7-9",
    "scene": "save-1-tablet-press",
-   "start": 187.073,
-   "end": 194.033,
-   "text": "Guard closed, area clear, setter's lock removed, interlock tested. Then Go."
+   "start": 188.95,
+   "end": 194.999,
+   "text": "Guard closed, area clear, setter's lock removed, interlock tested. Then Go.",
+   "words": [
+    [
+     "guard",
+     188.95
+    ],
+    [
+     "closed",
+     189.37
+    ],
+    [
+     "area",
+     190.08
+    ],
+    [
+     "clear",
+     190.4
+    ],
+    [
+     "setter's",
+     190.848
+    ],
+    [
+     "lock",
+     191.424
+    ],
+    [
+     "removed",
+     191.744
+    ],
+    [
+     "interlock",
+     192.43
+    ],
+    [
+     "tested",
+     193.08
+    ],
+    [
+     "then",
+     194.17
+    ],
+    [
+     "go",
+     194.631
+    ]
+   ]
   },
   {
    "id": "s7-10",
    "scene": "save-1-tablet-press",
-   "start": 194.533,
-   "end": 197.708,
-   "text": "Nobody starts that press with its tooling half in."
+   "start": 195.499,
+   "end": 198.674,
+   "text": "Nobody starts that press with its tooling half in.",
+   "words": [
+    [
+     "nobody",
+     195.499
+    ],
+    [
+     "starts",
+     195.935
+    ],
+    [
+     "that",
+     196.371
+    ],
+    [
+     "press",
+     196.682
+    ],
+    [
+     "with",
+     197.055
+    ],
+    [
+     "its",
+     197.366
+    ],
+    [
+     "tooling",
+     197.615
+    ],
+    [
+     "half",
+     198.113
+    ],
+    [
+     "in",
+     198.425
+    ]
+   ]
   },
   {
    "id": "s8-1",
    "scene": "save-2-powder-charge",
-   "start": 200.348,
-   "end": 205.265,
-   "text": "Save two: you add powder to a reactor that holds flammable solvent."
+   "start": 201.014,
+   "end": 206.977,
+   "text": "Save two: you add powder from a drum to a reactor that holds flammable solvent.",
+   "words": [
+    [
+     "save",
+     201.014
+    ],
+    [
+     "two",
+     201.429
+    ],
+    [
+     "you",
+     202.174
+    ],
+    [
+     "add",
+     202.448
+    ],
+    [
+     "powder",
+     202.723
+    ],
+    [
+     "from",
+     203.203
+    ],
+    [
+     "a",
+     203.546
+    ],
+    [
+     "drum",
+     203.683
+    ],
+    [
+     "to",
+     204.026
+    ],
+    [
+     "a",
+     204.232
+    ],
+    [
+     "reactor",
+     204.37
+    ],
+    [
+     "that",
+     204.919
+    ],
+    [
+     "holds",
+     205.262
+    ],
+    [
+     "flammable",
+     205.674
+    ],
+    [
+     "solvent",
+     206.36
+    ]
+   ]
   },
   {
    "id": "s8-2",
    "scene": "save-2-powder-charge",
-   "start": 205.605,
-   "end": 210.145,
-   "text": "It's inerted: filled with nitrogen to keep the oxygen out."
+   "start": 207.317,
+   "end": 211.857,
+   "text": "It's inerted: filled with nitrogen to keep the oxygen out.",
+   "words": [
+    [
+     "it's",
+     207.317
+    ],
+    [
+     "inerted",
+     207.635
+    ],
+    [
+     "filled",
+     208.657
+    ],
+    [
+     "with",
+     209.155
+    ],
+    [
+     "nitrogen",
+     209.511
+    ],
+    [
+     "to",
+     210.151
+    ],
+    [
+     "keep",
+     210.364
+    ],
+    [
+     "the",
+     210.72
+    ],
+    [
+     "oxygen",
+     211.004
+    ],
+    [
+     "out",
+     211.502
+    ]
+   ]
   },
   {
    "id": "s8-3",
    "scene": "save-2-powder-charge",
-   "start": 210.485,
-   "end": 212.109,
-   "text": "What would make you stop here?"
+   "start": 212.457,
+   "end": 215.306,
+   "text": "Before you start, what would make you stop here?",
+   "words": [
+    [
+     "before",
+     212.457
+    ],
+    [
+     "you",
+     212.928
+    ],
+    [
+     "start",
+     213.197
+    ],
+    [
+     "what",
+     213.907
+    ],
+    [
+     "would",
+     214.133
+    ],
+    [
+     "make",
+     214.403
+    ],
+    [
+     "you",
+     214.629
+    ],
+    [
+     "stop",
+     214.81
+    ],
+    [
+     "here",
+     215.035
+    ]
+   ]
   },
   {
    "id": "s8-4",
    "scene": "save-2-powder-charge",
-   "start": 215.109,
-   "end": 220.598,
-   "text": "What could hurt us? A static spark at the open manway, with solvent vapor."
+   "start": 218.306,
+   "end": 223.994,
+   "text": "What could hurt us? A static spark at the open manway, where there's solvent vapor.",
+   "words": [
+    [
+     "what",
+     218.306
+    ],
+    [
+     "could",
+     218.561
+    ],
+    [
+     "hurt",
+     218.867
+    ],
+    [
+     "us",
+     219.122
+    ],
+    [
+     "a",
+     219.836
+    ],
+    [
+     "static",
+     219.969
+    ],
+    [
+     "spark",
+     220.435
+    ],
+    [
+     "at",
+     220.834
+    ],
+    [
+     "the",
+     221.034
+    ],
+    [
+     "open",
+     221.3
+    ],
+    [
+     "manway",
+     221.633
+    ],
+    [
+     "where",
+     222.466
+    ],
+    [
+     "there's",
+     222.782
+    ],
+    [
+     "solvent",
+     223.204
+    ],
+    [
+     "vapor",
+     223.625
+    ]
+   ]
   },
   {
    "id": "s8-5",
    "scene": "save-2-powder-charge",
-   "start": 220.938,
-   "end": 227.092,
-   "text": "Checked or assumed? Oxygen is below the limit. But the grounding indicator is red."
+   "start": 224.334,
+   "end": 230.962,
+   "text": "Checked or assumed? The oxygen is below the limit, but the grounding indicator is red.",
+   "words": [
+    [
+     "checked",
+     224.334
+    ],
+    [
+     "or",
+     224.97
+    ],
+    [
+     "assumed",
+     225.209
+    ],
+    [
+     "the",
+     226.484
+    ],
+    [
+     "oxygen",
+     226.737
+    ],
+    [
+     "is",
+     227.18
+    ],
+    [
+     "below",
+     227.37
+    ],
+    [
+     "the",
+     227.749
+    ],
+    [
+     "limit",
+     228.002
+    ],
+    [
+     "but",
+     228.654
+    ],
+    [
+     "the",
+     228.911
+    ],
+    [
+     "grounding",
+     229.167
+    ],
+    [
+     "indicator",
+     229.808
+    ],
+    [
+     "is",
+     230.449
+    ],
+    [
+     "red",
+     230.642
+    ]
+   ]
   },
   {
    "id": "s8-6",
    "scene": "save-2-powder-charge",
-   "start": 227.792,
-   "end": 228.712,
-   "text": "Your call?"
+   "start": 231.662,
+   "end": 232.768,
+   "text": "What's your call?",
+   "words": [
+    [
+     "what's",
+     231.662
+    ],
+    [
+     "your",
+     232.092
+    ],
+    [
+     "call",
+     232.4
+    ]
+   ]
   },
   {
    "id": "s8-7",
    "scene": "save-2-powder-charge",
-   "start": 231.112,
-   "end": 235.725,
-   "text": "Fix it: your procedure lets you clip the grounding clamp onto the drum."
+   "start": 235.168,
+   "end": 240.422,
+   "text": "Fix it. It's a step in your procedure: clip the grounding clamp onto the drum.",
+   "words": [
+    [
+     "fix",
+     235.168
+    ],
+    [
+     "it",
+     235.498
+    ],
+    [
+     "it's",
+     236.048
+    ],
+    [
+     "a",
+     236.31
+    ],
+    [
+     "step",
+     236.414
+    ],
+    [
+     "in",
+     236.675
+    ],
+    [
+     "your",
+     236.832
+    ],
+    [
+     "procedure",
+     237.093
+    ],
+    [
+     "clip",
+     238.168
+    ],
+    [
+     "the",
+     238.45
+    ],
+    [
+     "grounding",
+     238.675
+    ],
+    [
+     "clamp",
+     239.239
+    ],
+    [
+     "onto",
+     239.577
+    ],
+    [
+     "the",
+     239.858
+    ],
+    [
+     "drum",
+     240.084
+    ]
+   ]
   },
   {
    "id": "s8-8",
    "scene": "save-2-powder-charge",
-   "start": 236.225,
-   "end": 241.519,
-   "text": "The indicator turns green, and the drum liner is static-safe. Then Go."
+   "start": 240.922,
+   "end": 246.581,
+   "text": "The indicator turns green, and the drum liner is static-safe. Now it's Go.",
+   "words": [
+    [
+     "the",
+     240.922
+    ],
+    [
+     "indicator",
+     241.197
+    ],
+    [
+     "turns",
+     241.886
+    ],
+    [
+     "green",
+     242.299
+    ],
+    [
+     "and",
+     242.942
+    ],
+    [
+     "the",
+     243.171
+    ],
+    [
+     "drum",
+     243.401
+    ],
+    [
+     "liner",
+     243.688
+    ],
+    [
+     "is",
+     244.033
+    ],
+    [
+     "static-safe",
+     244.205
+    ],
+    [
+     "now",
+     245.502
+    ],
+    [
+     "it's",
+     245.834
+    ],
+    [
+     "go",
+     246.249
+    ]
+   ]
   },
   {
    "id": "s8-9",
    "scene": "save-2-powder-charge",
-   "start": 242.119,
-   "end": 243.931,
-   "text": "The spark never happens."
+   "start": 247.181,
+   "end": 248.994,
+   "text": "The spark never happens.",
+   "words": [
+    [
+     "the",
+     247.181
+    ],
+    [
+     "spark",
+     247.471
+    ],
+    [
+     "never",
+     247.906
+    ],
+    [
+     "happens",
+     248.341
+    ]
+   ]
   },
   {
    "id": "s9-1",
    "scene": "save-3-inerted-vessel",
-   "start": 246.571,
-   "end": 253.622,
-   "text": "Save three: you're a contractor. At a product change, you'll open a dryer full of nitrogen."
+   "start": 251.334,
+   "end": 258.806,
+   "text": "Save three: a product change. As a contractor, you'll open a filter dryer full of nitrogen.",
+   "words": [
+    [
+     "save",
+     251.334
+    ],
+    [
+     "three",
+     251.709
+    ],
+    [
+     "a",
+     252.414
+    ],
+    [
+     "product",
+     252.544
+    ],
+    [
+     "change",
+     253.064
+    ],
+    [
+     "as",
+     254.284
+    ],
+    [
+     "a",
+     254.48
+    ],
+    [
+     "contractor",
+     254.61
+    ],
+    [
+     "you'll",
+     255.694
+    ],
+    [
+     "open",
+     256.178
+    ],
+    [
+     "a",
+     256.524
+    ],
+    [
+     "filter",
+     256.662
+    ],
+    [
+     "dryer",
+     257.146
+    ],
+    [
+     "full",
+     257.561
+    ],
+    [
+     "of",
+     257.907
+    ],
+    [
+     "nitrogen",
+     258.114
+    ]
+   ]
   },
   {
    "id": "s9-2",
    "scene": "save-3-inerted-vessel",
-   "start": 253.962,
-   "end": 255.585,
-   "text": "What would make you stop here?"
+   "start": 259.406,
+   "end": 261.389,
+   "text": "So, what would make you stop here?",
+   "words": [
+    [
+     "so",
+     259.406
+    ],
+    [
+     "what",
+     260.006
+    ],
+    [
+     "would",
+     260.229
+    ],
+    [
+     "make",
+     260.497
+    ],
+    [
+     "you",
+     260.72
+    ],
+    [
+     "stop",
+     260.898
+    ],
+    [
+     "here",
+     261.121
+    ]
+   ]
   },
   {
    "id": "s9-3",
    "scene": "save-3-inerted-vessel",
-   "start": 258.585,
-   "end": 264.862,
-   "text": "What could hurt us? Low-oxygen air inside. Nitrogen has no color or smell."
+   "start": 264.389,
+   "end": 269.749,
+   "text": "What could hurt us? Low-oxygen air inside. You can't see it or smell it.",
+   "words": [
+    [
+     "what",
+     264.389
+    ],
+    [
+     "could",
+     264.619
+    ],
+    [
+     "hurt",
+     264.895
+    ],
+    [
+     "us",
+     265.125
+    ],
+    [
+     "low-oxygen",
+     265.669
+    ],
+    [
+     "air",
+     266.587
+    ],
+    [
+     "inside",
+     266.921
+    ],
+    [
+     "you",
+     267.969
+    ],
+    [
+     "can't",
+     268.206
+    ],
+    [
+     "see",
+     268.562
+    ],
+    [
+     "it",
+     268.8
+    ],
+    [
+     "or",
+     268.978
+    ],
+    [
+     "smell",
+     269.156
+    ],
+    [
+     "it",
+     269.512
+    ]
+   ]
   },
   {
    "id": "s9-4",
    "scene": "save-3-inerted-vessel",
-   "start": 265.202,
-   "end": 272.352,
-   "text": "Checked or assumed? Is the nitrogen line closed with a solid plate, and the air inside tested?"
+   "start": 270.089,
+   "end": 277.706,
+   "text": "Checked or assumed? Is the nitrogen line closed with a solid plate, and the air inside tested?",
+   "words": [
+    [
+     "checked",
+     270.089
+    ],
+    [
+     "or",
+     270.693
+    ],
+    [
+     "assumed",
+     270.92
+    ],
+    [
+     "is",
+     272.199
+    ],
+    [
+     "the",
+     272.399
+    ],
+    [
+     "nitrogen",
+     272.664
+    ],
+    [
+     "line",
+     273.263
+    ],
+    [
+     "closed",
+     273.595
+    ],
+    [
+     "with",
+     274.06
+    ],
+    [
+     "a",
+     274.392
+    ],
+    [
+     "solid",
+     274.525
+    ],
+    [
+     "plate",
+     274.924
+    ],
+    [
+     "and",
+     275.759
+    ],
+    [
+     "the",
+     276.048
+    ],
+    [
+     "air",
+     276.336
+    ],
+    [
+     "inside",
+     276.624
+    ],
+    [
+     "tested",
+     277.129
+    ]
+   ]
   },
   {
    "id": "s9-5",
    "scene": "save-3-inerted-vessel",
-   "start": 272.692,
-   "end": 274.774,
-   "text": "No test, no permit yet."
+   "start": 278.046,
+   "end": 280.161,
+   "text": "Not yet, and no permit yet.",
+   "words": [
+    [
+     "not",
+     278.046
+    ],
+    [
+     "yet",
+     278.392
+    ],
+    [
+     "and",
+     278.946
+    ],
+    [
+     "no",
+     279.201
+    ],
+    [
+     "permit",
+     279.393
+    ],
+    [
+     "yet",
+     279.841
+    ]
+   ]
   },
   {
    "id": "s9-6",
    "scene": "save-3-inerted-vessel",
-   "start": 275.474,
-   "end": 276.394,
-   "text": "Your call?"
+   "start": 280.861,
+   "end": 281.781,
+   "text": "Your call?",
+   "words": [
+    [
+     "your",
+     280.861
+    ],
+    [
+     "call",
+     281.279
+    ]
+   ]
   },
   {
    "id": "s9-7",
    "scene": "save-3-inerted-vessel",
-   "start": 278.794,
-   "end": 283.513,
-   "text": "Stop and get help, because opening it needs a gas test and a permit."
+   "start": 284.181,
+   "end": 288.706,
+   "text": "Stop & get help: opening it needs a gas test and a permit.",
+   "words": [
+    [
+     "stop",
+     284.181
+    ],
+    [
+     "",
+     284.534
+    ],
+    [
+     "get",
+     284.675
+    ],
+    [
+     "help",
+     284.957
+    ],
+    [
+     "opening",
+     285.901
+    ],
+    [
+     "it",
+     286.435
+    ],
+    [
+     "needs",
+     286.636
+    ],
+    [
+     "a",
+     287.036
+    ],
+    [
+     "gas",
+     287.17
+    ],
+    [
+     "test",
+     287.437
+    ],
+    [
+     "and",
+     287.771
+    ],
+    [
+     "a",
+     288.038
+    ],
+    [
+     "permit",
+     288.172
+    ]
+   ]
   },
   {
    "id": "s9-8",
    "scene": "save-3-inerted-vessel",
-   "start": 284.013,
-   "end": 292.531,
-   "text": "An authorized team isolates, tests, ventilates and retests. The permit is issued. Then Go."
+   "start": 289.206,
+   "end": 296.888,
+   "text": "An authorized team isolates, tests, ventilates and retests. Once the permit is issued, it's Go.",
+   "words": [
+    [
+     "an",
+     289.206
+    ],
+    [
+     "authorized",
+     289.431
+    ],
+    [
+     "team",
+     290.254
+    ],
+    [
+     "isolates",
+     290.628
+    ],
+    [
+     "tests",
+     291.546
+    ],
+    [
+     "ventilates",
+     292.276
+    ],
+    [
+     "and",
+     292.991
+    ],
+    [
+     "retests",
+     293.251
+    ],
+    [
+     "once",
+     294.426
+    ],
+    [
+     "the",
+     294.721
+    ],
+    [
+     "permit",
+     294.956
+    ],
+    [
+     "is",
+     295.368
+    ],
+    [
+     "issued",
+     295.545
+    ],
+    [
+     "it's",
+     296.106
+    ],
+    [
+     "go",
+     296.541
+    ]
+   ]
   },
   {
    "id": "s9-9",
    "scene": "save-3-inerted-vessel",
-   "start": 293.331,
-   "end": 294.98,
-   "text": "No permit, no Go."
+   "start": 297.688,
+   "end": 299.337,
+   "text": "No permit, no Go.",
+   "words": [
+    [
+     "no",
+     297.688
+    ],
+    [
+     "permit",
+     297.898
+    ],
+    [
+     "no",
+     298.538
+    ],
+    [
+     "go",
+     298.88
+    ]
+   ]
   },
   {
    "id": "s9-10",
    "scene": "save-3-inerted-vessel",
-   "start": 295.32,
-   "end": 298.67,
-   "text": "Nobody leans into air with too little oxygen."
+   "start": 299.837,
+   "end": 303.187,
+   "text": "Nobody leans into air with too little oxygen.",
+   "words": [
+    [
+     "nobody",
+     299.837
+    ],
+    [
+     "leans",
+     300.346
+    ],
+    [
+     "into",
+     300.784
+    ],
+    [
+     "air",
+     301.148
+    ],
+    [
+     "with",
+     301.439
+    ],
+    [
+     "too",
+     301.803
+    ],
+    [
+     "little",
+     302.095
+    ],
+    [
+     "oxygen",
+     302.605
+    ]
+   ]
   },
   {
    "id": "s10-1",
    "scene": "save-4-blister-jam",
-   "start": 301.31,
-   "end": 306.071,
-   "text": "Save four: a blister packer jams where your jam tool can't reach."
+   "start": 305.527,
+   "end": 311.8,
+   "text": "Save four: an interruption. The blister packer jams where your jam tool can't reach.",
+   "words": [
+    [
+     "save",
+     305.527
+    ],
+    [
+     "four",
+     305.927
+    ],
+    [
+     "an",
+     306.627
+    ],
+    [
+     "interruption",
+     306.788
+    ],
+    [
+     "the",
+     308.187
+    ],
+    [
+     "blister",
+     308.441
+    ],
+    [
+     "packer",
+     308.948
+    ],
+    [
+     "jams",
+     309.392
+    ],
+    [
+     "where",
+     309.708
+    ],
+    [
+     "your",
+     310.089
+    ],
+    [
+     "jam",
+     310.406
+    ],
+    [
+     "tool",
+     310.659
+    ],
+    [
+     "can't",
+     310.976
+    ],
+    [
+     "reach",
+     311.356
+    ]
+   ]
   },
   {
    "id": "s10-2",
    "scene": "save-4-blister-jam",
-   "start": 306.571,
-   "end": 309.082,
-   "text": "Stopped isn't the same as isolated."
+   "start": 312.3,
+   "end": 316.048,
+   "text": "It's stopped, but stopped isn't the same as isolated.",
+   "words": [
+    [
+     "it's",
+     312.3
+    ],
+    [
+     "stopped",
+     312.596
+    ],
+    [
+     "but",
+     313.38
+    ],
+    [
+     "stopped",
+     313.647
+    ],
+    [
+     "isn't",
+     314.18
+    ],
+    [
+     "the",
+     314.58
+    ],
+    [
+     "same",
+     314.847
+    ],
+    [
+     "as",
+     315.181
+    ],
+    [
+     "isolated",
+     315.381
+    ]
+   ]
   },
   {
    "id": "s10-3",
    "scene": "save-4-blister-jam",
-   "start": 309.422,
-   "end": 311.196,
-   "text": "You lock out power and air."
+   "start": 316.388,
+   "end": 318.36,
+   "text": "So you lock out power and air.",
+   "words": [
+    [
+     "so",
+     316.388
+    ],
+    [
+     "you",
+     316.579
+    ],
+    [
+     "lock",
+     316.833
+    ],
+    [
+     "out",
+     317.151
+    ],
+    [
+     "power",
+     317.406
+    ],
+    [
+     "and",
+     317.787
+    ],
+    [
+     "air",
+     318.042
+    ]
+   ]
   },
   {
    "id": "s10-4",
    "scene": "save-4-blister-jam",
-   "start": 311.596,
-   "end": 313.22,
-   "text": "What would make you stop here?"
+   "start": 318.96,
+   "end": 321.062,
+   "text": "Now, what would make you stop here?",
+   "words": [
+    [
+     "now",
+     318.96
+    ],
+    [
+     "what",
+     319.66
+    ],
+    [
+     "would",
+     319.886
+    ],
+    [
+     "make",
+     320.157
+    ],
+    [
+     "you",
+     320.384
+    ],
+    [
+     "stop",
+     320.564
+    ],
+    [
+     "here",
+     320.791
+    ]
+   ]
   },
   {
    "id": "s10-5",
    "scene": "save-4-blister-jam",
-   "start": 316.22,
-   "end": 319.846,
-   "text": "Checked or assumed? The gauge still shows trapped air."
+   "start": 324.062,
+   "end": 327.753,
+   "text": "Checked or assumed? The gauge still shows trapped air.",
+   "words": [
+    [
+     "checked",
+     324.062
+    ],
+    [
+     "or",
+     324.578
+    ],
+    [
+     "assumed",
+     324.771
+    ],
+    [
+     "the",
+     325.732
+    ],
+    [
+     "gauge",
+     325.963
+    ],
+    [
+     "still",
+     326.309
+    ],
+    [
+     "shows",
+     326.656
+    ],
+    [
+     "trapped",
+     327.002
+    ],
+    [
+     "air",
+     327.464
+    ]
+   ]
   },
   {
    "id": "s10-6",
    "scene": "save-4-blister-jam",
-   "start": 320.546,
-   "end": 321.466,
-   "text": "Your call?"
+   "start": 328.453,
+   "end": 329.559,
+   "text": "What's your call?",
+   "words": [
+    [
+     "what's",
+     328.453
+    ],
+    [
+     "your",
+     328.883
+    ],
+    [
+     "call",
+     329.191
+    ]
+   ]
   },
   {
    "id": "s10-7",
    "scene": "save-4-blister-jam",
-   "start": 323.866,
-   "end": 328.598,
-   "text": "Fix it: your procedure lets you bleed the air, with your own lock on."
+   "start": 331.959,
+   "end": 337.772,
+   "text": "Fix it. Your procedure lets you bleed off the trapped air, with your own lock still on.",
+   "words": [
+    [
+     "fix",
+     331.959
+    ],
+    [
+     "it",
+     332.274
+    ],
+    [
+     "your",
+     332.839
+    ],
+    [
+     "procedure",
+     333.105
+    ],
+    [
+     "lets",
+     333.636
+    ],
+    [
+     "you",
+     333.902
+    ],
+    [
+     "bleed",
+     334.115
+    ],
+    [
+     "off",
+     334.433
+    ],
+    [
+     "the",
+     334.646
+    ],
+    [
+     "trapped",
+     334.858
+    ],
+    [
+     "air",
+     335.284
+    ],
+    [
+     "with",
+     335.949
+    ],
+    [
+     "your",
+     336.264
+    ],
+    [
+     "own",
+     336.578
+    ],
+    [
+     "lock",
+     336.829
+    ],
+    [
+     "still",
+     337.144
+    ],
+    [
+     "on",
+     337.521
+    ]
+   ]
   },
   {
    "id": "s10-8",
    "scene": "save-4-blister-jam",
-   "start": 328.938,
-   "end": 334.203,
-   "text": "Bleed to zero and try START. Nothing moves. Then Go."
+   "start": 338.112,
+   "end": 342.489,
+   "text": "Bleed to zero and try START. Nothing moves, so it's Go.",
+   "words": [
+    [
+     "bleed",
+     338.112
+    ],
+    [
+     "to",
+     338.545
+    ],
+    [
+     "zero",
+     338.761
+    ],
+    [
+     "and",
+     339.121
+    ],
+    [
+     "try",
+     339.41
+    ],
+    [
+     "start",
+     339.698
+    ],
+    [
+     "nothing",
+     340.642
+    ],
+    [
+     "moves",
+     341.19
+    ],
+    [
+     "so",
+     341.668
+    ],
+    [
+     "it's",
+     341.874
+    ],
+    [
+     "go",
+     342.216
+    ]
+   ]
   },
   {
    "id": "s10-9",
    "scene": "save-4-blister-jam",
-   "start": 334.803,
-   "end": 338.643,
-   "text": "Your hand stays out of a machine that still had stored energy."
+   "start": 343.089,
+   "end": 347.438,
+   "text": "Your hand never goes into a machine that still has stored energy.",
+   "words": [
+    [
+     "your",
+     343.089
+    ],
+    [
+     "hand",
+     343.419
+    ],
+    [
+     "never",
+     343.748
+    ],
+    [
+     "goes",
+     344.143
+    ],
+    [
+     "into",
+     344.473
+    ],
+    [
+     "a",
+     344.802
+    ],
+    [
+     "machine",
+     344.934
+    ],
+    [
+     "that",
+     345.461
+    ],
+    [
+     "still",
+     345.791
+    ],
+    [
+     "has",
+     346.186
+    ],
+    [
+     "stored",
+     346.45
+    ],
+    [
+     "energy",
+     346.911
+    ]
+   ]
   },
   {
    "id": "s11-1",
    "scene": "save-5-isolator",
-   "start": 341.283,
-   "end": 347.293,
-   "text": "Save five: after a break, you weigh a potent active ingredient at an isolator."
+   "start": 349.778,
+   "end": 355.788,
+   "text": "Save five: after a break, you weigh a potent active ingredient at an isolator.",
+   "words": [
+    [
+     "save",
+     349.778
+    ],
+    [
+     "five",
+     350.219
+    ],
+    [
+     "after",
+     351.168
+    ],
+    [
+     "a",
+     351.472
+    ],
+    [
+     "break",
+     351.573
+    ],
+    [
+     "you",
+     352.008
+    ],
+    [
+     "weigh",
+     352.293
+    ],
+    [
+     "a",
+     352.721
+    ],
+    [
+     "potent",
+     352.864
+    ],
+    [
+     "active",
+     353.363
+    ],
+    [
+     "ingredient",
+     353.862
+    ],
+    [
+     "at",
+     354.647
+    ],
+    [
+     "an",
+     354.861
+    ],
+    [
+     "isolator",
+     355.075
+    ]
+   ]
   },
   {
    "id": "s11-2",
    "scene": "save-5-isolator",
-   "start": 347.633,
-   "end": 349.257,
-   "text": "What would make you stop here?"
+   "start": 356.388,
+   "end": 359.196,
+   "text": "Look closely. What would make you stop here?",
+   "words": [
+    [
+     "look",
+     356.388
+    ],
+    [
+     "closely",
+     356.774
+    ],
+    [
+     "what",
+     357.778
+    ],
+    [
+     "would",
+     358.007
+    ],
+    [
+     "make",
+     358.281
+    ],
+    [
+     "you",
+     358.51
+    ],
+    [
+     "stop",
+     358.693
+    ],
+    [
+     "here",
+     358.922
+    ]
+   ]
   },
   {
    "id": "s11-3",
    "scene": "save-5-isolator",
-   "start": 352.257,
-   "end": 356.484,
-   "text": "What's different? Nothing, and the pressure display is in range."
+   "start": 362.196,
+   "end": 366.424,
+   "text": "What's different? Nothing, and the pressure display is in range.",
+   "words": [
+    [
+     "what's",
+     362.196
+    ],
+    [
+     "different",
+     362.566
+    ],
+    [
+     "nothing",
+     363.516
+    ],
+    [
+     "and",
+     364.296
+    ],
+    [
+     "the",
+     364.52
+    ],
+    [
+     "pressure",
+     364.744
+    ],
+    [
+     "display",
+     365.248
+    ],
+    [
+     "is",
+     365.696
+    ],
+    [
+     "in",
+     365.864
+    ],
+    [
+     "range",
+     366.032
+    ]
+   ]
   },
   {
    "id": "s11-4",
    "scene": "save-5-isolator",
-   "start": 356.884,
-   "end": 360.772,
-   "text": "Checked or assumed? You check each glove. One has a cut."
+   "start": 366.824,
+   "end": 370.968,
+   "text": "Checked or assumed? You check each glove, and one has a cut.",
+   "words": [
+    [
+     "checked",
+     366.824
+    ],
+    [
+     "or",
+     367.38
+    ],
+    [
+     "assumed",
+     367.588
+    ],
+    [
+     "you",
+     368.674
+    ],
+    [
+     "check",
+     368.897
+    ],
+    [
+     "each",
+     369.233
+    ],
+    [
+     "glove",
+     369.513
+    ],
+    [
+     "and",
+     369.905
+    ],
+    [
+     "one",
+     370.128
+    ],
+    [
+     "has",
+     370.352
+    ],
+    [
+     "a",
+     370.576
+    ],
+    [
+     "cut",
+     370.688
+    ]
+   ]
   },
   {
    "id": "s11-5",
    "scene": "save-5-isolator",
-   "start": 361.472,
-   "end": 362.391,
-   "text": "Your call?"
+   "start": 371.668,
+   "end": 372.587,
+   "text": "Your call?",
+   "words": [
+    [
+     "your",
+     371.668
+    ],
+    [
+     "call",
+     372.086
+    ]
+   ]
   },
   {
    "id": "s11-6",
    "scene": "save-5-isolator",
-   "start": 364.791,
-   "end": 371.395,
-   "text": "Stop and get help, because a cut glove is a break in the barrier. Your lead and QA must know."
+   "start": 374.987,
+   "end": 381.744,
+   "text": "Stop & get help, because a cut glove is a break in the barrier. Your lead and QA must know.",
+   "words": [
+    [
+     "stop",
+     374.987
+    ],
+    [
+     "",
+     375.302
+    ],
+    [
+     "get",
+     375.428
+    ],
+    [
+     "help",
+     375.68
+    ],
+    [
+     "because",
+     376.137
+    ],
+    [
+     "a",
+     376.621
+    ],
+    [
+     "cut",
+     376.742
+    ],
+    [
+     "glove",
+     376.983
+    ],
+    [
+     "is",
+     377.346
+    ],
+    [
+     "a",
+     377.527
+    ],
+    [
+     "break",
+     377.648
+    ],
+    [
+     "in",
+     378.011
+    ],
+    [
+     "the",
+     378.192
+    ],
+    [
+     "barrier",
+     378.434
+    ],
+    [
+     "your",
+     379.597
+    ],
+    [
+     "lead",
+     379.981
+    ],
+    [
+     "and",
+     380.364
+    ],
+    [
+     "qa",
+     380.671
+    ],
+    [
+     "must",
+     380.901
+    ],
+    [
+     "know",
+     381.284
+    ]
+   ]
   },
   {
    "id": "s11-7",
    "scene": "save-5-isolator",
-   "start": 371.895,
-   "end": 376.885,
-   "text": "An authorized person changes the glove and leak-tests it. Then Go."
+   "start": 382.244,
+   "end": 387.233,
+   "text": "An authorized person changes the glove and leak-tests it. Then Go.",
+   "words": [
+    [
+     "an",
+     382.244
+    ],
+    [
+     "authorized",
+     382.428
+    ],
+    [
+     "person",
+     383.106
+    ],
+    [
+     "changes",
+     383.536
+    ],
+    [
+     "the",
+     384.029
+    ],
+    [
+     "glove",
+     384.275
+    ],
+    [
+     "and",
+     384.644
+    ],
+    [
+     "leak-tests",
+     384.891
+    ],
+    [
+     "it",
+     385.568
+    ],
+    [
+     "then",
+     386.334
+    ],
+    [
+     "go",
+     386.833
+    ]
+   ]
   },
   {
    "id": "s11-8",
    "scene": "save-5-isolator",
-   "start": 377.485,
-   "end": 383.298,
-   "text": "That powder is strong, even in tiny amounts. It stays inside the isolator."
+   "start": 387.833,
+   "end": 394.047,
+   "text": "That powder is strong, even in tiny amounts. It stays inside the isolator.",
+   "words": [
+    [
+     "that",
+     387.833
+    ],
+    [
+     "powder",
+     388.164
+    ],
+    [
+     "is",
+     388.626
+    ],
+    [
+     "strong",
+     388.824
+    ],
+    [
+     "even",
+     389.623
+    ],
+    [
+     "in",
+     389.985
+    ],
+    [
+     "tiny",
+     390.201
+    ],
+    [
+     "amounts",
+     390.563
+    ],
+    [
+     "it",
+     391.823
+    ],
+    [
+     "stays",
+     392.046
+    ],
+    [
+     "inside",
+     392.49
+    ],
+    [
+     "the",
+     393.009
+    ],
+    [
+     "isolator",
+     393.306
+    ]
+   ]
   },
   {
    "id": "s12-1",
    "scene": "save-6-cip-line-break",
-   "start": 385.938,
-   "end": 392.135,
-   "text": "Save six: you're about to open a pipe at the transfer panel. That's a line break."
+   "start": 396.387,
+   "end": 402.722,
+   "text": "Save six: you have a permit to open a pipe at the transfer panel. That's a line break.",
+   "words": [
+    [
+     "save",
+     396.387
+    ],
+    [
+     "six",
+     396.757
+    ],
+    [
+     "you",
+     397.207
+    ],
+    [
+     "have",
+     397.462
+    ],
+    [
+     "a",
+     397.781
+    ],
+    [
+     "permit",
+     397.909
+    ],
+    [
+     "to",
+     398.355
+    ],
+    [
+     "open",
+     398.546
+    ],
+    [
+     "a",
+     398.865
+    ],
+    [
+     "pipe",
+     398.992
+    ],
+    [
+     "at",
+     399.311
+    ],
+    [
+     "the",
+     399.502
+    ],
+    [
+     "transfer",
+     399.757
+    ],
+    [
+     "panel",
+     400.331
+    ],
+    [
+     "that's",
+     401.357
+    ],
+    [
+     "a",
+     401.812
+    ],
+    [
+     "line",
+     401.942
+    ],
+    [
+     "break",
+     402.267
+    ]
+   ]
   },
   {
    "id": "s12-2",
    "scene": "save-6-cip-line-break",
-   "start": 392.475,
-   "end": 396.68,
-   "text": "The CIP screen says the cleaning cycle is complete."
+   "start": 403.062,
+   "end": 407.108,
+   "text": "The CIP screen says the cleaning cycle is complete.",
+   "words": [
+    [
+     "the",
+     403.062
+    ],
+    [
+     "cip",
+     403.373
+    ],
+    [
+     "screen",
+     403.685
+    ],
+    [
+     "says",
+     404.229
+    ],
+    [
+     "the",
+     404.618
+    ],
+    [
+     "cleaning",
+     404.929
+    ],
+    [
+     "cycle",
+     405.63
+    ],
+    [
+     "is",
+     406.096
+    ],
+    [
+     "complete",
+     406.33
+    ]
+   ]
   },
   {
    "id": "s12-3",
    "scene": "save-6-cip-line-break",
-   "start": 397.02,
-   "end": 398.644,
-   "text": "What would make you stop here?"
+   "start": 407.708,
+   "end": 410.133,
+   "text": "Your turn. What would make you stop here?",
+   "words": [
+    [
+     "your",
+     407.708
+    ],
+    [
+     "turn",
+     408.085
+    ],
+    [
+     "what",
+     408.778
+    ],
+    [
+     "would",
+     408.996
+    ],
+    [
+     "make",
+     409.259
+    ],
+    [
+     "you",
+     409.477
+    ],
+    [
+     "stop",
+     409.652
+    ],
+    [
+     "here",
+     409.87
+    ]
+   ]
   },
   {
    "id": "s12-4",
    "scene": "save-6-cip-line-break",
-   "start": 401.644,
-   "end": 405.985,
-   "text": "What if it goes wrong? If the pipe still has pressure, where would it spray?"
+   "start": 413.133,
+   "end": 417.474,
+   "text": "What if it goes wrong? If the pipe still has pressure, where would it spray?",
+   "words": [
+    [
+     "what",
+     413.133
+    ],
+    [
+     "if",
+     413.378
+    ],
+    [
+     "it",
+     413.526
+    ],
+    [
+     "goes",
+     413.673
+    ],
+    [
+     "wrong",
+     413.919
+    ],
+    [
+     "if",
+     414.703
+    ],
+    [
+     "the",
+     414.859
+    ],
+    [
+     "pipe",
+     415.068
+    ],
+    [
+     "still",
+     415.329
+    ],
+    [
+     "has",
+     415.642
+    ],
+    [
+     "pressure",
+     415.851
+    ],
+    [
+     "where",
+     416.463
+    ],
+    [
+     "would",
+     416.738
+    ],
+    [
+     "it",
+     417.014
+    ],
+    [
+     "spray",
+     417.152
+    ]
+   ]
   },
   {
    "id": "s12-5",
    "scene": "save-6-cip-line-break",
-   "start": 406.485,
-   "end": 411.843,
-   "text": "You lock out the supply valve and the pump, step to the side, and check the gauge."
+   "start": 417.974,
+   "end": 423.56,
+   "text": "You lock out the supply valve and the pump, step to the side, and check the gauge.",
+   "words": [
+    [
+     "you",
+     417.974
+    ],
+    [
+     "lock",
+     418.189
+    ],
+    [
+     "out",
+     418.459
+    ],
+    [
+     "the",
+     418.674
+    ],
+    [
+     "supply",
+     418.89
+    ],
+    [
+     "valve",
+     419.267
+    ],
+    [
+     "and",
+     419.59
+    ],
+    [
+     "the",
+     419.805
+    ],
+    [
+     "pump",
+     420.021
+    ],
+    [
+     "step",
+     420.804
+    ],
+    [
+     "to",
+     421.151
+    ],
+    [
+     "the",
+     421.359
+    ],
+    [
+     "side",
+     421.637
+    ],
+    [
+     "and",
+     422.334
+    ],
+    [
+     "check",
+     422.567
+    ],
+    [
+     "the",
+     422.918
+    ],
+    [
+     "gauge",
+     423.151
+    ]
+   ]
   },
   {
    "id": "s12-6",
    "scene": "save-6-cip-line-break",
-   "start": 412.343,
-   "end": 415.062,
-   "text": "It shows pressure, and the line is hot."
+   "start": 424.06,
+   "end": 426.779,
+   "text": "It shows pressure, and the line is hot.",
+   "words": [
+    [
+     "it",
+     424.06
+    ],
+    [
+     "shows",
+     424.246
+    ],
+    [
+     "pressure",
+     424.619
+    ],
+    [
+     "and",
+     425.52
+    ],
+    [
+     "the",
+     425.76
+    ],
+    [
+     "line",
+     425.999
+    ],
+    [
+     "is",
+     426.299
+    ],
+    [
+     "hot",
+     426.479
+    ]
+   ]
   },
   {
    "id": "s12-7",
    "scene": "save-6-cip-line-break",
-   "start": 415.762,
-   "end": 416.682,
-   "text": "Your call?"
+   "start": 427.479,
+   "end": 428.872,
+   "text": "So, what's your call?",
+   "words": [
+    [
+     "so",
+     427.479
+    ],
+    [
+     "what's",
+     427.732
+    ],
+    [
+     "your",
+     428.175
+    ],
+    [
+     "call",
+     428.492
+    ]
+   ]
   },
   {
    "id": "s12-8",
    "scene": "save-6-cip-line-break",
-   "start": 419.082,
-   "end": 427.174,
-   "text": "Fix it. Your line-break procedure says: wait, vent, check for zero pressure and a cool line."
+   "start": 431.272,
+   "end": 438.576,
+   "text": "Fix it. Your line-break procedure says: wait, vent, check for zero pressure and a cool line.",
+   "words": [
+    [
+     "fix",
+     431.272
+    ],
+    [
+     "it",
+     431.587
+    ],
+    [
+     "your",
+     432.092
+    ],
+    [
+     "line-break",
+     432.392
+    ],
+    [
+     "procedure",
+     433.052
+    ],
+    [
+     "says",
+     433.652
+    ],
+    [
+     "wait",
+     434.512
+    ],
+    [
+     "vent",
+     435.162
+    ],
+    [
+     "check",
+     435.962
+    ],
+    [
+     "for",
+     436.344
+    ],
+    [
+     "zero",
+     436.599
+    ],
+    [
+     "pressure",
+     436.918
+    ],
+    [
+     "and",
+     437.492
+    ],
+    [
+     "a",
+     437.747
+    ],
+    [
+     "cool",
+     437.875
+    ],
+    [
+     "line",
+     438.194
+    ]
+   ]
   },
   {
    "id": "s12-9",
    "scene": "save-6-cip-line-break",
-   "start": 428.374,
-   "end": 433.683,
-   "text": "Then Go. The screen reports the cycle. The gauge reports your line."
+   "start": 439.776,
+   "end": 444.874,
+   "text": "Then Go. The screen reports the cycle. The gauge reports your line.",
+   "words": [
+    [
+     "then",
+     439.776
+    ],
+    [
+     "go",
+     440.215
+    ],
+    [
+     "the",
+     440.796
+    ],
+    [
+     "screen",
+     441.035
+    ],
+    [
+     "reports",
+     441.453
+    ],
+    [
+     "the",
+     441.93
+    ],
+    [
+     "cycle",
+     442.169
+    ],
+    [
+     "the",
+     443.076
+    ],
+    [
+     "gauge",
+     443.324
+    ],
+    [
+     "reports",
+     443.696
+    ],
+    [
+     "your",
+     444.192
+    ],
+    [
+     "line",
+     444.502
+    ]
+   ]
   },
   {
    "id": "s12-10",
    "scene": "save-6-cip-line-break",
-   "start": 434.023,
-   "end": 437.123,
-   "text": "No spray of hot cleaning chemical or steam."
+   "start": 445.214,
+   "end": 448.959,
+   "text": "No one gets sprayed with hot cleaning chemical or steam.",
+   "words": [
+    [
+     "no",
+     445.214
+    ],
+    [
+     "one",
+     445.412
+    ],
+    [
+     "gets",
+     445.674
+    ],
+    [
+     "sprayed",
+     446.003
+    ],
+    [
+     "with",
+     446.528
+    ],
+    [
+     "hot",
+     446.857
+    ],
+    [
+     "cleaning",
+     447.12
+    ],
+    [
+     "chemical",
+     447.711
+    ],
+    [
+     "or",
+     448.302
+    ],
+    [
+     "steam",
+     448.499
+    ]
+   ]
   },
   {
    "id": "s13-1",
    "scene": "all-six-end-in-go",
-   "start": 438.363,
-   "end": 443.764,
-   "text": "Three fixes, three calls for help. All six end in Go, once it's safe."
+   "start": 450.199,
+   "end": 457.134,
+   "text": "Three saves were Fix it, and three were Stop & get help. All six end in Go, once it's safe.",
+   "words": [
+    [
+     "three",
+     450.199
+    ],
+    [
+     "saves",
+     450.566
+    ],
+    [
+     "were",
+     450.933
+    ],
+    [
+     "fix",
+     451.239
+    ],
+    [
+     "it",
+     451.484
+    ],
+    [
+     "and",
+     452.029
+    ],
+    [
+     "three",
+     452.234
+    ],
+    [
+     "were",
+     452.542
+    ],
+    [
+     "stop",
+     452.798
+    ],
+    [
+     "",
+     453.054
+    ],
+    [
+     "get",
+     453.157
+    ],
+    [
+     "help",
+     453.362
+    ],
+    [
+     "all",
+     454.329
+    ],
+    [
+     "six",
+     454.65
+    ],
+    [
+     "end",
+     454.97
+    ],
+    [
+     "in",
+     455.291
+    ],
+    [
+     "go",
+     455.531
+    ],
+    [
+     "once",
+     455.852
+    ],
+    [
+     "it's",
+     456.253
+    ],
+    [
+     "safe",
+     456.653
+    ]
+   ]
+  },
+  {
+   "id": "s13-2",
+   "scene": "all-six-end-in-go",
+   "start": 457.734,
+   "end": 463.752,
+   "text": "And most pauses end in Go right away. That's good for people, product and the line.",
+   "words": [
+    [
+     "and",
+     457.734
+    ],
+    [
+     "most",
+     458.003
+    ],
+    [
+     "pauses",
+     458.338
+    ],
+    [
+     "end",
+     458.808
+    ],
+    [
+     "in",
+     459.076
+    ],
+    [
+     "go",
+     459.278
+    ],
+    [
+     "right",
+     459.479
+    ],
+    [
+     "away",
+     459.882
+    ],
+    [
+     "that's",
+     460.904
+    ],
+    [
+     "good",
+     461.275
+    ],
+    [
+     "for",
+     461.539
+    ],
+    [
+     "people",
+     461.751
+    ],
+    [
+     "product",
+     462.424
+    ],
+    [
+     "and",
+     462.907
+    ],
+    [
+     "the",
+     463.149
+    ],
+    [
+     "line",
+     463.39
+    ]
+   ]
   },
   {
    "id": "s14-1",
    "scene": "what-makes-it-work",
-   "start": 447.264,
-   "end": 454.82,
-   "text": "Anyone can stop a job, staff or contractor, even on a late batch. No punishment, no blame."
+   "start": 465.852,
+   "end": 473.408,
+   "text": "Anyone can stop a job, staff or contractor, even on a late batch. No punishment, no blame.",
+   "words": [
+    [
+     "anyone",
+     465.852
+    ],
+    [
+     "can",
+     466.394
+    ],
+    [
+     "stop",
+     466.704
+    ],
+    [
+     "a",
+     467.091
+    ],
+    [
+     "job",
+     467.246
+    ],
+    [
+     "staff",
+     467.772
+    ],
+    [
+     "or",
+     468.195
+    ],
+    [
+     "contractor",
+     468.407
+    ],
+    [
+     "even",
+     469.572
+    ],
+    [
+     "on",
+     469.857
+    ],
+    [
+     "a",
+     470.027
+    ],
+    [
+     "late",
+     470.141
+    ],
+    [
+     "batch",
+     470.425
+    ],
+    [
+     "no",
+     471.452
+    ],
+    [
+     "punishment",
+     471.687
+    ],
+    [
+     "no",
+     472.626
+    ],
+    [
+     "blame",
+     472.86
+    ]
+   ]
   },
   {
    "id": "s14-2",
    "scene": "what-makes-it-work",
-   "start": 455.42,
-   "end": 461.571,
-   "text": "Leaders come quickly and thank you. They fix the cause and tell you what changed."
+   "start": 474.608,
+   "end": 480.548,
+   "text": "When you stop, leaders come quickly and thank you, fix the cause and tell you what changed.",
+   "words": [
+    [
+     "when",
+     474.608
+    ],
+    [
+     "you",
+     474.874
+    ],
+    [
+     "stop",
+     475.088
+    ],
+    [
+     "leaders",
+     475.618
+    ],
+    [
+     "come",
+     476.053
+    ],
+    [
+     "quickly",
+     476.325
+    ],
+    [
+     "and",
+     476.761
+    ],
+    [
+     "thank",
+     476.979
+    ],
+    [
+     "you",
+     477.305
+    ],
+    [
+     "fix",
+     478.008
+    ],
+    [
+     "the",
+     478.255
+    ],
+    [
+     "cause",
+     478.503
+    ],
+    [
+     "and",
+     478.875
+    ],
+    [
+     "tell",
+     479.123
+    ],
+    [
+     "you",
+     479.433
+    ],
+    [
+     "what",
+     479.68
+    ],
+    [
+     "changed",
+     479.99
+    ]
+   ]
   },
   {
    "id": "s14-3",
    "scene": "what-makes-it-work",
-   "start": 462.171,
-   "end": 466.581,
-   "text": "The pause is not a form. Report what you caught the usual way."
+   "start": 481.148,
+   "end": 485.732,
+   "text": "The pause isn't a form. Just report what you caught the usual way.",
+   "words": [
+    [
+     "the",
+     481.148
+    ],
+    [
+     "pause",
+     481.421
+    ],
+    [
+     "isn't",
+     481.831
+    ],
+    [
+     "a",
+     482.241
+    ],
+    [
+     "form",
+     482.378
+    ],
+    [
+     "just",
+     483.258
+    ],
+    [
+     "report",
+     483.545
+    ],
+    [
+     "what",
+     483.948
+    ],
+    [
+     "you",
+     484.236
+    ],
+    [
+     "caught",
+     484.466
+    ],
+    [
+     "the",
+     484.869
+    ],
+    [
+     "usual",
+     485.099
+    ],
+    [
+     "way",
+     485.444
+    ]
+   ]
   },
   {
    "id": "s15-1",
    "scene": "close-recap",
-   "start": 467.981,
-   "end": 475.745,
-   "text": "Before you start, and after any break, handover, interruption or change: stop and look."
+   "start": 487.132,
+   "end": 493.708,
+   "text": "So, before you start, and after any break, handover, interruption or change: stop and look.",
+   "words": [
+    [
+     "so",
+     487.132
+    ],
+    [
+     "before",
+     487.367
+    ],
+    [
+     "you",
+     487.777
+    ],
+    [
+     "start",
+     488.012
+    ],
+    [
+     "and",
+     488.612
+    ],
+    [
+     "after",
+     488.797
+    ],
+    [
+     "any",
+     489.074
+    ],
+    [
+     "break",
+     489.259
+    ],
+    [
+     "handover",
+     489.712
+    ],
+    [
+     "interruption",
+     490.406
+    ],
+    [
+     "or",
+     491.309
+    ],
+    [
+     "change",
+     491.517
+    ],
+    [
+     "stop",
+     492.592
+    ],
+    [
+     "and",
+     492.964
+    ],
+    [
+     "look",
+     493.262
+    ]
+   ]
   },
   {
    "id": "s15-2",
    "scene": "close-recap",
-   "start": 476.085,
-   "end": 479.53,
-   "text": "Ask: What's different? What could hurt us?"
+   "start": 494.048,
+   "end": 496.69,
+   "text": "Ask: What's different? What could hurt us?",
+   "words": [
+    [
+     "ask",
+     494.048
+    ],
+    [
+     "what's",
+     494.352
+    ],
+    [
+     "different",
+     494.778
+    ],
+    [
+     "what",
+     495.718
+    ],
+    [
+     "could",
+     495.961
+    ],
+    [
+     "hurt",
+     496.253
+    ],
+    [
+     "us",
+     496.496
+    ]
+   ]
   },
   {
    "id": "s15-3",
    "scene": "close-recap",
-   "start": 479.87,
-   "end": 482.789,
-   "text": "Checked or assumed? What if it goes wrong?"
+   "start": 496.94,
+   "end": 499.891,
+   "text": "Checked or assumed? What if it goes wrong?",
+   "words": [
+    [
+     "checked",
+     496.94
+    ],
+    [
+     "or",
+     497.5
+    ],
+    [
+     "assumed",
+     497.71
+    ],
+    [
+     "what",
+     498.71
+    ],
+    [
+     "if",
+     498.967
+    ],
+    [
+     "it",
+     499.121
+    ],
+    [
+     "goes",
+     499.275
+    ],
+    [
+     "wrong",
+     499.531
+    ]
+   ]
   },
   {
    "id": "s15-4",
    "scene": "close-recap",
-   "start": 483.289,
-   "end": 492.483,
-   "text": "Decide: Go, fix it, or stop and get help. Fix it only if trained, authorized and in procedure."
+   "start": 500.391,
+   "end": 504.758,
+   "text": "Decide: Go, Fix it, or Stop & get help.",
+   "words": [
+    [
+     "decide",
+     500.391
+    ],
+    [
+     "go",
+     501.451
+    ],
+    [
+     "fix",
+     502.151
+    ],
+    [
+     "it",
+     502.541
+    ],
+    [
+     "or",
+     503.191
+    ],
+    [
+     "stop",
+     503.426
+    ],
+    [
+     "",
+     503.817
+    ],
+    [
+     "get",
+     503.974
+    ],
+    [
+     "help",
+     504.288
+    ]
+   ]
   },
   {
    "id": "s15-5",
    "scene": "close-recap",
-   "start": 493.183,
-   "end": 495.991,
-   "text": "Two minutes. Line clearance for people."
+   "start": 505.158,
+   "end": 510.515,
+   "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
+   "words": [
+    [
+     "fix",
+     505.158
+    ],
+    [
+     "it",
+     505.42
+    ],
+    [
+     "only",
+     505.616
+    ],
+    [
+     "if",
+     505.943
+    ],
+    [
+     "you're",
+     506.139
+    ],
+    [
+     "trained",
+     506.597
+    ],
+    [
+     "and",
+     507.121
+    ],
+    [
+     "authorized",
+     507.383
+    ],
+    [
+     "and",
+     508.618
+    ],
+    [
+     "it's",
+     508.835
+    ],
+    [
+     "a",
+     509.106
+    ],
+    [
+     "step",
+     509.214
+    ],
+    [
+     "in",
+     509.485
+    ],
+    [
+     "your",
+     509.648
+    ],
+    [
+     "procedure",
+     509.919
+    ]
+   ]
   },
   {
    "id": "s15-6",
    "scene": "close-recap",
-   "start": 498.591,
-   "end": 503.651,
-   "text": "Find out who to call for help: days, nights and weekends."
+   "start": 511.215,
+   "end": 516.526,
+   "text": "When in doubt, get help. That's the 2-minute rule: line clearance for people.",
+   "words": [
+    [
+     "when",
+     511.215
+    ],
+    [
+     "in",
+     511.629
+    ],
+    [
+     "doubt",
+     511.877
+    ],
+    [
+     "get",
+     512.535
+    ],
+    [
+     "help",
+     512.551
+    ],
+    [
+     "that's",
+     512.975
+    ],
+    [
+     "the",
+     513.36
+    ],
+    [
+     "2-minute",
+     513.58
+    ],
+    [
+     "rule",
+     514.075
+    ],
+    [
+     "line",
+     514.765
+    ],
+    [
+     "clearance",
+     515.091
+    ],
+    [
+     "for",
+     515.743
+    ],
+    [
+     "people",
+     516.004
+    ]
+   ]
   },
   {
    "id": "s15-7",
    "scene": "close-recap",
-   "start": 507.251,
-   "end": 512.454,
-   "text": "Follow your site's procedures. This video is awareness training only."
+   "start": 519.126,
+   "end": 523.144,
+   "text": "Find out who to call for help: days, nights and weekends.",
+   "words": [
+    [
+     "find",
+     519.126
+    ],
+    [
+     "out",
+     519.373
+    ],
+    [
+     "who",
+     519.57
+    ],
+    [
+     "to",
+     519.767
+    ],
+    [
+     "call",
+     519.915
+    ],
+    [
+     "for",
+     520.162
+    ],
+    [
+     "help",
+     520.36
+    ],
+    [
+     "days",
+     521.136
+    ],
+    [
+     "nights",
+     521.766
+    ],
+    [
+     "and",
+     522.225
+    ],
+    [
+     "weekends",
+     522.488
+    ]
+   ]
+  },
+  {
+   "id": "s15-8",
+   "scene": "close-recap",
+   "start": 526.744,
+   "end": 531.947,
+   "text": "Follow your site's procedures. This video is awareness training only.",
+   "words": [
+    [
+     "follow",
+     526.744
+    ],
+    [
+     "your",
+     527.171
+    ],
+    [
+     "site's",
+     527.475
+    ],
+    [
+     "procedures",
+     527.902
+    ],
+    [
+     "this",
+     529.144
+    ],
+    [
+     "video",
+     529.503
+    ],
+    [
+     "is",
+     529.935
+    ],
+    [
+     "awareness",
+     530.15
+    ],
+    [
+     "training",
+     530.869
+    ],
+    [
+     "only",
+     531.516
+    ]
+   ]
   }
  ],
- "duration": 517.194
+ "duration": 536.687
 }

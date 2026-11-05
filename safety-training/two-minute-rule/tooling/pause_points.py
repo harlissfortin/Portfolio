@@ -9,8 +9,8 @@ rows = ["| Chapter | Starts | Hold 1: “What would make you stop here?” | Hol
 for sc in t["scenes"]:
     if not sc["id"].startswith("save-"): continue
     cs = [c for c in t["cues"] if c["scene"] == sc["id"]]
-    h1 = next(c for c in cs if c["text"].startswith("What would make you stop here"))
-    h2 = next(c for c in cs if c["text"] == "Your call?")
+    # the two prediction holds are the only cues in a save followed by a pause of 2.4 s or more
+    h1, h2 = [c for c in cs if pace.get(c["id"], {}).get("after", 0) >= 2.4][:2]
     end = lambda c: c["end"] + pace.get(c["id"], {}).get("after", 0.34)
     rows.append(f"| {sc['chapter']} | {f(sc['start'])} | {f(h1['start'])} (holds to {f(end(h1))}) | {f(h2['start'])} (holds to {f(end(h2))}) |")
 other = " · ".join(f"{sc['chapter'] or 'Intro'} {f(sc['start'])}" for sc in t["scenes"] if not sc["id"].startswith("save-"))

@@ -11,13 +11,13 @@
     },
     {
      "id": "s1-2",
-     "text": "You know the job. Before your hands move, give it two minutes.",
+     "text": "You know these jobs. But today, something might be different.",
      "after": 0.6
     },
     {
      "id": "s1-3",
-     "text": "That's the 2-minute rule.",
-     "tts": "That's the two-minute rule."
+     "text": "So before your hands move, give it two minutes. That's the 2-minute rule.",
+     "tts": "So before your hands move, give it two minutes. That's the two-minute rule."
     }
    ],
    "pre": 0.6,
@@ -29,18 +29,15 @@
    "cues": [
     {
      "id": "s2-1",
-     "text": "It's a short pause, on purpose, at the point of work: where you do the job.",
-     "tts": "It's a short pause, | on purpose, | at the point of work: | where you do the job."
+     "text": "It's a short pause you take on purpose, at the point of work, where you do the job."
     },
     {
      "id": "s2-2",
-     "text": "Do it before you start, and again after any break, handover, interruption or change.",
-     "tts": "Do it before you start, | and again after any break, | handover, | interruption, | or change."
+     "text": "Do it before you start, and again after any break, handover, interruption or change."
     },
     {
      "id": "s2-3",
-     "text": "Two minutes is a guide, not an exact time. What matters is the pause.",
-     "tts": "Two minutes is a guide, | not an exact time. | What matters is the pause."
+     "text": "Two minutes is a guide, not an exact time. What matters is the pause."
     }
    ],
    "post": 0.5
@@ -51,7 +48,7 @@
    "cues": [
     {
      "id": "s3-1",
-     "text": "You already do this for product: line clearance, right before each run.",
+     "text": "You already do line clearance for product, right before each run.",
      "after": 0.9
     },
     {
@@ -61,12 +58,11 @@
     },
     {
      "id": "s3-3",
-     "text": "It adds to your procedures, permits and lockout. It never replaces them.",
-     "tts": "It adds to your procedures, | permits | and lockout. | It never replaces them."
+     "text": "It adds to your procedures, permits and lockout. It never replaces them."
     },
     {
      "id": "s3-4",
-     "text": "It catches what the plan missed, because you're there."
+     "text": "But you're the one at the job, so you can see what the plan missed."
     }
    ],
    "post": 0.6
@@ -77,48 +73,46 @@
    "cues": [
     {
      "id": "s4-1",
-     "text": "Stop: hands off."
+     "text": "Here's how. Stop: hands off."
     },
     {
      "id": "s4-2",
-     "text": "Look: around the job, and compare it with the plan.",
-     "tts": "Look: | around the job, | and compare it with the plan."
+     "text": "Look: around the job, and compare it with the plan."
     },
     {
      "id": "s4-3",
-     "text": "Ask four questions: What's different? What could hurt us?",
-     "tts": "Ask four questions: | What's different? | What could hurt us?"
+     "text": "Ask yourself four questions: What's different? What could hurt us?",
+     "after": 0.25
     },
     {
      "id": "s4-4",
      "text": "Checked or assumed? What if it goes wrong?",
-     "tts": "Checked or assumed? | What if it goes wrong?"
+     "after": 0.5
     },
     {
      "id": "s4-5",
-     "text": "Checked or assumed? It means: did you look or test it yourself, or are you guessing?",
-     "tts": "Checked or assumed? | It means: | did you look or test it yourself, | or are you guessing?"
+     "text": "“Checked or assumed” means: did you look or test it yourself, or are you guessing?",
+     "tts": "Checked or assumed means: did you look or test it yourself, or are you guessing?"
     },
     {
      "id": "s4-6",
-     "text": "Decide: Go, fix it, or stop and get help.",
-     "tts": "Decide: | Go, | fix it, | or stop and get help.",
+     "text": "Then decide: make one of three calls. Go, Fix it, or Stop & get help.",
+     "tts": "Then decide: make one of three calls. Go, | fix it, | or stop and get help.",
      "after": 0.9
     },
     {
      "id": "s4-7",
-     "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
-     "tts": "Fix it only if you're trained and authorized, | and it's a step in your procedure."
+     "text": "Fix it only if you're trained and authorized, and it's a step in your procedure."
     },
     {
      "id": "s4-8",
-     "text": "No permit yet? Someone else's unfinished work? Not authorized? Stop and get help.",
-     "tts": "No permit yet? | Someone else's unfinished work? | Not authorized? | Stop and get help."
+     "text": "No permit yet? Someone else's unfinished work? Not authorized? Stop & get help.",
+     "tts": "No permit yet? Someone else's unfinished work? Not authorized? Stop and get help."
     },
     {
      "id": "s4-9",
-     "text": "Not sure, or the fix doesn't work? Stop and get help.",
-     "tts": "Not sure, | or the fix doesn't work? | Stop and get help.",
+     "text": "Not sure, or the fix doesn't work? Stop & get help.",
+     "tts": "Not sure, or the fix doesn't work? Stop and get help.",
      "after": 0.9
     }
    ],
@@ -130,31 +124,29 @@
    "cues": [
     {
      "id": "s5-1",
-     "text": "First, a routine pause: you're about to clean a weighing booth."
+     "text": "Let's try it on a routine job: you're about to clean a weighing booth."
     },
     {
      "id": "s5-2",
-     "text": "What's different? Nothing. What could hurt us? Leftover powder and the cleaning chemical.",
-     "tts": "What's different? Nothing. | What could hurt us? | Leftover powder, | and the cleaning chemical."
+     "text": "What's different? Nothing. What could hurt us? Leftover powder and the cleaning chemical."
     },
     {
      "id": "s5-3",
-     "text": "Gloves and goggles: on. Checked or assumed? Checked: the airflow light is green.",
-     "tts": "Gloves and goggles: on. | Checked or assumed? Checked: the airflow light is green."
+     "text": "Gloves and goggles are on. Checked or assumed? Checked: the airflow light is green."
     },
     {
      "id": "s5-4",
-     "text": "What if it goes wrong? The spill kit is right there.",
+     "text": "What if it goes wrong? The spill kit is right there. Your call?",
      "after": 2.6
     },
     {
      "id": "s5-5",
-     "text": "Go. That took a few seconds.",
-     "after": 0.7
+     "text": "Go. That took just a few seconds.",
+     "after": 0.4
     }
    ],
    "pre": 0.4,
-   "post": 0.8
+   "post": 0.6
   },
   {
    "id": "six-saves",
@@ -167,8 +159,7 @@
     },
     {
      "id": "s6-2",
-     "text": "Sometimes a question catches a problem. That's a save. Here are six.",
-     "tts": "Sometimes a question catches a problem. | That's a save. | Here are six."
+     "text": "But sometimes a question catches a problem. That's a save. Here are six."
     },
     {
      "id": "s6-3",
@@ -177,8 +168,7 @@
     },
     {
      "id": "s6-4",
-     "text": "In each save, the video waits. Find the problem and pick your call, before we show it.",
-     "tts": "In each save, | the video waits. | Find the problem | and pick your call, | before we show it.",
+     "text": "In each save, the video asks you twice: find the problem, then pick your call.",
      "after": 0.6
     }
    ],
@@ -190,7 +180,8 @@
    "cues": [
     {
      "id": "s7-1",
-     "text": "Save one: you take over a tablet press at handover."
+     "text": "Save one: you take over a tablet press at handover.",
+     "after": 0.6
     },
     {
      "id": "s7-2",
@@ -199,12 +190,11 @@
     },
     {
      "id": "s7-3",
-     "text": "What's different? The note says the last shift started a tooling change."
+     "text": "What's different? The handover note says the last shift started a tooling change."
     },
     {
      "id": "s7-4",
-     "text": "Guard open. Tooling half in. No lock on the power switch.",
-     "tts": "Guard open. | Tooling half in. | No lock on the power switch.",
+     "text": "The guard is open, the tooling is half in, and there's no lock on the power switch.",
      "after": 0.7
     },
     {
@@ -214,23 +204,23 @@
     },
     {
      "id": "s7-6",
-     "text": "Stop and get help, because it's someone else's unfinished work.",
+     "text": "Stop & get help. It's someone else's unfinished work.",
+     "tts": "Stop and get help. It's someone else's unfinished work.",
      "after": 0.5
     },
     {
      "id": "s7-7",
-     "text": "Your lead comes, thanks you, and checks with the last shift."
+     "text": "Your lead comes over, thanks you, and checks with the last shift."
     },
     {
      "id": "s7-8",
      "text": "An authorized press setter locks out, tries START, then finishes and counts the tooling.",
-     "tts": "An authorized press setter locks out, | tries start, | then finishes and counts the tooling.",
+     "tts": "An authorized press setter locks out, tries start, then finishes and counts the tooling.",
      "after": 0.6
     },
     {
      "id": "s7-9",
      "text": "Guard closed, area clear, setter's lock removed, interlock tested. Then Go.",
-     "tts": "Guard closed, | area clear, | setter's lock removed, | interlock tested. | Then Go.",
      "after": 0.5
     },
     {
@@ -239,7 +229,7 @@
     }
    ],
    "pre": 1.4,
-   "post": 0.9
+   "post": 0.6
   },
   {
    "id": "save-2-powder-charge",
@@ -247,42 +237,40 @@
    "cues": [
     {
      "id": "s8-1",
-     "text": "Save two: you add powder to a reactor that holds flammable solvent."
+     "text": "Save two: you add powder from a drum to a reactor that holds flammable solvent."
     },
     {
      "id": "s8-2",
-     "text": "It's inerted: filled with nitrogen to keep the oxygen out."
+     "text": "It's inerted: filled with nitrogen to keep the oxygen out.",
+     "after": 0.6
     },
     {
      "id": "s8-3",
-     "text": "What would make you stop here?",
+     "text": "Before you start, what would make you stop here?",
      "after": 3.0
     },
     {
      "id": "s8-4",
-     "text": "What could hurt us? A static spark at the open manway, with solvent vapor.",
-     "tts": "What could hurt us? | A static spark at the open manway, | with solvent vapor."
+     "text": "What could hurt us? A static spark at the open manway, where there's solvent vapor."
     },
     {
      "id": "s8-5",
-     "text": "Checked or assumed? Oxygen is below the limit. But the grounding indicator is red.",
-     "tts": "Checked or assumed? | Oxygen is below the limit. | But the grounding indicator is red.",
+     "text": "Checked or assumed? The oxygen is below the limit, but the grounding indicator is red.",
      "after": 0.7
     },
     {
      "id": "s8-6",
-     "text": "Your call?",
+     "text": "What's your call?",
      "after": 2.4
     },
     {
      "id": "s8-7",
-     "text": "Fix it: your procedure lets you clip the grounding clamp onto the drum.",
+     "text": "Fix it. It's a step in your procedure: clip the grounding clamp onto the drum.",
      "after": 0.5
     },
     {
      "id": "s8-8",
-     "text": "The indicator turns green, and the drum liner is static-safe. Then Go.",
-     "tts": "The indicator turns green, | and the drum liner is static-safe. | Then Go.",
+     "text": "The indicator turns green, and the drum liner is static-safe. Now it's Go.",
      "after": 0.6
     },
     {
@@ -291,7 +279,7 @@
     }
    ],
    "pre": 1.4,
-   "post": 0.9
+   "post": 0.6
   },
   {
    "id": "save-3-inerted-vessel",
@@ -299,26 +287,25 @@
    "cues": [
     {
      "id": "s9-1",
-     "text": "Save three: you're a contractor. At a product change, you'll open a dryer full of nitrogen.",
-     "tts": "Save three: | you're a contractor. | At a product change, | you'll open a dryer full of nitrogen."
+     "text": "Save three: a product change. As a contractor, you'll open a filter dryer full of nitrogen.",
+     "after": 0.6
     },
     {
      "id": "s9-2",
-     "text": "What would make you stop here?",
+     "text": "So, what would make you stop here?",
      "after": 3.0
     },
     {
      "id": "s9-3",
-     "text": "What could hurt us? Low-oxygen air inside. Nitrogen has no color or smell."
+     "text": "What could hurt us? Low-oxygen air inside. You can't see it or smell it."
     },
     {
      "id": "s9-4",
-     "text": "Checked or assumed? Is the nitrogen line closed with a solid plate, and the air inside tested?",
-     "tts": "Checked or assumed? | Is the nitrogen line closed with a solid plate, | and the air inside tested?"
+     "text": "Checked or assumed? Is the nitrogen line closed with a solid plate, and the air inside tested?"
     },
     {
      "id": "s9-5",
-     "text": "No test, no permit yet.",
+     "text": "Not yet, and no permit yet.",
      "after": 0.7
     },
     {
@@ -328,18 +315,19 @@
     },
     {
      "id": "s9-7",
-     "text": "Stop and get help, because opening it needs a gas test and a permit.",
+     "text": "Stop & get help: opening it needs a gas test and a permit.",
+     "tts": "Stop and get help: opening it needs a gas test and a permit.",
      "after": 0.5
     },
     {
      "id": "s9-8",
-     "text": "An authorized team isolates, tests, ventilates and retests. The permit is issued. Then Go.",
-     "tts": "An authorized team isolates, | tests, | ventilates, | and retests. | The permit is issued. | Then Go.",
+     "text": "An authorized team isolates, tests, ventilates and retests. Once the permit is issued, it's Go.",
      "after": 0.8
     },
     {
      "id": "s9-9",
-     "text": "No permit, no Go."
+     "text": "No permit, no Go.",
+     "after": 0.5
     },
     {
      "id": "s9-10",
@@ -347,7 +335,7 @@
     }
    ],
    "pre": 1.4,
-   "post": 0.9
+   "post": 0.6
   },
   {
    "id": "save-4-blister-jam",
@@ -355,51 +343,50 @@
    "cues": [
     {
      "id": "s10-1",
-     "text": "Save four: a blister packer jams where your jam tool can't reach.",
+     "text": "Save four: an interruption. The blister packer jams where your jam tool can't reach.",
      "after": 0.5
     },
     {
      "id": "s10-2",
-     "text": "Stopped isn't the same as isolated."
+     "text": "It's stopped, but stopped isn't the same as isolated."
     },
     {
      "id": "s10-3",
-     "text": "You lock out power and air.",
-     "after": 0.4
+     "text": "So you lock out power and air.",
+     "after": 0.6
     },
     {
      "id": "s10-4",
-     "text": "What would make you stop here?",
+     "text": "Now, what would make you stop here?",
      "after": 3.0
     },
     {
      "id": "s10-5",
      "text": "Checked or assumed? The gauge still shows trapped air.",
-     "tts": "Checked or assumed? | The gauge still shows trapped air.",
      "after": 0.7
     },
     {
      "id": "s10-6",
-     "text": "Your call?",
+     "text": "What's your call?",
      "after": 2.4
     },
     {
      "id": "s10-7",
-     "text": "Fix it: your procedure lets you bleed the air, with your own lock on."
+     "text": "Fix it. Your procedure lets you bleed off the trapped air, with your own lock still on."
     },
     {
      "id": "s10-8",
-     "text": "Bleed to zero and try START. Nothing moves. Then Go.",
-     "tts": "Bleed to zero, | and try start. | Nothing moves. | Then Go.",
+     "text": "Bleed to zero and try START. Nothing moves, so it's Go.",
+     "tts": "Bleed to zero and try start. Nothing moves, so it's Go.",
      "after": 0.6
     },
     {
      "id": "s10-9",
-     "text": "Your hand stays out of a machine that still had stored energy."
+     "text": "Your hand never goes into a machine that still has stored energy."
     }
    ],
    "pre": 1.4,
-   "post": 0.9
+   "post": 0.6
   },
   {
    "id": "save-5-isolator",
@@ -407,11 +394,12 @@
    "cues": [
     {
      "id": "s11-1",
-     "text": "Save five: after a break, you weigh a potent active ingredient at an isolator."
+     "text": "Save five: after a break, you weigh a potent active ingredient at an isolator.",
+     "after": 0.6
     },
     {
      "id": "s11-2",
-     "text": "What would make you stop here?",
+     "text": "Look closely. What would make you stop here?",
      "after": 3.0
     },
     {
@@ -421,7 +409,7 @@
     },
     {
      "id": "s11-4",
-     "text": "Checked or assumed? You check each glove. One has a cut.",
+     "text": "Checked or assumed? You check each glove, and one has a cut.",
      "after": 0.7
     },
     {
@@ -431,8 +419,8 @@
     },
     {
      "id": "s11-6",
-     "text": "Stop and get help, because a cut glove is a break in the barrier. Your lead and QA must know.",
-     "tts": "Stop and get help, | because a cut glove is a break in the barrier. | Your lead and Q A must know.",
+     "text": "Stop & get help, because a cut glove is a break in the barrier. Your lead and QA must know.",
+     "tts": "Stop and get help, because a cut glove is a break in the barrier. Your lead and QA must know.",
      "after": 0.5
     },
     {
@@ -442,12 +430,11 @@
     },
     {
      "id": "s11-8",
-     "text": "That powder is strong, even in tiny amounts. It stays inside the isolator.",
-     "tts": "That powder is strong, | even in tiny amounts. | It stays inside the isolator."
+     "text": "That powder is strong, even in tiny amounts. It stays inside the isolator."
     }
    ],
    "pre": 1.4,
-   "post": 0.9
+   "post": 0.6
   },
   {
    "id": "save-6-cip-line-break",
@@ -455,17 +442,16 @@
    "cues": [
     {
      "id": "s12-1",
-     "text": "Save six: you're about to open a pipe at the transfer panel. That's a line break.",
-     "tts": "Save six: | you're about to open a pipe at the transfer panel. | That's a line break."
+     "text": "Save six: you have a permit to open a pipe at the transfer panel. That's a line break."
     },
     {
      "id": "s12-2",
      "text": "The CIP screen says the cleaning cycle is complete.",
-     "tts": "The C I P screen says | the cleaning cycle is complete."
+     "after": 0.6
     },
     {
      "id": "s12-3",
-     "text": "What would make you stop here?",
+     "text": "Your turn. What would make you stop here?",
      "after": 3.0
     },
     {
@@ -476,7 +462,6 @@
     {
      "id": "s12-5",
      "text": "You lock out the supply valve and the pump, step to the side, and check the gauge.",
-     "tts": "You lock out the supply valve and the pump, | step to the side, | and check the gauge.",
      "after": 0.5
     },
     {
@@ -486,23 +471,21 @@
     },
     {
      "id": "s12-7",
-     "text": "Your call?",
+     "text": "So, what's your call?",
      "after": 2.4
     },
     {
      "id": "s12-8",
      "text": "Fix it. Your line-break procedure says: wait, vent, check for zero pressure and a cool line.",
-     "tts": "Fix it. | Your line-break procedure says: | wait, | vent, | check for zero pressure | and a cool line.",
      "after": 1.2
     },
     {
      "id": "s12-9",
-     "text": "Then Go. The screen reports the cycle. The gauge reports your line.",
-     "tts": "Then Go. | The screen reports the cycle. | The gauge reports your line."
+     "text": "Then Go. The screen reports the cycle. The gauge reports your line."
     },
     {
      "id": "s12-10",
-     "text": "No spray of hot cleaning chemical or steam."
+     "text": "No one gets sprayed with hot cleaning chemical or steam."
     }
    ],
    "pre": 1.4,
@@ -514,11 +497,17 @@
    "cues": [
     {
      "id": "s13-1",
-     "text": "Three fixes, three calls for help. All six end in Go, once it's safe.",
+     "text": "Three saves were Fix it, and three were Stop & get help. All six end in Go, once it's safe.",
+     "tts": "Three saves were Fix it, and three were Stop and get help. All six end in Go, once it's safe.",
+     "after": 0.6
+    },
+    {
+     "id": "s13-2",
+     "text": "And most pauses end in Go right away. That's good for people, product and the line.",
      "after": 0.2
     }
    ],
-   "post": 3.0
+   "post": 1.6
   },
   {
    "id": "what-makes-it-work",
@@ -527,17 +516,16 @@
     {
      "id": "s14-1",
      "text": "Anyone can stop a job, staff or contractor, even on a late batch. No punishment, no blame.",
-     "after": 0.6
+     "after": 1.2
     },
     {
      "id": "s14-2",
-     "text": "Leaders come quickly and thank you. They fix the cause and tell you what changed.",
-     "tts": "Leaders come quickly | and thank you. | They fix the cause | and tell you what changed.",
+     "text": "When you stop, leaders come quickly and thank you, fix the cause and tell you what changed.",
      "after": 0.6
     },
     {
      "id": "s14-3",
-     "text": "The pause is not a form. Report what you caught the usual way.",
+     "text": "The pause isn't a form. Just report what you caught the usual way.",
      "after": 0.6
     }
    ],
@@ -550,39 +538,42 @@
    "cues": [
     {
      "id": "s15-1",
-     "text": "Before you start, and after any break, handover, interruption or change: stop and look.",
-     "tts": "Before you start, | and after any break, | handover, | interruption, | or change: | stop and look."
+     "text": "So, before you start, and after any break, handover, interruption or change: stop and look."
     },
     {
      "id": "s15-2",
      "text": "Ask: What's different? What could hurt us?",
-     "tts": "Ask: | What's different? | What could hurt us?"
+     "after": 0.25
     },
     {
      "id": "s15-3",
      "text": "Checked or assumed? What if it goes wrong?",
-     "tts": "Checked or assumed? | What if it goes wrong?",
      "after": 0.5
     },
     {
      "id": "s15-4",
-     "text": "Decide: Go, fix it, or stop and get help. Fix it only if trained, authorized and in procedure.",
-     "tts": "Decide: | Go, | fix it, | or stop and get help. | Fix it only if trained, | authorized, | and in procedure.",
-     "after": 0.7
+     "text": "Decide: Go, Fix it, or Stop & get help.",
+     "tts": "Decide: Go, | fix it, | or stop and get help.",
+     "after": 0.4
     },
     {
      "id": "s15-5",
-     "text": "Two minutes. Line clearance for people.",
-     "after": 2.6
+     "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
+     "after": 0.7
     },
     {
      "id": "s15-6",
-     "text": "Find out who to call for help: days, nights and weekends.",
-     "tts": "Find out who to call for help: | days, | nights | and weekends.",
-     "after": 3.6
+     "text": "When in doubt, get help. That's the 2-minute rule: line clearance for people.",
+     "tts": "When in doubt, get help. That's the two-minute rule: line clearance for people.",
+     "after": 2.6
     },
     {
      "id": "s15-7",
+     "text": "Find out who to call for help: days, nights and weekends.",
+     "after": 3.6
+    },
+    {
+     "id": "s15-8",
      "text": "Follow your site's procedures. This video is awareness training only."
     }
    ],

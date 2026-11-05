@@ -11,20 +11,20 @@ Scene plan and narration. Cue ids match `captions.vtt`, `source/timing.json` and
 | Cue | Narration | On screen |
 |---|---|---|
 | `s1-1` | A jam to clear, a line to break, a vessel to open. | Clear a jam · Break a line · Open a vessel |
-| `s1-2` | You know the job. Before your hands move, give it two minutes. | Two minutes |
-| `s1-3` | That's the 2-minute rule. | The 2-Minute Rule / Six saves on a pharma floor |
+| `s1-2` | You know these jobs. But today, something might be different. | Clear a jam · Break a line · Open a vessel (dimmed) · A figure appears |
+| `s1-3` | So before your hands move, give it two minutes. That's the 2-minute rule. | Hand icon · Two minutes · The 2-Minute Rule / Six saves on a pharma floor |
 
 ## 2. the-rule — The rule
 
 **Purpose.** Define the rule: a short, deliberate pause at the point of work, right before you start and again after any break, handover, interruption or change. Two minutes is a rule of thumb, and what matters is the pause.
 
-**Visual.** (~20 s) Light theme. s2-1: the title 'A pause at the point of work' rises top-left, with an amber pin icon at its left. On 'point', a thin timeline grows left to right across the middle of the stage. s2-2: five markers pop along the line, one per spoken item. Each is a white circle with an amber ring and an amber icon, and its label rises just beneath it: pause icon 'Before you start' at the left end (on 'start'), then clock 'Break', people 'Handover', phone 'Interruption' and gear 'Change'. s2-3: the timeline and markers fade. A large stopwatch pops in at left, its amber ring full and reading '2:00'. On 'guide', the heading 'A guide, not an exact time' rises to its right and the '2:00' digits fade, leaving the empty dial. On 'What matters', the muted line 'The pause is what matters' rises beneath the heading. The title stays at the top throughout.
+**Visual.** (~20 s) Light theme. s2-1: the title 'A pause at the point of work' rises top-left, with an amber pin icon at its left. On 'point', a thin timeline grows left to right across the middle of the stage. s2-2: five markers pop along the line, one per spoken item. Each is a white circle with an amber ring and an amber icon, and its label rises just beneath it: pause icon 'Before you start' at the left end (on 'start'), then clock 'Break', people 'Handover', phone 'Interruption' and gear 'Change'. s2-3: the timeline and markers fade. A large stopwatch pops in at left, its amber ring full and reading '2:00'. On 'guide', the heading 'A guide, not an exact time' rises to its right and the '2:00' digits fade, leaving the empty dial. On 'What matters', the muted line 'What matters is the pause' rises beneath the heading. The title stays at the top throughout.
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s2-1` | It's a short pause, on purpose, at the point of work: where you do the job. | A pause at the point of work |
+| `s2-1` | It's a short pause you take on purpose, at the point of work, where you do the job. | A pause at the point of work |
 | `s2-2` | Do it before you start, and again after any break, handover, interruption or change. | Before you start · Break · Handover · Interruption · Change |
-| `s2-3` | Two minutes is a guide, not an exact time. What matters is the pause. | A guide, not an exact time · The pause is what matters |
+| `s2-3` | Two minutes is a guide, not an exact time. What matters is the pause. | A guide, not an exact time · What matters is the pause |
 
 ## 3. line-clearance — Line clearance for people
 
@@ -34,42 +34,42 @@ Scene plan and narration. Cue ids match `captions.vtt`, `source/timing.json` and
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s3-1` | You already do this for product: line clearance, right before each run. | Line clearance: product · 21 CFR 211.130(e) · Inspected right before use |
+| `s3-1` | You already do line clearance for product, right before each run. | Line clearance: product · 21 CFR 211.130(e) · Inspected right before use |
 | `s3-2` | The 2-minute rule is line clearance for people. | Line clearance for people |
 | `s3-3` | It adds to your procedures, permits and lockout. It never replaces them. | Procedures · Permits · Lockout · Guards & interlocks · Adds to. Never replaces. |
-| `s3-4` | It catches what the plan missed, because you're there. | You see what plans miss |
+| `s3-4` | But you're the one at the job, so you can see what the plan missed. | You see what plans miss |
 
 ## 4. how-to-run-it — Stop · Look · Ask · Decide
 
 **Purpose.** Teach Stop · Look · Ask · Decide with the four questions and the three decisions, and build the question cards and decision buttons that every save reuses. Define 'Checked or assumed?' once: did you look or test it yourself, or are you guessing? Then set the boundary rule where the decision is defined, as a side-by-side contrast. Fix it only if you are trained and authorized and it is a step in your procedure (e.g. clip on a grounding clamp, or bleed air to zero or vent a line under your own lock). Stop & get help when there is no permit yet, when it is someone else's unfinished work, or when you are not authorized for the repair (e.g. a cut isolator glove, a faulty guard or interlock, opening a vessel). If you are not sure, or the fix doesn't work, Stop & get help.
 
-**Visual.** (~45 s) Light theme. There is no silhouette in this scene. As the scene opens, the STOP, LOOK, ASK and DECIDE tiles drop in, in a row across the top, and each tile lights amber while it is being taught. STOP is already lit as it lands; the other three land unlit. s4-1: STOP (hand icon) is lit, and 'Hands off' rises under it. s4-2: STOP returns to unlit and LOOK (eye icon) lights. On 'around', the two-line label 'Around the job' / 'Compare with the plan' rises under it. s4-3: ASK (question-bubble icon) lights and both labels fade. The question cards pop into a 2 x 2 grid beneath the tiles as each question is spoken: card 1 (blue, document icon) 'What’s different?' and card 2 (violet, warning icon) 'What could hurt us?'. s4-4: card 3 (teal, check-and-question icon) 'Checked or assumed?' and then, on 'What', card 4 (plum, branch icon) 'What if it goes wrong?' pop in below them. s4-5: a line rises under the grid: a teal check-and-question icon, 'Checked or assumed?' in teal, then 'Did you look or test it yourself, or are you guessing?' in dark ink. s4-6: DECIDE (signpost icon) lights and stays lit to the end of the scene. The cards and the line fade, and three buttons pop in a centred row, each on its word: green 'Go', amber 'Fix it' and red 'Stop & get help'. s4-7: just before the line, the buttons fade and a two-column panel takes their place. The left column, with an amber top edge, rises first: a wrench and 'Fix it, only if', then the bullets 'You’re trained and authorized' (on 'trained', with 'and' in bold) and 'It’s a step in your procedure' (on 'step'). Just after 'procedure', the muted example line 'e.g. clip on a grounding clamp · bleed air to zero under your lock · vent a line under your lock' fades in. s4-8: the right column, with a red top edge, rises: a red hand and 'Stop & get help for', then the bullets 'No permit yet' (on 'permit'), 'Someone else’s unfinished work' (on 'Someone') and 'Not authorized for it' (on 'authorized'). On 'help', the muted line 'e.g. a cut isolator glove · a faulty guard or interlock · opening a vessel' fades in. s4-9: under the panel, a centred line rises: 'Not sure, or the fix doesn’t work? Stop & get help.', with 'Stop & get help.' in red. The panel, the tiles and the lit DECIDE tile hold to the end of the scene.
+**Visual.** (~45 s) Light theme. There is no silhouette in this scene. As the scene opens, the STOP, LOOK, ASK and DECIDE tiles drop in, in a row across the top, and each tile lights amber while it is being taught. STOP is already lit as it lands; the other three land unlit. s4-1: STOP (hand icon) is lit, and 'Hands off' rises under it. s4-2: STOP returns to unlit and LOOK (eye icon) lights. On 'around', the two-line label 'Around the job' / 'Compare with the plan' rises under it. s4-3: ASK (question-bubble icon) lights and both labels fade. The question cards pop into a 2 x 2 grid beneath the tiles as each question is spoken: card 1 (blue, document icon) 'What’s different?' and card 2 (violet, warning icon) 'What could hurt us?'. s4-4: card 3 (teal, check-and-question icon) 'Checked or assumed?' and then, on 'What', card 4 (plum, branch icon) 'What if it goes wrong?' pop in below them. s4-5: a line rises under the grid: a teal check-and-question icon, 'Checked or assumed?' in teal, then 'Did you look or test it yourself, or are you guessing?' in dark ink. s4-6: DECIDE (signpost icon) lights and stays lit to the end of the scene. The cards and the line fade, and three buttons pop in a centred row, each on its word: green 'Go', amber 'Fix it' and red 'Stop & get help'. s4-7: just before the line, the buttons fade and a two-column panel takes their place. The left column, with an amber top edge, rises first: a wrench and 'Fix it, only if', then the bullets 'You’re trained and authorized' (on 'trained', with 'and' in bold) and 'It’s a step in your procedure' (on 'step'). Just after 'procedure', the muted example line 'e.g. put on the face shield your procedure lists · clean up a small spill with the spill kit, as your procedure says' fades in. s4-8: the right column, with a red top edge, rises: a red hand and 'Stop & get help for', then the bullets 'No permit yet' (on 'permit'), 'Someone else’s unfinished work' (on 'Someone') and 'Not authorized for it' (on 'authorized'). On 'help', the muted line 'e.g. someone else’s lock on the switch · a guard that won’t close · a hose you’re not trained to change' fades in. s4-9: under the panel, a centred line rises: 'Not sure, or the fix doesn’t work? Stop & get help.', with 'Stop & get help.' in red. The panel, the tiles and the lit DECIDE tile hold to the end of the scene.
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s4-1` | Stop: hands off. | STOP · Hands off |
+| `s4-1` | Here's how. Stop: hands off. | STOP · Hands off |
 | `s4-2` | Look: around the job, and compare it with the plan. | LOOK · Around the job · Compare with the plan |
-| `s4-3` | Ask four questions: What's different? What could hurt us? | ASK · What's different? · What could hurt us? |
+| `s4-3` | Ask yourself four questions: What's different? What could hurt us? | ASK · What's different? · What could hurt us? |
 | `s4-4` | Checked or assumed? What if it goes wrong? | Checked or assumed? · What if it goes wrong? |
-| `s4-5` | Checked or assumed? It means: did you look or test it yourself, or are you guessing? | Checked or assumed? Did you look or test it yourself, or are you guessing? |
-| `s4-6` | Decide: Go, fix it, or stop and get help. | DECIDE · Go · Fix it · Stop & get help |
-| `s4-7` | Fix it only if you're trained and authorized, and it's a step in your procedure. | Fix it, only if: You're trained and authorized · It's a step in your procedure (e.g. clip on a grounding clamp · bleed air to zero under your lock · vent a line under your lock) |
-| `s4-8` | No permit yet? Someone else's unfinished work? Not authorized? Stop and get help. | Stop & get help for: No permit yet · Someone else's unfinished work · Not authorized for it (e.g. a cut isolator glove · a faulty guard or interlock · opening a vessel) |
-| `s4-9` | Not sure, or the fix doesn't work? Stop and get help. | Not sure, or the fix doesn't work? Stop & get help. |
+| `s4-5` | “Checked or assumed” means: did you look or test it yourself, or are you guessing? | Checked or assumed? Did you look or test it yourself, or are you guessing? |
+| `s4-6` | Then decide: make one of three calls. Go, Fix it, or Stop & get help. | DECIDE · Go · Fix it · Stop & get help |
+| `s4-7` | Fix it only if you're trained and authorized, and it's a step in your procedure. | Fix it, only if: You're trained and authorized · It's a step in your procedure (e.g. put on the face shield your procedure lists · clean up a small spill with the spill kit, as your procedure says) |
+| `s4-8` | No permit yet? Someone else's unfinished work? Not authorized? Stop & get help. | Stop & get help for: No permit yet · Someone else's unfinished work · Not authorized for it (e.g. someone else's lock on the switch · a guard that won't close · a hose you're not trained to change) |
+| `s4-9` | Not sure, or the fix doesn't work? Stop & get help. | Not sure, or the fix doesn't work? Stop & get help. |
 
 ## 5. routine-go — A routine Go
 
 **Purpose.** Model the pause people will do most often, before any catch is shown. On a routine start-of-shift task, cleaning a weighing booth, all four questions are answered clean in seconds: nothing is different; gloves and goggles cover the leftover powder and the cleaning chemical; the airflow light is checked, not assumed; and the spill kit is there. Then Go. The scene also shows a manual-cleaning task, and it sets up the next scene's point that most pauses end like this.
 
-**Visual.** (~26 s) Light theme. As the scene opens, the top band fades in: 'A routine Go', a chip with a clock icon reading 'Start of shift', and a muted '· Cleaning a weighing booth'. The weighing booth is on the left of the stage from the first frame: a steel frame with a 'WEIGHING BOOTH' header bar, four faint blue downflow arrows inside it, a green light labelled 'AIRFLOW' at its top right, and a bench with a balance on it. s5-1: a plain silhouette fades in, standing at the bench inside the booth. s5-2: a column of small question cards builds on the right, with each answer beside its card. Card 1 (blue) 'What’s different?' rises, and on 'Nothing' a green check 'Nothing' pops beside it. On 'could', card 2 (violet) 'What could hurt us?' rises below it, and it stays unanswered while the powder and the cleaning chemical are named. s5-3: on 'Gloves', goggles and teal gloves fade onto the silhouette, and a green check 'Gloves & goggles on' pops beside card 2. Just before the question 'Checked or assumed?', card 3 (teal) 'Checked or assumed?' rises. On that first 'Checked', a green ring circles the airflow light. On 'green', a check 'Checked: airflow green' pops beside card 3. s5-4: card 4 (plum) 'What if it goes wrong?' rises. On 'spill', a yellow 'SPILL KIT' box pops in on the floor just outside the booth's right side, and a check 'Spill kit there' pops beside card 4. s5-5: a large green 'Go' button pops in under the cards, with 'A few seconds.' beside it, and holds to the end of the scene. After s5-4, with no narration, a row reads 'Your call?' with a filling ring and the three calls in outline (Go, Fix it, Stop & get help); on s5-5 Go fills in green, the other two fade, and 'A few seconds.' rises below.
+**Visual.** (~26 s) Light theme. As the scene opens, the top band fades in: 'A routine Go', a chip with a clock icon reading 'Start of shift', and a muted '· Cleaning a weighing booth'. The weighing booth is on the left of the stage from the first frame: a steel frame with a 'WEIGHING BOOTH' header bar, four faint blue downflow arrows inside it, a green light labelled 'AIRFLOW' at its top right, and a bench with a balance on it. s5-1: a plain silhouette fades in, standing at the bench inside the booth. s5-2: a column of small question cards builds on the right, with each answer beside its card. Card 1 (blue) 'What’s different?' rises, and on 'Nothing' a green check 'Nothing' pops beside it. On 'could', card 2 (violet) 'What could hurt us?' rises below it, and on 'leftover' a check pops beside it with 'Powder, cleaning chemical'; on 'gloves' a second line adds '→ gloves & goggles on'. s5-3: on 'Gloves', goggles and teal gloves fade onto the silhouette, and a second line '→ gloves & goggles on' appears under 'Powder, cleaning chemical' beside card 2. Just before the question 'Checked or assumed?', card 3 (teal) 'Checked or assumed?' rises. On that first 'Checked', a green ring circles the airflow light. On 'green', a check 'Checked: airflow green' pops beside card 3. s5-4: card 4 (plum) 'What if it goes wrong?' rises. On 'spill', a yellow 'SPILL KIT' box pops in on the floor just outside the booth's right side, and a check 'Spill kit there' pops beside card 4. s5-5: a large green 'Go' button pops in under the cards, with 'A few seconds.' beside it, and holds to the end of the scene. After s5-4, with no narration, a row reads 'Your call?' with a filling ring and the three calls in outline (Go, Fix it, Stop & get help); on s5-5 Go fills in green, the other two fade, and 'A few seconds.' rises below.
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s5-1` | First, a routine pause: you're about to clean a weighing booth. | A routine Go · Start of shift · Cleaning a weighing booth |
-| `s5-2` | What's different? Nothing. What could hurt us? Leftover powder and the cleaning chemical. | What's different? ✓ Nothing · What could hurt us? |
-| `s5-3` | Gloves and goggles: on. Checked or assumed? Checked: the airflow light is green. | ✓ Gloves & goggles on · Checked or assumed? ✓ Checked: airflow green |
-| `s5-4` | What if it goes wrong? The spill kit is right there. | What if it goes wrong? ✓ Spill kit there |
-| `s5-5` | Go. That took a few seconds. | Go · A few seconds |
+| `s5-1` | Let's try it on a routine job: you're about to clean a weighing booth. | A routine Go · Start of shift · Cleaning a weighing booth |
+| `s5-2` | What's different? Nothing. What could hurt us? Leftover powder and the cleaning chemical. | What's different? ✓ Nothing · What could hurt us? ✓ Powder, cleaning chemical |
+| `s5-3` | Gloves and goggles are on. Checked or assumed? Checked: the airflow light is green. | → gloves & goggles on · Checked or assumed? ✓ Checked: airflow green |
+| `s5-4` | What if it goes wrong? The spill kit is right there. Your call? | What if it goes wrong? ✓ Spill kit there · Your call? Go · Fix it · Stop & get help, in outline (pause) |
+| `s5-5` | Go. That took just a few seconds. | Go fills in · A few seconds. |
 
 ## 6. six-saves — Six saves
 
@@ -82,9 +82,9 @@ SAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). 
 | Cue | Narration | On screen |
 |---|---|---|
 | `s6-1` | Most pauses end like that. | Most pauses end in Go · In seconds |
-| `s6-2` | Sometimes a question catches a problem. That's a save. Here are six. | Six two-minute saves · A save = a pause that caught a problem |
+| `s6-2` | But sometimes a question catches a problem. That's a save. Here are six. | Six two-minute saves · A save = a pause that caught a problem |
 | `s6-3` | They're examples built from common pharma hazards, not real events. | Examples built from common pharma hazards, not real events |
-| `s6-4` | In each save, the video waits. Find the problem and pick your call, before we show it. | The video waits: find the problem, pick your call |
+| `s6-4` | In each save, the video asks you twice: find the problem, then pick your call. | It asks twice: find the problem, pick your call |
 
 ## 7. save-1-tablet-press — Save 1 · Tablet press handover
 
@@ -95,12 +95,12 @@ SAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). 
 | Cue | Narration | On screen |
 |---|---|---|
 | `s7-1` | Save one: you take over a tablet press at handover. | Save 1 · Tablet press · Handover |
-| `s7-2` | What would make you stop here? | What would make you stop here? Look at the picture. Then we'll show it. (3-second pause) |
-| `s7-3` | What's different? The note says the last shift started a tooling change. | Last shift: tooling change started |
-| `s7-4` | Guard open. Tooling half in. No lock on the power switch. | The catch: Guard open · tooling half in · no lock |
-| `s7-5` | Your call? | Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause) |
-| `s7-6` | Stop and get help, because it's someone else's unfinished work. | The call: Stop & get help · Someone else's unfinished work |
-| `s7-7` | Your lead comes, thanks you, and checks with the last shift. | Your lead: “Thanks. What did you see?” · Checks with the last shift |
+| `s7-2` | What would make you stop here? | Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause) |
+| `s7-3` | What's different? The handover note says the last shift started a tooling change. | Last shift: tooling change started |
+| `s7-4` | The guard is open, the tooling is half in, and there's no lock on the power switch. | The catch: Guard open · tooling half in · no lock |
+| `s7-5` | Your call? | Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause) |
+| `s7-6` | Stop & get help. It's someone else's unfinished work. | The call: Stop & get help · Someone else's unfinished work |
+| `s7-7` | Your lead comes over, thanks you, and checks with the last shift. | Your lead: “Thanks. What did you see?” · Checks with the last shift |
 | `s7-8` | An authorized press setter locks out, tries START, then finishes and counts the tooling. | Press setter · Setter's lock · authorized · Air bled to 0 · Guard shut for the test · Nothing moves · Counted |
 | `s7-9` | Guard closed, area clear, setter's lock removed, interlock tested. Then Go. | Guard closed · Tools out · area clear · Setter's lock removed · Interlock tested · Start-up checks → Go |
 | `s7-10` | Nobody starts that press with its tooling half in. | Prevented: No start with tooling half in |
@@ -113,14 +113,14 @@ SAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). 
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s8-1` | Save two: you add powder to a reactor that holds flammable solvent. | Save 2 · Powder charge · Before you start |
+| `s8-1` | Save two: you add powder from a drum to a reactor that holds flammable solvent. | Save 2 · Powder charge · Before you start |
 | `s8-2` | It's inerted: filled with nitrogen to keep the oxygen out. | Inerted = filled with nitrogen · N₂ inerted ✓ |
-| `s8-3` | What would make you stop here? | What would make you stop here? Look at the picture. Then we'll show it. (3-second pause) |
-| `s8-4` | What could hurt us? A static spark at the open manway, with solvent vapor. | Static · Manway (opening) |
-| `s8-5` | Checked or assumed? Oxygen is below the limit. But the grounding indicator is red. | O₂ below limit ✓ · Grounding indicator red, clamp off · The catch: Clamp off, not grounded |
-| `s8-6` | Your call? | Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause) |
-| `s8-7` | Fix it: your procedure lets you clip the grounding clamp onto the drum. | The call: Fix it, if safe · A step in your procedure · Trained · in procedure |
-| `s8-8` | The indicator turns green, and the drum liner is static-safe. Then Go. | Grounded ✓ · Static-safe liner ✓ → Go · Still red? Get help |
+| `s8-3` | Before you start, what would make you stop here? | Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause) |
+| `s8-4` | What could hurt us? A static spark at the open manway, where there's solvent vapor. | Static · Manway (opening) |
+| `s8-5` | Checked or assumed? The oxygen is below the limit, but the grounding indicator is red. | O₂ below limit ✓ · Grounding indicator red, clamp off · The catch: Clamp off, not grounded |
+| `s8-6` | What's your call? | Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause) |
+| `s8-7` | Fix it. It's a step in your procedure: clip the grounding clamp onto the drum. | The call: Fix it · A step in your procedure · Trained · in procedure |
+| `s8-8` | The indicator turns green, and the drum liner is static-safe. Now it's Go. | Grounded ✓ · Static-safe liner ✓ → Go · Still red? Get help |
 | `s8-9` | The spark never happens. | Prevented: No spark at the manway |
 
 ## 9. save-3-inerted-vessel — Save 3 · Inerted filter dryer
@@ -131,14 +131,14 @@ SAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). 
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s9-1` | Save three: you're a contractor. At a product change, you'll open a dryer full of nitrogen. | Save 3 · Filter dryer · Contractor · Change · Campaign |
-| `s9-2` | What would make you stop here? | What would make you stop here? Look at the picture. Then we'll show it. (3-second pause) |
-| `s9-3` | What could hurt us? Low-oxygen air inside. Nitrogen has no color or smell. | Low O₂ · No color · No smell |
+| `s9-1` | Save three: a product change. As a contractor, you'll open a filter dryer full of nitrogen. | Save 3 · Filter dryer · Contractor · Change · Campaign |
+| `s9-2` | So, what would make you stop here? | Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause) |
+| `s9-3` | What could hurt us? Low-oxygen air inside. You can't see it or smell it. | Low O₂ ↓ · Can't see it · Can't smell it |
 | `s9-4` | Checked or assumed? Is the nitrogen line closed with a solid plate, and the air inside tested? | Solid plate on N₂ line? · Air tested at opening? · Permit? (each: Not yet) |
-| `s9-5` | No test, no permit yet. | The catch: No test, no permit |
-| `s9-6` | Your call? | Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause) |
-| `s9-7` | Stop and get help, because opening it needs a gas test and a permit. | The call: Stop & get help · Needs a gas test and a permit |
-| `s9-8` | An authorized team isolates, tests, ventilates and retests. The permit is issued. Then Go. | Your lead · Authorized team · Solid plate in · Bump-tested · Solvent vapor ✓ · O₂ low · Ventilate · O₂ 20.9% ✓ · Permit issued · Under permit → Go |
+| `s9-5` | Not yet, and no permit yet. | The catch: No test, no permit |
+| `s9-6` | Your call? | Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause) |
+| `s9-7` | Stop & get help: opening it needs a gas test and a permit. | The call: Stop & get help · Needs a gas test and a permit |
+| `s9-8` | An authorized team isolates, tests, ventilates and retests. Once the permit is issued, it's Go. | Your lead · Authorized team · Solid plate in · Bump-tested · Solvent vapor ✓ · O₂ low · Ventilate · O₂ 20.9% ✓ · Permit issued · Under permit → Go |
 | `s9-9` | No permit, no Go. | No permit, no Go |
 | `s9-10` | Nobody leans into air with too little oxygen. | Prevented: Nobody leans into low O₂ |
 
@@ -150,15 +150,15 @@ SAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). 
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s10-1` | Save four: a blister packer jams where your jam tool can't reach. | Save 4 · Blister packer · Interruption · Tool can't reach |
-| `s10-2` | Stopped isn't the same as isolated. | Stopped ≠ isolated · Isolated = energy supply cut off |
-| `s10-3` | You lock out power and air. | Power + air locked · authorized |
-| `s10-4` | What would make you stop here? | What would make you stop here? Look at the picture. Then we'll show it. (3-second pause) |
+| `s10-1` | Save four: an interruption. The blister packer jams where your jam tool can't reach. | Save 4 · Blister packer · Interruption · Tool can't reach |
+| `s10-2` | It's stopped, but stopped isn't the same as isolated. | Stopped ≠ isolated · Isolated = energy supply cut off |
+| `s10-3` | So you lock out power and air. | Power + air locked · authorized |
+| `s10-4` | Now, what would make you stop here? | Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause) |
 | `s10-5` | Checked or assumed? The gauge still shows trapped air. | Checked or assumed? · The catch: Trapped air pressure |
-| `s10-6` | Your call? | Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause) |
-| `s10-7` | Fix it: your procedure lets you bleed the air, with your own lock on. | The call: Fix it · Your own lock on · In procedure |
-| `s10-8` | Bleed to zero and try START. Nothing moves. Then Go. | Zero ✓ · Nothing moves → Go |
-| `s10-9` | Your hand stays out of a machine that still had stored energy. | Prevented: Hands clear of stored energy |
+| `s10-6` | What's your call? | Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause) |
+| `s10-7` | Fix it. Your procedure lets you bleed off the trapped air, with your own lock still on. | The call: Fix it · Your own lock on · In procedure |
+| `s10-8` | Bleed to zero and try START. Nothing moves, so it's Go. | Zero ✓ · Nothing moves → Go |
+| `s10-9` | Your hand never goes into a machine that still has stored energy. | Prevented: Hands clear of stored energy |
 
 ## 11. save-5-isolator — Save 5 · Potent ingredient
 
@@ -169,11 +169,11 @@ SAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). 
 | Cue | Narration | On screen |
 |---|---|---|
 | `s11-1` | Save five: after a break, you weigh a potent active ingredient at an isolator. | Save 5 · Potent ingredient (API) · After a break |
-| `s11-2` | What would make you stop here? | What would make you stop here? Look at the picture. Then we'll show it. (3-second pause) |
+| `s11-2` | Look closely. What would make you stop here? | Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause) |
 | `s11-3` | What's different? Nothing, and the pressure display is in range. | In range |
-| `s11-4` | Checked or assumed? You check each glove. One has a cut. | The catch: Cut in a glove |
-| `s11-5` | Your call? | Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause) |
-| `s11-6` | Stop and get help, because a cut glove is a break in the barrier. Your lead and QA must know. | The call: Stop & get help · A break in the barrier: lead & QA must know · Your lead + QA · Do not use |
+| `s11-4` | Checked or assumed? You check each glove, and one has a cut. | The catch: Cut in a glove |
+| `s11-5` | Your call? | Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause) |
+| `s11-6` | Stop & get help, because a cut glove is a break in the barrier. Your lead and QA must know. | The call: Stop & get help · A break in the barrier: lead & QA must know · Your lead + QA · Do not use |
 | `s11-7` | An authorized person changes the glove and leak-tests it. Then Go. | Glove changed · Leak-tested · Pressure in range → Go |
 | `s11-8` | That powder is strong, even in tiny amounts. It stays inside the isolator. | Prevented: The powder stays inside |
 
@@ -185,16 +185,16 @@ SAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). 
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s12-1` | Save six: you're about to open a pipe at the transfer panel. That's a line break. | Save 6 · Line break = opening a pipe · Line-break permit ✓ |
+| `s12-1` | Save six: you have a permit to open a pipe at the transfer panel. That's a line break. | Save 6 · Line break = opening a pipe · Line-break permit ✓ |
 | `s12-2` | The CIP screen says the cleaning cycle is complete. | CIP complete ✓ · CIP = cleaning cycle |
-| `s12-3` | What would make you stop here? | What would make you stop here? Look at the picture. Then we'll show it. (3-second pause) |
+| `s12-3` | Your turn. What would make you stop here? | Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause) |
 | `s12-4` | What if it goes wrong? If the pipe still has pressure, where would it spray? | Spray path? |
 | `s12-5` | You lock out the supply valve and the pump, step to the side, and check the gauge. | Supply + pump locked · authorized · Stand to the side · Face shield · Chem gloves |
 | `s12-6` | It shows pressure, and the line is hot. | The catch: Pressure on gauge, line hot |
-| `s12-7` | Your call? | Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause) |
-| `s12-8` | Fix it. Your line-break procedure says: wait, vent, check for zero pressure and a cool line. | The call: Fix it, if safe · In your line-break procedure · Wait · Vent · Zero & cool · Vent open · No flow |
+| `s12-7` | So, what's your call? | Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause) |
+| `s12-8` | Fix it. Your line-break procedure says: wait, vent, check for zero pressure and a cool line. | The call: Fix it · In your line-break procedure · Wait · Vent · Zero & cool · Vent open · No flow |
 | `s12-9` | Then Go. The screen reports the cycle. The gauge reports your line. | Go · Screen: reports the cycle · Gauge: reports your line |
-| `s12-10` | No spray of hot cleaning chemical or steam. | Prevented: No hot chemical or steam |
+| `s12-10` | No one gets sprayed with hot cleaning chemical or steam. | Prevented: No hot chemical or steam |
 
 ## 13. all-six-end-in-go — All six end in Go
 
@@ -204,7 +204,8 @@ SAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). 
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s13-1` | Three fixes, three calls for help. All six end in Go, once it's safe. | All six end in Go · Good for people, product and the line |
+| `s13-1` | Three saves were Fix it, and three were Stop & get help. All six end in Go, once it's safe. | All six end in Go · Good for people, product and the line |
+| `s13-2` | And most pauses end in Go right away. That's good for people, product and the line. | Most pauses end in Go · Good for people, product and the line |
 
 ## 14. what-makes-it-work — What leaders commit to
 
@@ -215,8 +216,8 @@ SAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). 
 | Cue | Narration | On screen |
 |---|---|---|
 | `s14-1` | Anyone can stop a job, staff or contractor, even on a late batch. No punishment, no blame. | Anyone can stop a job · Staff & contractors · Even on a late batch · No punishment · No blame · Stop the task. Running processes are stopped only through your operating procedures. |
-| `s14-2` | Leaders come quickly and thank you. They fix the cause and tell you what changed. | Leaders commit to: Come quickly · Thank you · Fix the cause · Tell you what changed · Lead: “Thanks. What did you see?” then “Fixed. Here's what changed.” |
-| `s14-3` | The pause is not a form. Report what you caught the usual way. | Not a form · Report through your usual channels |
+| `s14-2` | When you stop, leaders come quickly and thank you, fix the cause and tell you what changed. | Leaders commit to: Come quickly · Thank you · Fix the cause · Tell you what changed · Lead: “Thanks. What did you see?” then “Fixed. Here's what changed.” |
+| `s14-3` | The pause isn't a form. Just report what you caught the usual way. | Not a form · Report through your usual channels |
 
 ## 15. close-recap — Recap card
 
@@ -226,10 +227,11 @@ SAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). 
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s15-1` | Before you start, and after any break, handover, interruption or change: stop and look. | Before you start · Break · Handover · Interruption · Change · STOP · LOOK |
+| `s15-1` | So, before you start, and after any break, handover, interruption or change: stop and look. | Before you start · Break · Handover · Interruption · Change · STOP · LOOK |
 | `s15-2` | Ask: What's different? What could hurt us? | ASK · What's different? · What could hurt us? |
 | `s15-3` | Checked or assumed? What if it goes wrong? | Checked or assumed? · What if it goes wrong? |
-| `s15-4` | Decide: Go, fix it, or stop and get help. Fix it only if trained, authorized and in procedure. | DECIDE · Go · Fix it, if safe (only if trained, authorized & in procedure) · Stop & get help (get help: your lead) |
-| `s15-5` | Two minutes. Line clearance for people. | The 2-Minute Rule · Line clearance for people |
-| `s15-6` | Find out who to call for help: days, nights and weekends. | Who do you call for help? Days · Nights · Weekends · Radio channel or extension · Write it on your pocket card. |
-| `s15-7` | Follow your site's procedures. This video is awareness training only. | End card: awareness training, not lockout or confined-space training |
+| `s15-4` | Decide: Go, Fix it, or Stop & get help. | DECIDE · Go · Fix it · Stop & get help (No permit yet · someone else's unfinished work · not authorized · not sure → your lead) |
+| `s15-5` | Fix it only if you're trained and authorized, and it's a step in your procedure. | Fix it: only if trained, authorized & in procedure |
+| `s15-6` | When in doubt, get help. That's the 2-minute rule: line clearance for people. | The 2-Minute Rule · Line clearance for people |
+| `s15-7` | Find out who to call for help: days, nights and weekends. | Who do you call for help? Days · Nights · Weekends · Radio channel or extension · Write it on your pocket card. |
+| `s15-8` | Follow your site's procedures. This video is awareness training only. | End card: awareness training, not lockout or confined-space training |

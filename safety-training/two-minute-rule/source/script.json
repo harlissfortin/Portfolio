@@ -77,7 +77,7 @@
     "PQE Group, '3W of Glove Integrity Test' (visual check at each use and physical integrity testing, as quoted from EU GMP Annex 1, 2022; the same practice is applied in containment glove programs)",
     "Use cases are illustrative composites, not real incidents."
   ],
-  "word_count": 993,
+  "word_count": 1104,
   "scenes": [
     {
       "id": "title-open",
@@ -92,14 +92,14 @@
         },
         {
           "id": "s1-2",
-          "text": "You know the job. Before your hands move, give it two minutes.",
-          "on_screen": "Two minutes"
+          "text": "You know these jobs. But today, something might be different.",
+          "on_screen": "Clear a jam · Break a line · Open a vessel (dimmed) · A figure appears"
         },
         {
           "id": "s1-3",
-          "text": "That's the 2-minute rule.",
-          "tts": "That's the two-minute rule.",
-          "on_screen": "The 2-Minute Rule / Six saves on a pharma floor"
+          "text": "So before your hands move, give it two minutes. That's the 2-minute rule.",
+          "on_screen": "Hand icon · Two minutes · The 2-Minute Rule / Six saves on a pharma floor",
+          "tts": "So before your hands move, give it two minutes. That's the two-minute rule."
         }
       ]
     },
@@ -107,25 +107,22 @@
       "id": "the-rule",
       "chapter": "The rule",
       "purpose": "Define the rule: a short, deliberate pause at the point of work, right before you start and again after any break, handover, interruption or change. Two minutes is a rule of thumb, and what matters is the pause.",
-      "visual": "(~20 s) Light theme. s2-1: the title 'A pause at the point of work' rises top-left, with an amber pin icon at its left. On 'point', a thin timeline grows left to right across the middle of the stage. s2-2: five markers pop along the line, one per spoken item. Each is a white circle with an amber ring and an amber icon, and its label rises just beneath it: pause icon 'Before you start' at the left end (on 'start'), then clock 'Break', people 'Handover', phone 'Interruption' and gear 'Change'. s2-3: the timeline and markers fade. A large stopwatch pops in at left, its amber ring full and reading '2:00'. On 'guide', the heading 'A guide, not an exact time' rises to its right and the '2:00' digits fade, leaving the empty dial. On 'What matters', the muted line 'The pause is what matters' rises beneath the heading. The title stays at the top throughout.",
+      "visual": "(~20 s) Light theme. s2-1: the title 'A pause at the point of work' rises top-left, with an amber pin icon at its left. On 'point', a thin timeline grows left to right across the middle of the stage. s2-2: five markers pop along the line, one per spoken item. Each is a white circle with an amber ring and an amber icon, and its label rises just beneath it: pause icon 'Before you start' at the left end (on 'start'), then clock 'Break', people 'Handover', phone 'Interruption' and gear 'Change'. s2-3: the timeline and markers fade. A large stopwatch pops in at left, its amber ring full and reading '2:00'. On 'guide', the heading 'A guide, not an exact time' rises to its right and the '2:00' digits fade, leaving the empty dial. On 'What matters', the muted line 'What matters is the pause' rises beneath the heading. The title stays at the top throughout.",
       "cues": [
         {
           "id": "s2-1",
-          "text": "It's a short pause, on purpose, at the point of work: where you do the job.",
-          "on_screen": "A pause at the point of work",
-          "tts": "It's a short pause, | on purpose, | at the point of work: | where you do the job."
+          "text": "It's a short pause you take on purpose, at the point of work, where you do the job.",
+          "on_screen": "A pause at the point of work"
         },
         {
           "id": "s2-2",
           "text": "Do it before you start, and again after any break, handover, interruption or change.",
-          "tts": "Do it before you start, | and again after any break, | handover, | interruption, | or change.",
           "on_screen": "Before you start · Break · Handover · Interruption · Change"
         },
         {
           "id": "s2-3",
           "text": "Two minutes is a guide, not an exact time. What matters is the pause.",
-          "on_screen": "A guide, not an exact time · The pause is what matters",
-          "tts": "Two minutes is a guide, | not an exact time. | What matters is the pause."
+          "on_screen": "A guide, not an exact time · What matters is the pause"
         }
       ]
     },
@@ -137,7 +134,7 @@
       "cues": [
         {
           "id": "s3-1",
-          "text": "You already do this for product: line clearance, right before each run.",
+          "text": "You already do line clearance for product, right before each run.",
           "on_screen": "Line clearance: product · 21 CFR 211.130(e) · Inspected right before use"
         },
         {
@@ -149,12 +146,11 @@
         {
           "id": "s3-3",
           "text": "It adds to your procedures, permits and lockout. It never replaces them.",
-          "tts": "It adds to your procedures, | permits | and lockout. | It never replaces them.",
           "on_screen": "Procedures · Permits · Lockout · Guards & interlocks · Adds to. Never replaces."
         },
         {
           "id": "s3-4",
-          "text": "It catches what the plan missed, because you're there.",
+          "text": "But you're the one at the job, so you can see what the plan missed.",
           "on_screen": "You see what plans miss"
         }
       ]
@@ -163,60 +159,56 @@
       "id": "how-to-run-it",
       "chapter": "Stop · Look · Ask · Decide",
       "purpose": "Teach Stop · Look · Ask · Decide with the four questions and the three decisions, and build the question cards and decision buttons that every save reuses. Define 'Checked or assumed?' once: did you look or test it yourself, or are you guessing? Then set the boundary rule where the decision is defined, as a side-by-side contrast. Fix it only if you are trained and authorized and it is a step in your procedure (e.g. clip on a grounding clamp, or bleed air to zero or vent a line under your own lock). Stop & get help when there is no permit yet, when it is someone else's unfinished work, or when you are not authorized for the repair (e.g. a cut isolator glove, a faulty guard or interlock, opening a vessel). If you are not sure, or the fix doesn't work, Stop & get help.",
-      "visual": "(~45 s) Light theme. There is no silhouette in this scene. As the scene opens, the STOP, LOOK, ASK and DECIDE tiles drop in, in a row across the top, and each tile lights amber while it is being taught. STOP is already lit as it lands; the other three land unlit. s4-1: STOP (hand icon) is lit, and 'Hands off' rises under it. s4-2: STOP returns to unlit and LOOK (eye icon) lights. On 'around', the two-line label 'Around the job' / 'Compare with the plan' rises under it. s4-3: ASK (question-bubble icon) lights and both labels fade. The question cards pop into a 2 x 2 grid beneath the tiles as each question is spoken: card 1 (blue, document icon) 'What’s different?' and card 2 (violet, warning icon) 'What could hurt us?'. s4-4: card 3 (teal, check-and-question icon) 'Checked or assumed?' and then, on 'What', card 4 (plum, branch icon) 'What if it goes wrong?' pop in below them. s4-5: a line rises under the grid: a teal check-and-question icon, 'Checked or assumed?' in teal, then 'Did you look or test it yourself, or are you guessing?' in dark ink. s4-6: DECIDE (signpost icon) lights and stays lit to the end of the scene. The cards and the line fade, and three buttons pop in a centred row, each on its word: green 'Go', amber 'Fix it' and red 'Stop & get help'. s4-7: just before the line, the buttons fade and a two-column panel takes their place. The left column, with an amber top edge, rises first: a wrench and 'Fix it, only if', then the bullets 'You’re trained and authorized' (on 'trained', with 'and' in bold) and 'It’s a step in your procedure' (on 'step'). Just after 'procedure', the muted example line 'e.g. clip on a grounding clamp · bleed air to zero under your lock · vent a line under your lock' fades in. s4-8: the right column, with a red top edge, rises: a red hand and 'Stop & get help for', then the bullets 'No permit yet' (on 'permit'), 'Someone else’s unfinished work' (on 'Someone') and 'Not authorized for it' (on 'authorized'). On 'help', the muted line 'e.g. a cut isolator glove · a faulty guard or interlock · opening a vessel' fades in. s4-9: under the panel, a centred line rises: 'Not sure, or the fix doesn’t work? Stop & get help.', with 'Stop & get help.' in red. The panel, the tiles and the lit DECIDE tile hold to the end of the scene.",
+      "visual": "(~45 s) Light theme. There is no silhouette in this scene. As the scene opens, the STOP, LOOK, ASK and DECIDE tiles drop in, in a row across the top, and each tile lights amber while it is being taught. STOP is already lit as it lands; the other three land unlit. s4-1: STOP (hand icon) is lit, and 'Hands off' rises under it. s4-2: STOP returns to unlit and LOOK (eye icon) lights. On 'around', the two-line label 'Around the job' / 'Compare with the plan' rises under it. s4-3: ASK (question-bubble icon) lights and both labels fade. The question cards pop into a 2 x 2 grid beneath the tiles as each question is spoken: card 1 (blue, document icon) 'What’s different?' and card 2 (violet, warning icon) 'What could hurt us?'. s4-4: card 3 (teal, check-and-question icon) 'Checked or assumed?' and then, on 'What', card 4 (plum, branch icon) 'What if it goes wrong?' pop in below them. s4-5: a line rises under the grid: a teal check-and-question icon, 'Checked or assumed?' in teal, then 'Did you look or test it yourself, or are you guessing?' in dark ink. s4-6: DECIDE (signpost icon) lights and stays lit to the end of the scene. The cards and the line fade, and three buttons pop in a centred row, each on its word: green 'Go', amber 'Fix it' and red 'Stop & get help'. s4-7: just before the line, the buttons fade and a two-column panel takes their place. The left column, with an amber top edge, rises first: a wrench and 'Fix it, only if', then the bullets 'You’re trained and authorized' (on 'trained', with 'and' in bold) and 'It’s a step in your procedure' (on 'step'). Just after 'procedure', the muted example line 'e.g. put on the face shield your procedure lists · clean up a small spill with the spill kit, as your procedure says' fades in. s4-8: the right column, with a red top edge, rises: a red hand and 'Stop & get help for', then the bullets 'No permit yet' (on 'permit'), 'Someone else’s unfinished work' (on 'Someone') and 'Not authorized for it' (on 'authorized'). On 'help', the muted line 'e.g. someone else’s lock on the switch · a guard that won’t close · a hose you’re not trained to change' fades in. s4-9: under the panel, a centred line rises: 'Not sure, or the fix doesn’t work? Stop & get help.', with 'Stop & get help.' in red. The panel, the tiles and the lit DECIDE tile hold to the end of the scene.",
       "cues": [
         {
           "id": "s4-1",
-          "text": "Stop: hands off.",
+          "text": "Here's how. Stop: hands off.",
           "on_screen": "STOP · Hands off"
         },
         {
           "id": "s4-2",
           "text": "Look: around the job, and compare it with the plan.",
-          "tts": "Look: | around the job, | and compare it with the plan.",
           "on_screen": "LOOK · Around the job · Compare with the plan"
         },
         {
           "id": "s4-3",
-          "text": "Ask four questions: What's different? What could hurt us?",
-          "tts": "Ask four questions: | What's different? | What could hurt us?",
+          "text": "Ask yourself four questions: What's different? What could hurt us?",
           "on_screen": "ASK · What's different? · What could hurt us?"
         },
         {
           "id": "s4-4",
           "text": "Checked or assumed? What if it goes wrong?",
-          "tts": "Checked or assumed? | What if it goes wrong?",
           "on_screen": "Checked or assumed? · What if it goes wrong?"
         },
         {
           "id": "s4-5",
-          "text": "Checked or assumed? It means: did you look or test it yourself, or are you guessing?",
-          "tts": "Checked or assumed? | It means: | did you look or test it yourself, | or are you guessing?",
+          "text": "“Checked or assumed” means: did you look or test it yourself, or are you guessing?",
+          "tts": "Checked or assumed means: did you look or test it yourself, or are you guessing?",
           "on_screen": "Checked or assumed? Did you look or test it yourself, or are you guessing?"
         },
         {
           "id": "s4-6",
-          "text": "Decide: Go, fix it, or stop and get help.",
-          "tts": "Decide: | Go, | fix it, | or stop and get help.",
+          "text": "Then decide: make one of three calls. Go, Fix it, or Stop & get help.",
+          "tts": "Then decide: make one of three calls. Go, | fix it, | or stop and get help.",
           "on_screen": "DECIDE · Go · Fix it · Stop & get help"
         },
         {
           "id": "s4-7",
           "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
-          "tts": "Fix it only if you're trained and authorized, | and it's a step in your procedure.",
-          "on_screen": "Fix it, only if: You're trained and authorized · It's a step in your procedure (e.g. clip on a grounding clamp · bleed air to zero under your lock · vent a line under your lock)"
+          "on_screen": "Fix it, only if: You're trained and authorized · It's a step in your procedure (e.g. put on the face shield your procedure lists · clean up a small spill with the spill kit, as your procedure says)"
         },
         {
           "id": "s4-8",
-          "text": "No permit yet? Someone else's unfinished work? Not authorized? Stop and get help.",
-          "tts": "No permit yet? | Someone else's unfinished work? | Not authorized? | Stop and get help.",
-          "on_screen": "Stop & get help for: No permit yet · Someone else's unfinished work · Not authorized for it (e.g. a cut isolator glove · a faulty guard or interlock · opening a vessel)"
+          "text": "No permit yet? Someone else's unfinished work? Not authorized? Stop & get help.",
+          "on_screen": "Stop & get help for: No permit yet · Someone else's unfinished work · Not authorized for it (e.g. someone else's lock on the switch · a guard that won't close · a hose you're not trained to change)",
+          "tts": "No permit yet? Someone else's unfinished work? Not authorized? Stop and get help."
         },
         {
           "id": "s4-9",
-          "text": "Not sure, or the fix doesn't work? Stop and get help.",
+          "text": "Not sure, or the fix doesn't work? Stop & get help.",
           "on_screen": "Not sure, or the fix doesn't work? Stop & get help.",
-          "tts": "Not sure, | or the fix doesn't work? | Stop and get help."
+          "tts": "Not sure, or the fix doesn't work? Stop and get help."
         }
       ]
     },
@@ -224,34 +216,32 @@
       "id": "routine-go",
       "chapter": "A routine Go",
       "purpose": "Model the pause people will do most often, before any catch is shown. On a routine start-of-shift task, cleaning a weighing booth, all four questions are answered clean in seconds: nothing is different; gloves and goggles cover the leftover powder and the cleaning chemical; the airflow light is checked, not assumed; and the spill kit is there. Then Go. The scene also shows a manual-cleaning task, and it sets up the next scene's point that most pauses end like this.",
-      "visual": "(~26 s) Light theme. As the scene opens, the top band fades in: 'A routine Go', a chip with a clock icon reading 'Start of shift', and a muted '· Cleaning a weighing booth'. The weighing booth is on the left of the stage from the first frame: a steel frame with a 'WEIGHING BOOTH' header bar, four faint blue downflow arrows inside it, a green light labelled 'AIRFLOW' at its top right, and a bench with a balance on it. s5-1: a plain silhouette fades in, standing at the bench inside the booth. s5-2: a column of small question cards builds on the right, with each answer beside its card. Card 1 (blue) 'What’s different?' rises, and on 'Nothing' a green check 'Nothing' pops beside it. On 'could', card 2 (violet) 'What could hurt us?' rises below it, and it stays unanswered while the powder and the cleaning chemical are named. s5-3: on 'Gloves', goggles and teal gloves fade onto the silhouette, and a green check 'Gloves & goggles on' pops beside card 2. Just before the question 'Checked or assumed?', card 3 (teal) 'Checked or assumed?' rises. On that first 'Checked', a green ring circles the airflow light. On 'green', a check 'Checked: airflow green' pops beside card 3. s5-4: card 4 (plum) 'What if it goes wrong?' rises. On 'spill', a yellow 'SPILL KIT' box pops in on the floor just outside the booth's right side, and a check 'Spill kit there' pops beside card 4. s5-5: a large green 'Go' button pops in under the cards, with 'A few seconds.' beside it, and holds to the end of the scene. After s5-4, with no narration, a row reads 'Your call?' with a filling ring and the three calls in outline (Go, Fix it, Stop & get help); on s5-5 Go fills in green, the other two fade, and 'A few seconds.' rises below.",
+      "visual": "(~26 s) Light theme. As the scene opens, the top band fades in: 'A routine Go', a chip with a clock icon reading 'Start of shift', and a muted '· Cleaning a weighing booth'. The weighing booth is on the left of the stage from the first frame: a steel frame with a 'WEIGHING BOOTH' header bar, four faint blue downflow arrows inside it, a green light labelled 'AIRFLOW' at its top right, and a bench with a balance on it. s5-1: a plain silhouette fades in, standing at the bench inside the booth. s5-2: a column of small question cards builds on the right, with each answer beside its card. Card 1 (blue) 'What’s different?' rises, and on 'Nothing' a green check 'Nothing' pops beside it. On 'could', card 2 (violet) 'What could hurt us?' rises below it, and on 'leftover' a check pops beside it with 'Powder, cleaning chemical'; on 'gloves' a second line adds '→ gloves & goggles on'. s5-3: on 'Gloves', goggles and teal gloves fade onto the silhouette, and a second line '→ gloves & goggles on' appears under 'Powder, cleaning chemical' beside card 2. Just before the question 'Checked or assumed?', card 3 (teal) 'Checked or assumed?' rises. On that first 'Checked', a green ring circles the airflow light. On 'green', a check 'Checked: airflow green' pops beside card 3. s5-4: card 4 (plum) 'What if it goes wrong?' rises. On 'spill', a yellow 'SPILL KIT' box pops in on the floor just outside the booth's right side, and a check 'Spill kit there' pops beside card 4. s5-5: a large green 'Go' button pops in under the cards, with 'A few seconds.' beside it, and holds to the end of the scene. After s5-4, with no narration, a row reads 'Your call?' with a filling ring and the three calls in outline (Go, Fix it, Stop & get help); on s5-5 Go fills in green, the other two fade, and 'A few seconds.' rises below.",
       "cues": [
         {
           "id": "s5-1",
-          "text": "First, a routine pause: you're about to clean a weighing booth.",
+          "text": "Let's try it on a routine job: you're about to clean a weighing booth.",
           "on_screen": "A routine Go · Start of shift · Cleaning a weighing booth"
         },
         {
           "id": "s5-2",
           "text": "What's different? Nothing. What could hurt us? Leftover powder and the cleaning chemical.",
-          "tts": "What's different? Nothing. | What could hurt us? | Leftover powder, | and the cleaning chemical.",
-          "on_screen": "What's different? ✓ Nothing · What could hurt us?"
+          "on_screen": "What's different? ✓ Nothing · What could hurt us? ✓ Powder, cleaning chemical"
         },
         {
           "id": "s5-3",
-          "text": "Gloves and goggles: on. Checked or assumed? Checked: the airflow light is green.",
-          "tts": "Gloves and goggles: on. | Checked or assumed? Checked: the airflow light is green.",
-          "on_screen": "✓ Gloves & goggles on · Checked or assumed? ✓ Checked: airflow green"
+          "text": "Gloves and goggles are on. Checked or assumed? Checked: the airflow light is green.",
+          "on_screen": "→ gloves & goggles on · Checked or assumed? ✓ Checked: airflow green"
         },
         {
           "id": "s5-4",
-          "text": "What if it goes wrong? The spill kit is right there.",
-          "on_screen": "What if it goes wrong? ✓ Spill kit there"
+          "text": "What if it goes wrong? The spill kit is right there. Your call?",
+          "on_screen": "What if it goes wrong? ✓ Spill kit there · Your call? Go · Fix it · Stop & get help, in outline (pause)"
         },
         {
           "id": "s5-5",
-          "text": "Go. That took a few seconds.",
-          "on_screen": "Go · A few seconds"
+          "text": "Go. That took just a few seconds.",
+          "on_screen": "Go fills in · A few seconds."
         }
       ]
     },
@@ -268,9 +258,8 @@
         },
         {
           "id": "s6-2",
-          "text": "Sometimes a question catches a problem. That's a save. Here are six.",
-          "on_screen": "Six two-minute saves · A save = a pause that caught a problem",
-          "tts": "Sometimes a question catches a problem. | That's a save. | Here are six."
+          "text": "But sometimes a question catches a problem. That's a save. Here are six.",
+          "on_screen": "Six two-minute saves · A save = a pause that caught a problem"
         },
         {
           "id": "s6-3",
@@ -279,9 +268,8 @@
         },
         {
           "id": "s6-4",
-          "text": "In each save, the video waits. Find the problem and pick your call, before we show it.",
-          "on_screen": "The video waits: find the problem, pick your call",
-          "tts": "In each save, | the video waits. | Find the problem | and pick your call, | before we show it."
+          "text": "In each save, the video asks you twice: find the problem, then pick your call.",
+          "on_screen": "It asks twice: find the problem, pick your call"
         }
       ]
     },
@@ -299,44 +287,43 @@
         {
           "id": "s7-2",
           "text": "What would make you stop here?",
-          "on_screen": "What would make you stop here? Look at the picture. Then we'll show it. (3-second pause)"
+          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
         },
         {
           "id": "s7-3",
-          "text": "What's different? The note says the last shift started a tooling change.",
+          "text": "What's different? The handover note says the last shift started a tooling change.",
           "on_screen": "Last shift: tooling change started"
         },
         {
           "id": "s7-4",
-          "text": "Guard open. Tooling half in. No lock on the power switch.",
-          "on_screen": "The catch: Guard open · tooling half in · no lock",
-          "tts": "Guard open. | Tooling half in. | No lock on the power switch."
+          "text": "The guard is open, the tooling is half in, and there's no lock on the power switch.",
+          "on_screen": "The catch: Guard open · tooling half in · no lock"
         },
         {
           "id": "s7-5",
           "text": "Your call?",
-          "on_screen": "Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause)"
+          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
         },
         {
           "id": "s7-6",
-          "text": "Stop and get help, because it's someone else's unfinished work.",
-          "on_screen": "The call: Stop & get help · Someone else's unfinished work"
+          "text": "Stop & get help. It's someone else's unfinished work.",
+          "on_screen": "The call: Stop & get help · Someone else's unfinished work",
+          "tts": "Stop and get help. It's someone else's unfinished work."
         },
         {
           "id": "s7-7",
-          "text": "Your lead comes, thanks you, and checks with the last shift.",
+          "text": "Your lead comes over, thanks you, and checks with the last shift.",
           "on_screen": "Your lead: “Thanks. What did you see?” · Checks with the last shift"
         },
         {
           "id": "s7-8",
           "text": "An authorized press setter locks out, tries START, then finishes and counts the tooling.",
-          "tts": "An authorized press setter locks out, | tries start, | then finishes and counts the tooling.",
-          "on_screen": "Press setter · Setter's lock · authorized · Air bled to 0 · Guard shut for the test · Nothing moves · Counted"
+          "on_screen": "Press setter · Setter's lock · authorized · Air bled to 0 · Guard shut for the test · Nothing moves · Counted",
+          "tts": "An authorized press setter locks out, tries start, then finishes and counts the tooling."
         },
         {
           "id": "s7-9",
           "text": "Guard closed, area clear, setter's lock removed, interlock tested. Then Go.",
-          "tts": "Guard closed, | area clear, | setter's lock removed, | interlock tested. | Then Go.",
           "on_screen": "Guard closed · Tools out · area clear · Setter's lock removed · Interlock tested · Start-up checks → Go"
         },
         {
@@ -354,7 +341,7 @@
       "cues": [
         {
           "id": "s8-1",
-          "text": "Save two: you add powder to a reactor that holds flammable solvent.",
+          "text": "Save two: you add powder from a drum to a reactor that holds flammable solvent.",
           "on_screen": "Save 2 · Powder charge · Before you start"
         },
         {
@@ -364,36 +351,33 @@
         },
         {
           "id": "s8-3",
-          "text": "What would make you stop here?",
-          "on_screen": "What would make you stop here? Look at the picture. Then we'll show it. (3-second pause)"
+          "text": "Before you start, what would make you stop here?",
+          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
         },
         {
           "id": "s8-4",
-          "text": "What could hurt us? A static spark at the open manway, with solvent vapor.",
-          "on_screen": "Static · Manway (opening)",
-          "tts": "What could hurt us? | A static spark at the open manway, | with solvent vapor."
+          "text": "What could hurt us? A static spark at the open manway, where there's solvent vapor.",
+          "on_screen": "Static · Manway (opening)"
         },
         {
           "id": "s8-5",
-          "text": "Checked or assumed? Oxygen is below the limit. But the grounding indicator is red.",
-          "on_screen": "O₂ below limit ✓ · Grounding indicator red, clamp off · The catch: Clamp off, not grounded",
-          "tts": "Checked or assumed? | Oxygen is below the limit. | But the grounding indicator is red."
+          "text": "Checked or assumed? The oxygen is below the limit, but the grounding indicator is red.",
+          "on_screen": "O₂ below limit ✓ · Grounding indicator red, clamp off · The catch: Clamp off, not grounded"
         },
         {
           "id": "s8-6",
-          "text": "Your call?",
-          "on_screen": "Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause)"
+          "text": "What's your call?",
+          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
         },
         {
           "id": "s8-7",
-          "text": "Fix it: your procedure lets you clip the grounding clamp onto the drum.",
-          "on_screen": "The call: Fix it, if safe · A step in your procedure · Trained · in procedure"
+          "text": "Fix it. It's a step in your procedure: clip the grounding clamp onto the drum.",
+          "on_screen": "The call: Fix it · A step in your procedure · Trained · in procedure"
         },
         {
           "id": "s8-8",
-          "text": "The indicator turns green, and the drum liner is static-safe. Then Go.",
-          "on_screen": "Grounded ✓ · Static-safe liner ✓ → Go · Still red? Get help",
-          "tts": "The indicator turns green, | and the drum liner is static-safe. | Then Go."
+          "text": "The indicator turns green, and the drum liner is static-safe. Now it's Go.",
+          "on_screen": "Grounded ✓ · Static-safe liner ✓ → Go · Still red? Get help"
         },
         {
           "id": "s8-9",
@@ -410,45 +394,43 @@
       "cues": [
         {
           "id": "s9-1",
-          "text": "Save three: you're a contractor. At a product change, you'll open a dryer full of nitrogen.",
-          "on_screen": "Save 3 · Filter dryer · Contractor · Change · Campaign",
-          "tts": "Save three: | you're a contractor. | At a product change, | you'll open a dryer full of nitrogen."
+          "text": "Save three: a product change. As a contractor, you'll open a filter dryer full of nitrogen.",
+          "on_screen": "Save 3 · Filter dryer · Contractor · Change · Campaign"
         },
         {
           "id": "s9-2",
-          "text": "What would make you stop here?",
-          "on_screen": "What would make you stop here? Look at the picture. Then we'll show it. (3-second pause)"
+          "text": "So, what would make you stop here?",
+          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
         },
         {
           "id": "s9-3",
-          "text": "What could hurt us? Low-oxygen air inside. Nitrogen has no color or smell.",
-          "on_screen": "Low O₂ · No color · No smell"
+          "text": "What could hurt us? Low-oxygen air inside. You can't see it or smell it.",
+          "on_screen": "Low O₂ ↓ · Can't see it · Can't smell it"
         },
         {
           "id": "s9-4",
           "text": "Checked or assumed? Is the nitrogen line closed with a solid plate, and the air inside tested?",
-          "on_screen": "Solid plate on N₂ line? · Air tested at opening? · Permit? (each: Not yet)",
-          "tts": "Checked or assumed? | Is the nitrogen line closed with a solid plate, | and the air inside tested?"
+          "on_screen": "Solid plate on N₂ line? · Air tested at opening? · Permit? (each: Not yet)"
         },
         {
           "id": "s9-5",
-          "text": "No test, no permit yet.",
+          "text": "Not yet, and no permit yet.",
           "on_screen": "The catch: No test, no permit"
         },
         {
           "id": "s9-6",
           "text": "Your call?",
-          "on_screen": "Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause)"
+          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
         },
         {
           "id": "s9-7",
-          "text": "Stop and get help, because opening it needs a gas test and a permit.",
-          "on_screen": "The call: Stop & get help · Needs a gas test and a permit"
+          "text": "Stop & get help: opening it needs a gas test and a permit.",
+          "on_screen": "The call: Stop & get help · Needs a gas test and a permit",
+          "tts": "Stop and get help: opening it needs a gas test and a permit."
         },
         {
           "id": "s9-8",
-          "text": "An authorized team isolates, tests, ventilates and retests. The permit is issued. Then Go.",
-          "tts": "An authorized team isolates, | tests, | ventilates, | and retests. | The permit is issued. | Then Go.",
+          "text": "An authorized team isolates, tests, ventilates and retests. Once the permit is issued, it's Go.",
           "on_screen": "Your lead · Authorized team · Solid plate in · Bump-tested · Solvent vapor ✓ · O₂ low · Ventilate · O₂ 20.9% ✓ · Permit issued · Under permit → Go"
         },
         {
@@ -471,49 +453,48 @@
       "cues": [
         {
           "id": "s10-1",
-          "text": "Save four: a blister packer jams where your jam tool can't reach.",
+          "text": "Save four: an interruption. The blister packer jams where your jam tool can't reach.",
           "on_screen": "Save 4 · Blister packer · Interruption · Tool can't reach"
         },
         {
           "id": "s10-2",
-          "text": "Stopped isn't the same as isolated.",
+          "text": "It's stopped, but stopped isn't the same as isolated.",
           "on_screen": "Stopped ≠ isolated · Isolated = energy supply cut off"
         },
         {
           "id": "s10-3",
-          "text": "You lock out power and air.",
+          "text": "So you lock out power and air.",
           "on_screen": "Power + air locked · authorized"
         },
         {
           "id": "s10-4",
-          "text": "What would make you stop here?",
-          "on_screen": "What would make you stop here? Look at the picture. Then we'll show it. (3-second pause)"
+          "text": "Now, what would make you stop here?",
+          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
         },
         {
           "id": "s10-5",
           "text": "Checked or assumed? The gauge still shows trapped air.",
-          "on_screen": "Checked or assumed? · The catch: Trapped air pressure",
-          "tts": "Checked or assumed? | The gauge still shows trapped air."
+          "on_screen": "Checked or assumed? · The catch: Trapped air pressure"
         },
         {
           "id": "s10-6",
-          "text": "Your call?",
-          "on_screen": "Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause)"
+          "text": "What's your call?",
+          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
         },
         {
           "id": "s10-7",
-          "text": "Fix it: your procedure lets you bleed the air, with your own lock on.",
+          "text": "Fix it. Your procedure lets you bleed off the trapped air, with your own lock still on.",
           "on_screen": "The call: Fix it · Your own lock on · In procedure"
         },
         {
           "id": "s10-8",
-          "text": "Bleed to zero and try START. Nothing moves. Then Go.",
-          "tts": "Bleed to zero, | and try start. | Nothing moves. | Then Go.",
-          "on_screen": "Zero ✓ · Nothing moves → Go"
+          "text": "Bleed to zero and try START. Nothing moves, so it's Go.",
+          "on_screen": "Zero ✓ · Nothing moves → Go",
+          "tts": "Bleed to zero and try start. Nothing moves, so it's Go."
         },
         {
           "id": "s10-9",
-          "text": "Your hand stays out of a machine that still had stored energy.",
+          "text": "Your hand never goes into a machine that still has stored energy.",
           "on_screen": "Prevented: Hands clear of stored energy"
         }
       ]
@@ -531,8 +512,8 @@
         },
         {
           "id": "s11-2",
-          "text": "What would make you stop here?",
-          "on_screen": "What would make you stop here? Look at the picture. Then we'll show it. (3-second pause)"
+          "text": "Look closely. What would make you stop here?",
+          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
         },
         {
           "id": "s11-3",
@@ -541,19 +522,19 @@
         },
         {
           "id": "s11-4",
-          "text": "Checked or assumed? You check each glove. One has a cut.",
+          "text": "Checked or assumed? You check each glove, and one has a cut.",
           "on_screen": "The catch: Cut in a glove"
         },
         {
           "id": "s11-5",
           "text": "Your call?",
-          "on_screen": "Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause)"
+          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
         },
         {
           "id": "s11-6",
-          "text": "Stop and get help, because a cut glove is a break in the barrier. Your lead and QA must know.",
+          "text": "Stop & get help, because a cut glove is a break in the barrier. Your lead and QA must know.",
           "on_screen": "The call: Stop & get help · A break in the barrier: lead & QA must know · Your lead + QA · Do not use",
-          "tts": "Stop and get help, | because a cut glove is a break in the barrier. | Your lead and Q A must know."
+          "tts": "Stop and get help, because a cut glove is a break in the barrier. Your lead and QA must know."
         },
         {
           "id": "s11-7",
@@ -563,8 +544,7 @@
         {
           "id": "s11-8",
           "text": "That powder is strong, even in tiny amounts. It stays inside the isolator.",
-          "on_screen": "Prevented: The powder stays inside",
-          "tts": "That powder is strong, | even in tiny amounts. | It stays inside the isolator."
+          "on_screen": "Prevented: The powder stays inside"
         }
       ]
     },
@@ -576,20 +556,18 @@
       "cues": [
         {
           "id": "s12-1",
-          "text": "Save six: you're about to open a pipe at the transfer panel. That's a line break.",
-          "on_screen": "Save 6 · Line break = opening a pipe · Line-break permit ✓",
-          "tts": "Save six: | you're about to open a pipe at the transfer panel. | That's a line break."
+          "text": "Save six: you have a permit to open a pipe at the transfer panel. That's a line break.",
+          "on_screen": "Save 6 · Line break = opening a pipe · Line-break permit ✓"
         },
         {
           "id": "s12-2",
           "text": "The CIP screen says the cleaning cycle is complete.",
-          "on_screen": "CIP complete ✓ · CIP = cleaning cycle",
-          "tts": "The C I P screen says | the cleaning cycle is complete."
+          "on_screen": "CIP complete ✓ · CIP = cleaning cycle"
         },
         {
           "id": "s12-3",
-          "text": "What would make you stop here?",
-          "on_screen": "What would make you stop here? Look at the picture. Then we'll show it. (3-second pause)"
+          "text": "Your turn. What would make you stop here?",
+          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
         },
         {
           "id": "s12-4",
@@ -599,8 +577,7 @@
         {
           "id": "s12-5",
           "text": "You lock out the supply valve and the pump, step to the side, and check the gauge.",
-          "on_screen": "Supply + pump locked · authorized · Stand to the side · Face shield · Chem gloves",
-          "tts": "You lock out the supply valve and the pump, | step to the side, | and check the gauge."
+          "on_screen": "Supply + pump locked · authorized · Stand to the side · Face shield · Chem gloves"
         },
         {
           "id": "s12-6",
@@ -609,24 +586,22 @@
         },
         {
           "id": "s12-7",
-          "text": "Your call?",
-          "on_screen": "Your call? Go · Fix it, if safe · Stop & get help, dimmed (pause)"
+          "text": "So, what's your call?",
+          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
         },
         {
           "id": "s12-8",
           "text": "Fix it. Your line-break procedure says: wait, vent, check for zero pressure and a cool line.",
-          "tts": "Fix it. | Your line-break procedure says: | wait, | vent, | check for zero pressure | and a cool line.",
-          "on_screen": "The call: Fix it, if safe · In your line-break procedure · Wait · Vent · Zero & cool · Vent open · No flow"
+          "on_screen": "The call: Fix it · In your line-break procedure · Wait · Vent · Zero & cool · Vent open · No flow"
         },
         {
           "id": "s12-9",
           "text": "Then Go. The screen reports the cycle. The gauge reports your line.",
-          "tts": "Then Go. | The screen reports the cycle. | The gauge reports your line.",
           "on_screen": "Go · Screen: reports the cycle · Gauge: reports your line"
         },
         {
           "id": "s12-10",
-          "text": "No spray of hot cleaning chemical or steam.",
+          "text": "No one gets sprayed with hot cleaning chemical or steam.",
           "on_screen": "Prevented: No hot chemical or steam"
         }
       ]
@@ -639,8 +614,14 @@
       "cues": [
         {
           "id": "s13-1",
-          "text": "Three fixes, three calls for help. All six end in Go, once it's safe.",
-          "on_screen": "All six end in Go · Good for people, product and the line"
+          "text": "Three saves were Fix it, and three were Stop & get help. All six end in Go, once it's safe.",
+          "on_screen": "All six end in Go · Good for people, product and the line",
+          "tts": "Three saves were Fix it, and three were Stop and get help. All six end in Go, once it's safe."
+        },
+        {
+          "id": "s13-2",
+          "text": "And most pauses end in Go right away. That's good for people, product and the line.",
+          "on_screen": "Most pauses end in Go · Good for people, product and the line"
         }
       ]
     },
@@ -657,13 +638,12 @@
         },
         {
           "id": "s14-2",
-          "text": "Leaders come quickly and thank you. They fix the cause and tell you what changed.",
-          "tts": "Leaders come quickly | and thank you. | They fix the cause | and tell you what changed.",
+          "text": "When you stop, leaders come quickly and thank you, fix the cause and tell you what changed.",
           "on_screen": "Leaders commit to: Come quickly · Thank you · Fix the cause · Tell you what changed · Lead: “Thanks. What did you see?” then “Fixed. Here's what changed.”"
         },
         {
           "id": "s14-3",
-          "text": "The pause is not a form. Report what you caught the usual way.",
+          "text": "The pause isn't a form. Just report what you caught the usual way.",
           "on_screen": "Not a form · Report through your usual channels"
         }
       ]
@@ -676,41 +656,43 @@
       "cues": [
         {
           "id": "s15-1",
-          "text": "Before you start, and after any break, handover, interruption or change: stop and look.",
-          "tts": "Before you start, | and after any break, | handover, | interruption, | or change: | stop and look.",
+          "text": "So, before you start, and after any break, handover, interruption or change: stop and look.",
           "on_screen": "Before you start · Break · Handover · Interruption · Change · STOP · LOOK"
         },
         {
           "id": "s15-2",
           "text": "Ask: What's different? What could hurt us?",
-          "tts": "Ask: | What's different? | What could hurt us?",
           "on_screen": "ASK · What's different? · What could hurt us?"
         },
         {
           "id": "s15-3",
           "text": "Checked or assumed? What if it goes wrong?",
-          "tts": "Checked or assumed? | What if it goes wrong?",
           "on_screen": "Checked or assumed? · What if it goes wrong?"
         },
         {
           "id": "s15-4",
-          "text": "Decide: Go, fix it, or stop and get help. Fix it only if trained, authorized and in procedure.",
-          "tts": "Decide: | Go, | fix it, | or stop and get help. | Fix it only if trained, | authorized, | and in procedure.",
-          "on_screen": "DECIDE · Go · Fix it, if safe (only if trained, authorized & in procedure) · Stop & get help (get help: your lead)"
+          "text": "Decide: Go, Fix it, or Stop & get help.",
+          "tts": "Decide: Go, | fix it, | or stop and get help.",
+          "on_screen": "DECIDE · Go · Fix it · Stop & get help (No permit yet · someone else's unfinished work · not authorized · not sure → your lead)"
         },
         {
           "id": "s15-5",
-          "text": "Two minutes. Line clearance for people.",
-          "on_screen": "The 2-Minute Rule · Line clearance for people"
+          "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
+          "on_screen": "Fix it: only if trained, authorized & in procedure"
         },
         {
           "id": "s15-6",
-          "text": "Find out who to call for help: days, nights and weekends.",
-          "on_screen": "Who do you call for help? Days · Nights · Weekends · Radio channel or extension · Write it on your pocket card.",
-          "tts": "Find out who to call for help: | days, | nights | and weekends."
+          "text": "When in doubt, get help. That's the 2-minute rule: line clearance for people.",
+          "on_screen": "The 2-Minute Rule · Line clearance for people",
+          "tts": "When in doubt, get help. That's the two-minute rule: line clearance for people."
         },
         {
           "id": "s15-7",
+          "text": "Find out who to call for help: days, nights and weekends.",
+          "on_screen": "Who do you call for help? Days · Nights · Weekends · Radio channel or extension · Write it on your pocket card."
+        },
+        {
+          "id": "s15-8",
           "text": "Follow your site's procedures. This video is awareness training only.",
           "on_screen": "End card: awareness training, not lockout or confined-space training"
         }

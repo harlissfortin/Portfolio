@@ -1,5 +1,5 @@
 {
- "_note": "Silent beats layered onto the script by tooling/from_script.py. scene: pre = silence before the first line (saves: the 1 s Stop-Look-Ask-Decide sting), post = silence after the last. cue: after = silence after that line (default 0.38 s).",
+ "_note": "Silent beats layered onto the script by tooling/from_script.py. scene: pre = silence before the first line (saves: the 1 s Stop-Look-Ask-Decide sting), post = silence after the last. cue: after = silence after that line (default 0.34 s).",
  "scenes": {
   "title-open": {
    "pre": 0.6,
@@ -16,37 +16,37 @@
   },
   "routine-go": {
    "pre": 0.4,
-   "post": 0.8
+   "post": 0.6
   },
   "six-saves": {
    "post": 0.6
   },
   "save-1-tablet-press": {
    "pre": 1.4,
-   "post": 0.9
+   "post": 0.6
   },
   "save-2-powder-charge": {
    "pre": 1.4,
-   "post": 0.9
+   "post": 0.6
   },
   "save-3-inerted-vessel": {
    "pre": 1.4,
-   "post": 0.9
+   "post": 0.6
   },
   "save-4-blister-jam": {
    "pre": 1.4,
-   "post": 0.9
+   "post": 0.6
   },
   "save-5-isolator": {
    "pre": 1.4,
-   "post": 0.9
+   "post": 0.6
   },
   "save-6-cip-line-break": {
    "pre": 1.4,
    "post": 0.9
   },
   "all-six-end-in-go": {
-   "post": 3.0
+   "post": 1.6
   },
   "what-makes-it-work": {
    "pre": 0.3,
@@ -67,7 +67,7 @@
    "after": 0.9
   },
   "s5-5": {
-   "after": 0.7
+   "after": 0.4
   },
   "s6-1": {
    "after": 0.6
@@ -130,7 +130,7 @@
    "after": 0.5
   },
   "s10-3": {
-   "after": 0.4
+   "after": 0.6
   },
   "s10-4": {
    "after": 3.0
@@ -181,10 +181,10 @@
    "after": 1.2
   },
   "s13-1": {
-   "after": 0.2
+   "after": 0.6
   },
   "s14-1": {
-   "after": 0.6
+   "after": 1.2
   },
   "s14-2": {
    "after": 0.6
@@ -196,12 +196,12 @@
    "after": 0.5
   },
   "s15-4": {
-   "after": 0.7
-  },
-  "s15-5": {
-   "after": 2.6
+   "after": 0.4
   },
   "s15-6": {
+   "after": 2.6
+  },
+  "s15-7": {
    "after": 3.6
   },
   "s4-9": {
@@ -209,6 +209,39 @@
   },
   "s5-4": {
    "after": 2.6
+  },
+  "s4-3": {
+   "after": 0.25
+  },
+  "s4-4": {
+   "after": 0.5
+  },
+  "s7-1": {
+   "after": 0.6
+  },
+  "s8-2": {
+   "after": 0.6
+  },
+  "s9-1": {
+   "after": 0.6
+  },
+  "s9-9": {
+   "after": 0.5
+  },
+  "s11-1": {
+   "after": 0.6
+  },
+  "s12-2": {
+   "after": 0.6
+  },
+  "s15-2": {
+   "after": 0.25
+  },
+  "s13-2": {
+   "after": 0.2
+  },
+  "s15-5": {
+   "after": 0.7
   }
  }
 }

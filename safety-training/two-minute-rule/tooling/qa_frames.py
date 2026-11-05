@@ -8,8 +8,9 @@ t = json.loads((ROOT / "source/timing.json").read_text())
 AT = sys.argv[sys.argv.index("--at") + 1] if "--at" in sys.argv else "end"  # end | mid (mid-cue catches transitions)
 points = [(c["id"], (c["start"] + c["end"]) / 2 if AT == "mid" else max(0, c["end"] - 0.15)) for c in t["cues"]]
 # the slate and end card are voiced, so they are covered; add the two prediction holds of every save, mid-hold
-for c in t["cues"]:
-    if c["text"] in ("What would make you stop here?", "Your call?"): points.append((c["id"] + "-hold", c["end"] + 1.2))
+pace = json.loads((ROOT / "source/pacing.json").read_text())["cues"]
+for c in t["cues"]:   # the prediction holds are the cues followed by a pause of 2.4 s or more
+    if pace.get(c["id"], {}).get("after", 0) >= 2.4 and c["scene"] != "close-recap": points.append((c["id"] + "-hold", c["end"] + 1.2))
 points.sort(key=lambda p: p[1])
 frames = []
 for name, ts in points:
