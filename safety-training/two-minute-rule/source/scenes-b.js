@@ -30,14 +30,14 @@
         ${P(500, 600, 265, { goggles: true, gloves: 'var(--q3)' })}`)}
       ${A(240, 30, gloss('Bonding = clamps and wires that stop static sparks'), 'data-in="up s7-3~bonding" data-out="fade s7-5 0.3"')}
       ${A(650, 128, lab('Static charge', '', 'color:var(--fix)'), 'data-in="up s7-4~static" data-out="fade s7-6 0.3"')}
-      ${A(20, 20, lab('You · first, before the drum is opened'), 'data-in="up s7-6~clamps" data-out="fade s7-7~green 0.3"')}
+      ${A(20, 20, lab('Clamps first, on bare metal'), 'data-in="up s7-6~clamps" data-out="fade s7-7~green 0.3"')}
       ${A(300, 76, `<span class="tag ok" style="font-size:22px">BONDED ✓</span>`, 'data-in="pop s7-7~green 0.35"')}
       <div class="abs" style="left:790px;top:20px;display:flex;flex-direction:column;gap:8px;white-space:nowrap">
         ${check('Drum', 'data-in="pop s7-7~drum 0.3"')}${check('Pump', 'data-in="pop s7-7~pump 0.3"')}${check('Hose: conductive', 'data-in="pop s7-7~bonded 0.3"')}${check('Tank: grounded', 'data-in="pop s7-7~bonded+0.3 0.3"')}
         <div data-in="fade s7-7~green+0.4 0.4" style="margin-top:6px">${gloss('Won’t go green?<br>Stop &amp; get help', 'font-size:19px;display:inline-block;line-height:1.3;white-space:normal')}</div></div>
       <div class="abs" style="left:0;top:0" data-out="fade s7-6~clamps 0.3">${ring(440, 246, 196, 's7-3~hook')}</div>
     `)}
-    ${SC.casecard({ catch: 'Clamps on the hook · lamp red', catchAt: 's7-3~hook', call: 'fix', callAt: 's7-6', why: 'A step in your procedure', goAt: 's7-7~go', prev: 'No static spark at the vapor', prevAt: 's7-8' })}
+    ${SC.casecard({ catch: 'Clamps still on their hook', catchAt: 's7-3~hook', call: 'fix', callAt: 's7-6', why: 'A step in your procedure', goAt: 's7-7~go', prev: 'No static spark where the vapor comes out', prevAt: 's7-8' })}
     ${SC.predict(S1, 's7-2', 3.0, 's7-3-0.1')}
     ${SC.yourCall(S1, 's7-5', 2.4, 'fix', 's7-6', 's7-6+1.6')}
   `));
@@ -62,11 +62,11 @@
         ${icon('hand', 466, 384, 72, 'var(--dim)', 'data-in="pop s8-7~authorized 0.4" data-out="fade s8-9 0.4"')}
         ${icon('radio', 896, 440, 52, 'var(--ink)', 'data-in="pop s8-8~call 0.35" data-out="fade s8-9+0.4 0.3"')}`)}
       ${A(800, 15, TD.cardInset(), 'data-in="fade ^1.3 0.4" data-out="fade s8-7+0.6 0.4"')}
-      ${A(330, 20, gloss('Roll staging: rolls wait here for the line'), 'data-in="up s8-1+0.3" data-out="fade s8-2~what-0.3 0.3"')}
+      ${A(330, 20, gloss('Roll staging: rolls wait here for the line'), 'data-in="up s8-1~staging" data-out="fade s8-2~what-0.3 0.3"')}
       ${A(400, 6, `<div class="card" style="padding:10px 14px 4px;border-radius:16px"><div style="font-size:19px;font-weight:850;color:var(--q1)">Before your break</div>${TD.beforeBreak()}</div>`, 'data-in="pop s8-3 0.4" data-out="fade s8-7+0.6 0.4"')}
       ${A(30, 16, `<span class="tag hz" style="font-size:22px">Up high: forklift job</span>`, 'data-in="pop s8-3~high+0.2 0.35" data-out="fade s8-7 0.3"')}
       ${A(420, 214, `<div class="bubble right" style="font-size:22px;width:330px">Line’s waiting. Just grab the forklift!</div>`, 'data-in="fade ^1.3 0.4" data-out="fade s8-8~thanks 0.3"')}
-      ${A(608, 164, `<div style="display:flex;gap:8px;align-items:center">${I('clock', '', 'width:34px;height:34px;color:var(--fix)')}<span class="tag" style="font-size:19px;color:var(--fix)">Line waiting</span></div>`, 'data-in="pop s8-5~help 0.35" data-out="fade s8-8~thanks 0.3"')}
+      ${A(608, 164, `<div style="display:flex;gap:8px;align-items:center">${I('clock', '', 'width:34px;height:34px;color:var(--fix)')}<span class="tag" style="font-size:19px;color:var(--fix)">Line waiting</span></div>`, 'data-in="pop s8-5~waiting 0.35" data-out="fade s8-8~thanks 0.3"')}
       ${A(560, 256, `<div class="bubble right" style="font-size:22px">Fair enough.</div>`, 'data-in="pop s8-8.end-0.4 0.35" data-out="fade s8-9 0.3"')}
       ${A(300, 598, gloss('Forklift: ride-on · lifts loads high'), 'data-in="up s8-3~forklift" data-out="fade s8-4~different-0.3 0.3"')}
       ${A(300, 598, gloss('Different truck · its own training'), 'data-in="up s8-4~different" data-out="fade s8-7 0.3"')}
@@ -76,12 +76,12 @@
       ${A(742, 150, `<div class="bubble right" style="font-size:22px;white-space:nowrap">Thanks. What did you see?</div>`, 'data-in="pop s8-9~lead+0.4 0.35" data-out="fade s8-10 0.3"')}
       ${A(976, 256, lab('Your lead', '', 'font-size:18px'), 'data-in="up s8-9~lead+0.5" data-out="fade s8-11 0.3"')}
       ${A(400, 262, `<div style="display:flex;gap:8px">${lab('Trained driver', '', 'font-size:19px')}<span class="tag ok" style="font-size:19px">Forklift ✓</span></div>`, 'data-in="up s8-9~driver" data-out="fade s8-10 0.3"')}
-      ${A(60, 598, gloss('Stand clear · nobody under the forks or in its path'), 'data-in="up s8-9~driver+0.4" data-out="fade s8-10+0.4 0.3"')}
-      ${A(30, 16, `<span class="tag grey" style="font-size:21px">Fixed: next rolls stay at floor level</span>`, 'data-in="up s8-10~go+0.3"')}
+      ${A(60, 598, gloss('Stand clear · nobody under the forks or in its path'), 'data-in="up s8-9~stand" data-out="fade s8-10+0.4 0.3"')}
+      
       <div class="abs" style="left:0;top:0" data-out="fade s8-7 0.3">${ring(180, 222, 290, 's8-3~high')}</div>
       <div class="abs" style="left:0;top:0" data-out="fade s8-7 0.3">${ring(991, 174, 76, 's8-4~card')}</div>
     `)}
-    ${SC.casecard({ catch: 'Up high: forklift job · card: pallet truck only<div class="srcline" style="margin-top:6px;font-size:19px">29 CFR 1910.178(l)</div>', catchAt: 's8-4~card', call: 'stop', callAt: 's8-7', why: 'Not authorized: trained on the pallet truck, not the forklift', goAt: 's8-10~go', prev: 'No driving a truck you’re not trained on', prevAt: 's8-11' })}
+    ${SC.casecard({ catch: 'Up high: forklift job · card: pallet truck only<div class="srcline" style="margin-top:6px;font-size:19px">29 CFR 1910.178(l)</div>', catchAt: 's8-4~card', call: 'stop', callAt: 's8-7', why: 'Not authorized to drive a forklift', goAt: 's8-10~go', prev: 'Nobody drives a truck they’re not trained on', prevAt: 's8-11' })}
     ${SC.predict(S2, 's8-2', 3.0, 's8-3-0.1')}
     ${SC.yourCall(S2, 's8-6', 2.4, 'stop', 's8-7', 's8-7+1.6')}
   `));
@@ -94,18 +94,18 @@
     ${SC.sting()}
     ${SC.topband(3, 'Die cutter', 'handover', ['', '', 's9-3 s9-5', ''], SC.WHEN.s3)}
     ${stage(`
-      ${svg(`${TD.dieCutter({ guardOff: 'data-out="fade s9-8~guard 0.4"', guardOn: 'data-in="fade s9-8~guard+0.2 0.5"', lock: 'data-out="up s9-8~back+0.1 0.4"', note: 'data-out="fade s9-9 0.4"' })}
+      ${svg(`${TD.dieCutter({ guardOff: 'data-out="fade s9-8~guard 0.4"', guardOn: 'data-in="fade s9-8~guard+0.2 0.5"', lock: 'data-out="up s9-8~removes 0.4"', note: 'data-out="fade s9-9 0.4"' })}
         ${icon('check', 520, 462, 40, 'var(--go)', 'data-in="pop s9-8~guard+0.8 0.3"')}
         <g id="s9-tech"><g data-in="fade s9-7~owner 0.5" data-out="fade s9-9 0.4">${P(820, 600, 290, { gloves: 'var(--q1)' })}</g></g>
         ${P(950, 600, 300)}
         ${icon('phone', 880, 410, 50, 'var(--ink)', 'data-in="pop s9-6~help 0.35" data-out="fade s9-7 0.3"')}`)}
       ${A(748, 536, `<span class="tag grey" style="font-size:18px;transform:rotate(-6deg);display:inline-block">Assumed</span>`, 'data-in="pop s9-3 0.35" data-out="fade s9-6 0.3"')}
       ${A(300, 70, gloss('Die station = where patches are cut'), 'data-in="up s9-3~station" data-out="fade s9-5 0.3"')}
-      ${A(270, 604, `<span class="tag ok" style="font-size:20px">Checked: guard off · lock on</span>`, 'data-in="up s9-4~lock+0.3" data-out="fade s9-6 0.3"')}
-      ${A(760, 92, lab('You call your lead', '', 'font-size:20px'), 'data-in="up s9-6~help+0.2" data-out="fade s9-7 0.3"')}
+      
+      
       ${A(700, 120, lab('Technician · lock owner', '', 'font-size:20px'), 'data-in="up s9-7~owner+0.2" data-out="fade s9-8~restart 0.3"')}
-      ${A(770, 196, `<span class="tag grey" style="font-size:18px">Owner removes their own lock</span>`, 'data-in="pop s9-8~back+0.1 0.3" data-out="fade s9-9 0.3"')}
-      ${A(20, 10, `<div class="card" style="padding:12px 18px;width:600px;font-size:20px;font-weight:650;line-height:1.35;color:var(--muted)"><b style="color:var(--ink)">Or a supervisor, by the site’s lock-removal procedure:</b><br>owner not on site · every effort to reach them · told before they’re back</div>`, 'data-in="up s9-7~supervisor" data-out="fade s9-8 0.3"')}
+      ${A(770, 196, `<span class="tag grey" style="font-size:18px">Owner removes their lock</span>`, 'data-in="pop s9-8~removes 0.3" data-out="fade s9-9 0.3"')}
+      ${A(20, 10, `<div class="card" style="padding:12px 18px;width:760px;font-size:20px;font-weight:650;line-height:1.35;color:var(--muted)"><b style="color:var(--ink)">Or a supervisor, using the site’s lock-removal procedure:</b><br>owner not on site · every effort to reach them · told before they’re back</div>`, 'data-in="up s9-7~supervisor" data-out="fade s9-8 0.3"')}
       <div class="abs" style="left:20px;top:10px;display:flex;flex-direction:column;gap:6px;white-space:nowrap">
         <div class="lab" style="font-size:20px;font-weight:850;letter-spacing:.1em;color:var(--muted)" data-in="fade s9-8~restart-0.2 0.3">YOU</div>
         ${[['Guard on', 's9-8~restart'], ['Area clear', 's9-8~restart+0.35'], ['Restart checks', 's9-8~checks+0.2']].map(([t, r]) => check(t, `data-in="pop ${r} 0.3"`)).join('')}</div>
@@ -126,27 +126,27 @@
     ${SC.topband(4, 'Potent product', 'change', ['', 's10-3 s10-4', '', ''], SC.WHEN.s4)}
     ${stage(`
       ${svg(`${TD.slitter({ prodA: 'data-out="fade s10-1~changes 0.3"', prodB: 'data-in="fade s10-1~changes 0.3"' })}
-        <g data-in="fade s10-6~wash 0.3" data-out="fade s10-7~then 0.3" fill="var(--q1)">${[0, 1, 2, 3].map(i => `<circle cx="${140 + i * 10}" cy="${420 + (i % 2) * 12}" r="4"/>`).join('')}</g>
+        <g data-in="fade s10-7~wash 0.3" data-out="fade s10-8~then 0.3" fill="var(--q1)">${[0, 1, 2, 3].map(i => `<circle cx="${140 + i * 10}" cy="${420 + (i % 2) * 12}" r="4"/>`).join('')}</g>
         <g id="s10-you">${P(340, 600, 300, { gloves: 'var(--q3)', ppeAttrs: 'data-out="fade s10-6~gloves-0.4 0.3"' })}
-          ${P(340, 600, 300, { ppeOnly: true, gloves: 'var(--q3)', ppeAttrs: 'opacity="0" data-in="fade s10-7~double 0.3"' })}
-          ${TD.coat(340, 600, 300)}${TD.gowned(340, 600, 300, 'data-in="fade s10-7~sleeve 0.5"', 'sleeves')}${TD.gowned(340, 600, 300, 'data-in="fade s10-7~covers+0.2 0.4"', 'gloves')}</g>
+          ${P(340, 600, 300, { ppeOnly: true, gloves: 'var(--q3)', ppeAttrs: 'opacity="0" data-in="fade s10-8~inner 0.3"' })}
+          ${TD.coat(340, 600, 300)}${TD.gowned(340, 600, 300, 'data-in="fade s10-8~sleeve 0.5"', 'sleeves')}${TD.gowned(340, 600, 300, 'data-in="fade s10-8~outer 0.4"', 'gloves')}</g>
         <path d="M390 236 V452" stroke="var(--steel)" stroke-width="3" stroke-dasharray="6 5" data-in="fade ^1.3 0.4" data-out="fade s10-6 0.3"/>`)}
       ${A(285, 15, TD.wrist({ covered: 'opacity="0"' }), 'data-in="fade ^1.3 0.4" data-out="fade s10-6 0.3"')}
       ${A(560, 110, gloss('Potent = strong in tiny amounts'), 'data-in="up s10-1~potent" data-out="fade s10-2~what-0.3 0.3"')}
-      ${A(620, 160, lab('Slitter: normal stop', '', 'font-size:20px'), 'data-in="up s10-6~step" data-out="fade s10-7 0.3"')}
-      ${A(300, 20, gloss('Gloves off to potent waste, as your procedure says'), 'data-in="up s10-6~gloves" data-out="fade s10-6.end 0.3"')}
+      ${A(620, 122, lab('Normal stop', '', 'font-size:20px'), 'data-in="up s10-6~normal" data-out="fade s10-7 0.3"')}
+      ${A(300, 20, gloss('Gloves off, as your procedure says'), 'data-in="up s10-6~gloves" data-out="fade s10-6.end 0.3"')}
       <div class="abs steps" style="left:300px;top:14px;display:flex;flex-direction:column;gap:6px;white-space:nowrap">
         <div data-in="pop s10-7~soap 0.3" style="display:flex;align-items:center;gap:10px">${I('soap', '', 'width:34px;height:34px;color:var(--q1)')}${check('Soap and water')}</div>
         ${cross('No hand sanitizer', 'data-in="pop s10-7~sanitizer 0.3"')}
-        ${check('1 Inner gloves', 'data-in="pop s10-7~double 0.3"', 'var(--q1)')}
-        ${check('2 Sleeve covers', 'data-in="pop s10-7~sleeve 0.3"', 'var(--q1)')}
-        ${check('3 Outer gloves over the cuffs', 'data-in="pop s10-7~covers+0.2 0.3"', 'var(--q1)')}
-        ${check('No skin showing', 'data-in="pop s10-7~covers+0.7 0.3"')}</div>
+        ${check('1 Inner gloves', 'data-in="pop s10-8~inner 0.3"', 'var(--q1)')}
+        ${check('2 Sleeve covers', 'data-in="pop s10-8~sleeve 0.3"', 'var(--q1)')}
+        ${check('3 Outer gloves over the cuffs', 'data-in="pop s10-8~outer 0.3"', 'var(--q1)')}
+        ${check('No skin showing', 'data-in="pop s10-8~cuffs+0.3 0.3"')}</div>
       <div class="abs" style="left:0;top:0" data-out="fade s10-5 0.3">${ring(391, 125, 96, 's10-3~wrists')}</div>
-      <div class="abs" style="left:0;top:0" data-out="fade s10-5 0.3">${A(32, 118, '<div style="width:228px;height:116px;border:6px solid var(--stop);border-radius:18px"></div>', 'data-in="pop s10-3~board 0.45"')}</div>
+      <div class="abs" style="left:0;top:0" data-out="fade s10-5 0.3">${A(32, 118, '<div style="width:228px;height:116px;border:6px solid var(--stop);border-radius:18px"></div>', 'data-in="pop s10-3~now 0.45"')}</div>
     `)}
-    ${SC.casecard({ catch: 'Wrists bare · board: double gloves + sleeve covers', catchAt: 's10-3~board', call: 'fix', callAt: 's10-5', why: 'Your own gowning step', goAt: 's10-7~go', prev: 'No small, repeated doses through skin', prevAt: 's10-8' })}
-    ${A(1120, 640, `<div class="small" style="width:560px;font-weight:650">Adhesive on skin? Wash and report it, as your site says.</div>`, 'data-in="fade s10-8+0.6 0.5"')}
+    ${SC.casecard({ catch: 'Bare wrists · now double gloves + sleeve covers', catchAt: 's10-3~now', call: 'fix', callAt: 's10-5', why: 'Your own gowning step', goAt: 's10-8~go', prev: 'No small, repeated doses through skin', prevAt: 's10-9' })}
+    ${A(1120, 640, `<div class="small" style="width:560px;font-weight:650">Adhesive on skin? Wash and report it, as your site says.</div>`, 'data-in="fade s10-9+0.6 0.5"')}
     ${SC.predict(S4, 's10-2', 3.0, 's10-3-0.1')}
     ${SC.yourCall(S4, 's10-4', 2.4, 'fix', 's10-5', 's10-5+1.6')}
   `));

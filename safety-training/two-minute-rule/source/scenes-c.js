@@ -3,7 +3,7 @@
   const { I, A, P, html, SAVES } = window.SC, SC = window.SC;
 
   // 11 ─ all four end in Go ─────────────────────────────────────────────────
-  const calls = ['fix', 'stop', 'stop', 'fix'], why = ['In procedure', 'Not authorized', 'Someone else’s unfinished work', 'Own gowning step'];
+  const calls = ['fix', 'stop', 'stop', 'fix'], why = ['A step in your procedure', 'Not authorized', 'Someone else’s<br>unfinished work', 'Your own gowning step'];
   html.push(SC.scene('all-four-end-in-go', '', `
     <div class="abs" style="inset:0" data-out="fade s11-1.end 0.4">
       ${A(0, 0, `<div class="h1">All four end in Go</div>`, 'data-in="up s11-1~all"')}
@@ -17,7 +17,7 @@
     </div>
     <div class="abs" style="inset:0" data-in="fade s11-1.end+0.3 0.5">
       ${A(0, 0, `<div class="h1">Most pauses end in Go</div>`)}
-      ${A(0, 120, `<div class="h3 muted">Good for people, product and the line</div>`)}
+      
       <svg id="a4-ticks" class="abs" style="left:40px;top:300px;overflow:visible" width="1600" height="240" viewBox="0 0 1600 240"></svg>
       ${A(40, 540, `<div style="display:flex;gap:12px;align-items:center;font-size:26px;font-weight:700"><span style="width:30px;height:30px;border-radius:50%;background:var(--go)"></span>Four saves, among all the pauses that simply ended in Go</div>`)}
     </div>
@@ -32,7 +32,7 @@
         <g data-in="fade s12-1~contractor 0.5">${P(760, 600, 320)}<g style="color:var(--amber)"><svg x="726" y="230" width="68" height="68"><use href="#i-helmet"/></svg></g></g>
       </svg>
       ${A(880, 140, `<div class="h2">Anyone can stop a job</div>`, 'data-in="up s12-1+0.2"')}
-      ${A(880, 240, `<div class="h4 muted">Staff &amp; contractors</div>`, 'data-in="up s12-1~contractor"')}
+      ${A(880, 240, `<div class="h4 muted">Staff or contractor</div>`, 'data-in="up s12-1~contractor"')}
       ${A(880, 300, `<div style="display:flex;gap:12px;align-items:center">${I('clock', '', 'width:40px;height:40px;color:var(--amber)')}<span class="h4 muted">Even on a late batch</span></div>`, 'data-in="up s12-1~late"')}
       ${A(880, 400, `<div class="h3" style="color:var(--amber)">No punishment · No blame</div>`, 'data-in="up s12-1~punishment"')}
       ${A(880, 480, `<div style="font-size:28px;font-weight:700;line-height:1.3;color:var(--ink)">Stop the task. Running processes are stopped only through your operating procedures.</div>`, 'data-in="fade s12-1~punishment+0.6"', 'width:720px')}
@@ -55,8 +55,8 @@
     <div class="abs" style="inset:0" data-in="fade s12-3 0.4">
       ${A(160, 160, `<div style="position:relative;color:var(--muted)">${I('form', '', 'width:240px;height:240px')}<svg class="abs" style="left:-20px;top:-10px" width="280" height="260"><path d="M20 240 L260 20" stroke="var(--dim)" stroke-width="10" stroke-linecap="round" pathLength="1" data-in="draw s12-3+0.3 0.5"/></svg></div>`)}
       ${A(160, 450, `<div class="h2">Not a form</div>`, 'data-in="up s12-3~form"')}
-      ${A(760, 230, `<div style="display:flex;align-items:center;gap:26px">${I('mag', '', 'width:110px;height:110px;color:var(--ink)')}<span style="font-size:60px;color:var(--muted)">→</span>${I('doc', '', 'width:120px;height:120px;color:var(--q3)')}</div>`, 'data-in="fade s12-3~form 0.5"')}
-      ${A(760, 450, `<div class="h3">Report what you caught the usual way</div>`, 'data-in="up s12-3~form+0.2"')}
+      ${A(760, 230, `<div style="display:flex;align-items:center;gap:26px">${I('mag', '', 'width:110px;height:110px;color:var(--ink)')}<span style="font-size:60px;color:var(--muted)">→</span>${I('doc', '', 'width:120px;height:120px;color:var(--q3)')}</div>`, 'data-in="fade s12-3~report 0.5"')}
+      ${A(760, 450, `<div class="h3">Report what you caught the usual way</div>`, 'data-in="up s12-3~report"')}
     </div>
   `));
 
@@ -75,7 +75,7 @@
         ${[0, 1, 2, 3].map(i => `<div data-in="pop ${['s13-2~what\'s', 's13-2~could', 's13-3', 's13-3~what'][i]} 0.4">${SC.qcard(i, 'padding:15px 24px')}</div>`).join('')}
       </div>
       <div class="abs" style="left:0;top:452px;width:1560px;display:flex;justify-content:center">${SC.btns(['', '', ''], ['data-in="pop s13-4~go 0.4"', 'data-in="pop s13-4~fix 0.4"', 'data-in="pop s13-4~stop 0.4"'],
-        ['', '<div class="small" style="margin:10px 18px 0;text-align:center;font-weight:700;color:var(--ink)" data-in="fade s13-5~procedure">Only if trained,<br>authorized &amp; in procedure</div>', '<div class="small" style="margin:10px 18px 0;text-align:center;font-weight:700;color:var(--ink)" data-in="fade s13-4~help+0.3">No permit yet · someone else’s unfinished work<br>not authorized · not sure → your lead</div>'])}</div>
+        ['', '<div class="small" style="margin:10px 18px 0;text-align:center;font-weight:700;color:var(--ink)" data-in="fade s13-5~only">Only if trained,<br>authorized &amp; in procedure</div>', '<div class="small" style="margin:10px 18px 0;text-align:center;font-weight:700;color:var(--ink)" data-in="fade s13-4~help+0.3">No permit yet · someone else’s unfinished work<br>not authorized · not sure → your lead</div>'])}</div>
     </div>
     <div class="abs lightvars" style="inset:-110px -120px -198px -120px;background:#fbf9f4" data-in="up s13-7-0.5 0.6">
       <div class="abs" style="left:240px;top:170px;width:1440px">
@@ -89,7 +89,7 @@
     </div>
     <div class="abs lightvars" style="inset:-110px -120px -198px -120px;background:#fbf9f4" data-in="up s13-8-0.6 0.6">
       <div class="abs" style="left:200px;top:140px;width:1520px">
-        <div class="h4">Follow your site’s procedures, permits and lockout. This video is awareness training, not lockout, solvent-bonding, forklift-operator or potent-compound handling training.</div>
+        <div class="h4">Follow your site’s procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or potent-compound handling training.</div>
         <div class="kicker" style="margin-top:34px">Sources</div>
         <ol style="margin:16px 0 0;padding-left:34px;font-size:25px;line-height:1.5;color:var(--ink)">
           <li>21 CFR 211.130(e), packaging and labeling operations (line clearance)</li>
@@ -156,12 +156,12 @@
   };
   H['save-3-die-cutter-lock'] = (t, lt, a) => {
     const R = r => a.ref(r, 'save-3-die-cutter-lock');
-    const go = a.ease.inOut(a.prog(t, R('s9-8~finishes'), 0.9)), back = a.ease.inOut(a.prog(t, R('s9-8~back+0.6'), 0.7));
+    const go = a.ease.inOut(a.prog(t, R('s9-8~finishes'), 0.9)), back = a.ease.inOut(a.prog(t, R('s9-8~removes+0.4'), 0.7));
     $('s9-tech').setAttribute('transform', `translate(${(-200 * (go - back)).toFixed(1)} 0)`);
   };
   H['save-4-potent-ppe'] = (t, lt, a) => {
     const R = r => a.ref(r, 'save-4-potent-ppe');
-    const away = a.ease.inOut(a.prog(t, R('s10-6~gloves+0.3'), 1.2)), back = a.ease.inOut(a.prog(t, R('s10-7~go-0.9'), 0.9));
+    const away = a.ease.inOut(a.prog(t, R('s10-6~gloves+0.3'), 1.2)), back = a.ease.inOut(a.prog(t, R('s10-8~go-0.9'), 0.9));
     $('s10-you').setAttribute('transform', `translate(${(-125 * (away - back)).toFixed(1)} 0)`);
   };
   H['all-four-end-in-go'] = (t, lt, a) => ticks('a4-ticks', t, a.ref('s11-1.end+0.4', 'all-four-end-in-go') - 3, true);

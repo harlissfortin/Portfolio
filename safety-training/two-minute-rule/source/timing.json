@@ -7,79 +7,79 @@
    "id": "title-open",
    "chapter": "Intro",
    "start": 0.0,
-   "end": 14.729
+   "end": 15.17
   },
   {
    "id": "the-rule",
    "chapter": "The rule",
-   "start": 14.729,
-   "end": 27.122
+   "start": 15.17,
+   "end": 29.387
   },
   {
    "id": "line-clearance",
    "chapter": "Line clearance for people",
-   "start": 27.122,
-   "end": 39.397
+   "start": 29.387,
+   "end": 42.888
   },
   {
    "id": "how-to-run-it",
    "chapter": "Stop · Look · Ask · Decide",
-   "start": 39.397,
-   "end": 82.855
+   "start": 42.888,
+   "end": 86.732
   },
   {
    "id": "routine-go",
    "chapter": "A routine Go",
-   "start": 82.855,
-   "end": 104.643
+   "start": 86.732,
+   "end": 109.248
   },
   {
    "id": "four-saves",
    "chapter": "Four saves",
-   "start": 104.643,
-   "end": 121.336
+   "start": 109.248,
+   "end": 125.484
   },
   {
    "id": "save-1-solvent-bonding",
    "chapter": "Save 1 · Solvent transfer",
-   "start": 121.336,
-   "end": 163.449
+   "start": 125.484,
+   "end": 167.982
   },
   {
    "id": "save-2-material-handling",
    "chapter": "Save 2 · Roll staging",
-   "start": 163.449,
-   "end": 213.89
+   "start": 167.982,
+   "end": 221.056
   },
   {
    "id": "save-3-die-cutter-lock",
    "chapter": "Save 3 · Die cutter",
-   "start": 213.89,
-   "end": 260.703
+   "start": 221.056,
+   "end": 269.524
   },
   {
    "id": "save-4-potent-ppe",
    "chapter": "Save 4 · Potent product",
-   "start": 260.703,
-   "end": 308.857
+   "start": 269.524,
+   "end": 321.251
   },
   {
    "id": "all-four-end-in-go",
    "chapter": "All four end in Go",
-   "start": 308.857,
-   "end": 318.985
+   "start": 321.251,
+   "end": 331.4
   },
   {
    "id": "what-makes-it-work",
    "chapter": "What leaders commit to",
-   "start": 318.985,
-   "end": 337.535
+   "start": 331.4,
+   "end": 352.83
   },
   {
    "id": "close-recap",
    "chapter": "Recap card",
-   "start": 337.535,
-   "end": 386.731
+   "start": 352.83,
+   "end": 402.774
   }
  ],
  "cues": [
@@ -87,3734 +87,3871 @@
    "id": "s1-1",
    "scene": "title-open",
    "start": 1.2,
-   "end": 4.875,
-   "text": "Solvent to pump, a pallet to move, a roll to slit.",
+   "end": 5.316,
+   "text": "Every shift, you pump solvent, move pallets and slit rolls.",
    "words": [
     [
-     "solvent",
+     "every",
      1.2
     ],
     [
-     "to",
-     1.718
+     "shift",
+     1.562
+    ],
+    [
+     "you",
+     1.984
     ],
     [
      "pump",
-     1.912
+     2.225
     ],
     [
-     "a",
-     2.53
-    ],
-    [
-     "pallet",
-     2.652
-    ],
-    [
-     "to",
-     3.08
+     "solvent",
+     2.527
     ],
     [
      "move",
-     3.263
+     3.4
     ],
     [
-     "a",
-     3.71
+     "pallets",
+     3.73
     ],
     [
-     "roll",
-     3.856
-    ],
-    [
-     "to",
-     4.22
+     "and",
+     4.259
     ],
     [
      "slit",
-     4.438
+     4.523
+    ],
+    [
+     "rolls",
+     4.854
     ]
    ]
   },
   {
    "id": "s1-2",
    "scene": "title-open",
-   "start": 5.215,
-   "end": 9.414,
+   "start": 5.656,
+   "end": 9.856,
    "text": "You know these jobs. But today, something might be different.",
    "words": [
     [
      "you",
-     5.215
+     5.656
     ],
     [
      "know",
-     5.485
+     5.927
     ],
     [
      "these",
-     5.823
+     6.265
     ],
     [
      "jobs",
-     6.229
+     6.67
     ],
     [
      "but",
-     7.055
+     7.496
     ],
     [
      "today",
-     7.291
+     7.732
     ],
     [
      "something",
-     7.885
+     8.326
     ],
     [
      "might",
-     8.395
+     8.836
     ],
     [
      "be",
-     8.7
+     9.142
     ],
     [
      "different",
-     8.853
+     9.295
     ]
    ]
   },
   {
    "id": "s1-3",
    "scene": "title-open",
-   "start": 10.014,
-   "end": 12.589,
+   "start": 10.456,
+   "end": 13.03,
    "text": "Before your hands move, take two minutes.",
    "words": [
     [
      "before",
-     10.014
+     10.456
     ],
     [
      "your",
-     10.399
+     10.841
     ],
     [
      "hands",
-     10.674
+     11.116
     ],
     [
      "move",
-     11.004
+     11.446
     ],
     [
      "take",
-     11.564
+     12.006
     ],
     [
      "two",
-     11.849
+     12.29
     ],
     [
      "minutes",
-     12.076
+     12.518
     ]
    ]
   },
   {
    "id": "s2-1",
    "scene": "the-rule",
-   "start": 14.729,
-   "end": 18.95,
+   "start": 15.17,
+   "end": 19.392,
    "text": "The 2-minute rule: pause at the point of work, before you start,",
    "words": [
     [
      "the",
-     14.729
+     15.17
     ],
     [
      "2-minute",
-     14.979
+     15.421
     ],
     [
      "rule",
-     15.543
+     15.984
     ],
     [
      "pause",
-     16.379
+     16.82
     ],
     [
      "at",
-     16.659
+     17.101
     ],
     [
      "the",
-     16.8
+     17.241
     ],
     [
      "point",
-     16.987
+     17.428
     ],
     [
      "of",
-     17.268
+     17.709
     ],
     [
      "work",
-     17.408
+     17.849
     ],
     [
      "before",
-     17.769
+     18.21
     ],
     [
      "you",
-     18.228
+     18.67
     ],
     [
      "start",
-     18.491
+     18.932
     ]
    ]
   },
   {
    "id": "s2-2",
    "scene": "the-rule",
-   "start": 19.29,
-   "end": 23.316,
-   "text": "and after any break, handover, interruption or change.",
+   "start": 19.732,
+   "end": 24.222,
+   "text": "and after any break, handover, interruption, or change.",
    "words": [
     [
      "and",
-     19.29
+     19.732
     ],
     [
      "after",
-     19.521
+     19.964
     ],
     [
      "any",
-     19.866
+     20.313
     ],
     [
      "break",
-     20.097
+     20.545
     ],
     [
      "handover",
-     20.83
+     21.252
     ],
     [
      "interruption",
-     21.68
+     22.042
     ],
     [
      "or",
-     22.566
+     23.172
     ],
     [
      "change",
-     22.77
+     23.458
     ]
    ]
   },
   {
    "id": "s2-3",
    "scene": "the-rule",
-   "start": 23.655,
-   "end": 25.282,
-   "text": "Two minutes is a guide.",
+   "start": 24.562,
+   "end": 28.047,
+   "text": "Two minutes is a guide. What matters is the pause.",
    "words": [
     [
      "two",
-     23.655
+     24.562
     ],
     [
      "minutes",
-     23.927
+     24.788
     ],
     [
      "is",
-     24.469
+     25.242
     ],
     [
      "a",
-     24.672
+     25.412
     ],
     [
      "guide",
-     24.807
+     25.525
+    ],
+    [
+     "what",
+     26.322
+    ],
+    [
+     "matters",
+     26.641
+    ],
+    [
+     "is",
+     27.152
+    ],
+    [
+     "the",
+     27.344
+    ],
+    [
+     "pause",
+     27.6
     ]
    ]
   },
   {
    "id": "s3-1",
    "scene": "line-clearance",
-   "start": 27.122,
-   "end": 29.703,
+   "start": 29.387,
+   "end": 31.968,
    "text": "You already do line clearance for product.",
    "words": [
     [
      "you",
-     27.122
+     29.387
     ],
     [
      "already",
-     27.362
+     29.627
     ],
     [
      "do",
-     27.842
+     30.108
     ],
     [
      "line",
-     28.022
+     30.288
     ],
     [
      "clearance",
-     28.322
+     30.588
     ],
     [
      "for",
-     28.923
+     31.188
     ],
     [
      "product",
-     29.163
+     31.428
     ]
    ]
   },
   {
    "id": "s3-2",
    "scene": "line-clearance",
-   "start": 30.603,
-   "end": 32.809,
+   "start": 32.868,
+   "end": 35.075,
    "text": "This is line clearance for people.",
    "words": [
     [
      "this",
-     30.603
+     32.868
     ],
     [
      "is",
-     30.918
+     33.184
     ],
     [
      "line",
-     31.107
+     33.373
     ],
     [
      "clearance",
-     31.422
+     33.688
     ],
     [
      "for",
-     32.053
+     34.318
     ],
     [
      "people",
-     32.305
+     34.57
     ]
    ]
   },
   {
    "id": "s3-3",
    "scene": "line-clearance",
-   "start": 33.149,
-   "end": 38.457,
-   "text": "It adds to procedures, permits and lockout. It never replaces them.",
+   "start": 35.874,
+   "end": 41.948,
+   "text": "It adds to procedures, permits, lockout and guards. It never replaces them.",
    "words": [
     [
      "it",
-     33.149
+     35.874
     ],
     [
      "adds",
-     33.376
+     36.098
     ],
     [
      "to",
-     33.754
+     36.469
     ],
     [
      "procedures",
-     33.981
+     36.692
     ],
     [
      "permits",
-     35.059
-    ],
-    [
-     "and",
-     35.577
+     37.755
     ],
     [
      "lockout",
-     35.836
+     38.465
+    ],
+    [
+     "and",
+     39.044
+    ],
+    [
+     "guards",
+     39.334
     ],
     [
      "it",
-     36.939
+     40.434
     ],
     [
      "never",
-     37.129
+     40.624
     ],
     [
      "replaces",
-     37.508
+     41.002
     ],
     [
      "them",
-     38.077
+     41.57
     ]
    ]
   },
   {
    "id": "s4-1",
    "scene": "how-to-run-it",
-   "start": 39.397,
-   "end": 40.864,
-   "text": "Stop: hands off.",
+   "start": 42.888,
+   "end": 44.886,
+   "text": "Stop. Hands off.",
    "words": [
     [
      "stop",
-     39.397
+     42.888
     ],
     [
      "hands",
-     39.915
+     43.878
     ],
     [
      "off",
-     40.433
+     44.428
     ]
    ]
   },
   {
    "id": "s4-2",
    "scene": "how-to-run-it",
-   "start": 41.204,
-   "end": 44.677,
-   "text": "Look: around the job, and compare it with the plan.",
+   "start": 45.226,
+   "end": 48.319,
+   "text": "Look around the job and compare with the plan.",
    "words": [
     [
      "look",
-     41.204
+     45.226
     ],
     [
      "around",
-     41.764
+     45.555
     ],
     [
      "the",
-     42.18
+     46.016
     ],
     [
      "job",
-     42.418
+     46.279
     ],
     [
      "and",
-     43.034
+     46.542
     ],
     [
      "compare",
-     43.254
-    ],
-    [
-     "it",
-     43.692
+     46.805
     ],
     [
      "with",
-     43.856
+     47.332
     ],
     [
      "the",
-     44.13
+     47.661
     ],
     [
      "plan",
-     44.349
+     47.924
     ]
    ]
   },
   {
    "id": "s4-3",
    "scene": "how-to-run-it",
-   "start": 45.017,
-   "end": 48.678,
+   "start": 48.659,
+   "end": 52.666,
    "text": "Ask four questions: What's different? What could hurt us?",
    "words": [
     [
      "ask",
-     45.017
+     48.659
     ],
     [
      "four",
-     45.305
+     48.947
     ],
     [
      "questions",
-     45.665
+     49.307
     ],
     [
      "what's",
-     46.607
+     50.329
     ],
     [
      "different",
-     46.95
+     50.663
     ],
     [
      "what",
-     47.747
+     51.459
     ],
     [
      "could",
-     47.98
+     51.761
     ],
     [
      "hurt",
-     48.259
+     52.123
     ],
     [
      "us",
-     48.492
+     52.425
     ]
    ]
   },
   {
    "id": "s4-4",
    "scene": "how-to-run-it",
-   "start": 48.928,
-   "end": 51.878,
+   "start": 52.916,
+   "end": 55.866,
    "text": "Checked or assumed? What if it goes wrong?",
    "words": [
     [
      "checked",
-     48.928
+     52.916
     ],
     [
      "or",
-     49.488
+     53.476
     ],
     [
      "assumed",
-     49.698
+     53.686
     ],
     [
      "what",
-     50.698
+     54.686
     ],
     [
      "if",
-     50.954
+     54.943
     ],
     [
      "it",
-     51.108
+     55.097
     ],
     [
      "goes",
-     51.262
+     55.251
     ],
     [
      "wrong",
-     51.519
+     55.507
     ]
    ]
   },
   {
    "id": "s4-5",
    "scene": "how-to-run-it",
-   "start": 52.378,
-   "end": 58.001,
-   "text": "“Checked or assumed” means: did you look or test it yourself, or are you guessing?",
+   "start": 56.366,
+   "end": 61.599,
+   "text": "Checked means you saw or tested it yourself.\nAssumed means you're guessing.",
    "words": [
     [
      "checked",
-     52.378
-    ],
-    [
-     "or",
-     52.999
-    ],
-    [
-     "assumed",
-     53.206
+     56.366
     ],
     [
      "means",
-     53.908
-    ],
-    [
-     "did",
-     55.128
+     56.878
     ],
     [
      "you",
-     55.337
+     57.262
     ],
     [
-     "look",
-     55.546
+     "saw",
+     57.518
     ],
     [
      "or",
-     55.807
+     57.774
     ],
     [
-     "test",
-     55.964
+     "tested",
+     57.966
     ],
     [
      "it",
-     56.225
+     58.414
     ],
     [
      "yourself",
-     56.381
+     58.606
     ],
     [
-     "or",
-     56.904
+     "assumed",
+     59.836
     ],
     [
-     "are",
-     57.061
+     "means",
+     60.291
     ],
     [
-     "you",
-     57.269
+     "you're",
+     60.632
     ],
     [
      "guessing",
-     57.478
+     61.031
     ]
    ]
   },
   {
    "id": "s4-6",
    "scene": "how-to-run-it",
-   "start": 58.341,
-   "end": 63.918,
+   "start": 62.199,
+   "end": 67.777,
    "text": "Decide: Go, Fix it, or Stop & get help. That's your call.",
    "words": [
     [
      "decide",
-     58.341
+     62.199
     ],
     [
      "go",
-     59.401
+     63.259
     ],
     [
      "fix",
-     60.101
+     63.959
     ],
     [
      "it",
-     60.491
+     64.349
     ],
     [
      "or",
-     61.141
+     64.999
     ],
     [
      "stop",
-     61.351
+     65.209
     ],
     [
      "",
-     61.701
+     65.559
     ],
     [
      "get",
-     61.841
+     65.699
     ],
     [
      "help",
-     62.121
+     65.979
     ],
     [
      "that's",
-     62.911
+     66.769
     ],
     [
      "your",
-     63.303
+     67.161
     ],
     [
      "call",
-     63.582
+     67.441
     ]
    ]
   },
   {
    "id": "s4-7",
    "scene": "how-to-run-it",
-   "start": 64.818,
-   "end": 70.176,
+   "start": 68.677,
+   "end": 74.053,
    "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
    "words": [
     [
      "fix",
-     64.818
+     68.677
     ],
     [
      "it",
-     65.08
+     68.949
     ],
     [
      "only",
-     65.276
+     69.153
     ],
     [
      "if",
-     65.604
+     69.493
     ],
     [
      "you're",
-     65.8
+     69.697
     ],
     [
      "trained",
-     66.258
+     70.174
     ],
     [
      "and",
-     66.781
+     70.718
     ],
     [
      "authorized",
-     67.043
+     70.99
     ],
     [
      "and",
-     68.278
+     72.247
     ],
     [
      "it's",
-     68.495
+     72.453
     ],
     [
      "a",
-     68.766
+     72.711
     ],
     [
      "step",
-     68.875
+     72.814
     ],
     [
      "in",
-     69.146
+     73.072
     ],
     [
      "your",
-     69.308
+     73.227
     ],
     [
      "procedure",
-     69.58
+     73.485
     ]
    ]
   },
   {
    "id": "s4-8",
    "scene": "how-to-run-it",
-   "start": 70.516,
-   "end": 76.877,
-   "text": "No permit yet? Someone else's unfinished work? Not authorized? Stop & get help.",
+   "start": 74.393,
+   "end": 80.754,
+   "text": "No permit yet? Someone else's unfinished work?\nNot authorized? Stop & get help.",
    "words": [
     [
      "no",
-     70.516
+     74.393
     ],
     [
      "permit",
-     70.742
+     74.619
     ],
     [
      "yet",
-     71.269
+     75.146
     ],
     [
      "someone",
-     71.986
+     75.863
     ],
     [
      "else's",
-     72.454
+     76.33
     ],
     [
      "unfinished",
-     72.863
+     76.739
     ],
     [
      "work",
-     73.505
+     77.382
     ],
     [
      "not",
-     74.056
+     77.933
     ],
     [
      "authorized",
-     74.361
+     78.238
     ],
     [
      "stop",
-     75.596
+     79.473
     ],
     [
      "",
-     75.973
+     79.85
     ],
     [
      "get",
-     76.124
+     80.0
     ],
     [
      "help",
-     76.425
+     80.302
     ]
    ]
   },
   {
    "id": "s4-9",
    "scene": "how-to-run-it",
-   "start": 77.217,
-   "end": 81.055,
+   "start": 81.094,
+   "end": 84.932,
    "text": "Not sure, or the fix doesn't work? Stop & get help.",
    "words": [
     [
      "not",
-     77.217
+     81.094
     ],
     [
      "sure",
-     77.463
+     81.34
     ],
     [
      "or",
-     77.832
+     81.708
     ],
     [
      "the",
-     78.016
+     81.893
     ],
     [
      "fix",
-     78.262
+     82.138
     ],
     [
      "doesn't",
-     78.507
+     82.384
     ],
     [
      "work",
-     78.999
+     82.876
     ],
     [
      "stop",
-     79.757
+     83.634
     ],
     [
      "",
-     80.139
+     84.016
     ],
     [
      "get",
-     80.292
+     84.168
     ],
     [
      "help",
-     80.597
+     84.474
     ]
    ]
   },
   {
    "id": "s5-1",
    "scene": "routine-go",
-   "start": 83.255,
-   "end": 87.282,
-   "text": "First job: moving a laminate roll with the roll lifter.",
+   "start": 87.132,
+   "end": 91.392,
+   "text": "Before you start, you'll move a laminate roll with the roll lifter.",
    "words": [
     [
-     "first",
-     83.255
+     "before",
+     87.132
     ],
     [
-     "job",
-     83.806
+     "you",
+     87.579
     ],
     [
-     "moving",
-     84.675
+     "start",
+     87.834
+    ],
+    [
+     "you'll",
+     88.642
+    ],
+    [
+     "move",
+     89.027
     ],
     [
      "a",
-     85.081
+     89.302
     ],
     [
      "laminate",
-     85.196
+     89.412
     ],
     [
      "roll",
-     85.718
+     89.907
     ],
     [
      "with",
-     86.008
+     90.182
     ],
     [
      "the",
-     86.297
+     90.457
     ],
     [
      "roll",
-     86.529
+     90.677
     ],
     [
      "lifter",
-     86.819
+     90.952
     ]
    ]
   },
   {
    "id": "s5-2",
    "scene": "routine-go",
-   "start": 87.622,
-   "end": 91.474,
+   "start": 91.732,
+   "end": 95.584,
    "text": "What's different? Nothing. What could hurt us? A heavy roll.",
    "words": [
     [
      "what's",
-     87.622
+     91.732
     ],
     [
      "different",
-     87.965
+     92.075
     ],
     [
      "nothing",
-     88.792
+     92.902
     ],
     [
      "what",
-     89.612
+     93.722
     ],
     [
      "could",
-     89.886
+     93.996
     ],
     [
      "hurt",
-     90.215
+     94.325
     ],
     [
      "us",
-     90.488
+     94.598
     ],
     [
      "a",
-     90.707
+     94.817
     ],
     [
      "heavy",
-     90.817
+     94.927
     ],
     [
      "roll",
-     91.145
+     95.255
     ]
    ]
   },
   {
    "id": "s5-3",
    "scene": "routine-go",
-   "start": 91.814,
-   "end": 95.451,
-   "text": "Checked or assumed? Checked: you tested the grip.",
+   "start": 95.924,
+   "end": 99.536,
+   "text": "Checked or assumed? Checked. You tested the grip.",
    "words": [
     [
      "checked",
-     91.814
+     95.924
     ],
     [
      "or",
-     92.382
+     96.472
     ],
     [
      "assumed",
-     92.595
+     96.677
     ],
     [
      "checked",
-     93.614
+     97.654
     ],
     [
      "you",
-     94.214
+     98.274
     ],
     [
      "tested",
-     94.45
+     98.514
     ],
     [
      "the",
-     94.862
+     98.935
     ],
     [
      "grip",
-     95.098
+     99.176
     ]
    ]
   },
   {
    "id": "s5-4",
    "scene": "routine-go",
-   "start": 95.791,
-   "end": 99.419,
+   "start": 99.876,
+   "end": 104.023,
    "text": "What if it goes wrong? Nobody's in the aisle. Your call?",
    "words": [
     [
      "what",
-     95.791
+     99.876
     ],
     [
      "if",
-     96.03
+     100.131
     ],
     [
      "it",
-     96.174
+     100.283
     ],
     [
      "goes",
-     96.317
+     100.436
     ],
     [
      "wrong",
-     96.556
+     100.69
     ],
     [
      "nobody's",
-     97.251
+     101.386
     ],
     [
      "in",
-     97.772
+     101.966
     ],
     [
      "the",
-     97.945
+     102.159
     ],
     [
      "aisle",
-     98.176
+     102.416
     ],
     [
      "your",
-     98.691
+     103.116
     ],
     [
      "call",
-     99.022
+     103.528
     ]
    ]
   },
   {
    "id": "s5-5",
    "scene": "routine-go",
-   "start": 101.819,
-   "end": 103.643,
+   "start": 106.423,
+   "end": 108.248,
    "text": "Go. That took seconds.",
    "words": [
     [
      "go",
-     101.819
+     106.423
     ],
     [
      "that",
-     102.499
+     107.103
     ],
     [
      "took",
-     102.8
+     107.404
     ],
     [
      "seconds",
-     103.101
+     107.705
     ]
    ]
   },
   {
    "id": "s6-1",
    "scene": "four-saves",
-   "start": 104.643,
-   "end": 106.575,
-   "text": "Most pauses end like that.",
+   "start": 109.248,
+   "end": 111.07,
+   "text": "Most pauses end in Go.",
    "words": [
     [
      "most",
-     104.643
+     109.248
     ],
     [
      "pauses",
-     105.001
+     109.644
     ],
     [
      "end",
-     105.502
+     110.199
     ],
     [
-     "like",
-     105.788
+     "in",
+     110.516
     ],
     [
-     "that",
-     106.145
+     "go",
+     110.753
     ]
    ]
   },
   {
    "id": "s6-2",
    "scene": "four-saves",
-   "start": 107.175,
-   "end": 111.697,
-   "text": "But sometimes a question catches a problem. That's a save.",
+   "start": 111.67,
+   "end": 115.847,
+   "text": "But sometimes a pause catches a problem. That's a save.",
    "words": [
     [
      "but",
-     107.175
+     111.67
     ],
     [
      "sometimes",
-     107.445
+     111.936
     ],
     [
      "a",
-     108.12
+     112.599
     ],
     [
-     "question",
-     108.255
+     "pause",
+     112.732
     ],
     [
      "catches",
-     108.862
+     113.13
     ],
     [
      "a",
-     109.402
+     113.661
     ],
     [
      "problem",
-     109.537
+     113.793
     ],
     [
      "that's",
-     110.625
+     114.81
     ],
     [
      "a",
-     111.125
+     115.294
     ],
     [
      "save",
-     111.268
+     115.432
     ]
    ]
   },
   {
    "id": "s6-3",
    "scene": "four-saves",
-   "start": 112.037,
-   "end": 115.087,
+   "start": 116.187,
+   "end": 119.237,
    "text": "Here are four examples, not real events.",
    "words": [
     [
      "here",
-     112.037
+     116.187
     ],
     [
      "are",
-     112.337
+     116.487
     ],
     [
      "four",
-     112.577
+     116.727
     ],
     [
      "examples",
-     112.877
+     117.027
     ],
     [
      "not",
-     113.707
+     117.857
     ],
     [
      "real",
-     114.032
+     118.182
     ],
     [
      "events",
-     114.438
+     118.588
     ]
    ]
   },
   {
    "id": "s6-4",
    "scene": "four-saves",
-   "start": 115.687,
-   "end": 120.136,
-   "text": "Each one asks twice: find the problem, then pick your call.",
+   "start": 119.837,
+   "end": 124.284,
+   "text": "Each one asks you twice: find the problem, then pick your call.",
    "words": [
     [
      "each",
-     115.687
+     119.837
     ],
     [
      "one",
-     116.063
+     120.153
     ],
     [
      "asks",
-     116.364
+     120.406
+    ],
+    [
+     "you",
+     120.722
     ],
     [
      "twice",
-     116.741
+     120.974
     ],
     [
      "find",
-     117.737
+     121.887
     ],
     [
      "the",
-     118.045
+     122.194
     ],
     [
      "problem",
-     118.291
+     122.44
     ],
     [
      "then",
-     118.844
+     122.993
     ],
     [
      "pick",
-     119.152
+     123.3
     ],
     [
      "your",
-     119.459
+     123.608
     ],
     [
      "call",
-     119.767
+     123.915
     ]
    ]
   },
   {
    "id": "s7-1",
    "scene": "save-1-solvent-bonding",
-   "start": 122.736,
-   "end": 127.67,
-   "text": "Mix room, before you start: you'll pump flammable solvent from a drum.",
+   "start": 126.884,
+   "end": 132.097,
+   "text": "In the mix room, before you start, you'll pump flammable solvent from a drum.",
    "words": [
     [
+     "in",
+     126.884
+    ],
+    [
+     "the",
+     127.074
+    ],
+    [
      "mix",
-     122.736
+     127.328
     ],
     [
      "room",
-     123.014
+     127.583
     ],
     [
      "before",
-     123.432
+     128.224
     ],
     [
      "you",
-     123.92
+     128.589
     ],
     [
      "start",
-     124.198
+     128.798
     ],
     [
      "you'll",
-     125.156
+     129.554
     ],
     [
      "pump",
-     125.565
+     129.968
     ],
     [
      "flammable",
-     125.858
+     130.263
     ],
     [
      "solvent",
-     126.442
+     130.855
     ],
     [
      "from",
-     126.91
+     131.328
     ],
     [
      "a",
-     127.202
+     131.623
     ],
     [
      "drum",
-     127.319
+     131.742
     ]
    ]
   },
   {
    "id": "s7-2",
    "scene": "save-1-solvent-bonding",
-   "start": 128.27,
-   "end": 130.79,
+   "start": 132.697,
+   "end": 135.217,
    "text": "Hands off. What would make you stop here?",
    "words": [
     [
      "hands",
-     128.27
+     132.697
     ],
     [
      "off",
-     128.772
+     133.198
     ],
     [
      "what",
-     129.41
+     133.837
     ],
     [
      "would",
-     129.633
+     134.059
     ],
     [
      "make",
-     129.9
+     134.326
     ],
     [
      "you",
-     130.122
+     134.549
     ],
     [
      "stop",
-     130.301
+     134.727
     ],
     [
      "here",
-     130.523
+     134.95
     ]
    ]
   },
   {
    "id": "s7-3",
    "scene": "save-1-solvent-bonding",
-   "start": 133.79,
-   "end": 139.779,
-   "text": "Checked or assumed? The bonding clamps, which stop static sparks, are still on their hook.",
+   "start": 138.217,
+   "end": 144.243,
+   "text": "Checked or assumed?\nThe bonding clamps that stop static sparks are still on their hook.",
    "words": [
     [
      "checked",
-     133.79
+     138.217
     ],
     [
      "or",
-     134.358
+     138.805
     ],
     [
      "assumed",
-     134.571
+     139.025
     ],
     [
      "the",
-     135.74
+     140.217
     ],
     [
      "bonding",
-     135.979
+     140.454
     ],
     [
      "clamps",
-     136.455
+     140.927
     ],
     [
-     "which",
-     136.932
+     "that",
+     141.342
     ],
     [
      "stop",
-     137.289
+     141.638
     ],
     [
      "static",
-     137.587
+     141.934
     ],
     [
      "sparks",
-     138.004
+     142.348
     ],
     [
      "are",
-     138.58
+     142.763
     ],
     [
      "still",
-     138.772
+     143.0
     ],
     [
      "on",
-     139.06
+     143.355
     ],
     [
      "their",
-     139.204
+     143.532
     ],
     [
      "hook",
-     139.492
+     143.888
     ]
    ]
   },
   {
    "id": "s7-4",
    "scene": "save-1-solvent-bonding",
-   "start": 140.119,
-   "end": 144.917,
+   "start": 144.583,
+   "end": 149.381,
    "text": "An unbonded drum or pump can hold a static charge and spark.",
    "words": [
     [
      "an",
-     140.119
+     144.583
     ],
     [
      "unbonded",
-     140.355
+     144.819
     ],
     [
      "drum",
-     141.063
+     145.527
     ],
     [
      "or",
-     141.457
+     145.92
     ],
     [
      "pump",
-     141.692
+     146.156
     ],
     [
      "can",
-     142.086
+     146.549
     ],
     [
      "hold",
-     142.4
+     146.864
     ],
     [
      "a",
-     142.794
+     147.257
     ],
     [
      "static",
-     142.951
+     147.414
     ],
     [
      "charge",
-     143.501
+     147.965
     ],
     [
      "and",
-     144.052
+     148.516
     ],
     [
      "spark",
-     144.367
+     148.83
     ]
    ]
   },
   {
    "id": "s7-5",
    "scene": "save-1-solvent-bonding",
-   "start": 145.617,
-   "end": 146.537,
+   "start": 150.081,
+   "end": 151.0,
    "text": "Your call?",
    "words": [
     [
      "your",
-     145.617
+     150.081
     ],
     [
      "call",
-     146.035
+     150.499
     ]
    ]
   },
   {
    "id": "s7-6",
    "scene": "save-1-solvent-bonding",
-   "start": 148.937,
-   "end": 154.488,
-   "text": "Fix it. Bonding is a step in your procedure: clamps first, on bare metal.",
+   "start": 153.4,
+   "end": 158.959,
+   "text": "Fix it. Bonding is a step in your procedure. Clamps first, on bare metal.",
    "words": [
     [
      "fix",
-     148.937
+     153.4
     ],
     [
      "it",
-     149.252
+     153.725
     ],
     [
      "bonding",
-     149.787
+     154.25
     ],
     [
      "is",
-     150.252
+     154.717
     ],
     [
      "a",
-     150.426
+     154.893
     ],
     [
      "step",
-     150.542
+     155.009
     ],
     [
      "in",
-     150.833
+     155.301
     ],
     [
      "your",
-     151.007
+     155.476
     ],
     [
      "procedure",
-     151.298
+     155.768
     ],
     [
      "clamps",
-     152.427
+     156.93
     ],
     [
      "first",
-     152.917
+     157.405
     ],
     [
      "on",
-     153.517
+     157.99
     ],
     [
      "bare",
-     153.711
+     158.184
     ],
     [
      "metal",
-     154.035
+     158.507
     ]
    ]
   },
   {
    "id": "s7-7",
    "scene": "save-1-solvent-bonding",
-   "start": 154.988,
-   "end": 159.094,
-   "text": "With drum and pump bonded, the lamp turns green: Go.",
+   "start": 159.459,
+   "end": 163.626,
+   "text": "With drum and pump bonded, the lamp turns green. Go.",
    "words": [
     [
      "with",
-     154.988
+     159.459
     ],
     [
      "drum",
-     155.26
+     159.732
     ],
     [
      "and",
-     155.532
+     160.004
     ],
     [
      "pump",
-     155.75
+     160.222
     ],
     [
      "bonded",
-     156.022
+     160.494
     ],
     [
      "the",
-     156.578
+     161.039
     ],
     [
      "lamp",
-     156.838
+     161.301
     ],
     [
      "turns",
-     157.163
+     161.629
     ],
     [
      "green",
-     157.553
+     162.021
     ],
     [
      "go",
-     158.448
+     162.989
     ]
    ]
   },
   {
    "id": "s7-8",
    "scene": "save-1-solvent-bonding",
-   "start": 159.694,
-   "end": 162.509,
+   "start": 164.226,
+   "end": 167.042,
    "text": "No static spark where the vapor comes out.",
    "words": [
     [
      "no",
-     159.694
+     164.226
     ],
     [
      "static",
-     159.89
+     164.423
     ],
     [
      "spark",
-     160.348
+     164.881
     ],
     [
      "where",
-     160.741
+     165.274
     ],
     [
      "the",
-     161.134
+     165.667
     ],
     [
      "vapor",
-     161.396
+     165.929
     ],
     [
      "comes",
-     161.789
+     166.321
     ],
     [
      "out",
-     162.182
+     166.714
     ]
    ]
   },
   {
    "id": "s8-1",
    "scene": "save-2-material-handling",
-   "start": 164.849,
-   "end": 167.511,
-   "text": "After your break, you go for the next roll.",
+   "start": 169.382,
+   "end": 173.394,
+   "text": "After your break, you head to roll staging for the next roll.",
    "words": [
     [
      "after",
-     164.849
+     169.382
     ],
     [
      "your",
-     165.212
+     169.738
     ],
     [
      "break",
-     165.515
+     170.036
     ],
     [
      "you",
-     166.159
+     170.812
     ],
     [
-     "go",
-     166.367
+     "head",
+     171.046
     ],
     [
-     "for",
-     166.523
-    ],
-    [
-     "the",
-     166.731
-    ],
-    [
-     "next",
-     166.939
+     "to",
+     171.34
     ],
     [
      "roll",
-     167.199
+     171.516
+    ],
+    [
+     "staging",
+     171.809
+    ],
+    [
+     "for",
+     172.279
+    ],
+    [
+     "the",
+     172.513
+    ],
+    [
+     "next",
+     172.748
+    ],
+    [
+     "roll",
+     173.041
     ]
    ]
   },
   {
    "id": "s8-2",
    "scene": "save-2-material-handling",
-   "start": 168.111,
-   "end": 170.919,
+   "start": 173.994,
+   "end": 176.802,
    "text": "Look closely. What would make you stop here?",
    "words": [
     [
      "look",
-     168.111
+     173.994
     ],
     [
      "closely",
-     168.496
+     174.379
     ],
     [
      "what",
-     169.501
+     175.384
     ],
     [
      "would",
-     169.729
+     175.612
     ],
     [
      "make",
-     170.004
+     175.887
     ],
     [
      "you",
-     170.233
+     176.116
     ],
     [
      "stop",
-     170.416
+     176.299
     ],
     [
      "here",
-     170.645
+     176.528
     ]
    ]
   },
   {
    "id": "s8-3",
    "scene": "save-2-material-handling",
-   "start": 173.919,
-   "end": 178.205,
+   "start": 179.802,
+   "end": 184.088,
    "text": "What's different? The roll's up high now. That's a forklift job.",
    "words": [
     [
      "what's",
-     173.919
+     179.802
     ],
     [
      "different",
-     174.285
+     180.168
     ],
     [
      "the",
-     174.969
+     180.852
     ],
     [
      "roll's",
-     175.197
+     181.081
     ],
     [
      "up",
-     175.597
+     181.48
     ],
     [
      "high",
-     175.768
+     181.651
     ],
     [
      "now",
-     176.054
+     181.937
     ],
     [
      "that's",
-     176.719
+     182.602
     ],
     [
      "a",
-     177.171
+     183.054
     ],
     [
      "forklift",
-     177.3
+     183.183
     ],
     [
      "job",
-     177.882
+     183.765
     ]
    ]
   },
   {
    "id": "s8-4",
    "scene": "save-2-material-handling",
-   "start": 178.545,
-   "end": 185.572,
-   "text": "Your card says pallet truck only. A forklift is different to drive and needs its own training.",
+   "start": 184.428,
+   "end": 190.381,
+   "text": "Your card says pallet truck only.\nA forklift's a different truck, with its own training.",
    "words": [
     [
      "your",
-     178.545
+     184.428
     ],
     [
      "card",
-     178.883
+     184.691
     ],
     [
      "says",
-     179.221
+     184.954
     ],
     [
      "pallet",
-     179.559
+     185.217
     ],
     [
      "truck",
-     180.033
+     185.586
     ],
     [
      "only",
-     180.439
+     185.902
     ],
     [
      "a",
-     181.485
+     186.298
     ],
     [
-     "forklift",
-     181.619
+     "forklift's",
+     186.461
     ],
     [
-     "is",
-     182.222
+     "a",
+     187.362
     ],
     [
      "different",
-     182.423
+     187.526
     ],
     [
-     "to",
-     183.093
+     "truck",
+     188.345
     ],
     [
-     "drive",
-     183.294
-    ],
-    [
-     "and",
-     183.696
-    ],
-    [
-     "needs",
-     183.964
+     "with",
+     188.998
     ],
     [
      "its",
-     184.366
+     189.298
     ],
     [
      "own",
-     184.634
+     189.539
     ],
     [
      "training",
-     184.902
+     189.78
     ]
    ]
   },
   {
    "id": "s8-5",
    "scene": "save-2-material-handling",
-   "start": 185.912,
-   "end": 189.685,
-   "text": "A co-worker wants to help: “Just grab the forklift.”",
+   "start": 190.721,
+   "end": 195.63,
+   "text": "A co-worker means well: “Line's waiting. Just grab the forklift!”",
    "words": [
     [
      "a",
-     185.912
+     190.721
     ],
     [
      "co-worker",
-     186.039
+     190.85
     ],
     [
-     "wants",
-     186.676
+     "means",
+     191.496
     ],
     [
-     "to",
-     187.058
+     "well",
+     191.884
     ],
     [
-     "help",
-     187.249
+     "line's",
+     192.691
+    ],
+    [
+     "waiting",
+     193.199
     ],
     [
      "just",
-     188.032
+     194.061
     ],
     [
      "grab",
-     188.413
+     194.375
     ],
     [
      "the",
-     188.731
+     194.689
     ],
     [
      "forklift",
-     188.985
+     194.94
     ]
    ]
   },
   {
    "id": "s8-6",
    "scene": "save-2-material-handling",
-   "start": 190.385,
-   "end": 191.461,
+   "start": 196.33,
+   "end": 197.407,
    "text": "So, your call?",
    "words": [
     [
      "so",
-     190.385
+     196.33
     ],
     [
      "your",
-     190.672
+     196.617
     ],
     [
      "call",
-     191.031
+     196.976
     ]
    ]
   },
   {
    "id": "s8-7",
    "scene": "save-2-material-handling",
-   "start": 193.861,
-   "end": 198.043,
+   "start": 199.807,
+   "end": 203.988,
    "text": "Stop & get help. You're not authorized to drive a forklift.",
    "words": [
     [
      "stop",
-     193.861
+     199.807
     ],
     [
      "",
-     194.185
+     200.13
     ],
     [
      "get",
-     194.314
+     200.26
     ],
     [
      "help",
-     194.573
+     200.518
     ],
     [
      "you're",
-     195.041
+     200.987
     ],
     [
      "not",
-     195.53
+     201.475
     ],
     [
      "authorized",
-     195.809
+     201.754
     ],
     [
      "to",
-     196.577
+     202.522
     ],
     [
      "drive",
-     196.786
+     202.731
     ],
     [
      "a",
-     197.205
+     203.15
     ],
     [
      "forklift",
-     197.345
+     203.29
     ]
    ]
   },
   {
    "id": "s8-8",
    "scene": "save-2-material-handling",
-   "start": 198.543,
-   "end": 203.669,
+   "start": 204.488,
+   "end": 209.614,
    "text": "Say it kindly: “Thanks, but I'm not trained on that one. I'll call our lead.”",
    "words": [
     [
      "say",
-     198.543
+     204.488
     ],
     [
      "it",
-     198.724
+     204.67
     ],
     [
      "kindly",
-     198.861
+     204.806
     ],
     [
      "thanks",
-     199.224
+     205.169
     ],
     [
      "but",
-     200.143
+     206.088
     ],
     [
      "i'm",
-     200.397
+     206.342
     ],
     [
      "not",
-     200.652
+     206.597
     ],
     [
      "trained",
-     200.906
+     206.851
     ],
     [
      "on",
-     201.415
+     207.361
     ],
     [
      "that",
-     201.606
+     207.551
     ],
     [
      "one",
-     201.924
+     207.87
     ],
     [
      "i'll",
-     202.543
+     208.488
     ],
     [
      "call",
-     202.811
+     208.756
     ],
     [
      "our",
-     203.079
+     209.024
     ],
     [
      "lead",
-     203.293
+     209.239
     ]
    ]
   },
   {
    "id": "s8-9",
    "scene": "save-2-material-handling",
-   "start": 204.069,
-   "end": 206.225,
-   "text": "Your lead sends a trained driver.",
+   "start": 210.014,
+   "end": 213.392,
+   "text": "Your lead sends a trained driver. You stand clear.",
    "words": [
     [
      "your",
-     204.069
+     210.014
     ],
     [
      "lead",
-     204.386
+     210.288
     ],
     [
      "sends",
-     204.703
+     210.561
     ],
     [
      "a",
-     205.084
+     210.889
     ],
     [
      "trained",
-     205.211
+     210.999
     ],
     [
      "driver",
-     205.718
+     211.436
+    ],
+    [
+     "you",
+     212.244
+    ],
+    [
+     "stand",
+     212.514
+    ],
+    [
+     "clear",
+     212.919
     ]
    ]
   },
   {
    "id": "s8-10",
    "scene": "save-2-material-handling",
-   "start": 208.225,
-   "end": 209.367,
+   "start": 215.392,
+   "end": 216.534,
    "text": "Then it's Go.",
    "words": [
     [
      "then",
-     208.225
+     215.392
     ],
     [
      "it's",
-     208.633
+     215.8
     ],
     [
      "go",
-     209.041
+     216.207
     ]
    ]
   },
   {
    "id": "s8-11",
    "scene": "save-2-material-handling",
-   "start": 209.967,
-   "end": 212.95,
+   "start": 217.134,
+   "end": 220.116,
    "text": "Nobody drives a truck they're not trained on.",
    "words": [
     [
      "nobody",
-     209.967
+     217.134
     ],
     [
      "drives",
-     210.421
+     217.588
     ],
     [
      "a",
-     210.875
+     218.041
     ],
     [
      "truck",
-     211.005
+     218.171
     ],
     [
      "they're",
-     211.394
+     218.56
     ],
     [
      "not",
-     211.912
+     219.079
     ],
     [
      "trained",
-     212.172
+     219.338
     ],
     [
      "on",
-     212.69
+     219.857
     ]
    ]
   },
   {
    "id": "s9-1",
    "scene": "save-3-die-cutter-lock",
-   "start": 215.29,
-   "end": 219.311,
+   "start": 222.456,
+   "end": 226.477,
    "text": "At handover, the die cutter's note says it's ready to run.",
    "words": [
     [
      "at",
-     215.29
+     222.456
     ],
     [
      "handover",
-     215.5
+     222.666
     ],
     [
      "the",
-     216.53
+     223.696
     ],
     [
      "die",
-     216.772
+     223.938
     ],
     [
      "cutter's",
-     217.013
+     224.18
     ],
     [
      "note",
-     217.558
+     224.724
     ],
     [
      "says",
-     217.86
+     225.026
     ],
     [
      "it's",
-     218.162
+     225.328
     ],
     [
      "ready",
-     218.464
+     225.631
     ],
     [
      "to",
-     218.827
+     225.993
     ],
     [
      "run",
-     219.008
+     226.175
     ]
    ]
   },
   {
    "id": "s9-2",
    "scene": "save-3-die-cutter-lock",
-   "start": 219.911,
-   "end": 222.013,
+   "start": 227.077,
+   "end": 229.179,
    "text": "Now, what would make you stop here?",
    "words": [
     [
      "now",
-     219.911
+     227.077
     ],
     [
      "what",
-     220.611
+     227.777
     ],
     [
      "would",
-     220.837
+     228.003
     ],
     [
      "make",
-     221.108
+     228.275
     ],
     [
      "you",
-     221.334
+     228.501
     ],
     [
      "stop",
-     221.515
+     228.682
     ],
     [
      "here",
-     221.741
+     228.908
     ]
    ]
   },
   {
    "id": "s9-3",
    "scene": "save-3-die-cutter-lock",
-   "start": 225.013,
-   "end": 230.413,
+   "start": 232.179,
+   "end": 237.579,
    "text": "Checked or assumed? The guard's off the die station, where patches are cut.",
    "words": [
     [
      "checked",
-     225.013
+     232.179
     ],
     [
      "or",
-     225.581
+     232.747
     ],
     [
      "assumed",
-     225.794
+     232.96
     ],
     [
      "the",
-     226.933
+     234.099
     ],
     [
      "guard's",
-     227.165
+     234.332
     ],
     [
      "off",
-     227.631
+     234.797
     ],
     [
      "the",
-     227.864
+     235.03
     ],
     [
      "die",
-     228.096
+     235.263
     ],
     [
      "station",
-     228.329
+     235.495
     ],
     [
      "where",
-     229.013
+     236.179
     ],
     [
      "patches",
-     229.378
+     236.544
     ],
     [
      "are",
-     229.865
+     237.031
     ],
     [
      "cut",
-     230.108
+     237.275
     ]
    ]
   },
   {
    "id": "s9-4",
    "scene": "save-3-die-cutter-lock",
-   "start": 230.753,
-   "end": 233.15,
+   "start": 237.919,
+   "end": 240.317,
    "text": "And someone else's lock is still on.",
    "words": [
     [
      "and",
-     230.753
+     237.919
     ],
     [
      "someone",
-     231.012
+     238.178
     ],
     [
      "else's",
-     231.53
+     238.697
     ],
     [
      "lock",
-     231.984
+     239.15
     ],
     [
      "is",
-     232.308
+     239.474
     ],
     [
      "still",
-     232.502
+     239.669
     ],
     [
      "on",
-     232.891
+     240.058
     ]
    ]
   },
   {
    "id": "s9-5",
    "scene": "save-3-die-cutter-lock",
-   "start": 233.85,
-   "end": 234.957,
+   "start": 241.017,
+   "end": 242.123,
    "text": "What's your call?",
    "words": [
     [
      "what's",
-     233.85
+     241.017
     ],
     [
      "your",
-     234.281
+     241.447
     ],
     [
      "call",
-     234.588
+     241.754
     ]
    ]
   },
   {
    "id": "s9-6",
    "scene": "save-3-die-cutter-lock",
-   "start": 237.357,
-   "end": 241.2,
+   "start": 244.523,
+   "end": 248.366,
    "text": "Stop & get help. It's someone else's unfinished work.",
    "words": [
     [
      "stop",
-     237.357
+     244.523
     ],
     [
      "",
-     237.657
+     244.823
     ],
     [
      "get",
-     237.777
+     244.943
     ],
     [
      "help",
-     238.017
+     245.183
     ],
     [
      "it's",
-     238.457
+     245.623
     ],
     [
      "someone",
-     238.827
+     245.994
     ],
     [
      "else's",
-     239.42
+     246.587
     ],
     [
      "unfinished",
-     239.939
+     247.106
     ],
     [
      "work",
-     240.755
+     247.921
     ]
    ]
   },
   {
    "id": "s9-7",
    "scene": "save-3-die-cutter-lock",
-   "start": 241.7,
-   "end": 248.53,
-   "text": "Only the lock's owner removes it, or a supervisor under the site's lock-removal procedure.",
+   "start": 248.866,
+   "end": 255.9,
+   "text": "Only the lock's owner removes it, or a supervisor, using the site's lock-removal procedure.",
    "words": [
     [
      "only",
-     241.7
+     248.866
     ],
     [
      "the",
-     242.023
+     249.171
     ],
     [
      "lock's",
-     242.282
+     249.414
     ],
     [
      "owner",
-     242.735
+     249.84
     ],
     [
      "removes",
-     243.123
+     250.206
     ],
     [
      "it",
-     243.641
+     250.693
     ],
     [
      "or",
-     244.37
+     251.306
     ],
     [
      "a",
-     244.589
+     251.543
     ],
     [
      "supervisor",
-     244.735
+     251.7
     ],
     [
-     "under",
-     245.538
+     "using",
+     253.116
     ],
     [
      "the",
-     245.975
+     253.524
     ],
     [
      "site's",
-     246.267
+     253.795
     ],
     [
      "lock-removal",
-     246.778
+     254.27
     ],
     [
      "procedure",
-     247.727
+     255.153
     ]
    ]
   },
   {
    "id": "s9-8",
    "scene": "save-3-die-cutter-lock",
-   "start": 248.93,
-   "end": 254.399,
-   "text": "The owner finishes and puts the guard back. After your restart checks, it's Go.",
+   "start": 256.6,
+   "end": 263.369,
+   "text": "The owner finishes, puts the guard back and removes their lock.\nYou run restart checks. Go.",
    "words": [
     [
      "the",
-     248.93
+     256.6
     ],
     [
      "owner",
-     249.155
+     256.84
     ],
     [
      "finishes",
-     249.493
-    ],
-    [
-     "and",
-     250.001
+     257.2
     ],
     [
      "puts",
-     250.226
+     257.95
     ],
     [
      "the",
-     250.508
+     258.21
     ],
     [
      "guard",
-     250.733
+     258.418
     ],
     [
      "back",
-     251.072
+     258.73
     ],
     [
-     "after",
-     251.98
+     "and",
+     258.991
     ],
     [
-     "your",
-     252.331
+     "removes",
+     259.199
+    ],
+    [
+     "their",
+     259.615
+    ],
+    [
+     "lock",
+     259.928
+    ],
+    [
+     "you",
+     260.68
+    ],
+    [
+     "run",
+     260.95
     ],
     [
      "restart",
-     252.624
+     261.22
     ],
     [
      "checks",
-     253.092
-    ],
-    [
-     "it's",
-     253.64
+     261.76
     ],
     [
      "go",
-     254.062
+     262.76
     ]
    ]
   },
   {
    "id": "s9-9",
    "scene": "save-3-die-cutter-lock",
-   "start": 254.999,
-   "end": 259.763,
-   "text": "The die cutter never runs with its guard off and the work unfinished.",
+   "start": 263.969,
+   "end": 268.584,
+   "text": "The die cutter never starts with the guard off and the work unfinished.",
    "words": [
     [
      "the",
-     254.999
+     263.969
     ],
     [
      "die",
-     255.272
+     264.225
     ],
     [
      "cutter",
-     255.544
+     264.482
     ],
     [
      "never",
-     256.02
+     264.93
     ],
     [
-     "runs",
-     256.428
+     "starts",
+     265.315
     ],
     [
      "with",
-     256.769
-    ],
-    [
-     "its",
-     257.109
-    ],
-    [
-     "guard",
-     257.381
-    ],
-    [
-     "off",
-     257.789
-    ],
-    [
-     "and",
-     258.061
+     265.764
     ],
     [
      "the",
-     258.334
+     266.084
+    ],
+    [
+     "guard",
+     266.34
+    ],
+    [
+     "off",
+     266.725
+    ],
+    [
+     "and",
+     266.981
+    ],
+    [
+     "the",
+     267.238
     ],
     [
      "work",
-     258.606
+     267.494
     ],
     [
      "unfinished",
-     258.946
+     267.814
     ]
    ]
   },
   {
    "id": "s10-1",
    "scene": "save-4-potent-ppe",
-   "start": 262.103,
-   "end": 267.167,
+   "start": 270.924,
+   "end": 275.988,
    "text": "The slitter changes over to a potent product, strong in tiny amounts.",
    "words": [
     [
      "the",
-     262.103
+     270.924
     ],
     [
      "slitter",
-     262.336
+     271.157
     ],
     [
      "changes",
-     262.802
+     271.623
     ],
     [
      "over",
-     263.268
+     272.089
     ],
     [
      "to",
-     263.559
+     272.38
     ],
     [
      "a",
-     263.734
+     272.555
     ],
     [
      "potent",
-     263.85
+     272.671
     ],
     [
      "product",
-     264.258
+     273.079
     ],
     [
      "strong",
-     265.183
+     274.004
     ],
     [
      "in",
-     265.761
+     274.582
     ],
     [
      "tiny",
-     266.01
+     274.83
     ],
     [
      "amounts",
-     266.423
+     275.244
     ]
    ]
   },
   {
    "id": "s10-2",
    "scene": "save-4-potent-ppe",
-   "start": 267.767,
-   "end": 270.192,
+   "start": 276.588,
+   "end": 279.013,
    "text": "Your turn. What would make you stop here?",
    "words": [
     [
      "your",
-     267.767
+     276.588
     ],
     [
      "turn",
-     268.145
+     276.965
     ],
     [
      "what",
-     268.837
+     277.658
     ],
     [
      "would",
-     269.056
+     277.877
     ],
     [
      "make",
-     269.318
+     278.139
     ],
     [
      "you",
-     269.537
+     278.357
     ],
     [
      "stop",
-     269.711
+     278.532
     ],
     [
      "here",
-     269.93
+     278.751
     ]
    ]
   },
   {
    "id": "s10-3",
    "scene": "save-4-potent-ppe",
-   "start": 273.192,
-   "end": 279.167,
-   "text": "What could hurt us? This product, on bare wrists. The board now says double gloves.",
+   "start": 282.013,
+   "end": 288.606,
+   "text": "What could hurt us? This product, on bare wrists.\nNow it's double gloves and sleeve covers.",
    "words": [
     [
      "what",
-     273.192
+     282.013
     ],
     [
      "could",
-     273.435
+     282.248
     ],
     [
      "hurt",
-     273.726
+     282.53
     ],
     [
      "us",
-     273.968
+     282.765
     ],
     [
      "this",
-     274.452
+     283.273
     ],
     [
      "product",
-     274.795
+     283.611
     ],
     [
      "on",
-     275.413
+     284.22
     ],
     [
      "bare",
-     275.619
+     284.423
     ],
     [
      "wrists",
-     275.963
-    ],
-    [
-     "the",
-     276.942
-    ],
-    [
-     "board",
-     277.204
+     284.762
     ],
     [
      "now",
-     277.596
+     285.813
     ],
     [
-     "says",
-     277.858
+     "it's",
+     286.079
     ],
     [
      "double",
-     278.185
+     286.411
     ],
     [
      "gloves",
-     278.643
+     286.877
+    ],
+    [
+     "and",
+     287.342
+    ],
+    [
+     "sleeve",
+     287.608
+    ],
+    [
+     "covers",
+     288.074
     ]
    ]
   },
   {
    "id": "s10-4",
    "scene": "save-4-potent-ppe",
-   "start": 279.867,
-   "end": 280.871,
+   "start": 289.306,
+   "end": 290.31,
    "text": "And your call?",
    "words": [
     [
      "and",
-     279.867
+     289.306
     ],
     [
      "your",
-     280.134
+     289.573
     ],
     [
      "call",
-     280.469
+     289.908
     ]
    ]
   },
   {
    "id": "s10-5",
    "scene": "save-4-potent-ppe",
-   "start": 283.271,
-   "end": 288.556,
-   "text": "Fix it. Putting on this product's protective gear is your own gowning step.",
+   "start": 292.71,
+   "end": 296.768,
+   "text": "Fix it. Putting on the right gear is your own gowning step.",
    "words": [
     [
      "fix",
-     283.271
+     292.71
     ],
     [
      "it",
-     283.616
+     293.065
     ],
     [
      "putting",
-     284.221
+     293.68
     ],
     [
      "on",
-     284.731
+     294.155
     ],
     [
-     "this",
-     284.922
+     "the",
+     294.333
     ],
     [
-     "product's",
-     285.241
-    ],
-    [
-     "protective",
-     285.878
+     "right",
+     294.571
     ],
     [
      "gear",
-     286.579
+     294.927
     ],
     [
      "is",
-     286.898
+     295.224
     ],
     [
      "your",
-     287.089
+     295.402
     ],
     [
      "own",
-     287.408
+     295.699
     ],
     [
      "gowning",
-     287.663
+     295.937
     ],
     [
      "step",
-     288.173
+     296.412
     ]
    ]
   },
   {
    "id": "s10-6",
    "scene": "save-4-potent-ppe",
-   "start": 289.056,
-   "end": 294.928,
-   "text": "Step away, take off your gloves as your procedure says, and wash hands and wrists.",
+   "start": 297.268,
+   "end": 302.892,
+   "text": "Do a normal stop, step away,\nand take off your gloves as your procedure says.",
    "words": [
     [
+     "do",
+     297.268
+    ],
+    [
+     "a",
+     297.463
+    ],
+    [
+     "normal",
+     297.593
+    ],
+    [
+     "stop",
+     298.048
+    ],
+    [
      "step",
-     289.056
+     298.528
     ],
     [
      "away",
-     289.433
+     299.042
+    ],
+    [
+     "and",
+     300.018
     ],
     [
      "take",
-     290.146
+     300.253
     ],
     [
      "off",
-     290.423
+     300.546
     ],
     [
      "your",
-     290.646
+     300.781
     ],
     [
      "gloves",
-     290.923
+     301.074
     ],
     [
      "as",
-     291.312
+     301.485
     ],
     [
      "your",
-     291.479
+     301.661
     ],
     [
      "procedure",
-     291.757
+     301.954
     ],
     [
      "says",
-     292.312
-    ],
-    [
-     "and",
-     293.046
-    ],
-    [
-     "wash",
-     293.324
-    ],
-    [
-     "hands",
-     293.673
-    ],
-    [
-     "and",
-     294.091
-    ],
-    [
-     "wrists",
-     294.37
+     302.54
     ]
    ]
   },
   {
    "id": "s10-7",
    "scene": "save-4-potent-ppe",
-   "start": 295.328,
-   "end": 302.163,
-   "text": "Soap and water, not hand sanitizer. Then put on double gloves and sleeve covers: Go.",
+   "start": 303.292,
+   "end": 308.081,
+   "text": "Wash hands and wrists with soap and water, not hand sanitizer.",
    "words": [
     [
-     "soap",
-     295.328
+     "wash",
+     303.292
+    ],
+    [
+     "hands",
+     303.61
     ],
     [
      "and",
-     295.656
+     303.991
+    ],
+    [
+     "wrists",
+     304.245
+    ],
+    [
+     "with",
+     304.689
+    ],
+    [
+     "soap",
+     305.006
+    ],
+    [
+     "and",
+     305.324
     ],
     [
      "water",
-     295.919
+     305.578
     ],
     [
      "not",
-     296.458
+     306.472
     ],
     [
      "hand",
-     296.754
+     306.794
     ],
     [
      "sanitizer",
-     297.124
-    ],
-    [
-     "then",
-     298.468
-    ],
-    [
-     "put",
-     298.77
-    ],
-    [
-     "on",
-     299.012
-    ],
-    [
-     "double",
-     299.193
-    ],
-    [
-     "gloves",
-     299.616
-    ],
-    [
-     "and",
-     300.04
-    ],
-    [
-     "sleeve",
-     300.281
-    ],
-    [
-     "covers",
-     300.704
-    ],
-    [
-     "go",
-     301.648
+     307.196
     ]
    ]
   },
   {
    "id": "s10-8",
    "scene": "save-4-potent-ppe",
-   "start": 302.763,
-   "end": 307.617,
+   "start": 308.421,
+   "end": 314.058,
+   "text": "Then put on inner gloves, sleeve covers, and outer gloves over the cuffs. Go.",
+   "words": [
+    [
+     "then",
+     308.421
+    ],
+    [
+     "put",
+     308.676
+    ],
+    [
+     "on",
+     308.881
+    ],
+    [
+     "inner",
+     309.034
+    ],
+    [
+     "gloves",
+     309.341
+    ],
+    [
+     "sleeve",
+     309.991
+    ],
+    [
+     "covers",
+     310.409
+    ],
+    [
+     "and",
+     310.887
+    ],
+    [
+     "outer",
+     311.127
+    ],
+    [
+     "gloves",
+     311.485
+    ],
+    [
+     "over",
+     311.904
+    ],
+    [
+     "the",
+     312.203
+    ],
+    [
+     "cuffs",
+     312.442
+    ],
+    [
+     "go",
+     313.461
+    ]
+   ]
+  },
+  {
+   "id": "s10-9",
+   "scene": "save-4-potent-ppe",
+   "start": 314.658,
+   "end": 319.511,
    "text": "No small, repeated doses from a product made to pass through skin.",
    "words": [
     [
      "no",
-     302.763
+     314.658
     ],
     [
      "small",
-     303.057
+     314.952
     ],
     [
      "repeated",
-     303.903
+     315.798
     ],
     [
      "doses",
-     304.49
+     316.384
     ],
     [
      "from",
-     304.881
+     316.775
     ],
     [
      "a",
-     305.206
+     317.101
     ],
     [
      "product",
-     305.337
+     317.231
     ],
     [
      "made",
-     305.858
+     317.752
     ],
     [
      "to",
-     306.184
+     318.078
     ],
     [
      "pass",
-     306.379
+     318.273
     ],
     [
      "through",
-     306.705
+     318.599
     ],
     [
      "skin",
-     307.226
+     319.12
     ]
    ]
   },
   {
    "id": "s11-1",
    "scene": "all-four-end-in-go",
-   "start": 308.857,
-   "end": 314.211,
+   "start": 321.251,
+   "end": 326.76,
    "text": "Two were Fix it, two were Stop & get help. All four end in Go once it's safe.",
    "words": [
     [
      "two",
-     308.857
+     321.251
     ],
     [
      "were",
-     309.09
+     321.475
     ],
     [
      "fix",
-     309.381
+     321.754
     ],
     [
      "it",
-     309.614
+     321.978
     ],
     [
      "two",
-     310.087
+     322.421
     ],
     [
      "were",
-     310.305
+     322.637
     ],
     [
      "stop",
-     310.578
+     322.906
     ],
     [
      "",
-     310.851
+     323.175
     ],
     [
      "get",
-     310.961
+     323.283
     ],
     [
      "help",
-     311.179
+     323.498
     ],
     [
      "all",
-     312.027
+     324.361
     ],
     [
      "four",
-     312.276
+     324.635
     ],
     [
      "end",
-     312.589
+     324.978
     ],
     [
      "in",
-     312.838
+     325.252
     ],
     [
      "go",
-     313.025
+     325.458
     ],
     [
      "once",
-     313.213
+     325.663
     ],
     [
      "it's",
-     313.525
+     326.006
     ],
     [
      "safe",
-     313.837
+     326.349
     ]
    ]
   },
   {
    "id": "s11-2",
    "scene": "all-four-end-in-go",
-   "start": 314.811,
-   "end": 317.185,
-   "text": "Most pauses end in Go right away.",
+   "start": 327.36,
+   "end": 330.0,
+   "text": "Most pauses end in Go, right away.",
    "words": [
     [
      "most",
-     314.811
+     327.36
     ],
     [
      "pauses",
-     315.16
+     327.71
     ],
     [
      "end",
-     315.649
+     328.2
     ],
     [
      "in",
-     315.928
+     328.48
     ],
     [
      "go",
-     316.138
+     328.69
     ],
     [
      "right",
-     316.347
+     329.2
     ],
     [
      "away",
-     316.766
+     329.6
     ]
    ]
   },
   {
    "id": "s12-1",
    "scene": "what-makes-it-work",
-   "start": 319.285,
-   "end": 326.84,
+   "start": 331.7,
+   "end": 339.255,
    "text": "Anyone can stop a job, staff or contractor, even on a late batch. No punishment, no blame.",
    "words": [
     [
      "anyone",
-     319.285
+     331.7
     ],
     [
      "can",
-     319.826
+     332.242
     ],
     [
      "stop",
-     320.136
+     332.551
     ],
     [
      "a",
-     320.523
+     332.938
     ],
     [
      "job",
-     320.678
+     333.093
     ],
     [
      "staff",
-     321.205
+     333.62
     ],
     [
      "or",
-     321.628
+     334.043
     ],
     [
      "contractor",
-     321.839
+     334.254
     ],
     [
      "even",
-     323.005
+     335.42
     ],
     [
      "on",
-     323.289
+     335.704
     ],
     [
      "a",
-     323.459
+     335.875
     ],
     [
      "late",
-     323.573
+     335.988
     ],
     [
      "batch",
-     323.857
+     336.272
     ],
     [
      "no",
-     324.885
+     337.3
     ],
     [
      "punishment",
-     325.119
+     337.535
     ],
     [
      "no",
-     326.058
+     338.473
     ],
     [
      "blame",
-     326.292
+     338.708
     ]
    ]
   },
   {
    "id": "s12-2",
    "scene": "what-makes-it-work",
-   "start": 328.04,
-   "end": 333.04,
-   "text": "Leaders come quickly and thank you, fix the cause and tell you what changed.",
+   "start": 340.455,
+   "end": 346.159,
+   "text": "Leaders commit to come quickly, thank you, fix the cause and tell you what changed.",
    "words": [
     [
      "leaders",
-     328.04
+     340.455
+    ],
+    [
+     "commit",
+     340.918
+    ],
+    [
+     "to",
+     341.322
     ],
     [
      "come",
-     328.502
+     341.496
     ],
     [
      "quickly",
-     328.791
-    ],
-    [
-     "and",
-     329.253
+     341.785
     ],
     [
      "thank",
-     329.484
+     342.715
     ],
     [
      "you",
-     329.831
+     343.037
     ],
     [
      "fix",
-     330.54
+     343.655
     ],
     [
      "the",
-     330.784
+     343.899
     ],
     [
      "cause",
-     331.028
+     344.144
     ],
     [
      "and",
-     331.394
+     344.51
     ],
     [
      "tell",
-     331.638
+     344.755
     ],
     [
      "you",
-     331.942
+     345.06
     ],
     [
      "what",
-     332.186
+     345.304
     ],
     [
      "changed",
-     332.491
+     345.61
     ]
    ]
   },
   {
    "id": "s12-3",
    "scene": "what-makes-it-work",
-   "start": 333.64,
-   "end": 335.335,
-   "text": "The pause isn't a form.",
+   "start": 346.759,
+   "end": 351.03,
+   "text": "The pause isn't a form. Report what you caught the usual way.",
    "words": [
     [
      "the",
-     333.64
+     346.759
     ],
     [
      "pause",
-     333.923
+     347.037
     ],
     [
      "isn't",
-     334.346
+     347.455
     ],
     [
      "a",
-     334.77
+     347.873
     ],
     [
      "form",
-     334.911
+     348.012
+    ],
+    [
+     "report",
+     348.889
+    ],
+    [
+     "what",
+     349.284
+    ],
+    [
+     "you",
+     349.565
+    ],
+    [
+     "caught",
+     349.791
+    ],
+    [
+     "the",
+     350.185
+    ],
+    [
+     "usual",
+     350.41
+    ],
+    [
+     "way",
+     350.748
     ]
    ]
   },
   {
    "id": "s13-1",
    "scene": "close-recap",
-   "start": 337.535,
-   "end": 343.751,
-   "text": "Before you start, and after any break, handover, interruption or change: stop and look.",
+   "start": 352.83,
+   "end": 359.674,
+   "text": "Pause before you start, and after any break, handover, interruption or change. Stop and look.",
    "words": [
     [
+     "pause",
+     352.83
+    ],
+    [
      "before",
-     337.535
+     353.192
     ],
     [
      "you",
-     337.94
+     353.615
     ],
     [
      "start",
-     338.171
+     353.857
     ],
     [
      "and",
-     338.695
+     354.44
     ],
     [
      "after",
-     338.886
+     354.632
     ],
     [
      "any",
-     339.171
+     354.921
     ],
     [
      "break",
-     339.362
+     355.113
     ],
     [
      "handover",
-     339.805
+     355.6
     ],
     [
      "interruption",
-     340.493
+     356.288
     ],
     [
      "or",
-     341.388
+     357.183
     ],
     [
      "change",
-     341.595
+     357.389
     ],
     [
      "stop",
-     342.655
+     358.53
     ],
     [
      "and",
-     343.021
+     358.911
     ],
     [
      "look",
-     343.313
+     359.216
     ]
    ]
   },
   {
    "id": "s13-2",
    "scene": "close-recap",
-   "start": 344.091,
-   "end": 346.734,
+   "start": 360.014,
+   "end": 362.656,
    "text": "Ask: What's different? What could hurt us?",
    "words": [
     [
      "ask",
-     344.091
+     360.014
     ],
     [
      "what's",
-     344.396
+     360.318
     ],
     [
      "different",
-     344.822
+     360.745
     ],
     [
      "what",
-     345.761
+     361.684
     ],
     [
      "could",
-     346.005
+     361.927
     ],
     [
      "hurt",
-     346.296
+     362.219
     ],
     [
      "us",
-     346.539
+     362.462
     ]
    ]
   },
   {
    "id": "s13-3",
    "scene": "close-recap",
-   "start": 346.984,
-   "end": 349.934,
+   "start": 362.906,
+   "end": 365.857,
    "text": "Checked or assumed? What if it goes wrong?",
    "words": [
     [
      "checked",
-     346.984
+     362.906
     ],
     [
      "or",
-     347.544
+     363.466
     ],
     [
      "assumed",
-     347.754
+     363.676
     ],
     [
      "what",
-     348.754
+     364.676
     ],
     [
      "if",
-     349.01
+     364.933
     ],
     [
      "it",
-     349.164
+     365.087
     ],
     [
      "goes",
-     349.318
+     365.241
     ],
     [
      "wrong",
-     349.575
+     365.497
     ]
    ]
   },
   {
    "id": "s13-4",
    "scene": "close-recap",
-   "start": 350.434,
-   "end": 354.801,
+   "start": 366.357,
+   "end": 370.724,
    "text": "Decide: Go, Fix it, or Stop & get help.",
    "words": [
     [
      "decide",
-     350.434
+     366.357
     ],
     [
      "go",
-     351.494
+     367.417
     ],
     [
      "fix",
-     352.194
+     368.117
     ],
     [
      "it",
-     352.584
+     368.507
     ],
     [
      "or",
-     353.234
+     369.157
     ],
     [
      "stop",
-     353.469
+     369.392
     ],
     [
      "",
-     353.861
+     369.784
     ],
     [
      "get",
-     354.018
+     369.94
     ],
     [
      "help",
-     354.331
+     370.254
     ]
    ]
   },
   {
    "id": "s13-5",
    "scene": "close-recap",
-   "start": 355.201,
-   "end": 360.559,
+   "start": 371.124,
+   "end": 376.5,
    "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
    "words": [
     [
      "fix",
-     355.201
+     371.124
     ],
     [
      "it",
-     355.463
+     371.396
     ],
     [
      "only",
-     355.659
+     371.6
     ],
     [
      "if",
-     355.986
+     371.94
     ],
     [
      "you're",
-     356.183
+     372.145
     ],
     [
      "trained",
-     356.641
+     372.621
     ],
     [
      "and",
-     357.164
+     373.165
     ],
     [
      "authorized",
-     357.426
+     373.437
     ],
     [
      "and",
-     358.661
+     374.694
     ],
     [
      "it's",
-     358.878
+     374.9
     ],
     [
      "a",
-     359.149
+     375.158
     ],
     [
      "step",
-     359.258
+     375.261
     ],
     [
      "in",
-     359.529
+     375.519
     ],
     [
      "your",
-     359.691
+     375.674
     ],
     [
      "procedure",
-     359.962
+     375.932
     ]
    ]
   },
   {
    "id": "s13-6",
    "scene": "close-recap",
-   "start": 361.259,
-   "end": 366.569,
+   "start": 377.2,
+   "end": 382.51,
    "text": "When in doubt, get help. That's the 2-minute rule: line clearance for people.",
    "words": [
     [
      "when",
-     361.259
+     377.2
     ],
     [
      "in",
-     361.672
+     377.613
     ],
     [
      "doubt",
-     361.92
+     377.861
     ],
     [
      "get",
-     362.579
+     378.52
     ],
     [
      "help",
-     362.595
+     378.536
     ],
     [
      "that's",
-     363.019
+     378.96
     ],
     [
      "the",
-     363.404
+     379.345
     ],
     [
      "2-minute",
-     363.624
+     379.565
     ],
     [
      "rule",
-     364.119
+     380.06
     ],
     [
      "line",
-     364.809
+     380.75
     ],
     [
      "clearance",
-     365.135
+     381.076
     ],
     [
      "for",
-     365.787
+     381.728
     ],
     [
      "people",
-     366.048
+     381.989
     ]
    ]
   },
   {
    "id": "s13-7",
    "scene": "close-recap",
-   "start": 369.169,
-   "end": 373.187,
-   "text": "Find out who to call for help: days, nights and weekends.",
+   "start": 385.11,
+   "end": 389.231,
+   "text": "Find out who you call for help: days, nights and weekends.",
    "words": [
     [
      "find",
-     369.169
+     385.11
     ],
     [
      "out",
-     369.416
+     385.362
     ],
     [
      "who",
-     369.613
+     385.563
     ],
     [
-     "to",
-     369.811
+     "you",
+     385.764
     ],
     [
      "call",
-     369.959
+     385.965
     ],
     [
      "for",
-     370.206
+     386.217
     ],
     [
      "help",
-     370.403
+     386.418
     ],
     [
      "days",
-     371.179
+     387.14
     ],
     [
      "nights",
-     371.809
+     387.86
     ],
     [
      "and",
-     372.268
+     388.317
     ],
     [
      "weekends",
-     372.531
+     388.578
     ]
    ]
   },
   {
    "id": "s13-8",
    "scene": "close-recap",
-   "start": 376.787,
-   "end": 381.991,
+   "start": 392.831,
+   "end": 398.034,
    "text": "Follow your site's procedures. This video is awareness training only.",
    "words": [
     [
      "follow",
-     376.787
+     392.831
     ],
     [
      "your",
-     377.214
+     393.257
     ],
     [
      "site's",
-     377.519
+     393.562
     ],
     [
      "procedures",
-     377.946
+     393.989
     ],
     [
      "this",
-     379.187
+     395.231
     ],
     [
      "video",
-     379.547
+     395.59
     ],
     [
      "is",
-     379.978
+     396.021
     ],
     [
      "awareness",
-     380.194
+     396.237
     ],
     [
      "training",
-     380.912
+     396.956
     ],
     [
      "only",
-     381.559
+     397.603
     ]
    ]
   }
  ],
- "duration": 386.731
+ "duration": 402.774
 }

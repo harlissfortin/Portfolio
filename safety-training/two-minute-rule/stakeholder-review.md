@@ -1,6 +1,6 @@
 # The 2-Minute Rule: stakeholder review and rollout guide
 
-The video is now **"The 2-Minute Rule: One Shift on a Patch Line"** (about 6:26), set at a transdermal patch
+The video is now **"The 2-Minute Rule: One Shift on a Patch Line"** (about 6:42), set at a transdermal patch
 manufacturing site. It follows one shift through four saves: solvent transfer, roll staging, the die cutter and a
 potent product. This document has two parts: the leadership review and where its changes stand in this version, and
 the rollout guide.
@@ -35,7 +35,7 @@ and all four end in Go.
 | Perspective (simulated) | Verdict on version 3 | What they asked for | Where it stands in version 5 |
 |---|---|---|---|
 | **Site safety (EHS) manager** | Approve with changes | Bound "Fix it". Put isolation and the main control before any check. Ask people to report what they catch. | Carried. The Fix-it rule is spoken twice, word for word. Save 1 bonds the drum and pump before the drum is opened. In Save 3 the lock stays on until its owner removes it. "Report what you caught the usual way" is on screen. An AI EHS reviewer also checked the version 5 script. |
-| **Operations director** | Approve with changes | Most pauses end in Go, and a call for help is a correct decision. Don't teach "lock out for every jam". Don't let "fix" become an unplanned change. Say who comes. | Carried. A routine Go comes first, and "Most pauses end in Go" frames the saves. In Save 2 your lead comes, sends a trained driver and fixes the system. The jam boundary stays a site task (see the rollout guide). |
+| **Operations director** | Approve with changes | Most pauses end in Go, and a call for help is a correct decision. Don't teach "lock out for every jam". Don't let "fix" become an unplanned change. Say who comes. | Carried. A routine Go comes first, and "Most pauses end in Go" frames the saves. In Save 2 your lead comes, thanks you and sends a trained driver. The jam boundary stays a site task (see the rollout guide). |
 | **Manufacturing site lead** | Approve with changes | A clear leader commitment, a slot for local contacts, credibility fixes, and chapters a huddle facilitator can find. | Carried: the leaders scene, the voiced "Your site" slate and chapters named by save. Credibility now depends on the patch line looking like yours: see "Check the four saves against your site" below. |
 
 Nothing in the video names an employer or a person, shows injury, or blames a worker. The four use cases are labelled
@@ -55,7 +55,7 @@ These points from the leadership review carry over to the patch line:
   Hands and wrists washed with soap and water, not hand sanitizer, before the product's gloves go on.
 - **No villains.** Every catch comes from a system gap: a pallet moved up high during your break, a handover note that
   says "ready to run", a changeover to a stronger product. The co-worker in Save 2 means well and agrees ("Fair
-  enough."), and the lead fixes the system, not a person.
+  enough."), and nobody is blamed.
 - **Huddle-friendly structure.** The save template, the one-second sting and the recap card make each save usable on
   its own. The shift strip shows where each save happens, but only its dot changes, so each chapter still plays alone.
 
@@ -72,13 +72,13 @@ in the CIP save, which is not in this version.
 | A non-routine jam, not "lock out every jam" (the blister-packer save) | Ops director, site lead, safety manager | That save was cut. The jam and re-thread boundary for each machine stays a site task in the rollout guide. |
 | Isolate, test, ventilate, retest, permit: "No permit, no Go" (the filter-dryer save) | Safety manager, site lead | That save was cut, and the video no longer covers confined spaces. The rule keeps the permit: "No permit yet? Someone else's unfinished work? Not authorized? Stop & get help." |
 | A visible glove cut, and a leak test before the new glove is used (the isolator save) | Site lead, safety manager | That save was cut. Potent products are now Save 4: your own gowning step, soap and water rather than hand sanitizer, and no exposure-band numbers on screen. |
-| Call your lead; the authorized person finishes; release checks before Go (the tablet-press save) | Ops director, safety manager | Carried into Save 3 ("You call your lead"; the lock's owner finishes and removes it; restart checks) and Save 2 (your lead sends a trained driver). |
+| Call your lead; the authorized person finishes; release checks before Go (the tablet-press save) | Ops director, safety manager | Carried into Save 3 (you call your lead; the lock's owner finishes and removes it; restart checks) and Save 2 (your lead sends a trained driver). |
 | "On a repeat task with nothing different, it takes seconds." | Ops director | Kept: the routine Go ends "Go. That took seconds." |
 | No spoken CFR citation; the citation stays on screen | Ops director, site lead | Kept. 21 CFR 211.130(e) and 29 CFR 1910.178(l) appear on screen only. |
 | "Anyone can stop a job, staff or contractor, even on a late batch." | Safety manager, site lead | Kept, with "No punishment, no blame." |
-| "Leaders come quickly, thank you, fix the cause, and tell you what changed." | Site lead, ops director | Kept, and now also shown in Save 2: the lead asks "Thanks. What did you see?" and fixes the system ("Fixed: next rolls stay at floor level"). |
+| "Leaders come quickly, thank you, fix the cause, and tell you what changed." | Site lead, ops director | Kept, and now also shown in Save 2: the lead asks "Thanks. What did you see?" and sends a trained driver; the leaders scene shows "Fixed. Here’s what changed." |
 | "It's not a form. Report what you caught through your usual channels." | Safety manager, ops director, site lead | Kept: "The pause isn't a form." On screen: "Report what you caught the usual way". |
-| A "Your site" slate, and an end-card line saying it is awareness training only | All three | Kept. The end card now reads: *awareness training, not lockout, solvent-bonding, forklift-operator or potent-compound handling training*. |
+| A "Your site" slate, and an end-card line saying it is awareness training only | All three | Kept. The end card now reads: *awareness training only: not lockout, solvent-bonding, forklift-operator or potent-compound handling training*. |
 | Chapters named by save | Site lead | Kept: "Save 1 · Solvent transfer", "Save 2 · Roll staging", "Save 3 · Die cutter", "Save 4 · Potent product". |
 
 Where two reviewers proposed different wordings for the same issue, technical safety accuracy won, then the brief
@@ -263,7 +263,7 @@ before anyone sees it.
   orderly transfer of locks at shift change (1910.147(f)(4)) and schedule overlap time. Save 3 is exactly this gap,
   and the handover observations show where it still breaks.
 - **Fix staging.** Decide where each line's next rolls wait, so the line's own pallet truck can reach them, and who
-  drives when a forklift is needed, breaks included. Save 2's fix is exactly this: "next rolls stay at floor level".
+  drives when a forklift is needed, breaks included. Save 2 is exactly this gap.
 - **Engineer catches out** under management of change. Examples: a bonding monitor that keeps the drum pump off until
   the bond is proven; a die-station guard interlock; floor-level spots for each line's next roll; a PPE board that
   changes with the product at changeover.

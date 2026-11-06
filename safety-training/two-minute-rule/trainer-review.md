@@ -178,13 +178,13 @@ The judges split, and the margin was half a point. The EHS judge's objections we
 - **A key left in the truck models poor key control and reads as a second catch.** No key is drawn.
 - **The link to "What's different?" is indirect.** A "Before your break" inset shows the same pallet on the floor in
   the NEXT ROLL spot, so the change is visible.
-- **The risk is never stated.** "A forklift is different to drive and needs its own training."
+- **The risk is never stated.** "A forklift's a different truck, with its own training."
 - **Most viewers already know not to drive a truck they aren't trained on.** The save teaches noticing that the job
   changed into one you aren't authorized for during your break, and handling well-meant pressure kindly.
 
 It is also drawn safely: everyone stands clear before the forks rise (1910.178(m)(2)), the driver wears the seatbelt,
 nobody climbs the rack, you walk in empty-handed, and "Go" is heard only once the pallet is down and the forks are
-flat. Your lead says "Thanks. What did you see?" and fixes the system ("Fixed: next rolls stay at floor level");
+flat. Your lead says "Thanks. What did you see?" and fixes the system ("Fixed: next rolls stay at floor level", since removed);
 nobody is blamed. The video never says OSHA issues forklift licences or cards: the employer trains, evaluates and
 certifies each operator, and the card on your lanyard stands for whatever your site uses.
 
@@ -200,7 +200,7 @@ The video went from 8:57 to about 6:26, and from about 1,100 to about 760 spoken
 - **Setup lines.** For example: "It's a short pause you take on purpose… where you do the job", "What matters is the
   pause", "right before each run", "But you're the one at the job, so you can see what the plan missed", "Here's how",
   "make one of three calls" (now "That's your call"), "When you stop," before the leaders line, and "So" at the start
-  of the title line and the recap. "That's good for people, product and the line" is now on screen only.
+  of the title line and the recap. "That's good for people, product and the line" moved to the screen (since removed).
 - **Not cut.** Both holds in every save, the four questions (spoken three times), the gloss for "checked or assumed",
   the Fix-it rule (spoken twice), the three boundary lines, "That's the 2-minute rule: line clearance for people.", and
   the slate and end lines. About 330 of the spoken words are fixed in this way, Save 2's designed lines included.
@@ -233,13 +233,35 @@ notes, each with a cost, and were not taken.
   hold 2 is 2.4 s. The catching questions are as in the table, and "What if it goes wrong?" is heard only in the
   routine Go. No hold's answer is spoken early, no line is morbid, and every caption is 95 characters or fewer.
 
+### Narration and on-screen text aligned (after version 5)
+
+At the user's request, a final pass made what you hear and what you read say the same thing, in the same words, and
+made the narration sound more like a co-worker talking. Three AI specialists (a sync auditor, a naturalness editor and
+a voice-delivery specialist) went through every line against the text on screen at that moment. Their edits were merged
+into one plan and checked by an EHS verifier and a read-aloud verifier. The locked wording did not change. Two lines the version 5 checks also held word for word were
+reworded to match the screen: the "checked or assumed" gloss and the slate line ("who to call" is now "who you call").
+
+- **Screen follows the voice.** Headings, glosses, catch rows, reasons and prevented rows now use the spoken words or a
+  short form of them: for example "Two minutes is a guide", "Find the problem", "Clamps still on their hook", "Not
+  authorized to drive a forklift", "Owner removes their lock" and "A step in your procedure". On-screen text that was
+  never said and added a new idea was removed (for example "In seconds", "Fixed: next rolls stay at floor level").
+- **Voice follows the screen.** Lines now say what the screen shows: "roll staging", "guards", "what matters is the
+  pause", "you stand clear", "report what you caught the usual way", and "Leaders commit to…".
+- **More natural.** Fewer colons and list fragments ("Stop. Hands off.", "Look around the job and compare with the
+  plan.", "Checked means you saw or tested it yourself. Assumed means you're guessing."), and Save 3 now says out loud
+  that the owner removes their lock and that *you* run the restart checks.
+- **Save 4 split in two.** The wash (soap and water, not hand sanitizer) and the donning order (inner gloves, sleeve
+  covers, outer gloves over the cuffs) are now separate lines, each shown as it is said.
+- **Length.** 77 lines, 794 words, 6:42 (was 76 lines, 762 words, 6:26). The extra time is mostly the added words
+  that make the narration and screen match. Not re-rated.
+
 ### Still open
 
 - **Not re-rated.** Whether version 5 scores higher or lower than version 4 is for the master-trainer panel to judge.
   Against version 4's "still open" list, without a score: production pressure and speaking up are now shown (Save 2);
   the single save template runs for about three minutes instead of five; the calls no longer simply alternate; the
   hook now names three patch-line jobs, but still sets calm rather than high stakes; the routine Go's hold comes at
-  about 1:38 and the first "What would make you stop here?" at about 2:10; there is still one synthetic voice; and
+  about 1:44 and the first "What would make you stop here?" at about 2:15; there is still one synthetic voice; and
   measurement fidelity is a facilitation question the video doesn't change.
 - **Site-dependent details.** Save 2 in particular depends on the site: who drives which truck, how authorization is
   shown, whether line equipment crosses the material airlock, and the forklift's restraint. The checks for all four

@@ -18,7 +18,7 @@ for i, s in enumerate(sc["scenes"], 1):
         if c.get("tts"): cue["tts"] = c["tts"]
         cue.update(pace["cues"].get(c["id"], {}))
         scene["cues"].append(cue); words += len(c["text"].split())
-        md.append(f"| `{c['id']}` | {c['text']} | {c.get('on_screen','') or ''} |")
+        md.append(f"| `{c['id']}` | {c['text'].replace(chr(10), ' ')} | {c.get('on_screen','') or ''} |")
     md.append(""); out["scenes"].append(scene)
 (ROOT / "source/narration.json").write_text(json.dumps(out, indent=1, ensure_ascii=False))
 (ROOT / "storyboard.md").write_text("\n".join(md))

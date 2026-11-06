@@ -94,6 +94,6 @@ async function renderSegment(browser, i, f0, f1) {
     '-metadata', 'title=The 2-Minute Rule', out], { stdio: 'inherit' });
   console.log(`rendered ${n} frames in ${((Date.now() - t0) / 1000).toFixed(0)} s -> ${out}`);
   // poster / LMS thumbnail: the title card
-  const titleEnd = timing.scenes[0].end - 0.6;
+  const titleEnd = timing.scenes[0].end - 0.25;
   if (!process.argv.includes('--clean')) execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-ss', String(titleEnd), '-i', out, '-frames:v', '1', path.join(path.dirname(out), 'poster.png')]);
 })().catch(e => { console.error(e); process.exit(1); });

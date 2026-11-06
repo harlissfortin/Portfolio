@@ -7,7 +7,7 @@ meaning for each, the three calls with the boundary rule (when you may Fix it, a
 blanks for local help. The colours and type match the video; the icons are simplified for print, and each icon has one meaning across video and print (the bell is Interruption, the phone is calling for help).
 
 It is not a form. There are no tick boxes and no signature lines, and nobody hands it in. It is an awareness aid: it
-adds to your procedures, permits and lockout, and never replaces them.
+adds to your procedures, permits, lockout and guards, and never replaces them.
 
 The same source also prints the facilitator's huddle materials: the ten sorting cards, the call cards the crew votes
 with, and a one-page huddle sheet that lists the video's four saves. The sorting cards and the sign's examples are set

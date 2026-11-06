@@ -18,7 +18,7 @@ for sc in t["scenes"]:
     for c in t["cues"]:
         if c["scene"] == sc["id"]:
             os_ = onscreen.get(c["id"], "")
-            out.append(f"**{mmss(c['start'])}** {c['text']}" + (f" — *{os_}*" if os_ else "") + "  ")
+            out.append(f"**{mmss(c['start'])}** {c['text'].replace(chr(10), ' ')}" + (f" — *{os_}*" if os_ else "") + "  ")
     out.append("")
 last = [c for c in t["cues"] if c["scene"] == "close-recap"]
 slate, end = last[-2]["start"] - 0.5, last[-1]["start"] - 0.6
@@ -26,8 +26,8 @@ out += ["## The last screens", "",
         f"**Your site slate** ({mmss(slate)}), spoken: *“{last[-2]['text']}”* On screen: *Who do you call for help?* "
         "Your lead: days ____ · nights ____ · weekends ____ · Radio or phone: ____ · No answer? Call: ____ · "
         "Report what I caught to: ____ · Write it on your pocket card.", "",
-        f"**End card** ({mmss(end)}), under the last spoken line: *Follow your site's procedures, permits and lockout. "
-        "This video is awareness training, not lockout, solvent-bonding, forklift-operator or potent-compound handling training.*", "",
+        f"**End card** ({mmss(end)}), under the last spoken line: *Follow your site's procedures. "
+        "This video is awareness training only: not lockout, solvent-bonding, forklift-operator or potent-compound handling training.*", "",
         "Sources: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147 (lockout/tagout), including (e)(3) on removing another person's lock; OSHA 29 CFR 1910.106(e)(6)(ii) and NFPA 77 (bonding before dispensing flammable liquids); OSHA 29 CFR 1910.178(l) (powered industrial truck operator training) and (m)(2) (no one under raised forks); NIOSH skin-exposure guidance (wash skin with soap and water).", "",
         "*Use cases are illustrative composites, not real incidents. Narration is a synthesized voice.*", ""]
 (ROOT / "transcript.md").write_text("\n".join(out))

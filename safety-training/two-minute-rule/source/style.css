@@ -35,7 +35,7 @@ body.on-dark #header { color: #a7b5c7; }
 #progress-track { position: absolute; left: 0; right: 0; bottom: var(--cap-h); height: 5px; background: rgba(127,140,160,.18); z-index: 50; }
 #progress { height: 100%; background: #e59a00; transform-origin: left center; transform: scaleX(0); }
 #cap { position: absolute; left: 0; right: 0; bottom: 0; height: var(--cap-h); display: flex; align-items: center; justify-content: center; background: #0b1420; z-index: 60; padding: 0 160px; }
-#cap span { font-size: 42px; line-height: 1.3; font-weight: 500; color: #fff; text-align: center; max-width: 1580px; text-wrap: balance; }
+#cap span { font-size: 42px; line-height: 1.3; font-weight: 500; color: #fff; text-align: center; max-width: 1580px; text-wrap: balance; white-space: pre-line; }
 
 /* type */
 .kicker { font-size: 28px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; color: var(--amber-text); }

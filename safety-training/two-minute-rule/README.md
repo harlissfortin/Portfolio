@@ -1,6 +1,6 @@
 # The 2-Minute Rule: One Shift on a Patch Line
 
-A narrated motion-graphics safety training video (about 6:26) about the **2-minute rule**: a short pause, on purpose,
+A narrated motion-graphics safety training video (about 6:42) about the **2-minute rule**: a short pause, on purpose,
 at the point of work, before you start and again after any break, handover, interruption or change. It is set at a
 transdermal patch manufacturing site. It teaches the rule and where its limits are, models a routine pause that finds
 nothing, then follows one shift on a patch line through four **two-minute saves**. A shift strip shows where each one
@@ -53,19 +53,19 @@ Two Fix it, two Stop & get help, and all four end in Go once it's safe.
 
 | Time | Chapter | What it teaches |
 |---|---|---|
-| 0:00 | Intro | Solvent to pump, a pallet to move, a roll to slit. You know these jobs, but today something might be different. Before your hands move, take two minutes. The title card draws the shift strip. |
-| 0:14 | The rule | A pause at the point of work: before you start, and after any break, handover, interruption or change. Two minutes is a guide. |
-| 0:27 | Line clearance for people | You already clear the line for product (no laminate, labels or pouches left); this is the same habit for people. It adds to procedures, permits, lockout and guards, and never replaces them. |
-| 0:39 | Stop · Look · Ask · Decide | The four questions, what "checked or assumed" means, the three calls, and the decision rule: when you may fix it yourself and when you stop and get help |
-| 1:22 | A routine Go | Before you start: moving a laminate roll with the roll lifter. All four questions come back clean in seconds, and the "Your call?" hold is answered Go. |
-| 1:44 | Four saves | Most pauses end in Go. Sometimes a question catches a problem: that's a save. Four examples, not real events. The video waits: find the problem, pick your call. |
-| 2:01 | Save 1 · Solvent transfer | **Checked or assumed?** You're about to pump flammable solvent from a drum, but the bonding clamps are still on their hook and the lamp is red. → Fix it (a step in your procedure): clamps on bare metal, lamp green, then Go. Won't go green? Stop & get help. |
-| 2:43 | Save 2 · Roll staging | **What's different?** After your break, the next pallet of rolls is up on the rack: a forklift job, and your card says pallet truck only. A co-worker says "Just grab the forklift." → Stop & get help (not authorized). You say so kindly and call your lead, who sends a trained driver. |
-| 3:33 | Save 3 · Die cutter | **Checked or assumed?** At handover the note says "ready to run", but the guard is off the die station and someone else's lock is still on. → Stop & get help (someone else's unfinished work). Only the lock's owner removes it, or a supervisor under the site's lock-removal procedure. |
-| 4:20 | Save 4 · Potent product | **What could hurt us?** The slitter changes over to a potent product. Your wrists are bare, and the board now says double gloves and sleeve covers. → Fix it (your own gowning step): gloves off as your procedure says, soap and water, then inner gloves, sleeve covers and outer gloves over the cuffs, no skin showing. |
-| 5:08 | All four end in Go | Two Fix it, two Stop & get help, each with its reason; all four end in Go, and most pauses end in Go right away |
-| 5:18 | What leaders commit to | Anyone can stop a job. Leaders come quickly ("Thanks. What did you see?"), fix the cause and tell you what changed. The pause isn't a form. |
-| 5:37 | Recap card | The rule on one card, both halves, with all five triggers; then "Who do you call for help?" (6:08) and the sources (6:16) |
+| 0:00 | Intro | Every shift, you pump solvent, move pallets and slit rolls. You know these jobs, but today something might be different. Before your hands move, take two minutes. The title card draws the shift strip. |
+| 0:15 | The rule | Pause at the point of work: before you start, and after any break, handover, interruption or change. Two minutes is a guide; what matters is the pause. |
+| 0:29 | Line clearance for people | You already clear the line for product (no laminate, labels or pouches left); this is the same habit for people. It adds to procedures, permits, lockout and guards, and never replaces them. |
+| 0:42 | Stop · Look · Ask · Decide | The four questions, what "checked or assumed" means, the three calls, and the decision rule: when you may fix it yourself and when you stop and get help |
+| 1:26 | A routine Go | Before you start: moving a laminate roll with the roll lifter. All four questions come back clean in seconds, and the "Your call?" hold is answered Go. |
+| 1:49 | Four saves | Most pauses end in Go. Sometimes a pause catches a problem: that's a save. Four examples, not real events. Each one asks you twice: find the problem, then pick your call. |
+| 2:05 | Save 1 · Solvent transfer | **Checked or assumed?** You're about to pump flammable solvent from a drum, but the bonding clamps are still on their hook and the lamp is red. → Fix it (a step in your procedure): clamps on bare metal, lamp green, then Go. Won't go green? Stop & get help. |
+| 2:47 | Save 2 · Roll staging | **What's different?** After your break, the next pallet of rolls is up on the rack: a forklift job, and your card says pallet truck only. A co-worker means well: "Line's waiting. Just grab the forklift!" → Stop & get help (not authorized). You say so kindly and call your lead, who sends a trained driver while you stand clear. |
+| 3:41 | Save 3 · Die cutter | **Checked or assumed?** At handover the note says "ready to run", but the guard is off the die station and someone else's lock is still on. → Stop & get help (someone else's unfinished work). Only the lock's owner removes it, or a supervisor, using the site's lock-removal procedure. The owner puts the guard back and removes their lock; you run the restart checks. |
+| 4:29 | Save 4 · Potent product | **What could hurt us?** The slitter changes over to a potent product. Your wrists are bare, and the board now says double gloves and sleeve covers. → Fix it (your own gowning step): a normal stop, gloves off as your procedure says, soap and water (not hand sanitizer), then inner gloves, sleeve covers and outer gloves over the cuffs, no skin showing. |
+| 5:21 | All four end in Go | Two Fix it, two Stop & get help, each with its reason; all four end in Go, and most pauses end in Go right away |
+| 5:31 | What leaders commit to | Anyone can stop a job. Leaders commit to come quickly ("Thanks. What did you see?"), thank you, fix the cause and tell you what changed. The pause isn't a form: report what you caught the usual way. |
+| 5:52 | Recap card | The rule on one card, both halves, with all five triggers; then "Who do you call for help?" (6:24) and the sources (6:32) |
 
 Each save follows the same template so a facilitator can show it on its own:
 1. A one-second Stop · Look · Ask · Decide sting.
@@ -109,11 +109,12 @@ Each save follows the same template so a facilitator can show it on its own:
   is down and the forks are flat.
 - **Proportionate.** The four saves split two fixes and two calls for help, and every one ends in Go once it's safe.
 - **Natural delivery.** Each line is voiced in one pass, so the voice keeps its intonation and punctuation carries the
-  pauses. The spoken prompts at the holds vary from save to save while the cards stay the same, and every save names
+  pauses. Six short lines are the exception: each is split once or twice (" | " in the script) and joined with 0.16 s of
+  silence, to hold a pause the voice would rush. The spoken prompts at the holds vary from save to save while the cards stay the same, and every save names
   its trigger out loud.
 - **Plain language for a multilingual floor.** About 150 words a minute while speaking, a calm conversational pace.
   Jargon is glossed on first use: bonding, die station, potent ("strong in tiny amounts"), roll lifter, forklift and
-  pallet truck, roll staging, PPE ("your protective gear", on screen) and checked or assumed. The transcript describes
+  pallet truck, roll staging and checked or assumed. The transcript describes
   what is on screen as well as what is said.
 - **Who's on screen.** An operator in solvent PPE, a co-worker who wants to help, your lead in a teal vest, a trained
   forklift driver, the technician who owns the lock, and an operator in a coat who adds double gloves and sleeve
@@ -152,7 +153,9 @@ reproductions (the same list is in the rollout guide).
    save: three candidates were researched, and two AI judges, one in an EHS role and one in a trainer role, chose
    "Pallet truck only". Three shorter drafts were then written from different angles and scored by two independent AI
    judges. The best was merged with trims from the others, reviewed for EHS accuracy, natural speech and teaching
-   length, and a verifier read all 76 lines aloud in order.
+   length, and a verifier read all 76 lines aloud in order. A final pass matched the narration to the on-screen
+   text: a sync auditor, a naturalness editor and a voice specialist proposed edits, which were merged, checked for
+   EHS accuracy and read aloud in order (77 lines: the Save 4 wash and gowning steps are now two lines).
 3. **Stakeholder review.** AI reviewers read the version 3 script as a safety manager, an operations director and a
    site lead ([`stakeholder-review.md`](stakeholder-review.md)).
 4. **Master-trainer review, version 4 and version 5.** Four AI reviewers rated version 3 as master trainers
@@ -160,7 +163,7 @@ reproductions (the same list is in the rollout guide).
    Version 4 implemented every fix and was re-rated at 7.0, then a naturalness and flow pass rewrote the delivery.
    Version 5 has not been re-rated. See [`trainer-review.md`](trainer-review.md).
 5. **Narration.** [Kokoro](https://github.com/thewh1teagle/kokoro-onnx) TTS (voice `af_heart`, speed 0.80). Each
-   caption line is synthesized in one pass, so caption times are measured, not estimated. `synth.py` also
+   caption line is synthesized on its own (six in two or three phrases, split with " | "), so caption times are measured, not estimated. `synth.py` also
    finds the pauses in each line and aligns the caption's phrases to them, so on-screen beats land on measured word
    times rather than a guess from the text.
 6. **Picture.** Each scene is HTML/SVG in [`source/`](source/): `scenes-a.js` (shared helpers, the save template, the

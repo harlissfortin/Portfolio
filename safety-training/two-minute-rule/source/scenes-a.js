@@ -61,7 +61,7 @@
   SC.predict = (scene, cue, hold, out) => {
     SC.sfx(`${cue}.end+0.15`, scene, 'tick'); SC.sfx(`${cue}.end+1.15`, scene, 'tick'); SC.sfx(`${cue}.end+2.15`, scene, 'tick');
     return A(1120, 130, `<div class="promptcard">
-      <div style="display:flex;align-items:center;gap:14px">${I('mag', '', 'width:44px;height:44px;color:var(--amber-text)')}<div class="lab" style="color:var(--amber-text)">Look for the catch</div></div>
+      <div style="display:flex;align-items:center;gap:14px">${I('mag', '', 'width:44px;height:44px;color:var(--amber-text)')}<div class="lab" style="color:var(--amber-text)">Find the problem</div></div>
       <div class="h3" style="margin-top:18px;line-height:1.15">What would make you stop here?</div>
       <div style="display:flex;align-items:center;gap:18px;margin-top:26px">${holdRing(`${cue}.end`, hold)}<div class="muted" style="font-size:24px;font-weight:650;line-height:1.3">Look at the picture.<br>Watching alone? Pause now.</div></div></div>`,
       `data-in="pop ${cue}~what-0.15 0.4" data-out="fade ${out} 0.3"`);
@@ -100,7 +100,7 @@
   html.push(SC.scene('title-open', '', `
     <div class="abs" style="inset:0" data-out="dim s1-2 0.6">
       <div class="abs" data-out="fade s1-3.end 0.5" style="left:60px;top:40px;display:flex;gap:70px">
-        ${mini('drum', 'Pump solvent', 's1-1~pump', 'var(--q3)')}${mini('pallet', 'Move a pallet', 's1-1~pallet', '#9a6a3a')}${mini('slit', 'Slit a roll', 's1-1~slit', 'var(--q1)')}
+        ${mini('drum', 'Pump solvent', 's1-1~pump', 'var(--q3)')}${mini('pallet', 'Move pallets', 's1-1~pallets', '#9a6a3a')}${mini('slit', 'Slit rolls', 's1-1~slit', 'var(--q1)')}
       </div>
     </div>
     <svg class="abs" style="left:0;top:0;overflow:visible" width="1680" height="772" viewBox="0 0 1680 772">
@@ -113,7 +113,7 @@
     ${A(690, 0, ART.stopwatch('sw1', { size: 300 }), 'data-in="pop s1-3.end+0.15"')}
     ${A(0, 350, `<div class="h0" style="width:1680px;text-align:center">The 2-Minute Rule</div>`, 'data-in="up s1-3.end+0.35"')}
     ${A(0, 515, `<div class="h3 muted" style="width:1680px;text-align:center;font-weight:600">One shift on a patch line</div>`, 'data-in="up s1-3.end+0.7"')}
-    ${A(540, 620, SC.shift(null, 600), 'data-in="wipe s1-3.end+1.0 0.8"')}
+    ${A(540, 620, SC.shift(null, 600), 'data-in="wipe s1-3.end+0.8 0.6"')}
   `));
 
   // 2 ─ the rule ─────────────────────────────────────────────────────────────
@@ -121,20 +121,20 @@
       ${A(x - 110, 46, `<div class="small" style="width:220px;text-align:center;font-weight:750;color:var(--ink)">${key === 'break' ? 'Break' : SC.TRIG[key][1]}</div>`, `data-in="up ${ref}+0.1"`)}`;
   html.push(SC.scene('the-rule', '', `
     ${A(0, 0, `<div class="h1">The 2-minute rule</div>`, 'data-in="up s2-1~rule-0.3"')}
-    ${A(0, 130, `<div style="display:flex;align-items:center;gap:16px">${I('pin', '', 'width:54px;height:54px;color:var(--amber)')}<div class="h3">A pause at the point of work</div></div>`, 'data-in="up s2-1~point"')}
+    ${A(0, 130, `<div style="display:flex;align-items:center;gap:16px">${I('pin', '', 'width:54px;height:54px;color:var(--amber)')}<div class="h3">Pause at the point of work</div></div>`, 'data-in="up s2-1~point"')}
     <div class="abs" style="left:60px;top:360px;width:1560px" data-out="fade s2-3 0.5">
       ${A(0, 0, `<div style="width:1560px;height:6px;border-radius:3px;background:var(--line)"></div>`, 'data-in="grow s2-1~pause 0.8"')}
       ${tl(110, 'start', 's2-1~start')}${tl(440, 'break', 's2-2~break')}${tl(770, 'handover', 's2-2~handover')}${tl(1100, 'interruption', 's2-2~interruption')}${tl(1430, 'change', 's2-2~change')}
     </div>
     ${A(220, 250, ART.stopwatch('sw2', { size: 300 }), 'data-in="pop s2-3"')}
-    ${A(660, 340, `<div class="h2">A guide, not an exact time</div>`, 'data-in="up s2-3~minutes"')}
-    ${A(660, 450, `<div class="h3 muted">What matters is the pause</div>`, 'data-in="up s2-3~guide+0.1"')}
+    ${A(660, 340, `<div class="h2">Two minutes is a guide</div>`, 'data-in="up s2-3~minutes"')}
+    ${A(660, 450, `<div class="h3 muted">What matters is the pause</div>`, 'data-in="up s2-3~matters"')}
   `));
 
   // 3 ─ line clearance for people ───────────────────────────────────────────
   html.push(SC.scene('line-clearance', '', `
-    <div class="abs" style="inset:0" data-out="fade s3-2.end 0.4">
-      ${A(0, 0, `<div class="h2">Line clearance: product</div>`, 'data-in="up s3-1" data-out="fade s3-2~people-0.8 0.3"')}
+    <div class="abs" style="inset:0" data-out="fade s3-2.end+0.45 0.4">
+      ${A(0, 0, `<div class="h2">Line clearance for product</div>`, 'data-in="up s3-1" data-out="fade s3-2~people-0.8 0.3"')}
       ${A(0, 0, `<div class="h1">Line clearance for <span style="color:var(--q3)">people</span></div>`, 'data-in="up s3-2~people-0.4"')}
       ${A(1000, 6, `<span class="tag grey" style="font-size:24px">21 CFR 211.130(e) · Checked right before use</span>`, 'data-in="left s3-1~clearance 0.6" data-out="fade s3-2~people-0.8 0.3"')}
       ${A(0, 150, `<div style="display:flex;gap:30px">${['No laminate left', 'No labels left', 'No pouches left'].map((t, i) => SC.check(t, `data-in="pop s3-1.end${['-0.4', '-0.15', '+0.1'][i]} 0.3"`)).join('')}</div>`, 'data-out="fade s3-2~people-0.8 0.3"')}
@@ -149,10 +149,10 @@
     </div>
     <div class="abs" style="inset:0">
       ${A(0, 0, `<div class="h1"><span style="display:inline-block" data-in="up s3-3~adds">Adds to.</span> <span class="muted" style="display:inline-block" data-in="up s3-3~never">Never replaces.</span></div>`)}
-      ${A(740, 170, ART.stopwatch('sw3', { size: 220 }), 'data-in="down s3-3~lockout+0.2"')}
-      ${A(980, 220, `<div style="font-size:80px;font-weight:850;color:var(--amber-text)">+</div>`, 'data-in="pop s3-3~lockout+0.4"')}
+      ${A(740, 170, ART.stopwatch('sw3', { size: 220 }), 'data-in="down s3-3~guards+0.2"')}
+      ${A(980, 220, `<div style="font-size:80px;font-weight:850;color:var(--amber-text)">+</div>`, 'data-in="pop s3-3~guards+0.4"')}
       <div class="abs" style="left:30px;top:460px;display:flex;gap:24px">
-        ${[['doc', 'Procedures', 's3-3~procedures'], ['form', 'Permits', 's3-3~permits'], ['lock', 'Lockout', 's3-3~lockout'], ['shield', 'Guards &amp; interlocks', 's3-3~lockout+0.3']].map(([ic, l, r]) => `<div class="block" style="width:390px;height:100px;justify-content:center;font-size:34px" data-in="up ${r}">${I(ic)}${l}</div>`).join('')}
+        ${[['doc', 'Procedures', 's3-3~procedures'], ['form', 'Permits', 's3-3~permits'], ['lock', 'Lockout', 's3-3~lockout'], ['shield', 'Guards', 's3-3~guards']].map(([ic, l, r]) => `<div class="block" style="width:390px;height:100px;justify-content:center;font-size:34px" data-in="up ${r}">${I(ic)}${l}</div>`).join('')}
       </div>
     </div>
   `));
@@ -168,7 +168,7 @@
       ${A(870, 0, SC.qcard(1, 'width:810px'), 'data-in="pop s4-3~could"')}
       ${A(0, 140, SC.qcard(2, 'width:810px'), 'data-in="pop s4-4"')}
       ${A(870, 140, SC.qcard(3, 'width:810px'), 'data-in="pop s4-4~what"')}
-      ${A(0, 290, `<div style="display:flex;align-items:center;gap:16px;font-size:34px;font-weight:800;color:var(--ok-text)">${I('verify', '', 'width:46px;height:46px')}Checked or assumed? <span style="color:var(--ink)">Did you look or test it yourself, or are you guessing?</span></div>`, 'data-in="up s4-5"', 'width:1680px')}
+      ${A(0, 290, `<div style="display:flex;align-items:center;gap:16px;font-size:34px;font-weight:800;color:var(--ok-text)">${I('verify', '', 'width:46px;height:46px')}<span>Checked <span style="color:var(--ink)">= you saw or tested it yourself ·</span> Assumed <span style="color:var(--ink)">= you’re guessing</span></span></div>`, 'data-in="up s4-5"', 'width:1680px')}
     </div>
     ${A(0, 270, `<div style="width:1680px;text-align:center;font-size:28px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Your call</div>`, 'data-in="fade s4-6~call 0.4" data-out="fade s4-7-0.2 0.4"')}
     ${A(0, 330, `<div style="width:1680px;display:flex;justify-content:center">${SC.btns(['', '', ''], ['data-in="pop s4-6~go"', 'data-in="pop s4-6~fix"', 'data-in="pop s4-6~stop"'])}</div>`, 'data-out="fade s4-7-0.2 0.4"')}
@@ -177,7 +177,7 @@
         <ul><li data-in="fade s4-7~trained">You’re trained <b>and</b> authorized</li><li data-in="fade s4-7~step">It’s a step in your procedure</li></ul>
         <div class="eg" data-in="fade s4-7~procedure+0.2">e.g. a small adhesive drip or a full trim-waste bag, as your procedure says</div></div>
       <div class="col stop" data-in="up s4-8"><div class="ttl">${I('phone', '', 'width:46px;height:46px;color:var(--stop)')}Stop &amp; get help for</div>
-        <ul><li data-in="fade s4-8~permit">No permit yet</li><li data-in="fade s4-8~someone">Someone else’s unfinished work</li><li data-in="fade s4-8~authorized">Not authorized for it</li></ul>
+        <ul><li data-in="fade s4-8~permit">No permit yet</li><li data-in="fade s4-8~someone">Someone else’s unfinished work</li><li data-in="fade s4-8~authorized">Not authorized</li></ul>
         <div class="eg" data-in="fade s4-8~help">e.g. a guard that won’t close · a web wrapped on a roll you’re not trained to clear · an alarm you don’t recognize</div></div></div>`)}
     ${A(0, 690, `<div class="h4" style="width:1680px;text-align:center">Not sure, or the fix doesn’t work? <span style="color:var(--stop)">Stop &amp; get help.</span></div>`, 'data-in="up s4-9"')}
   `));
@@ -205,7 +205,7 @@
     </div>
     ${A(800, 596, `<div style="display:flex;align-items:center;gap:16px"><div class="h4" style="margin-right:4px">Your call?</div><div data-out="fade s5-5 0.3">${holdRing('s5-4.end', 2.4)}</div>
       ${[['go', 'check', 'Go'], ['fix', 'wrench', 'Fix it'], ['stop', 'phone', 'Stop &amp; get help']].map(([k, ic, t]) => `<div style="position:relative" ${k !== 'go' ? 'data-out="fade s5-5 0.3"' : ''}><div class="btn ${k}" style="font-size:24px;padding:10px 18px;background:var(--panel);color:var(--ink);box-shadow:inset 0 0 0 3px var(--${k})">${I(ic, '', `color:var(--${k})`)}${t}</div>${k === 'go' ? `<div class="abs" style="inset:0" data-in="fade s5-5 0.3"><div class="btn go" style="font-size:24px;padding:10px 18px;height:100%;box-sizing:border-box">${I('check')}Go</div></div>` : ''}</div>`).join('')}</div>`, 'data-in="pop s5-4~call-0.15 0.4"')}
-    ${A(1280, 596, `<div class="h4" style="line-height:74px">A few seconds.</div>`, 'data-in="up s5-5~took"')}
+    ${A(1280, 596, `<div class="h4" style="line-height:74px">That took seconds.</div>`, 'data-in="up s5-5~took"')}
     ${SC.sfx('s5-4.end+0.25', 'routine-go', 'tick')}${SC.sfx('s5-4.end+1.25', 'routine-go', 'tick')}
     ${SC.sfx('s5-5', 'routine-go', 'go')}
   `));
@@ -216,20 +216,20 @@
   html.push(SC.scene('four-saves', '', `
     <div class="abs" style="inset:0" data-out="up s6-2~save-0.1 0.5">
       ${A(0, 0, `<div class="h1">Most pauses end in Go</div>`, 'data-in="up s6-1"')}
-      ${A(0, 120, `<div class="h3 muted">In seconds</div>`, 'data-in="up s6-1+0.4"')}
+      
       <svg id="ss-ticks" class="abs" style="left:40px;top:300px;overflow:visible" width="1600" height="240" viewBox="0 0 1600 240" data-in="fade s6-1 0.4"></svg>
-      ${A(40, 540, `<div style="display:flex;gap:40px;font-size:26px;font-weight:700;color:var(--ink)"><span style="display:flex;gap:12px;align-items:center"><span style="width:10px;height:30px;border-radius:4px;background:var(--go)"></span>A pause that ended in Go</span><span style="display:flex;gap:12px;align-items:center"><span style="width:30px;height:30px;border-radius:50%;border:5px solid var(--amber)"></span>A pause that caught something</span></div>`, 'data-in="fade s6-1+0.6 0.5"')}
+      ${A(40, 540, `<div style="display:flex;gap:40px;font-size:26px;font-weight:700;color:var(--ink)"><span style="display:flex;gap:12px;align-items:center"><span style="width:10px;height:30px;border-radius:4px;background:var(--go)"></span>A pause that ended in Go</span><span style="display:flex;gap:12px;align-items:center"><span style="width:30px;height:30px;border-radius:50%;border:5px solid var(--amber)"></span>A pause that caught a problem</span></div>`, 'data-in="fade s6-1+0.6 0.5"')}
     </div>
     <div class="abs" style="inset:0">
-      ${A(0, 0, `<div class="h2">Four two-minute saves</div>`, 'data-in="up s6-2~save+0.1"')}
+      ${A(0, 0, `<div class="h2">Four two-minute saves</div>`, 'data-in="up s6-2~save+0.4"')}
       ${A(830, 26, `<div style="font-size:28px;font-weight:700;color:var(--muted);white-space:nowrap">A save = a pause that caught a problem</div>`, 'data-in="fade s6-2~save+0.4 0.5"')}
       ${A(0, 120, SC.shift(null, 1680, '', [SC.WHEN.s1, SC.WHEN.s2, SC.WHEN.s3, SC.WHEN.s4]), 'data-in="wipe s6-2~save+0.2 0.6"')}
       ${SAVES.map(([t, trig, q, ic, f], i) => A(i * 420, 200, `<div class="card" style="width:400px;height:250px;padding:22px 26px;border-left:12px solid var(--${q});display:flex;flex-direction:column;gap:16px">
           <div style="display:flex;align-items:center;gap:16px"><div style="font-size:44px;font-weight:850;color:var(--ink)">${i + 1}</div>${I(ic, '', 'width:60px;height:60px;color:var(--ink)')}</div>
           <div class="h4" style="font-size:34px">${t}</div>
           <div><span class="chip trig">${I(SC.TRIG[trig][0])}${SC.TRIG[trig][1]}</span></div></div>`, `data-in="pop s6-3~four+${(0.1 + i * 0.15).toFixed(2)}"`)).join('')}
-      ${A(0, 500, `<span class="tag grey">Examples built from common patch-line hazards, not real events</span>`, 'data-in="fade s6-3~examples"')}
-      ${A(0, 580, `<div style="display:inline-flex;align-items:center;gap:14px;background:var(--panel);border:4px solid var(--amber);border-radius:999px;padding:10px 26px;font-size:27px;font-weight:800;white-space:nowrap">${I('mag', '', 'width:38px;height:38px;color:var(--amber-text)')}The video waits: find the problem, pick your call</div>`, 'data-in="pop s6-4"')}
+      ${A(0, 500, `<span class="tag grey">Four examples, not real events</span>`, 'data-in="fade s6-3~examples"')}
+      ${A(0, 580, `<div style="display:inline-flex;align-items:center;gap:14px;background:var(--panel);border:4px solid var(--amber);border-radius:999px;padding:10px 26px;font-size:27px;font-weight:800;white-space:nowrap">${I('mag', '', 'width:38px;height:38px;color:var(--amber-text)')}Each one asks you twice: find the problem, then pick your call</div>`, 'data-in="pop s6-4"')}
     </div>
   `));
 })();

@@ -1,7 +1,7 @@
 # The 2-Minute Rule: facilitator guide
 
 This guide is for the launch session and the four weekly huddles that go with the video *The 2-Minute Rule: One Shift
-on a Patch Line* (about 6:26). The video follows one shift on a transdermal patch line: a routine Go, then four saves.
+on a Patch Line* (about 6:42). The video follows one shift on a transdermal patch line: a routine Go, then four saves.
 
 This is awareness training. It builds a habit. It is not lockout, solvent-bonding, forklift-operator or potent-compound
 handling training, and it does not qualify anyone to do any fix. Your site's procedures, permits and lockout always
@@ -150,7 +150,7 @@ aid.
 | Part | Time | Who |
 |---|---|---|
 | 1. Live opening: leader commitments and the QA position | About 3 min | Site or area head |
-| 2. The full video | About 7 min (6:26, plus pauses at Save 1's holds) | Facilitator |
+| 2. The full video | About 7 min (6:42, plus pauses at Save 1's holds) | Facilitator |
 | 3. Discussion | About 8 min | Facilitator, with the head staying |
 | 4. Close | About 2 min | Facilitator |
 
@@ -261,12 +261,12 @@ Chapter and hold times:
 <!-- PAUSE-POINTS -->
 | Chapter | Starts | Hold 1: “What would make you stop here?” | Hold 2: “Your call?” |
 |---|---|---|---|
-| Save 1 · Solvent transfer | 2:01 | 2:08 (holds to 2:13) | 2:25 (holds to 2:28) |
-| Save 2 · Roll staging | 2:43 | 2:48 (holds to 2:53) | 3:10 (holds to 3:13) |
-| Save 3 · Die cutter | 3:33 | 3:39 (holds to 3:45) | 3:53 (holds to 3:57) |
-| Save 4 · Potent product | 4:20 | 4:27 (holds to 4:33) | 4:39 (holds to 4:43) |
+| Save 1 · Solvent transfer | 2:05 | 2:12 (holds to 2:18) | 2:30 (holds to 2:33) |
+| Save 2 · Roll staging | 2:47 | 2:53 (holds to 2:59) | 3:16 (holds to 3:19) |
+| Save 3 · Die cutter | 3:41 | 3:47 (holds to 3:52) | 4:01 (holds to 4:04) |
+| Save 4 · Potent product | 4:29 | 4:36 (holds to 4:42) | 4:49 (holds to 4:52) |
 
-Other chapters: Intro 0:00 · The rule 0:14 · Line clearance for people 0:27 · Stop · Look · Ask · Decide 0:39 · A routine Go 1:22 · Four saves 1:44 · All four end in Go 5:08 · What leaders commit to 5:18 · Recap card 5:37. Full video: 6:26.
+Other chapters: Intro 0:00 · The rule 0:15 · Line clearance for people 0:29 · Stop · Look · Ask · Decide 0:42 · A routine Go 1:26 · Four saves 1:49 · All four end in Go 5:21 · What leaders commit to 5:31 · Recap card 5:52. Full video: 6:42.
 
 *Times come from `source/timing.json` (`python tooling/pause_points.py` refreshes them).*
 <!-- /PAUSE-POINTS -->
@@ -353,7 +353,7 @@ paused this week. Which trigger was it? Which question did the work?" Then ask f
    the job aid and read from it, or do it as a pair.
 3. The volunteer talks through their two minutes out loud, as if about to start:
    - Stop: "Hands off."
-   - Look: around the job, and compare it with the plan. They point at what they would look at.
+   - Look: around the job, and compare with the plan. They point at what they would look at.
    - Ask: the four questions, out loud, with what they would check here.
    - Decide: they say the call.
 4. Then say: "Now imagine you find this:" and read the situation in the save's note. The volunteer stops and says the
@@ -398,7 +398,7 @@ before the huddle, and tell the crew where your site differs from the video.
 
 #### Save 1 huddle · Solvent transfer
 
-Mix room, before you start: you'll pump flammable solvent from a drum into the adhesive mix tank with an air drum
+In the mix room, before you start, you'll pump flammable solvent from a drum into the adhesive mix tank with an air drum
 pump. You're already in your solvent PPE.
 
 **Check first.** Your mix-room PPE. Your bonding set-up: a reel and a BOND lamp, as in the video, or a fixed ground
@@ -456,7 +456,7 @@ sit-down forklift.
    - What happens next: you say no kindly and call your lead. Your lead thanks you and sends a trained driver.
      Everyone stands clear of the forks and the truck's path: nobody stands or walks under raised forks
      (1910.178(m)(2)). Once the pallet is down, your own steps: pallet truck, roll lifter, Go.
-   - The lead fixes the cause without blame: the next rolls stay at floor level. Nobody is blamed: not the co-worker,
+   - Off screen, the lead also fixes the cause: the next rolls stay at floor level. Nobody is blamed: not the co-worker,
      not the driver, not whoever moved the pallet.
    - Listen for: "I've driven one before" or "It's only a few feet" (your site authorizes you for each type of truck;
      driving one somewhere else isn't that); "I'd pull it down with the pallet truck" (not any other way either);
@@ -501,14 +501,14 @@ say, and who signs off the restart?
      assumed?** The note is assumed; the guard and the lock are what you checked.
    - Hold 2 ("What's your call?"), the call: **Stop & get help.**
 3. **The reason.** It's someone else's unfinished work. You never touch the lock, the tag or the guard, and you call
-   your lead. Only the lock's owner removes it, or a supervisor under the site's lock-removal procedure (29 CFR
+   your lead. Only the lock's owner removes it, or a supervisor, using the site's lock-removal procedure (29 CFR
    1910.147(e)(3)): the owner isn't on site, every reasonable effort is made to reach them, and they're told before
-   they're back at work. The owner finishes, puts the guard back and removes their own lock. Then your restart checks:
+   they're back at work. The owner finishes, puts the guard back and removes their lock. Then you run restart checks:
    guard on, area clear, and the checks your procedure lists. Then Go.
    - Listen for: "The note says it's ready" (a note is someone's word); "I'd put the guard back myself" (it's part of
      their work); "I'm trained on die changes, I'd finish it" (it still starts with Stop & get help: the work is theirs
      until they hand it back).
-   - Prevented: the die cutter never runs with its guard off and the work unfinished.
+   - Prevented: the die cutter never starts with the guard off and the work unfinished.
    - **Twist:** "What if the guard is on, there's no lock or tag, and the technician tells you face to face that the
      die change is finished?" Model call: **Go**, after your restart checks.
 4. **Sorting cards 4, 7, 8.** Whose work is it? Your own PPE step is yours. Someone else's unfinished work, and the
@@ -536,7 +536,7 @@ outside? Where is the potent waste? What are your steps if product touches skin?
      sleeve covers marked NEW. The question that catches it: **What could hurt us?** ("What's different?" also fits:
      the board changed.)
    - Hold 2 ("And your call?"), the call: **Fix it.**
-3. **The reason.** Putting on this product's protective gear is your own gowning step, and you're trained on it. Bring
+3. **The reason.** Putting on the right gear for this product is your own gowning step, and you're trained on it. Bring
    the slitter to a normal stop and put the trim in the potent waste. At the gowning point, take off your gloves as
    your procedure says, and wash hands and wrists with soap and water, not hand sanitizer. Then inner gloves, sleeve
    covers, and outer gloves over the cuffs. No skin showing. Then Go.
@@ -998,11 +998,11 @@ locked.
 | Point of work | The place where you do the job, before your hands go on it. |
 | Before you start · After a break · Handover · Interruption · Change | The five times to pause, word for word as on the video's recap card and the job aid. In running speech: before you start, and after any break, handover, interruption or change. The rule scene's pill says "Break". |
 | Stop | Hands off. |
-| Look | Around the job, and compare it with the plan. |
+| Look | Around the job and compare with the plan. |
 | Ask | Ask yourself the four questions. |
 | What's different? | Anything new, changed, or not as planned? |
 | What could hurt us? | Moving parts, power, heat, sparks, solvents, heavy loads, potent product? |
-| Checked or assumed? | Did you look or test it yourself, or are you guessing? |
+| Checked or assumed? | Checked means you saw or tested it yourself. Assumed means you're guessing. |
 | What if it goes wrong? | Where does it go? Who is in the way? |
 | Decide | Make one of three calls. |
 | Go | You found nothing wrong. Start the job. |
@@ -1028,7 +1028,7 @@ locked.
 | Trained on | Your site's record of the trucks you're trained, evaluated and authorized to drive: a card, a badge or a posted list. OSHA doesn't issue licences or cards. |
 | Roll lifter | Lifts a roll by its core. |
 | Lock out | Cut off every energy source, and put your own lock on each one. |
-| Lock's owner · Lockout owner | The person whose lock and tag are on. Only they remove it, or a supervisor under the site's lock-removal procedure: the owner isn't on site, every reasonable effort is made to reach them, and they're told before they're back at work. |
+| Lock's owner · Lockout owner | The person whose lock and tag are on. Only they remove it, or a supervisor, using the site's lock-removal procedure: the owner isn't on site, every reasonable effort is made to reach them, and they're told before they're back at work. |
 | Isolate · Isolated | Cut off and lock out every energy source or line. Stopped isn't the same as isolated. |
 | Stored energy | Energy left after you lock out: trapped air, springs, heat. |
 | Bleed to zero | Let trapped air out through the valve your procedure names, until the gauge reads zero. |
