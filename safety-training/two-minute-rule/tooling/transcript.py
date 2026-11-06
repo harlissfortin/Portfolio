@@ -8,7 +8,7 @@ script = json.loads((ROOT / "source/script.json").read_text())
 onscreen = {c["id"]: c.get("on_screen", "") for s in script["scenes"] for c in s["cues"]}
 cue = {c["id"]: c for c in t["cues"]}
 def mmss(s): return "%d:%02d" % (int(s // 60), int(s % 60))
-out = ["# The 2-Minute Rule — transcript", "",
+out = ["# The 2-Minute Rule: One Shift on a Patch Line — transcript", "",
        f"Runtime {mmss(t['duration'])}. Narration is a synthesized voice (Kokoro, `{t['voice']}`, speed {t['speed']}). "
        "Times are when each line starts in `two-minute-rule.mp4`; the same lines are in `captions.vtt`. "
        "Italic text describes what is on screen. In each save, the video pauses twice and asks you to answer first: "
@@ -25,10 +25,10 @@ slate, end = last[-2]["start"] - 0.5, last[-1]["start"] - 0.6
 out += ["## The last screens", "",
         f"**Your site slate** ({mmss(slate)}), spoken: *“{last[-2]['text']}”* On screen: *Who do you call for help?* "
         "Your lead: days ____ · nights ____ · weekends ____ · Radio or phone: ____ · No answer? Call: ____ · "
-        "Report catches to: ____ · Write it on your pocket card.", "",
+        "Report what I caught to: ____ · Write it on your pocket card.", "",
         f"**End card** ({mmss(end)}), under the last spoken line: *Follow your site's procedures, permits and lockout. "
-        "This video is awareness training, not lockout or confined-space training.*", "",
-        "Sources: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147 (lockout/tagout) and OSHA interpretations on minor servicing; OSHA 29 CFR 1910.212 (machine guarding); OSHA 29 CFR 1910.146 (permit-required confined spaces); U.S. Chemical Safety Board Safety Bulletin 2003-10-B, *Hazards of Nitrogen Asphyxiation*; NFPA 77 and the CCPS Process Safety Beacon, March 2025 (static); isolator glove programs, including EU GMP Annex 1 (2022) for aseptic isolators.", "",
+        "This video is awareness training, not lockout, solvent-bonding, forklift-operator or potent-compound handling training.*", "",
+        "Sources: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147 (lockout/tagout), including (e)(3) on removing another person's lock; OSHA 29 CFR 1910.106(e)(6)(ii) and NFPA 77 (bonding before dispensing flammable liquids); OSHA 29 CFR 1910.178(l) (powered industrial truck operator training) and (m)(2) (no one under raised forks); NIOSH skin-exposure guidance (wash skin with soap and water).", "",
         "*Use cases are illustrative composites, not real incidents. Narration is a synthesized voice.*", ""]
 (ROOT / "transcript.md").write_text("\n".join(out))
 print("transcript.md:", len(t["cues"]), "lines")

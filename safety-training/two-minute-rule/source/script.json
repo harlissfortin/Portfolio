@@ -1,702 +1,508 @@
 {
-  "title": "The 2-Minute Rule: Six Saves on a Pharma Floor",
-  "facts_used": [
+ "title": "The 2-Minute Rule: One Shift on a Patch Line",
+ "notes": "FILES\n- Script: /tmp/claude-0/-home-user-Portfolio/2b214e81-c21b-5a35-932e-9a0878b5c71e/scratchpad/td-final2/final.json\n- Applier and checks: /tmp/claude-0/-home-user-Portfolio/2b214e81-c21b-5a35-932e-9a0878b5c71e/scratchpad/td-final2/apply.py. It starts from td-final/final.json, asserts that every replacement matches exactly once, and leaves the earlier folders unchanged.\n\nLENGTH\n- 758 spoken words by the project counter (td-short/est.py). The previous version had 742.\n- 76 cues. Save 2's line 9 is now two cues. The longest caption is 94 characters.\n- est.py: 6:18 (377.7 s), including four stings, four 3.0 s holds, five 2.4 s holds and Save 2's new 2.0 s picture-only beat. est.py read about 2% long on the last render, so expect about 6:10 real. The previous version was 6:09 est, about 6:01 real.\n- Words and estimated seconds per scene:\n  - title-open: 28 words, 13.9 s\n  - the-rule: 26 words, 11.8 s\n  - line-clearance: 24 words, 11.6 s\n  - how-to-run-it: 93 words, 41.6 s\n  - routine-go: 43 words, 21.7 s\n  - four-saves: 34 words, 16.2 s\n  - Save 1: 81 words, 42.3 s\n  - Save 2: 101 words, 53.0 s\n  - Save 3: 92 words, 47.0 s\n  - Save 4: 92 words, 46.5 s\n  - all-four: 23 words, 11.5 s\n  - leaders: 34 words, 16.8 s\n  - recap: 87 words, 43.9 s\n- Why it is still above 700 words: the precedence puts length last. The +16 words come from safety and plain-English fixes, and the two setup trims recover 2:\n  - Save 2: \"The roll's\", \"is different to drive\", \"wants to help\"\n  - Save 3: \"puts the guard back\", and \"The die cutter never runs\" instead of a second \"Nobody…\"\n  - Save 4: a catch that names the hazard; \"take off your gloves as your procedure says\"; \"put on … sleeve covers\"; \"pass through skin\"\n  - \"still on their hook\", \"static charge\", \"Each save asks you\", \"the roll lifter\", \"Nobody's in the aisle\"\n  - Setup trims taken: \"So\" in the title; \"two Stop & get help\" in all-four\n- About 330 words are fixed: the locked lines, the four questions spoken three times, the gloss, the Fix-it rule spoken twice, the exact slate and end lines, and the designed Save 2. Reaching 700 would mean dropping a required item.\n- Save 2 is about 53 s, against about 45 s for the others. Two reviewers accepted that, because Save 2 is the only save that shows production pressure and speaking up. The extra time pays for the slow, correct lowering.\n- Optional trims, each with a cost, worth about −8 words and about −4 s:\n  - \"Ask four questions:\" → \"Ask:\" (−2). It was kept because the brief says \"Ask four questions\" and \"four\" tells a listener how many to expect.\n  - Drop the three +1 plain-English changes: \"roll lifter\", \"static charge\", \"pass through skin\" (−3).\n  - Four-saves: drop \"But\" (−1). This loses the spoken contrast.\n  - Save 3 line 9 back to \"Nobody starts it…\" (−2). This brings back the Nobody/Nobody repeat.\n  - Save 2 beat 2.0 → 1.0 s, but only if the animator can show back out, stop, lower and set down calmly in less time.\n\nHOW REVIEWER CONFLICTS WERE SETTLED\nPrecedence: safety accuracy, then structure and locked wording, then naturalness, then length.\n- Save 1, where the spark is drawn: the EHS reviewer's tank opening wins over the drum bung. The fact-check says vapor comes out at both openings, but most at the receiving vessel as it fills. Teaching-length's dashed 'what if' styling is kept, so the bung stays shut and nothing is flowing. The ✕ in \"prevented\" lands on the same spot.\n- Routine Go, Q4: EHS's \"Nobody's in the aisle\" is used, not \"The aisle is clear\". It answers what happens if it goes wrong (nobody is hit), and it also avoids hearing \"aisles clear\".\n- Save 4 catch: merged from two reviewers. Naturalness gives the hazard first (\"This product, on bare wrists.\"). Teaching-length gives the evidence (\"The board now says double gloves.\"). It now answers Q2, not Q1, and drops the spoken \"PPE\" from the catch. The ring lands on 'wrists' first and the board second.\n- Save 2 line 9: split, as naturalness suggested, into \"Your lead sends a trained driver.\" [2.0 s beat] / \"Then it's Go.\", so Go is heard only after the pallet is down and the forks are flat. The beat is 2.0 s, not the 1.0 or 1.5 s the reviewers proposed, because EHS adds the back-out → stop → lower → set-down sequence. Teaching-length's 'glide in the next line' is honoured: the pallet truck glides on \"Then it's Go.\"\n- SCHEMA NOTE: 2.0 s is the only cue 'after' that isn't -1, 3.0 or 2.4. It is a picture-only beat with no card. It is below 2.4 s, so tooling/pause_points.py and qa_frames.py won't treat it as a decision hold, and synth.py takes any positive gap. If the pipeline must have -1, set -1 and add 2.0 s of picture time to the animation instead.\n- Save 2 L4: \"A forklift is different to drive and needs its own training.\" (94 characters). \"Handles\" could be heard as a noun. The line stays whole as the spec requires: the teaching point plus a calm statement of the risk.\n- Save 2 L8: \"Let's get a driver.\" replaces the spec's \"call the driver\", because the dock driver is never introduced on screen. The radio icon is anchored on 'get', and you call your lead.\n\nDECLINED OR NOT TAKEN\n- how-to \"Ask four questions:\" → \"Ask:\" (teaching-length, should): declined on structure precedence (see above). It is listed as an optional trim.\n- Save 1 \"Once the drum and pump are bonded…\" (+2, nice): the current line is clear and still says drum, pump, lamp and green.\n- Save 3 \"a note on the die cutter\" (+2, nice): the reviewer marked it 'only if length allows'.\n\nEDITS APPLIED (summary)\n- EHS:\n  - Save 1: the silhouette wears the site's solvent PPE (safety glasses, gloves), and the spark and vapor are in one place.\n  - Save 2:\n    - The driver's seatbelt is fastened.\n    - Everyone stands clear of the forks and the truck's path.\n    - The truck backs out until the pallet clears the beam, stops, then lowers. The pallet is never lowered over the beam.\n    - You walk in empty-handed; there is no drink in staging.\n    - A tag reads 'No climbing the rack · no pulling it down'.\n    - The NEVER SHOWN list is updated.\n  - Save 3: the tag carries an illegible handwritten name (lockout devices must identify who applied them). A phone icon shows 'You call your lead'.\n  - Save 4: you are already in the coat, and only the double gloves and sleeve covers are marked NEW. The slitter comes to a normal stop before you step away. The bin is labelled POTENT TRIM WASTE.\n  - How-to: the Fix-it example reads 'e.g. a small adhesive drip or a full trim-waste bag, as your procedure says'.\n  - Routine Go: the roll is carried low and the parked pallet truck's forks are down.\n  - End card: '…not lockout, solvent-bonding, forklift-operator or potent-compound handling training.'\n- Naturalness: all musts and shoulds except where a conflict was settled above. Nice edits taken:\n  - all-four \"two Stop & get help\"\n  - routine \"Nobody's in the aisle\" (the EHS form) and \"roll lifter\"\n  - \"static charge\"\n  - the-rule comma\n  - \"pass through skin\"\n- Teaching-length:\n  - The Save 2 hold, the glide and \"The roll's\"\n  - Empty-handed\n  - Save 4 catch\n  - Save 1 spark\n  - Title \"So\" cut\n  - Wood-brown pallet card (amber stays reserved for Fix it)\n  - Gloss line tts emptied (quote marks aren't pronunciation)\n  - Recap rule words under the red button\n  - Recap 'After a break' caption\n\nCHECKS (run by apply.py)\n- All locked lines are word for word: the four questions in how-to, routine-go and recap; the gloss; the three boundary lines; the Fix-it rule twice; \"That's the 2-minute rule: line clearance for people.\"; the slate line; the end line.\n- Hold 1 lead-ins are Hands off / Look closely / Now / Your turn, each 3.0 s. Hold 2 prompts are Your call? / So, your call? / What's your call? / And your call?, each 2.4 s, plus the routine Go's 2.4 s hold, which ends in Go. No hold's answer is spoken before it.\n- Catching questions: Save 1 Q3, Save 2 Q1, Save 3 Q3, Save 4 Q2. Q4 is answered only in the routine Go.\n- Calls:\n  - Save 1: Fix it, a step in your procedure (plus 'Won't go green? Stop & get help').\n  - Save 2: Stop & get help, not authorized.\n  - Save 3: Stop & get help, someone else's unfinished work.\n  - Save 4: Fix it, your own gowning step.\n- Every cue is 95 characters or fewer. Every '&' and '2-minute' has a tts.\n- The two Decide tts lines keep the \" | \" timing splits. Strip them if tts must carry pronunciation only.\n- No oven, dryer, drying or NFPA 86 text in any visual or narration. Save 2's purpose names the oven area only as a place the scene is kept away from.\n\nSITE-DEPENDENT ITEMS\n- Save 2:\n  - Do line operators drive powered pallet trucks? If not, draw a staging truck. With manual jacks, mark the jack YOURS and show only 'Forklift ☐'.\n  - Card, badge endorsement or PIN reader? With a badge, the pressure line becomes 'use my badge'.\n  - Does line equipment cross the airlock, and are rolls racked in staging?\n  - Are operator restraints fitted on the site's forklifts? If a different restraint is fitted, draw that one.\n  - What are the food and drink rules in staging and the airlock?\n  - The pre-use check, the horn at aisles, the lifter's rated capacity and damaged racking go in the facilitator guide.\n- Save 1:\n  - Mix-room PPE for solvent transfer.\n  - With a fixed ground reel and a pump interlock, the clue is the red lamp alone.\n  - Clamp points and hose type come from the site procedure.\n- How-to: whether operators may clean drug-in-adhesive drips on potent lines. If not, swap the example for the trim-waste bag alone.\n- Save 3:\n  - Whether lockout tags carry a name or a badge number.\n  - The site's documented lock-removal procedure, and who signs off the restart.\n- Save 4:\n  - PPE comes from the site's own OEL/OEB assessment, with no band numbers on screen.\n  - Whether a coat is standard in the room.\n  - Potent products may run only in dedicated suites with gowning outside the room.\n  - The skin-contact reporting steps.\n- DEA-controlled lines are not shown.\n- Before release, check this text on eCFR. This session confirmed it only through reproductions:\n  - 1910.178(l), (m)(2) and (m)(5)\n  - 1910.147(c)(5)(ii)(D) and (e)(3)\n  - 1910.106(e)(6)(ii)\n  - Put only '29 CFR 1910.178(l)' on screen.\n- EHS, operations, QA and training leads must review before use.\n\nKNOCK-ON EDITS FOR THE BUILD\n- td-art.js: replace TD.oven with TD.staging (rack, pallet of rolls, NEXT ROLL spot, forklift, pallet truck, airlock door, TRAINED ON inset, before-break inset). Add:\n  - the belted driver\n  - the back-out / stop / lower / set-down motion\n  - the step-clear positions\n- Save 1:\n  - solvent PPE on the silhouette\n  - the dashed bolt and vapor at the tank opening\n- Save 3:\n  - the scribbled name on the tag\n  - the phone icon\n  - the note text 'Die change done. Ready to run ✓'\n- Save 4:\n  - the coat on the silhouette\n  - NEW tags on the board\n  - the POTENT TRIM WASTE bin\n  - the slitter normal stop\n- Routine Go:\n  - the 'Before you start' chip\n  - the roll carried low\n  - the parked truck's forks down\n- Shared:\n  - the shared inset component\n  - the cup on the shift strip\n  - the wood-brown pallet card\n- Save 2 now has 11 cues. Re-anchor its events, and move the Go arrow and fix chip to \"Then it's Go.\"\n- End card: the disclaimer adds 'solvent-bonding'. Sources: NFPA 86 out; 1910.178(l) and (m)(2) in.",
+ "end_card_sources": [
+  "21 CFR 211.130(e), Packaging and labeling operations (line clearance)",
+  "OSHA 29 CFR 1910.147, The control of hazardous energy (lockout/tagout), including (e)(3) on removing another person's lock",
+  "OSHA 29 CFR 1910.106(e)(6)(ii) and NFPA 77, Recommended Practice on Static Electricity (bonding before dispensing flammable liquids)",
+  "OSHA 29 CFR 1910.178(l), powered industrial truck operator training, and (m)(2), no one under raised forks",
+  "NIOSH skin-exposure guidance: wash skin with soap and water",
+  "Use cases are illustrative composites, not real incidents."
+ ],
+ "word_count": 759,
+ "scenes": [
+  {
+   "id": "title-open",
+   "chapter": "Intro",
+   "purpose": "Hook on three everyday patch-line jobs (solvent, a pallet of rolls, slitting), respect what the viewer already knows, set calm stakes (today might be different) and land on the pause. The subtitle and the shift strip set the visual frame used by every save; nothing about the shift is spoken.",
+   "visual": "(~14 s) Light theme on a warm off-white background. Line 1: three white cards pop in across the top, left to right, each on its word, each a single icon over a label: a teal drum-and-pump 'Pump solvent' on 'pump', a plain wood-brown pallet (not amber, which is kept for Fix it) carrying two wrapped rolls standing on end 'Move a pallet' on 'pallet', and a blue roll with a small round blade 'Slit a roll' on 'slit'. Line 2: the cards dim to about 30%, and a plain silhouette fades in at centre stage below them. On 'different', a small amber '?' pops beside the silhouette's head. Line 3: on 'hands', a raised-hand icon pops beside the silhouette's shoulder; on 'two', an amber ring draws once, clockwise, around the hand, and 'Two minutes' fades in in amber to its right. The cards, silhouette and ring fade; a stopwatch reading '2:00' pops in at top centre and its amber ring sweeps once while the digits stay at '2:00'. The title 'The 2-Minute Rule' rises beneath it, then the muted subtitle 'One shift on a patch line'. Last, the shift strip draws in under the subtitle from left to right, with 'Start of shift' and 'End of shift' at its ends and a small cup icon about a third of the way along for the break. The title card holds about 1 s after the line.",
+   "cues": [
     {
-      "claim": "The 2-minute rule is a short, deliberate pause at the point of work, right before you start and again after any break, handover, interruption or change. 'Two minutes' is a rule of thumb and what matters is the pause; on a repeat task with nothing different, the pause takes seconds.",
-      "source": "brief-v2.md, 'The rule (verified consensus)'; proportionality framing from the operations-director review (framing, not a statistic)"
+     "text": "Solvent to pump, a pallet to move, a roll to slit.",
+     "on_screen": "Pump solvent · Move a pallet · Slit a roll",
+     "id": "s1-1"
     },
     {
-      "claim": "The rule adds to SOPs, permits, lockout, confined-space programs and engineering controls such as guards and interlocks, and never replaces them. It catches what the plan didn't anticipate.",
-      "source": "brief-v2.md, 'The rule (verified consensus)'; hierarchy-of-controls point from the safety-manager review"
+     "text": "You know these jobs. But today, something might be different.",
+     "on_screen": "Cards dim · a figure appears · '?'",
+     "id": "s1-2"
     },
     {
-      "claim": "Run it as Stop · Look · Ask · Decide. Ask: What's different? What could hurt us? Checked or assumed? What if it goes wrong? Decide: Go, Fix it if safe, or Stop & get help. A fix must be one you are trained and authorized for and that is in your procedure; anything else is Stop & get help.",
-      "source": "brief-v2.md, 'The rule (verified consensus)'; OSHA 29 CFR 1910.147 (lockout applied by authorized employees); safety-manager and operations-director reviews"
-    },
-    {
-      "claim": "Most pauses end in Go. This is the brief's framing, not a statistic. No number is given, and the tick runs on screen are deliberately too many to count, so no catch rate is implied.",
-      "source": "brief-v2.md, 'What the user asked for'; site-lead review"
-    },
-    {
-      "claim": "Under 21 CFR 211.130(e), packaging and labeling facilities are inspected immediately before use (shown as an on-screen chip, not read aloud). The 2-minute rule is line clearance for people.",
-      "source": "21 CFR 211.130(e); result-4.json citable_facts and packaging changeover/line-clearance task"
-    },
-    {
-      "claim": "Tablet-press setup and tooling changeover are not minor servicing, so lockout applies at main power and compressed air. A changeover found half-finished at handover, with no lock on, is a Stop & get help. Isolation is verified with a try-start before work, the tooling is counted, and before locks come off the tools are removed, the area is clear and affected people are told. Guards go back on and each interlock is tested before restart, followed by the normal start-up checks.",
-      "source": "OSHA 29 CFR 1910.147 ((d)(6) verification, (e) release from lockout, (f)(4) shift changes) and OSHA minor-servicing interpretations; OSHA 29 CFR 1910.212; brief-v2.md use case 2; result-4.json tablet-press task ('locked out at main power and compressed air'; 'Are the tooling count and the inspection sheet ready?') and changeover task ('each interlock tested before restart'); safety-manager and operations-director reviews"
-    },
-    {
-      "claim": "Before a powder charge into a reactor holding flammable solvent, the first check is inerting with oxygen confirmed low on the reading. Bonding and grounding with a monitored clamp (red/green earth indicator) and the specified conductive or dissipative liner are a second layer. A drum lifter is used instead of tipping by hand.",
-      "source": "result-4.json powder-charging task (first check 'Is the vessel inerted, with oxygen confirmed low on the reading, not assumed?'; standard controls) and drum-handling task ('drum lifter instead of tipping by hand'); NFPA 77; CCPS Process Safety Beacon, March 2025; brief-v2.md use case 3"
-    },
-    {
-      "claim": "Nitrogen has no color or smell, and the hazard of an inerted vessel is oxygen-poor air.",
-      "source": "U.S. CSB Safety Bulletin 2003-10-B, Hazards of Nitrogen Asphyxiation; brief-v2.md use case 4"
-    },
-    {
-      "claim": "Before anyone opens or leans into a nitrogen-inerted vessel (here a filter dryer opened between campaigns for inspection), authorized people positively isolate the nitrogen (blind or spool removed and locked, not just a valve closed). They test oxygen and solvent vapor at the opening with a bump-tested meter before air goes in, ventilate, retest, and issue the permit. The pause never replaces the permit: no permit, no Go.",
-      "source": "OSHA 29 CFR 1910.146; result-4.json nitrogen-inerted vessel task (positive isolation; test at the opening; solvent/LEL readings; bumped monitor); brief-v2.md use case 4 ('for inspection'); safety-manager review (de-inerting order and who does the work)"
-    },
-    {
-      "claim": "Normal air is about 20.9% oxygen. Under 29 CFR 1910.146, oxygen-deficient air is below 19.5% and oxygen-enriched air is above 23.5%. The gauge's tinted band and its label 'O₂ 19.5–23.5%' show this range.",
-      "source": "OSHA 29 CFR 1910.146 definitions, via result-4.json citable_facts"
-    },
-    {
-      "claim": "Routine jams may be cleared under a site's minor-servicing method, with jam tools and interlocked guards, only where an alternative effective protection exists, and an emergency stop alone is not that protection. A jam that needs a reach-in the tool can't make calls for lockout of every energy source, including stored pneumatic energy. You lock out power and air, bleed trapped air to zero, then try START to verify before reaching in.",
-      "source": "OSHA 29 CFR 1910.147 ((a)(2)(ii), (d)(5), (d)(6)) and OSHA minor-servicing interpretations; result-4.json packaging-jam task ('Can I clear this with the guard closed or with a tool, or do I have to reach in?'; stored-energy dump valves) and citable fact on the minor-servicing letters; brief-v2.md use case 1"
-    },
-    {
-      "claim": "A visual glove check at each use finds visible damage such as a cut. Pinholes need a physical integrity (leak or pressure-decay) test, and a replacement glove is leak-tested before use. The isolator pressure display should read in range. Highly potent APIs act at very low doses.",
-      "source": "result-4.json isolator/RABS task (visual check at each use; pressure decay per ISO 14644-7; glove management programme) and HPAPI task; PQE Group, '3W of Glove Integrity Test'; site-lead and safety-manager reviews"
-    },
-    {
-      "claim": "Lockout covers chemical and thermal energy. Before you break a line after CIP, the CIP supply and pump are isolated first, and the local gauge then verifies the line. Pressure trapped between closed valves is relieved by waiting, venting and confirming zero (vent open, no flow) and cool-down. You stand to the side of the joint, not in front of it, in a face shield and chemical gloves.",
-      "source": "OSHA 29 CFR 1910.147; brief-v2.md use case 5; result-4.json CIP/SIP task (isolation and LOTO of steam, CIP supply and pumps; face shield and chemical gloves) and line-break task (gauge or vent check confirms zero; position to the side)"
-    },
-    {
-      "claim": "Anyone, staff or contractor, can stop a job, even on a late batch, with no reprisal or blame. Stopping means stopping the job, not shutting down a running process outside procedure.",
-      "source": "brief-v2.md, 'The rule (verified consensus)' (real authority to stop without reprisal); safety-manager and site-lead reviews; CSB 2003-10-B (almost half of the nitrogen incidents involved contractors; not stated on screen)"
-    },
-    {
-      "claim": "Leaders come quickly, thank you, fix the cause and tell you what changed. The rule is not a check-the-box form, and what you catch goes through your usual reporting channels.",
-      "source": "brief-v2.md, 'The rule (verified consensus)'; safety-manager, operations-director and site-lead reviews"
-    },
-    {
-      "claim": "The six use cases are illustrative composites built from common pharma hazards, not real incidents.",
-      "source": "brief-v2.md, house rules"
+     "text": "Before your hands move, take two minutes.",
+     "on_screen": "Hand icon · Two minutes · The 2-Minute Rule / One shift on a patch line · shift strip",
+     "id": "s1-3"
     }
-  ],
-  "end_card_sources": [
-    "21 CFR 211.130(e), Packaging and labeling operations (line clearance)",
-    "OSHA 29 CFR 1910.147, The control of hazardous energy (lockout/tagout), and OSHA standard interpretations on minor servicing",
-    "OSHA 29 CFR 1910.212, General requirements for all machines (guarding)",
-    "OSHA 29 CFR 1910.146, Permit-required confined spaces",
-    "U.S. Chemical Safety Board, Safety Bulletin 2003-10-B: Hazards of Nitrogen Asphyxiation",
-    "NFPA 77, Recommended Practice on Static Electricity",
-    "CCPS Process Safety Beacon, March 2025: Static Accumulation Gives Warning Signs",
-    "PQE Group, '3W of Glove Integrity Test' (visual check at each use and physical integrity testing, as quoted from EU GMP Annex 1, 2022; the same practice is applied in containment glove programs)",
-    "Use cases are illustrative composites, not real incidents."
-  ],
-  "word_count": 1104,
-  "scenes": [
+   ]
+  },
+  {
+   "id": "the-rule",
+   "chapter": "The rule",
+   "purpose": "Name and define the rule in the imperative: the 2-minute rule is a pause at the point of work, before you start and after any break, handover, interruption or change. Two minutes is a guide.",
+   "visual": "(~11 s) Light theme. Line 1: on 'rule', the heading 'The 2-minute rule' rises top-left. A simple patch-line station (a roll on a stand feeding a flat web) sits centre stage with the silhouette beside it. On 'pause', the raised-hand icon pops at the silhouette's shoulder; on 'point', a map pin drops onto the station and 'At the point of work' rises under it; on 'start', the first amber-edged trigger pill pops in under the station: 'Before you start' (play icon). Line 2: four more pills pop into the row, each on its word, each with its icon: 'Break' (cup), 'Handover' (two people), 'Interruption' (bell) and 'Change' (two swapping arrows). These icons are reused on every trigger chip later. Line 3: the station fades; a stopwatch with a soft dotted ring sits at the right, and 'A guide, not an exact time' rises beside it. The pills hold to the end of the scene.",
+   "cues": [
     {
-      "id": "title-open",
-      "chapter": "Intro",
-      "purpose": "Hook on three everyday pharma tasks. Freeze the moment before the hands move, respect what the viewer already knows, and name the rule.",
-      "visual": "(~13 s) Light theme on a warm off-white background. s1-1: three white cards pop in across the top, left to right, each on its word. Each card is a single icon over a label: an amber gear 'Clear a jam' on 'jam', a blue wrench 'Break a line' on 'line' and a teal lock 'Open a vessel' on 'vessel'. s1-2: the cards dim to about 30%, and a plain silhouette fades in at centre stage below them. On 'Before', a raised-hand icon pops beside the silhouette's shoulder. On 'give', an amber ring draws once, clockwise, around the hand. On 'minutes', 'Two minutes' fades in in amber to the right of the ring. s1-3: the cards fade out, and a moment later the silhouette, hand, ring and label fade too. A stopwatch reading '2:00' pops in at top centre, and its amber ring sweeps once around the dark dial over about 2 s while the digits stay at '2:00'. The title 'The 2-Minute Rule' rises in beneath the stopwatch, then the muted subtitle 'Six saves on a pharma floor' rises below it. The title card holds to the end of the scene, about 1.3 s after the line.",
-      "cues": [
-        {
-          "id": "s1-1",
-          "text": "A jam to clear, a line to break, a vessel to open.",
-          "on_screen": "Clear a jam · Break a line · Open a vessel"
-        },
-        {
-          "id": "s1-2",
-          "text": "You know these jobs. But today, something might be different.",
-          "on_screen": "Clear a jam · Break a line · Open a vessel (dimmed) · A figure appears"
-        },
-        {
-          "id": "s1-3",
-          "text": "So before your hands move, give it two minutes. That's the 2-minute rule.",
-          "on_screen": "Hand icon · Two minutes · The 2-Minute Rule / Six saves on a pharma floor",
-          "tts": "So before your hands move, give it two minutes. That's the two-minute rule."
-        }
-      ]
+     "text": "The 2-minute rule: pause at the point of work, before you start,",
+     "tts": "The two-minute rule: pause at the point of work, before you start,",
+     "on_screen": "The 2-minute rule · At the point of work · Before you start",
+     "id": "s2-1"
     },
     {
-      "id": "the-rule",
-      "chapter": "The rule",
-      "purpose": "Define the rule: a short, deliberate pause at the point of work, right before you start and again after any break, handover, interruption or change. Two minutes is a rule of thumb, and what matters is the pause.",
-      "visual": "(~20 s) Light theme. s2-1: the title 'A pause at the point of work' rises top-left, with an amber pin icon at its left. On 'point', a thin timeline grows left to right across the middle of the stage. s2-2: five markers pop along the line, one per spoken item. Each is a white circle with an amber ring and an amber icon, and its label rises just beneath it: pause icon 'Before you start' at the left end (on 'start'), then clock 'Break', people 'Handover', phone 'Interruption' and gear 'Change'. s2-3: the timeline and markers fade. A large stopwatch pops in at left, its amber ring full and reading '2:00'. On 'guide', the heading 'A guide, not an exact time' rises to its right and the '2:00' digits fade, leaving the empty dial. On 'What matters', the muted line 'What matters is the pause' rises beneath the heading. The title stays at the top throughout.",
-      "cues": [
-        {
-          "id": "s2-1",
-          "text": "It's a short pause you take on purpose, at the point of work, where you do the job.",
-          "on_screen": "A pause at the point of work"
-        },
-        {
-          "id": "s2-2",
-          "text": "Do it before you start, and again after any break, handover, interruption or change.",
-          "on_screen": "Before you start · Break · Handover · Interruption · Change"
-        },
-        {
-          "id": "s2-3",
-          "text": "Two minutes is a guide, not an exact time. What matters is the pause.",
-          "on_screen": "A guide, not an exact time · What matters is the pause"
-        }
-      ]
+     "text": "and after any break, handover, interruption or change.",
+     "on_screen": "Break · Handover · Interruption · Change",
+     "id": "s2-2"
     },
     {
-      "id": "line-clearance",
-      "chapter": "Line clearance for people",
-      "purpose": "Anchor the rule in a habit the audience already owns: line clearance for product, right before each run (21 CFR 211.130(e), shown on screen as a citation chip and not read aloud). The 2-minute rule is line clearance for people, shown on the same packaging line that was just cleared. It adds to SOPs, permits, lockout and engineering controls such as guards and interlocks, and never replaces them. It catches what the plan missed because the worker is at the job.",
-      "visual": "(~20 s) Light theme. s3-1: the heading 'Line clearance: product' rises top-left, and the packaging line wipes in left to right across the lower half of the stage: a 'BLISTER PACKER' at the left end of a long roller conveyor. Leftovers from the last batch sit on the conveyor: three plain cartons, an amber carton and a lilac leaflet. A magnifier fades in at the left end and sweeps along the conveyor. While it is still sweeping, just after 'product', a grey citation chip '21 CFR 211.130(e) · Inspected right before use' slides in at top right. On 'right', the magnifier reaches the far end and fades, and the cartons and the leaflet lift off and vanish, leaving the line empty. s3-2: the heading and the chip fade. The empty line stays on stage, and a plain silhouette fades in just past its right end. Just before 'people', the title 'Line clearance for people' rises top-left, with 'people' in teal, and on 'people' a teal ring draws around the silhouette. s3-3: the line, title, silhouette and ring fade out. Four white blocks with teal icons rise in a row across the lower half, one per spoken item: document icon 'Procedures', form icon 'Permits' and lock icon 'Lockout', then shield icon 'Guards & interlocks' just after 'lockout'. The stopwatch (amber ring full, '2:00') drops in above the row, near centre, and a large amber '+' pops to its right. Nothing is covered or removed. On 'never', the heading 'Adds to. Never replaces.' rises top-left, with 'Never replaces.' muted. s3-4: the blocks, the stopwatch, the '+' and the heading fade. The heading 'You see what plans miss' rises top-left. A card 'The plan' with a grey document icon slides in on the left, and the silhouette fades in on the right. On 'missed', an amber bolt icon pops in the gap between them, outside the plan. On 'because', a teal eye icon pops beside the silhouette's head.",
-      "cues": [
-        {
-          "id": "s3-1",
-          "text": "You already do line clearance for product, right before each run.",
-          "on_screen": "Line clearance: product · 21 CFR 211.130(e) · Inspected right before use"
-        },
-        {
-          "id": "s3-2",
-          "text": "The 2-minute rule is line clearance for people.",
-          "tts": "The two-minute rule is line clearance for people.",
-          "on_screen": "Line clearance for people"
-        },
-        {
-          "id": "s3-3",
-          "text": "It adds to your procedures, permits and lockout. It never replaces them.",
-          "on_screen": "Procedures · Permits · Lockout · Guards & interlocks · Adds to. Never replaces."
-        },
-        {
-          "id": "s3-4",
-          "text": "But you're the one at the job, so you can see what the plan missed.",
-          "on_screen": "You see what plans miss"
-        }
-      ]
-    },
-    {
-      "id": "how-to-run-it",
-      "chapter": "Stop · Look · Ask · Decide",
-      "purpose": "Teach Stop · Look · Ask · Decide with the four questions and the three decisions, and build the question cards and decision buttons that every save reuses. Define 'Checked or assumed?' once: did you look or test it yourself, or are you guessing? Then set the boundary rule where the decision is defined, as a side-by-side contrast. Fix it only if you are trained and authorized and it is a step in your procedure (e.g. clip on a grounding clamp, or bleed air to zero or vent a line under your own lock). Stop & get help when there is no permit yet, when it is someone else's unfinished work, or when you are not authorized for the repair (e.g. a cut isolator glove, a faulty guard or interlock, opening a vessel). If you are not sure, or the fix doesn't work, Stop & get help.",
-      "visual": "(~45 s) Light theme. There is no silhouette in this scene. As the scene opens, the STOP, LOOK, ASK and DECIDE tiles drop in, in a row across the top, and each tile lights amber while it is being taught. STOP is already lit as it lands; the other three land unlit. s4-1: STOP (hand icon) is lit, and 'Hands off' rises under it. s4-2: STOP returns to unlit and LOOK (eye icon) lights. On 'around', the two-line label 'Around the job' / 'Compare with the plan' rises under it. s4-3: ASK (question-bubble icon) lights and both labels fade. The question cards pop into a 2 x 2 grid beneath the tiles as each question is spoken: card 1 (blue, document icon) 'What’s different?' and card 2 (violet, warning icon) 'What could hurt us?'. s4-4: card 3 (teal, check-and-question icon) 'Checked or assumed?' and then, on 'What', card 4 (plum, branch icon) 'What if it goes wrong?' pop in below them. s4-5: a line rises under the grid: a teal check-and-question icon, 'Checked or assumed?' in teal, then 'Did you look or test it yourself, or are you guessing?' in dark ink. s4-6: DECIDE (signpost icon) lights and stays lit to the end of the scene. The cards and the line fade, and three buttons pop in a centred row, each on its word: green 'Go', amber 'Fix it' and red 'Stop & get help'. s4-7: just before the line, the buttons fade and a two-column panel takes their place. The left column, with an amber top edge, rises first: a wrench and 'Fix it, only if', then the bullets 'You’re trained and authorized' (on 'trained', with 'and' in bold) and 'It’s a step in your procedure' (on 'step'). Just after 'procedure', the muted example line 'e.g. put on the face shield your procedure lists · clean up a small spill with the spill kit, as your procedure says' fades in. s4-8: the right column, with a red top edge, rises: a red hand and 'Stop & get help for', then the bullets 'No permit yet' (on 'permit'), 'Someone else’s unfinished work' (on 'Someone') and 'Not authorized for it' (on 'authorized'). On 'help', the muted line 'e.g. someone else’s lock on the switch · a guard that won’t close · a hose you’re not trained to change' fades in. s4-9: under the panel, a centred line rises: 'Not sure, or the fix doesn’t work? Stop & get help.', with 'Stop & get help.' in red. The panel, the tiles and the lit DECIDE tile hold to the end of the scene.",
-      "cues": [
-        {
-          "id": "s4-1",
-          "text": "Here's how. Stop: hands off.",
-          "on_screen": "STOP · Hands off"
-        },
-        {
-          "id": "s4-2",
-          "text": "Look: around the job, and compare it with the plan.",
-          "on_screen": "LOOK · Around the job · Compare with the plan"
-        },
-        {
-          "id": "s4-3",
-          "text": "Ask yourself four questions: What's different? What could hurt us?",
-          "on_screen": "ASK · What's different? · What could hurt us?"
-        },
-        {
-          "id": "s4-4",
-          "text": "Checked or assumed? What if it goes wrong?",
-          "on_screen": "Checked or assumed? · What if it goes wrong?"
-        },
-        {
-          "id": "s4-5",
-          "text": "“Checked or assumed” means: did you look or test it yourself, or are you guessing?",
-          "tts": "Checked or assumed means: did you look or test it yourself, or are you guessing?",
-          "on_screen": "Checked or assumed? Did you look or test it yourself, or are you guessing?"
-        },
-        {
-          "id": "s4-6",
-          "text": "Then decide: make one of three calls. Go, Fix it, or Stop & get help.",
-          "tts": "Then decide: make one of three calls. Go, | fix it, | or stop and get help.",
-          "on_screen": "DECIDE · Go · Fix it · Stop & get help"
-        },
-        {
-          "id": "s4-7",
-          "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
-          "on_screen": "Fix it, only if: You're trained and authorized · It's a step in your procedure (e.g. put on the face shield your procedure lists · clean up a small spill with the spill kit, as your procedure says)"
-        },
-        {
-          "id": "s4-8",
-          "text": "No permit yet? Someone else's unfinished work? Not authorized? Stop & get help.",
-          "on_screen": "Stop & get help for: No permit yet · Someone else's unfinished work · Not authorized for it (e.g. someone else's lock on the switch · a guard that won't close · a hose you're not trained to change)",
-          "tts": "No permit yet? Someone else's unfinished work? Not authorized? Stop and get help."
-        },
-        {
-          "id": "s4-9",
-          "text": "Not sure, or the fix doesn't work? Stop & get help.",
-          "on_screen": "Not sure, or the fix doesn't work? Stop & get help.",
-          "tts": "Not sure, or the fix doesn't work? Stop and get help."
-        }
-      ]
-    },
-    {
-      "id": "routine-go",
-      "chapter": "A routine Go",
-      "purpose": "Model the pause people will do most often, before any catch is shown. On a routine start-of-shift task, cleaning a weighing booth, all four questions are answered clean in seconds: nothing is different; gloves and goggles cover the leftover powder and the cleaning chemical; the airflow light is checked, not assumed; and the spill kit is there. Then Go. The scene also shows a manual-cleaning task, and it sets up the next scene's point that most pauses end like this.",
-      "visual": "(~26 s) Light theme. As the scene opens, the top band fades in: 'A routine Go', a chip with a clock icon reading 'Start of shift', and a muted '· Cleaning a weighing booth'. The weighing booth is on the left of the stage from the first frame: a steel frame with a 'WEIGHING BOOTH' header bar, four faint blue downflow arrows inside it, a green light labelled 'AIRFLOW' at its top right, and a bench with a balance on it. s5-1: a plain silhouette fades in, standing at the bench inside the booth. s5-2: a column of small question cards builds on the right, with each answer beside its card. Card 1 (blue) 'What’s different?' rises, and on 'Nothing' a green check 'Nothing' pops beside it. On 'could', card 2 (violet) 'What could hurt us?' rises below it, and on 'leftover' a check pops beside it with 'Powder, cleaning chemical'; on 'gloves' a second line adds '→ gloves & goggles on'. s5-3: on 'Gloves', goggles and teal gloves fade onto the silhouette, and a second line '→ gloves & goggles on' appears under 'Powder, cleaning chemical' beside card 2. Just before the question 'Checked or assumed?', card 3 (teal) 'Checked or assumed?' rises. On that first 'Checked', a green ring circles the airflow light. On 'green', a check 'Checked: airflow green' pops beside card 3. s5-4: card 4 (plum) 'What if it goes wrong?' rises. On 'spill', a yellow 'SPILL KIT' box pops in on the floor just outside the booth's right side, and a check 'Spill kit there' pops beside card 4. s5-5: a large green 'Go' button pops in under the cards, with 'A few seconds.' beside it, and holds to the end of the scene. After s5-4, with no narration, a row reads 'Your call?' with a filling ring and the three calls in outline (Go, Fix it, Stop & get help); on s5-5 Go fills in green, the other two fade, and 'A few seconds.' rises below.",
-      "cues": [
-        {
-          "id": "s5-1",
-          "text": "Let's try it on a routine job: you're about to clean a weighing booth.",
-          "on_screen": "A routine Go · Start of shift · Cleaning a weighing booth"
-        },
-        {
-          "id": "s5-2",
-          "text": "What's different? Nothing. What could hurt us? Leftover powder and the cleaning chemical.",
-          "on_screen": "What's different? ✓ Nothing · What could hurt us? ✓ Powder, cleaning chemical"
-        },
-        {
-          "id": "s5-3",
-          "text": "Gloves and goggles are on. Checked or assumed? Checked: the airflow light is green.",
-          "on_screen": "→ gloves & goggles on · Checked or assumed? ✓ Checked: airflow green"
-        },
-        {
-          "id": "s5-4",
-          "text": "What if it goes wrong? The spill kit is right there. Your call?",
-          "on_screen": "What if it goes wrong? ✓ Spill kit there · Your call? Go · Fix it · Stop & get help, in outline (pause)"
-        },
-        {
-          "id": "s5-5",
-          "text": "Go. That took just a few seconds.",
-          "on_screen": "Go fills in · A few seconds."
-        }
-      ]
-    },
-    {
-      "id": "six-saves",
-      "chapter": "Six saves",
-      "purpose": "Set the base rate: most pauses end like the routine Go, in seconds, and catches are a small minority, with no ratio implied. Define a save as a pause where a question catches a problem. Introduce six saves, ordered by the question that caught each, and say once that they are examples built from common pharma hazards, not real events. Then set up how each save plays: the video waits so the viewer can find the problem and pick a call before it is shown.",
-      "visual": "(~22 s) Light theme. s6-1: the heading 'Most pauses end in Go' rises top-left, and the muted line 'In seconds' rises under it. A shift timeline fades in across the middle of the stage. It holds a dense run of 93 small grey ticks, too many to count, which flip green in a fast wave from left to right over about 2 s. Six larger amber-outlined circles, irregularly spaced among the ticks, stay outlined. A legend fades in under the timeline: a green tick 'A pause that ended in Go' and an amber ring 'A pause that caught something'. s6-2: on 'catches', the six amber rings swell and settle once. Just before 'Here', the heading, timeline and legend fade out. On 'Here', the title 'Six two-minute saves' rises top-left, and a moment later the muted line 'A save = a pause that caught a problem' fades in beside it. Six numbered tiles pop in turn into a 3 x 2 grid. Each tile has a left stripe and a number in the colour of the question that caught it, an icon, a title, and a trigger chip with a small amber icon: 1 gear 'Tablet press', 'Handover' (blue); 2 bolt 'Powder charge', 'Before you start' (violet); 3 O₂ cloud 'Filter dryer', 'Change · Campaign' (violet); 4 lock 'Blister packer', 'Interruption' (teal); 5 shield 'Potent ingredient', 'After a break' (teal); 6 wrench 'Line break', 'Before you start' (plum). s6-3: a small grey tag fades in under the grid, at the left: 'Examples built from common pharma hazards, not real events'. s6-4: an amber-bordered pill with a magnifier icon pops in beside the tag: 'The video waits: find the problem, pick your call'. The title, the definition line, the grid, the tag and the pill hold to the end of the scene.\n\nSAVE TEMPLATE for scenes 7 to 12 (reference only, not on screen in this scene). Each save opens with a 1 s sting with no narration: four amber-bordered tiles, STOP · LOOK · ASK · DECIDE, each with its icon, pop in turn across the centre and then fade. The top band, the stage and the case card then fade in together. The top band holds the save tag ('Save N · title') and the trigger chip on the left. Beneath it, right-aligned, sits the question rail: four numbered pills, '1 What’s different?', '2 What could hurt us?', '3 Checked or assumed?' and '4 What if it goes wrong?', with inactive pills dimmed to about 60%. The left two-thirds of the stage hold the equipment. The right third holds the case card, with the rows 'The catch' (magnifier), 'The call' (signpost) and 'What it prevented' (shield). Before the catch, a 'What would make you stop here?' card pops over the case card. It has an amber border, a magnifier with 'Look for the catch', the question, and an amber ring that fills through the silent hold (about 3 s) beside 'Look at the picture.' / 'Then we’ll show it.'. The card fades just before the next line starts. Each question's pill lights on the rail as that question is asked. When the catch is named, a red ring lands on it and throbs, and 'The catch' fills. Before the call, a 'Your call?' card pops over the case card. Its own ring fills beside the heading (about 2.4 s), and the three calls are stacked and dimmed below: 'Go', 'Fix it' and 'Stop & get help'. On the reveal the chosen call lights, and the card fades about 1.6 s later. Behind it, the decision chip has popped into 'The call' with its full label, either amber 'Fix it' or red 'Stop & get help', and half a second later the spoken reason line sets in bold under it. Later, a grey arrow and a green 'Go' chip join the decision chip.",
-      "cues": [
-        {
-          "id": "s6-1",
-          "text": "Most pauses end like that.",
-          "on_screen": "Most pauses end in Go · In seconds"
-        },
-        {
-          "id": "s6-2",
-          "text": "But sometimes a question catches a problem. That's a save. Here are six.",
-          "on_screen": "Six two-minute saves · A save = a pause that caught a problem"
-        },
-        {
-          "id": "s6-3",
-          "text": "They're examples built from common pharma hazards, not real events.",
-          "on_screen": "Examples built from common pharma hazards, not real events"
-        },
-        {
-          "id": "s6-4",
-          "text": "In each save, the video asks you twice: find the problem, then pick your call.",
-          "on_screen": "It asks twice: find the problem, pick your call"
-        }
-      ]
-    },
-    {
-      "id": "save-1-tablet-press",
-      "chapter": "Save 1 · Tablet press handover",
-      "purpose": "Q1, What's different?, at a shift handover. The note and a look at the press show the guard open, the tooling half in and no lock on the power switch. The call is Stop & get help, because it is someone else's unfinished work. Your lead comes, thanks you and checks with the last shift. An authorized press setter, not you, then locks out the disconnect and the air, bleeds the air to zero, tries START (nothing moves), finishes the change and counts the tooling. The guard is closed, tools are out and the area is clear, the setter removes their own lock, the interlock is tested and the start-up checks are done, then Go. Prevented: starting a press with its tooling half in.",
-      "visual": "(~52 s, including the 1 s sting) Save template. The scene opens on the sting. The top band shows 'Save 1 · Tablet press' with the chip 'Handover' (people icon). The stage fades in with the tablet press at centre-left, labelled 'TABLET PRESS'. It has a turret window, a green 'START' button on its lower panel, and an interlock block at the right edge of the window marked with a red x. The turret guard hangs swung open at the left of the window. The turret has punches in only four of its eight stations: the other four are dashed outlines, and four punches stand in the 'TOOLING TRAY' to the right. A 'DISCONNECT' box shows an empty, dashed lockout point with a red x, and an 'AIR' line with a valve runs from the press to the right edge. The silhouette (you) slides in at the left beside the press. s7-1: on 'handover', a yellow note drops in at the top-left of the stage: 'Last shift: tooling change started'. s7-2: the 'What would make you stop here?' card pops over the case card ('Look for the catch', 'Look at the picture.' / 'Then we’ll show it.'). Its amber ring fills through a 3 s silent hold, then the card fades. s7-3: the rail lights pill 1 (blue, 'What’s different?'). s7-4: on 'Guard', a red ring lands on the open guard and throbs. On 'Tooling', 'The catch' fills: 'Guard open · tooling half in · no lock'. s7-5: the 'Your call?' card pops over the case card, and its ring fills beside the heading through a 2.4 s hold, above the the three calls in outline. s7-6: 'Stop & get help' lights on the card, and the note and the red ring fade. About 1.6 s later the card fades to show the red 'Stop & get help' chip in 'The call', with the reason line 'Someone else’s unfinished work' under it. s7-7: pill 1 dims. A second figure in a teal hi-vis vest fades in at the right of the stage, and the label 'Your lead' rises above it. On 'thanks', a speech bubble pops in: 'Thanks. What did you see?'. On 'checks', a tag with a phone icon rises under the bubble: 'Checks with the last shift'. s7-8: the lead, the label, the bubble and the tag fade, and a figure in blue gloves takes the same spot. On 'setter', the label 'Press setter' rises above it. On 'locks', the disconnect's dashed lockout point clears and a red padlock with an amber tag pops onto it. A second padlock and tag pop onto the air valve, and the label 'Setter’s lock · authorized' rises just right of the disconnect, above the air valve. Just before 'START', the guard swings shut, the red x at the interlock clears, and the label 'Guard shut for the test' rises above the press. A check 'Air bled to 0' pops above the valve lock. On 'START', a pointing hand drops onto the START button, and a check 'Nothing moves' pops under it. About 1.4 s later the hand has gone, the guard swings open again, and the test label fades. The four punches leave the tray, and the empty turret stations fill one by one. On 'counts', 'Nothing moves' clears and a check 'Counted' pops beside the empty tray. s7-9: the guard swings shut, and the label 'Guard closed' rises at the left, above the silhouette. A checklist ticks in at the top right of the stage: first 'Guard closed', then 'Tools out · area clear' on 'area'. On 'lock', both padlocks and their tags lift off, 'Setter’s lock · authorized' and 'Air bled to 0' clear, and 'Setter’s lock removed' ticks. On 'interlock', the guard opens a crack and the pointing hand presses START. A green check appears at the interlock point, 'Interlock tested' ticks, and the guard closes again. Just before 'Go', 'Start-up checks' ticks, and an arrow leads to a green 'Go' chip in 'The call'. s7-10: the press setter, the 'Press setter' label, 'Counted' and the 'Guard closed' label fade, and 'What it prevented' fills: 'No start with tooling half in'.",
-      "cues": [
-        {
-          "id": "s7-1",
-          "text": "Save one: you take over a tablet press at handover.",
-          "on_screen": "Save 1 · Tablet press · Handover"
-        },
-        {
-          "id": "s7-2",
-          "text": "What would make you stop here?",
-          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
-        },
-        {
-          "id": "s7-3",
-          "text": "What's different? The handover note says the last shift started a tooling change.",
-          "on_screen": "Last shift: tooling change started"
-        },
-        {
-          "id": "s7-4",
-          "text": "The guard is open, the tooling is half in, and there's no lock on the power switch.",
-          "on_screen": "The catch: Guard open · tooling half in · no lock"
-        },
-        {
-          "id": "s7-5",
-          "text": "Your call?",
-          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
-        },
-        {
-          "id": "s7-6",
-          "text": "Stop & get help. It's someone else's unfinished work.",
-          "on_screen": "The call: Stop & get help · Someone else's unfinished work",
-          "tts": "Stop and get help. It's someone else's unfinished work."
-        },
-        {
-          "id": "s7-7",
-          "text": "Your lead comes over, thanks you, and checks with the last shift.",
-          "on_screen": "Your lead: “Thanks. What did you see?” · Checks with the last shift"
-        },
-        {
-          "id": "s7-8",
-          "text": "An authorized press setter locks out, tries START, then finishes and counts the tooling.",
-          "on_screen": "Press setter · Setter's lock · authorized · Air bled to 0 · Guard shut for the test · Nothing moves · Counted",
-          "tts": "An authorized press setter locks out, tries start, then finishes and counts the tooling."
-        },
-        {
-          "id": "s7-9",
-          "text": "Guard closed, area clear, setter's lock removed, interlock tested. Then Go.",
-          "on_screen": "Guard closed · Tools out · area clear · Setter's lock removed · Interlock tested · Start-up checks → Go"
-        },
-        {
-          "id": "s7-10",
-          "text": "Nobody starts that press with its tooling half in.",
-          "on_screen": "Prevented: No start with tooling half in"
-        }
-      ]
-    },
-    {
-      "id": "save-2-powder-charge",
-      "chapter": "Save 2 · Powder charge",
-      "purpose": "Before you start a powder charge into a reactor holding flammable solvent, define inerting: nitrogen keeps the oxygen out. Q2, What could hurt us?, names a static spark at the open manway, with solvent vapor. Q3, Checked or assumed?, checks both layers. The O₂ readout confirms the inerting, but the grounding indicator is red because the clamp is off the drum. The call is Fix it, if safe, because clipping the grounding clamp onto the drum is a step in your procedure. The indicator turns green (still red: get help) and the drum liner is static-safe, then Go. Prevented: the spark at the manway.",
-      "visual": "(~46 s, including the 1 s sting) Save template, with no silhouette in this save. The scene opens on the sting. The top band shows 'Save 2 · Powder charge' with the chip 'Before you start' (pause icon). The stage fades in with the reactor on the left, labelled 'REACTOR'. On top is a funnel-shaped chute at the open manway, labelled 'MANWAY (OPENING)'. A band of solvent at the bottom is labelled 'FLAMMABLE SOLVENT', and a small dark readout on the body reads 'O₂ < LIMIT' in green. On the right, a drum labelled 'POWDER' stands in a simple lifting frame, with a liner folded over its rim. Beside the drum, a small earth indicator box shows a red ✕ and 'NO GROUND', and its green cable runs down to the grounding clamp lying loose on the floor. s8-1: the picture holds while the task is named. s8-2: a tag rises at the top-left of the stage: 'Inerted = filled with nitrogen (N₂), oxygen kept out'. On 'inerted', a teal tag 'N₂ inerted ✓' sets just below the O₂ readout and stays. s8-3: the top-left tag fades. The 'What would make you stop here?' card pops over the case card ('Look for the catch', 'Look at the picture.' / 'Then we’ll show it.'). Its amber ring fills through a 3 s silent hold, then the card fades. s8-4: the rail lights pill 2 (violet, 'What could hurt us?'). On 'static', a faint amber bolt pops above the manway, and the label 'Static' rises beside it. On 'vapor', faint grey vapor lines rise from the manway. There is no flame or fire graphic. s8-5: pill 2 dims and pill 3 (teal, 'Checked or assumed?') lights, and the bolt, its label and the vapor fade. On 'Oxygen', a magnifier pops at the O₂ readout, and a teal tag 'O₂ below limit ✓' sets left of the manway chute. On 'grounding', the magnifier moves to the earth indicator, which still shows red. On 'red', a red ring lands on the loose clamp and throbs, and 'The catch' fills: 'Clamp off, not grounded'. s8-6: the magnifier clears. The 'Your call?' card pops over the case card, and its ring fills beside the heading through a 2.4 s hold, above the the three calls in outline. s8-7: 'Fix it' lights on the card. About 1.6 s later the card fades to show the amber 'Fix it' chip in 'The call', with the reason line 'A step in your procedure' under it. On 'clip', the cable re-routes up to the drum rim with the clamp clipped on, the red ring clears, and the label 'Trained · in procedure' rises above the indicator. s8-8: pill 3 dims. Just before 'green', the indicator turns green with a ✓ and reads 'GROUNDED'. Just after 'green', a grey tag 'Still red? Get help' rises just under it. On 'liner', a teal tag 'Static-safe liner ✓' rises above the drum. On 'Go', an arrow leads to a green 'Go' chip in 'The call'. s8-9: the faint amber bolt returns above the manway with a grey x over it, and 'What it prevented' fills: 'No spark at the manway'.",
-      "cues": [
-        {
-          "id": "s8-1",
-          "text": "Save two: you add powder from a drum to a reactor that holds flammable solvent.",
-          "on_screen": "Save 2 · Powder charge · Before you start"
-        },
-        {
-          "id": "s8-2",
-          "text": "It's inerted: filled with nitrogen to keep the oxygen out.",
-          "on_screen": "Inerted = filled with nitrogen · N₂ inerted ✓"
-        },
-        {
-          "id": "s8-3",
-          "text": "Before you start, what would make you stop here?",
-          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
-        },
-        {
-          "id": "s8-4",
-          "text": "What could hurt us? A static spark at the open manway, where there's solvent vapor.",
-          "on_screen": "Static · Manway (opening)"
-        },
-        {
-          "id": "s8-5",
-          "text": "Checked or assumed? The oxygen is below the limit, but the grounding indicator is red.",
-          "on_screen": "O₂ below limit ✓ · Grounding indicator red, clamp off · The catch: Clamp off, not grounded"
-        },
-        {
-          "id": "s8-6",
-          "text": "What's your call?",
-          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
-        },
-        {
-          "id": "s8-7",
-          "text": "Fix it. It's a step in your procedure: clip the grounding clamp onto the drum.",
-          "on_screen": "The call: Fix it · A step in your procedure · Trained · in procedure"
-        },
-        {
-          "id": "s8-8",
-          "text": "The indicator turns green, and the drum liner is static-safe. Now it's Go.",
-          "on_screen": "Grounded ✓ · Static-safe liner ✓ → Go · Still red? Get help"
-        },
-        {
-          "id": "s8-9",
-          "text": "The spark never happens.",
-          "on_screen": "Prevented: No spark at the manway"
-        }
-      ]
-    },
-    {
-      "id": "save-3-inerted-vessel",
-      "chapter": "Save 3 · Inerted filter dryer",
-      "purpose": "You're a contractor, and at a product change between campaigns you'll open a nitrogen-inerted filter dryer. Making you a contractor shows that the rule covers everyone on site, which the leaders' commitments repeat ('staff or contractor'). Q2, What could hurt us?, names the low-oxygen air inside, which has no color or smell. Q3, Checked or assumed?, asks whether the nitrogen line is closed with a solid plate and the air inside tested. There is no test and no permit yet. Stop & get help, because opening it needs a gas test and a permit. Your lead comes. An authorized team isolates the nitrogen with a solid plate, tests oxygen and solvent vapor with a bump-tested meter, ventilates and retests, and the permit is issued. Then Go. No permit, no Go: the pause never replaces the permit. Prevented: anyone leaning into air with too little oxygen. No collapse is shown or described, and the save is the pause.",
-      "visual": "(~55 s, including the 1 s sting, a 3 s hold after s9-2 and a 2.4 s hold after s9-6) Light theme throughout, at a calm pace. No figure crosses the plane of the hatch at any point. The sting pops STOP, LOOK, ASK and DECIDE tiles in from left to right, then fades. The save template fades in: the tag 'Save 3 · Filter dryer' with the chip 'Change · Campaign', the four-question rail at top right with every card in outline, and the empty case card ('The catch', 'The call', 'What it prevented') on the right. The vessel cutaway is labelled 'FILTER DRYER · N₂' beneath it. It holds no liquid: a dark interior with a dashed filter-plate line near the bottom, the ladder on its left, a closed, bolted hatch on top, and the blue N₂ supply line coming in over the top through its valve, with the dip tube inside. A blue N₂ fill and a large 'N₂' label fade into the interior, and purge bubbles drift up through it. A silhouette in a yellow hard hat stands on the floor left of the ladder. s9-1: on 'contractor', a 'Contractor' tag sets above the silhouette and stays. s9-2: the amber-edged 'What would make you stop here?' card pops over the case card, under the label 'Look for the catch', with 'Look at the picture. Then we’ll show it.' Its amber ring fills through the 3 s hold, and then the card fades. s9-3: the rail lights card 2 (violet). On 'Low', a blue 'Low O₂ ↓' tag rises inside the vessel beneath the N₂ label. On 'color', eye and nose icons appear to the right of the vessel, each crossed by a grey slash, over 'Low O₂' / 'No color · No smell'. s9-4: the eye and nose clear, and the rail moves to card 3 (teal). Two check lines rise on their words: lock icon 'Solid plate on N₂ line?' on 'solid', and meter icon 'Air tested at opening?' on 'tested'. s9-5: a red pulse ring lands on the hatch, and 'The catch' fills: 'No test, no permit'. Red 'Not yet' tags set under the two lines in turn, and on 'permit' a third line, form icon 'Permit?', rises with its own 'Not yet'. s9-6: the 'Your call?' card pops over the case card with the three calls in outline ('Go', 'Fix it', 'Stop & get help'), and its ring fills through the 2.4 s hold. s9-7: 'Stop & get help' lights on the card, and the ring on the hatch clears. A red barrier bar grows across above the hatch, the silhouette takes one calm step back, and a people icon labelled 'Your lead' rises at the bottom left. When the card fades, the case card shows the red 'Stop & get help' chip under 'The call', with the reason line 'Needs a gas test and a permit'. s9-8: the check lines clear, and a second people icon, 'Authorized team', joins 'Your lead'. Each step lands on its word. 'Isolates': the N₂ line between the valve and the vessel turns grey with a red blind set in it, a red lock icon and the tag 'Solid plate in' pop above it, and the purge bubbles fade out. 'Tests': a meter icon tagged 'Bump-tested' appears with a green check 'Solvent vapor' (no number shown) and a red x 'O₂ low'. 'Ventilates': a breath icon pops above the vessel, the 'Low O₂ ↓' tag and the large 'N₂' label fade, and the interior clears to a pale fill. 'Retests': the meter gives way to an 'OXYGEN' gauge (0–25%), red below 19.5%, teal from 19.5% to 23.5% and neutral above, captioned 'O₂ 19.5–23.5% · Vapor ✓'. Its needle sweeps up out of the red band and settles mid-band, and only then does the readout show '20.9%'. A teal 'O₂ 20.9% ✓' tag rises inside the vessel. 'Permit': the barrier clears, and a 'Permit issued' check pops under the gauge. Just before 'Go', an arrow and a green 'Go' chip join the call in the case card, and on 'Go' the grey tag 'Under permit' sets under 'Permit issued'. s9-9: the gauge clears. A stopwatch reading '2:00', an amber '+' and a green form icon sit in a row over the heading 'No permit, no Go'. 'Permit issued' and 'Under permit' stay beneath. s9-10: 'What it prevented' fills: 'Nobody leans into low O₂'. From the start of the save until the low-oxygen beat, a small card at top right reads 'Permit: none yet' and 'Gas test: not done' (in red), so the catch is findable during the first hold.",
-      "cues": [
-        {
-          "id": "s9-1",
-          "text": "Save three: a product change. As a contractor, you'll open a filter dryer full of nitrogen.",
-          "on_screen": "Save 3 · Filter dryer · Contractor · Change · Campaign"
-        },
-        {
-          "id": "s9-2",
-          "text": "So, what would make you stop here?",
-          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
-        },
-        {
-          "id": "s9-3",
-          "text": "What could hurt us? Low-oxygen air inside. You can't see it or smell it.",
-          "on_screen": "Low O₂ ↓ · Can't see it · Can't smell it"
-        },
-        {
-          "id": "s9-4",
-          "text": "Checked or assumed? Is the nitrogen line closed with a solid plate, and the air inside tested?",
-          "on_screen": "Solid plate on N₂ line? · Air tested at opening? · Permit? (each: Not yet)"
-        },
-        {
-          "id": "s9-5",
-          "text": "Not yet, and no permit yet.",
-          "on_screen": "The catch: No test, no permit"
-        },
-        {
-          "id": "s9-6",
-          "text": "Your call?",
-          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
-        },
-        {
-          "id": "s9-7",
-          "text": "Stop & get help: opening it needs a gas test and a permit.",
-          "on_screen": "The call: Stop & get help · Needs a gas test and a permit",
-          "tts": "Stop and get help: opening it needs a gas test and a permit."
-        },
-        {
-          "id": "s9-8",
-          "text": "An authorized team isolates, tests, ventilates and retests. Once the permit is issued, it's Go.",
-          "on_screen": "Your lead · Authorized team · Solid plate in · Bump-tested · Solvent vapor ✓ · O₂ low · Ventilate · O₂ 20.9% ✓ · Permit issued · Under permit → Go"
-        },
-        {
-          "id": "s9-9",
-          "text": "No permit, no Go.",
-          "on_screen": "No permit, no Go"
-        },
-        {
-          "id": "s9-10",
-          "text": "Nobody leans into air with too little oxygen.",
-          "on_screen": "Prevented: Nobody leans into low O₂"
-        }
-      ]
-    },
-    {
-      "id": "save-4-blister-jam",
-      "chapter": "Save 4 · Blister packer jam",
-      "purpose": "Q3, Checked or assumed?, on a non-routine jam. Routine jams follow the site's jam procedure; this one sits where the jam tool can't reach, so it needs a reach-in, and stopped is not isolated. You lock out power and air, but the gauge downstream of the locked air valve still shows trapped pressure. Fix it, if safe: bleed to zero, then try START to verify (nothing moves), then Go. The order follows lockout: isolate, relieve stored energy, verify. Prevented: a hand in a machine that still had stored energy.",
-      "visual": "(~40 s, including the 1 s sting, a 3 s hold after s10-4 and a 2.4 s hold after s10-6) Light theme. The sting pops STOP, LOOK, ASK and DECIDE tiles in, then fades. The save template fades in: the tag 'Save 4 · Blister packer' with the chip 'Interruption', the four-question rail at top right with every card in outline, and the empty case card ('The catch', 'The call', 'What it prevented') on the right. The 'BLISTER PACKER' shows its film reel, 'FORMING' station, blister pockets, lidding reel and 'SEALING' station under a closed, tinted guard. An amber crumpled strip is snagged between the pockets and the sealing station. The machine has a status light and a green START button. To its right sit the 'DISCONNECT' box and the air line, which runs from 'AIR IN' through the supply valve and past a 'BLEED' branch into the machine. The silhouette stands to the left. s10-1: the status light goes from green to off. On 'jams', a wrench (the jam tool) slides in at the lower left corner of the guard, well short of the jam. On 'tool', a grey x sets beside it, and the label 'Tool can’t reach the jam' rises below the machine. s10-2: 'Stopped ≠ isolated' rises above the machine, and on 'isolated' the line 'Isolated = energy supply cut off and locked' fades in beneath it. Both stay. s10-3: the wrench, x and label clear. Red padlocks with amber tags clip onto the disconnect on 'power' and onto the air supply valve on 'air', and the label 'Power + air locked · authorized' rises above the disconnect. As the line ends, a pressure gauge zooms in on the air line between the bleed branch and the locked valve, with its needle well above zero. s10-4: the 'What would make you stop here?' card pops over the case card ('Look for the catch', 'Look at the picture. Then we’ll show it.'). Its amber ring fills through the 3 s hold while the gauge stays in view. s10-5: the rail lights card 3 (teal). On 'trapped', a red pulse ring lands on the gauge, and 'The catch' fills: 'Trapped air pressure'. s10-6: the 'Your call?' card pops over the case card with 'Go', 'Fix it' and 'Stop & get help' in outline, and its ring fills through the 2.4 s hold. s10-7: 'Fix it' lights on the card, and the ring on the gauge clears. When the card fades, the case card shows the amber 'Fix it' chip under 'The call', with the reason line 'In your procedure, your own lock on'. s10-8: on 'bleed', short air-puff lines stream from the bleed branch and the needle falls. It reaches 0 on 'zero', the puffs stop, and a 'Zero' check sets beside the gauge. On 'try', a pointing hand comes down onto START. Nothing on the machine moves, and on 'nothing' a 'Nothing moves' check sets below the machine. An arrow leads to a green 'Go' chip in the case card, and on 'Go' the snagged strip lifts out and away. s10-9: the pointing hand clears, and 'What it prevented' fills: 'Hands clear of stored energy'. The locks, labels and checks stay.",
-      "cues": [
-        {
-          "id": "s10-1",
-          "text": "Save four: an interruption. The blister packer jams where your jam tool can't reach.",
-          "on_screen": "Save 4 · Blister packer · Interruption · Tool can't reach"
-        },
-        {
-          "id": "s10-2",
-          "text": "It's stopped, but stopped isn't the same as isolated.",
-          "on_screen": "Stopped ≠ isolated · Isolated = energy supply cut off"
-        },
-        {
-          "id": "s10-3",
-          "text": "So you lock out power and air.",
-          "on_screen": "Power + air locked · authorized"
-        },
-        {
-          "id": "s10-4",
-          "text": "Now, what would make you stop here?",
-          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
-        },
-        {
-          "id": "s10-5",
-          "text": "Checked or assumed? The gauge still shows trapped air.",
-          "on_screen": "Checked or assumed? · The catch: Trapped air pressure"
-        },
-        {
-          "id": "s10-6",
-          "text": "What's your call?",
-          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
-        },
-        {
-          "id": "s10-7",
-          "text": "Fix it. Your procedure lets you bleed off the trapped air, with your own lock still on.",
-          "on_screen": "The call: Fix it · Your own lock on · In procedure"
-        },
-        {
-          "id": "s10-8",
-          "text": "Bleed to zero and try START. Nothing moves, so it's Go.",
-          "on_screen": "Zero ✓ · Nothing moves → Go",
-          "tts": "Bleed to zero and try start. Nothing moves, so it's Go."
-        },
-        {
-          "id": "s10-9",
-          "text": "Your hand never goes into a machine that still has stored energy.",
-          "on_screen": "Prevented: Hands clear of stored energy"
-        }
-      ]
-    },
-    {
-      "id": "save-5-isolator",
-      "chapter": "Save 5 · Potent ingredient",
-      "purpose": "After a break, you weigh a highly potent active ingredient at an isolator. Q1 comes back clean: nothing is different, and the pressure display is in range. Then Q3's check of each glove finds a cut, the kind of visible damage a visual check is for. Stop & get help, because a cut glove is a break in the barrier, and your lead and QA must know. An authorized person changes the glove and leak-tests it before use, and the pressure display is re-checked. Then Go, and the break is reported. Prevented: exposure to a powder that is strong even in tiny amounts. It stays inside the isolator. This shows several questions running in one pause, with a clean answer before the catch.",
-      "visual": "(~45 s, including the 1 s sting, a 3 s hold after s11-2 and a 2.4 s hold after s11-5) Light theme. The sting pops STOP, LOOK, ASK and DECIDE tiles in, then fades. The save template fades in: the tag 'Save 5 · Potent ingredient' with the chip 'After a break', the four-question rail at top right with every card in outline, and the empty case card ('The catch', 'The call', 'What it prevented') on the right. The 'ISOLATOR' has two glove ports with a small powder container between them, and a dark pressure display on its window reads 'IN RANGE'. A short red slit is already visible on the right glove. A gowned silhouette (hood, mask, teal gloves) slides in from the right, back from the break, and stands beside the isolator. s11-1: on 'isolator', the tag 'Potent ingredient (API)' rises above the isolator and stays. s11-2: the 'What would make you stop here?' card pops over the case card ('Look for the catch', 'Look at the picture. Then we’ll show it.'), and its amber ring fills through the 3 s hold. s11-3: the rail lights card 1 (blue). On 'range', a teal tag 'In range ✓' rises above the pressure display. s11-4: the rail moves to card 3 (teal). On 'check', a magnifier pops in over the left glove. Just after 'glove', that glove gets a green check and the magnifier jumps to the right glove. On 'cut', a red pulse ring lands on the slit, and 'The catch' fills: 'Cut in a glove'. s11-5: the magnifier clears. The 'Your call?' card pops over the case card with 'Go', 'Fix it' and 'Stop & get help' in outline, and its ring fills through the 2.4 s hold. s11-6: 'Stop & get help' lights on the card, and the ring clears. A red 'Do not use' tag goes on the right port, and a people icon labelled 'Your lead + QA' rises to the upper right of the isolator. When the card fades, the case card shows the red 'Stop & get help' chip under 'The call', with the reason line 'A break in the barrier: lead & QA must know'. s11-7: a fresh glove in a slightly deeper teal fades in on the right port, and the slit and the 'Do not use' tag clear. Checks build in a list under 'Your lead + QA': 'Glove changed', then 'Leak-tested' on 'leak' (with a green check above the new glove), then 'Pressure in range'. An arrow leads to a green 'Go' chip in the case card. s11-8: 'What it prevented' fills: 'The powder stays inside', and a fourth check, 'Reported', joins the list.",
-      "cues": [
-        {
-          "id": "s11-1",
-          "text": "Save five: after a break, you weigh a potent active ingredient at an isolator.",
-          "on_screen": "Save 5 · Potent ingredient (API) · After a break"
-        },
-        {
-          "id": "s11-2",
-          "text": "Look closely. What would make you stop here?",
-          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
-        },
-        {
-          "id": "s11-3",
-          "text": "What's different? Nothing, and the pressure display is in range.",
-          "on_screen": "In range"
-        },
-        {
-          "id": "s11-4",
-          "text": "Checked or assumed? You check each glove, and one has a cut.",
-          "on_screen": "The catch: Cut in a glove"
-        },
-        {
-          "id": "s11-5",
-          "text": "Your call?",
-          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
-        },
-        {
-          "id": "s11-6",
-          "text": "Stop & get help, because a cut glove is a break in the barrier. Your lead and QA must know.",
-          "on_screen": "The call: Stop & get help · A break in the barrier: lead & QA must know · Your lead + QA · Do not use",
-          "tts": "Stop and get help, because a cut glove is a break in the barrier. Your lead and QA must know."
-        },
-        {
-          "id": "s11-7",
-          "text": "An authorized person changes the glove and leak-tests it. Then Go.",
-          "on_screen": "Glove changed · Leak-tested · Pressure in range → Go"
-        },
-        {
-          "id": "s11-8",
-          "text": "That powder is strong, even in tiny amounts. It stays inside the isolator.",
-          "on_screen": "Prevented: The powder stays inside"
-        }
-      ]
-    },
-    {
-      "id": "save-6-cip-line-break",
-      "chapter": "Save 6 · Line break after CIP",
-      "purpose": "Q4, What if it goes wrong?, before you open a pipe at the transfer panel after CIP. Opening it is a line break, and you have the line-break permit. Q4 is the only question this save lights. Isolation is a precondition, not a response. You ask where it would spray, lock out the supply valve and the pump, stand to the side of the joint in a face shield and chemical gloves, and check the local gauge. The gauge still shows pressure and the line is hot, even though the CIP screen says the cycle is complete. Fix it, if safe, under the line-break procedure: wait, vent, check for zero pressure (vent open, no flow) and a cool line, then Go. Takeaway: the screen reports the cycle, and the gauge reports your line. Prevented: a spray of hot caustic or steam.",
-      "visual": "(~54 s, including the 1 s sting, a 3 s hold after s12-3, a 2.4 s hold after s12-7 and a 1.2 s pause after s12-8) Light theme. The sting pops STOP, LOOK, ASK and DECIDE tiles in, then fades. The save template fades in: the tag 'Save 6 · Line break' with the chip 'Before you start', the four-question rail at top right with every card in outline, and the empty case card ('The catch', 'The call', 'What it prevented') on the right. A 'CIP TANK' feeds a 'PUMP'. The line rises and runs through the supply valve and past a local pressure gauge, whose needle is already above zero, to a 'TRANSFER PANEL' with a removable blue 'ELBOW'. A red-filled thermometer sits beside the line, and a drain line drops from the panel to a floor 'DRAIN'. A dark screen above the tank reads 'CIP complete ✓'. The silhouette stands to the right of the panel. s12-1: on 'line', a teal tag 'Line-break permit ✓' sets beside the panel and stays for the rest of the save, and on 'break' the grey tag 'Line break = opening a pipe' rises above the screen. s12-2: on 'cleaning', the grey tag 'CIP = cleaning cycle' rises under the screen. s12-3: the 'What would make you stop here?' card pops over the case card ('Look for the catch', 'Look at the picture. Then we’ll show it.'), and its amber ring fills through the 3 s hold. s12-4: both grey tags ('Line break = opening a pipe' and 'CIP = cleaning cycle') clear, and the rail lights card 4 (plum). On 'spray', a dashed red arc runs from the elbow toward the silhouette, with the red label 'Spray path?'. Nothing sprays. s12-5: on 'lock', a red padlock with an amber tag clips onto the supply valve. On 'pump', a second padlock clips onto the pump, and 'Supply + pump locked · authorized' sets above. On 'step', the arc and its label fade as the silhouette steps aside to the right, clear of the joint. A face shield and teal glove marks set on the silhouette, with the grey tag 'Stand to the side' / 'Face shield · Chem gloves' above. s12-6: on 'pressure', a red pulse ring lands on the gauge, whose needle still sits above zero, and 'The catch' fills: 'Pressure on gauge, line hot'. The thermometer still shows red. s12-7: the 'Your call?' card pops over the case card with 'Go', 'Fix it' and 'Stop & get help' in outline, and its ring fills through the 2.4 s hold. s12-8: 'Fix it' lights on the card, the ring on the gauge clears, and the lockout label clears while the padlocks stay on. When the card fades, the case card shows the amber 'Fix it' chip under 'The call', with the reason line 'In your line-break procedure'. On 'wait', a clock icon with the tag 'Wait · Vent · Zero & cool' sets where the lockout label was. On 'vent', blue drops run down the drain line into the floor drain and the needle falls. On 'zero', the needle reaches 0, the drops stop, and a teal tag 'Vent open · No flow' rises near the floor. On 'cool', the thermometer drains to a short blue fill. s12-9: the working tags ('Wait · Vent · Zero & cool', 'Vent open · No flow', 'Stand to the side') clear. On 'Go', an arrow leads to a green 'Go' chip in the case card. On 'screen', two tags sit side by side above the line: a form icon with 'Screen: reports the cycle' and a meter icon with 'Gauge: reports your line'. s12-10: the elbow lifts away cleanly, and 'What it prevented' fills: 'No hot chemical or steam'.",
-      "cues": [
-        {
-          "id": "s12-1",
-          "text": "Save six: you have a permit to open a pipe at the transfer panel. That's a line break.",
-          "on_screen": "Save 6 · Line break = opening a pipe · Line-break permit ✓"
-        },
-        {
-          "id": "s12-2",
-          "text": "The CIP screen says the cleaning cycle is complete.",
-          "on_screen": "CIP complete ✓ · CIP = cleaning cycle"
-        },
-        {
-          "id": "s12-3",
-          "text": "Your turn. What would make you stop here?",
-          "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)"
-        },
-        {
-          "id": "s12-4",
-          "text": "What if it goes wrong? If the pipe still has pressure, where would it spray?",
-          "on_screen": "Spray path?"
-        },
-        {
-          "id": "s12-5",
-          "text": "You lock out the supply valve and the pump, step to the side, and check the gauge.",
-          "on_screen": "Supply + pump locked · authorized · Stand to the side · Face shield · Chem gloves"
-        },
-        {
-          "id": "s12-6",
-          "text": "It shows pressure, and the line is hot.",
-          "on_screen": "The catch: Pressure on gauge, line hot"
-        },
-        {
-          "id": "s12-7",
-          "text": "So, what's your call?",
-          "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)"
-        },
-        {
-          "id": "s12-8",
-          "text": "Fix it. Your line-break procedure says: wait, vent, check for zero pressure and a cool line.",
-          "on_screen": "The call: Fix it · In your line-break procedure · Wait · Vent · Zero & cool · Vent open · No flow"
-        },
-        {
-          "id": "s12-9",
-          "text": "Then Go. The screen reports the cycle. The gauge reports your line.",
-          "on_screen": "Go · Screen: reports the cycle · Gauge: reports your line"
-        },
-        {
-          "id": "s12-10",
-          "text": "No one gets sprayed with hot cleaning chemical or steam.",
-          "on_screen": "Prevented: No hot chemical or steam"
-        }
-      ]
-    },
-    {
-      "id": "all-six-end-in-go",
-      "chapter": "All six end in Go",
-      "purpose": "Pay off the series: three fixes and three calls for help, and all six end in Go once it's safe. The goal is a safe start, not a fast one, and catches are a small share of all pauses, with no ratio implied. The pause is good for people, product and the line. It makes work go right and is not a brake on it.",
-      "visual": "(~9 s, including a ~3 s silent hold) Light theme. As the line starts, six compact case cards pop in from left to right. Each has a question-colored top stripe (blue, violet, violet, teal, teal, plum), its number 1 to 6, an icon (gear, bolt, O₂ cloud, lock, shield, wrench) and its name: 'Tablet press', 'Powder charge', 'Filter dryer', 'Blister packer', 'Potent ingredient', 'Line break'. s13-1: on 'fixes', amber 'Fix it' chips pop on cards 2, 4 and 6. On 'calls', red 'Stop & get help' chips pop on cards 1, 3 and 5. On 'All', the title 'All six end in Go' rises above the cards, and a green 'Go' chip with its check pops at the foot of each card, under its call chip, in quick sequence from left to right. Just after the line, the cards and title fade out. For the silent hold a new panel fades in: the heading 'Most pauses end in Go' with 'Good for people, product and the line' beneath it, and the shift timeline with every tick already green. Six larger solid green dots sit at irregular spacing among a long run of green ticks, so no catch rate can be read off it. The legend reads 'Your six saves, among all the pauses that simply ended in Go'. Under each call chip, a short reason line fades in: 'Someone else’s work', 'In procedure', 'No permit yet', 'In procedure, own lock', 'Not authorized · barrier', 'In procedure, permit held'.",
-      "cues": [
-        {
-          "id": "s13-1",
-          "text": "Three saves were Fix it, and three were Stop & get help. All six end in Go, once it's safe.",
-          "on_screen": "All six end in Go · Good for people, product and the line",
-          "tts": "Three saves were Fix it, and three were Stop and get help. All six end in Go, once it's safe."
-        },
-        {
-          "id": "s13-2",
-          "text": "And most pauses end in Go right away. That's good for people, product and the line.",
-          "on_screen": "Most pauses end in Go · Good for people, product and the line"
-        }
-      ]
-    },
-    {
-      "id": "what-makes-it-work",
-      "chapter": "What leaders commit to",
-      "purpose": "State the commitments plainly, as commitments, not conditions. Anyone, staff or contractor, can stop a job, even on a late batch, with no punishment and no blame. That means stopping the task: running processes are stopped only through operating procedures. Leaders come quickly, thank you, fix the cause and tell you what changed. The pause is not a form, and what you catch is reported through your usual channels so the system defect gets fixed.",
-      "visual": "(~21 s) Dark slate for emphasis. This scene has no hazard imagery. s14-1: the lit STOP tile pops in on the left. On 'staff', a worker silhouette fades in beside it. On 'contractor', a second silhouette with an amber hard-hat icon on its head joins. Labels build on the right: 'Anyone can stop a job', then 'Staff & contractors' on 'contractor', a clock icon with 'Even on a late batch' on 'late', and 'No punishment · No blame' in amber on 'punishment'. A small line fades in beneath: 'Stop the task. Running processes are stopped only through your operating procedures.' s14-2: the first panel clears for the heading 'Leaders commit to'. A silhouette labelled 'You' stands at the left with an amber raised-hand icon beside it. On 'come', a second silhouette in a teal hi-vis vest slides in beside it, labelled 'Your lead'. Four rows build on the right, one on each phrase: clock 'Come quickly', check 'Thank you', wrench 'Fix the cause', and ask icon 'Tell you what changed'. On 'thank', a speech bubble above the two figures reads 'Thanks. What did you see?', and on 'tell' it changes to 'Fixed. Here’s what changed.' s14-3: the panel clears. A large form icon appears at the left, and a grey slash draws across it above the label 'Not a form'. On 'Report', a magnifier, an arrow and a teal document icon fade in as a row on the right. On 'usual', the label 'Report through your usual channels' rises beneath them.",
-      "cues": [
-        {
-          "id": "s14-1",
-          "text": "Anyone can stop a job, staff or contractor, even on a late batch. No punishment, no blame.",
-          "on_screen": "Anyone can stop a job · Staff & contractors · Even on a late batch · No punishment · No blame · Stop the task. Running processes are stopped only through your operating procedures."
-        },
-        {
-          "id": "s14-2",
-          "text": "When you stop, leaders come quickly and thank you, fix the cause and tell you what changed.",
-          "on_screen": "Leaders commit to: Come quickly · Thank you · Fix the cause · Tell you what changed · Lead: “Thanks. What did you see?” then “Fixed. Here's what changed.”"
-        },
-        {
-          "id": "s14-3",
-          "text": "The pause isn't a form. Just report what you caught the usual way.",
-          "on_screen": "Not a form · Report through your usual channels"
-        }
-      ]
-    },
-    {
-      "id": "close-recap",
-      "chapter": "Recap card",
-      "purpose": "Close on the recap card. It covers when to pause (before you start, and after any break, handover, interruption or change), Stop · Look · Ask · Decide, the four questions and the three decisions, with the fix limit and 'Get help: your lead' on screen. It ends on 'Two minutes. Line clearance for people.' Next, a voiced 'Your site' slate asks viewers to find out who to call for help on days, nights and weekends and to write it on their pocket card. Last, a voiced end card says to follow site procedures and that this is awareness training only, and lists the sources.",
-      "visual": "(~49 s: the recap card through s15-5 and a ~2 s hold, then the voiced 'Your site' slate for ~8.5 s and the end card for ~10.5 s, ending in a fade to black) A light recap card sits inside a dark slate frame. As the scene opens, the stopwatch icon, the title 'The 2-Minute Rule' and, in teal, 'Line clearance for people' fade in across the top of the card. s15-1: the label 'PAUSE:' fades in along the bottom of the card. Five amber-edged pills pop in beside it on their words: 'Before you start', 'After a break', 'Handover', 'Interruption' and 'Change'. On 'stop' and 'look', the STOP and LOOK pills pop in at the left of the row under the title. s15-2: the ASK pill pops in. Card 1 (blue) 'What’s different?' and card 2 (violet) 'What could hurt us?' pop into the top row of a 2 x 2 grid. s15-3: card 3 (teal) 'Checked or assumed?' and card 4 (plum) 'What if it goes wrong?' fill the bottom row. s15-4: the DECIDE pill pops in, and green 'Go', amber 'Fix it' and red 'Stop & get help' pop in under the grid on their words. 'No permit · someone else’s work / not authorized · not sure → your lead' sets under the red button just after 'stop'. On 'procedure', 'Only if trained, authorized & in procedure' sets under the amber button. s15-5: nothing new is added. The complete card holds through the line and for about 2 s after it. s15-6: half a second before the line, a light full-frame slate rises over the card, and the chapter label changes to 'Your site'. It shows the kicker 'Your site · before your next shift', the heading 'Who do you call for help?', and four write-in lines, each an icon, a label and a blank rule: 'Days:', 'Nights:' and 'Weekends:' with clock icons, and 'Radio channel or extension:' with a phone icon. Beneath them, in amber with a form icon, it says 'Write it on your pocket card.' The slate holds about 3 s after the line. s15-7: just before the line, the end card rises over it, and the chapter label changes to 'Sources'. It reads 'Follow your site’s SOPs, lockout and permit procedures. This video is awareness training, not lockout or confined-space training.' Under the kicker 'Sources', six numbered sources follow in small type: 21 CFR 211.130(e); OSHA 29 CFR 1910.147; OSHA 29 CFR 1910.212 and 1910.146; CSB Safety Bulletin 2003-10-B; NFPA 77 and the CCPS Process Safety Beacon; and isolator glove programs under EU GMP Annex 1. Then comes the note 'Use cases are illustrative composites, not real incidents. Narration is a synthesized voice.' Over the last 1.3 s, the picture, header, progress bar and caption band fade to black.",
-      "cues": [
-        {
-          "id": "s15-1",
-          "text": "So, before you start, and after any break, handover, interruption or change: stop and look.",
-          "on_screen": "Before you start · Break · Handover · Interruption · Change · STOP · LOOK"
-        },
-        {
-          "id": "s15-2",
-          "text": "Ask: What's different? What could hurt us?",
-          "on_screen": "ASK · What's different? · What could hurt us?"
-        },
-        {
-          "id": "s15-3",
-          "text": "Checked or assumed? What if it goes wrong?",
-          "on_screen": "Checked or assumed? · What if it goes wrong?"
-        },
-        {
-          "id": "s15-4",
-          "text": "Decide: Go, Fix it, or Stop & get help.",
-          "tts": "Decide: Go, | fix it, | or stop and get help.",
-          "on_screen": "DECIDE · Go · Fix it · Stop & get help (No permit yet · someone else's unfinished work · not authorized · not sure → your lead)"
-        },
-        {
-          "id": "s15-5",
-          "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
-          "on_screen": "Fix it: only if trained, authorized & in procedure"
-        },
-        {
-          "id": "s15-6",
-          "text": "When in doubt, get help. That's the 2-minute rule: line clearance for people.",
-          "on_screen": "The 2-Minute Rule · Line clearance for people",
-          "tts": "When in doubt, get help. That's the two-minute rule: line clearance for people."
-        },
-        {
-          "id": "s15-7",
-          "text": "Find out who to call for help: days, nights and weekends.",
-          "on_screen": "Who do you call for help? Days · Nights · Weekends · Radio channel or extension · Write it on your pocket card."
-        },
-        {
-          "id": "s15-8",
-          "text": "Follow your site's procedures. This video is awareness training only.",
-          "on_screen": "End card: awareness training, not lockout or confined-space training"
-        }
-      ]
+     "text": "Two minutes is a guide.",
+     "on_screen": "A guide, not an exact time",
+     "id": "s2-3"
     }
-  ]
+   ]
+  },
+  {
+   "id": "line-clearance",
+   "chapter": "Line clearance for people",
+   "purpose": "Anchor the pause in a habit the viewer already trusts: line clearance for product. The pause is line clearance for people. It adds to procedures, permits and lockout and never replaces them.",
+   "visual": "(~12 s) Light theme, two panels side by side. Line 1: the left panel rises: 'Line clearance: product', a clean stretch of patch line with three green ticks building down beside it, 'No laminate left', 'No labels left', 'No pouches left', and the muted reference '21 CFR 211.130(e) · checked right before use' at its foot. Line 2: on 'people', the right panel rises in the same layout with the silhouette in place of the line and four small outline cards in the question colours (blue, violet, teal, plum) in place of the ticks; its heading reads 'Line clearance for people'. Line 3: both panels shrink up; four tiles pop in a row under them on their words, 'Procedures', 'Permits', 'Lockout' and 'Guards & interlocks', and an amber banner sets across them: 'Adds to. Never replaces.'",
+   "cues": [
+    {
+     "text": "You already do line clearance for product.",
+     "on_screen": "Line clearance: product · No laminate, labels or pouches left · 21 CFR 211.130(e)",
+     "id": "s3-1"
+    },
+    {
+     "text": "This is line clearance for people.",
+     "on_screen": "Line clearance for people",
+     "id": "s3-2"
+    },
+    {
+     "text": "It adds to procedures, permits and lockout. It never replaces them.",
+     "on_screen": "Procedures · Permits · Lockout · Guards & interlocks · Adds to. Never replaces.",
+     "id": "s3-3"
+    }
+   ]
+  },
+  {
+   "id": "how-to-run-it",
+   "chapter": "Stop · Look · Ask · Decide",
+   "purpose": "Teach Stop · Look · Ask · Decide, the four questions and the three calls, and build the cards and buttons every save reuses. Define 'Checked or assumed?' once and 'call' once ('That's your call', which every 'Your call?' hold reuses). Then teach the boundary as a side-by-side contrast, with the three locked lines word for word. The contrast-card examples are deliberately not the four saves, and none is a forklift or a truck, so the holds test the rule, not recall.",
+   "visual": "(~43 s) Light theme, no silhouette, same build as the current video. The STOP, LOOK, ASK and DECIDE tiles drop into a row across the top; each lights amber while it is taught. Line 1: STOP (hand icon) is lit and 'Hands off' rises under it. Line 2: LOOK (eye icon) lights; on 'around', 'Around the job' / 'Compare with the plan' rises under it. Line 3: ASK (question bubble) lights; the question cards pop into a 2 x 2 grid on their words: card 1 blue 'What's different?' and card 2 violet 'What could hurt us?'. Line 4: card 3 teal 'Checked or assumed?' and card 4 plum 'What if it goes wrong?'. Line 5: a line rises under the grid: a teal check-and-question icon, 'Checked or assumed?' in teal, then 'Did you look or test it yourself, or are you guessing?' in dark ink. Line 6: DECIDE (signpost) lights and stays lit; the grid fades and three buttons pop in a centred row on their words: green 'Go', amber 'Fix it', red 'Stop & get help'; on 'your call', a small muted label 'Your call' sets above the row. Line 7: the buttons give way to a two-column panel. The left column (amber top edge) rises: a wrench and 'Fix it, only if', then 'You're trained and authorized' (on 'trained') and 'It's a step in your procedure' (on 'step'); just after 'procedure' the muted example line fades in: 'e.g. a small adhesive drip or a full trim-waste bag, as your procedure says'. Line 8: the right column (red top edge) rises: a red hand and 'Stop & get help for', then 'No permit yet' (on 'permit'), 'Someone else's unfinished work' (on 'Someone') and 'Not authorized for it' (on 'authorized'); on 'help' the muted example line fades in: 'e.g. a guard that won't close · a web wrapped on a roll you're not trained to clear · an alarm you don't recognize'. Line 9: under the panel, a centred line rises: 'Not sure, or the fix doesn't work? Stop & get help.' with 'Stop & get help.' in red. Everything holds to the end of the scene.",
+   "cues": [
+    {
+     "text": "Stop: hands off.",
+     "on_screen": "STOP · Hands off",
+     "id": "s4-1"
+    },
+    {
+     "text": "Look: around the job, and compare it with the plan.",
+     "on_screen": "LOOK · Around the job · Compare with the plan",
+     "id": "s4-2"
+    },
+    {
+     "text": "Ask four questions: What's different? What could hurt us?",
+     "on_screen": "ASK · What's different? · What could hurt us?",
+     "id": "s4-3"
+    },
+    {
+     "text": "Checked or assumed? What if it goes wrong?",
+     "on_screen": "Checked or assumed? · What if it goes wrong?",
+     "id": "s4-4"
+    },
+    {
+     "text": "“Checked or assumed” means: did you look or test it yourself, or are you guessing?",
+     "on_screen": "Checked or assumed? Did you look or test it yourself, or are you guessing?",
+     "id": "s4-5"
+    },
+    {
+     "text": "Decide: Go, Fix it, or Stop & get help. That's your call.",
+     "tts": "Decide: Go, | fix it, | or stop and get help. That's your call.",
+     "on_screen": "DECIDE · Your call: Go · Fix it · Stop & get help",
+     "id": "s4-6"
+    },
+    {
+     "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
+     "on_screen": "Fix it, only if: You're trained and authorized · It's a step in your procedure (e.g. a small adhesive drip or a full trim-waste bag, as your procedure says)",
+     "id": "s4-7"
+    },
+    {
+     "text": "No permit yet? Someone else's unfinished work? Not authorized? Stop & get help.",
+     "tts": "No permit yet? Someone else's unfinished work? Not authorized? Stop and get help.",
+     "on_screen": "Stop & get help for: No permit yet · Someone else's unfinished work · Not authorized for it (e.g. a guard that won't close · a web wrapped on a roll you're not trained to clear · an alarm you don't recognize)",
+     "id": "s4-8"
+    },
+    {
+     "text": "Not sure, or the fix doesn't work? Stop & get help.",
+     "tts": "Not sure, or the fix doesn't work? Stop and get help.",
+     "on_screen": "Not sure, or the fix doesn't work? Stop & get help.",
+     "id": "s4-9"
+    }
+   ]
+  },
+  {
+   "id": "routine-go",
+   "chapter": "A routine Go",
+   "purpose": "Model the pause people do most often, before any catch is shown: the first job, moving a laminate roll with the roll lifter. All four questions come back clean in seconds (the only place Q4 is answered aloud: if the roll slips, nobody's in the aisle), the spoken 'Your call?' hold is answered Go, and the job goes ahead. Name it 'Moving a laminate roll' so it never reads as 'Roll staging'.",
+   "visual": "(~22 s) Light theme. The top band fades in: 'A routine Go', a chip with the play icon reading 'Before you start' (one of the five trigger names), and a muted '· Moving a laminate roll'. The shift strip's amber dot sits at 'Start of shift'. On the left of the stage from the first frame: a wrapped roll labelled 'LAMINATE' held by its core on a roll lifter (an upright mast, a handle and two grip arms), yellow aisle lines on the floor running right to the outline of a slitter unwind stand, and the silhouette at the lifter handle. Line 1: on 'lifter', the lifter's label 'ROLL LIFTER' fades in, with the muted gloss 'lifts a roll by its core' under it. Line 2: a column of small question cards builds on the right, each answer beside it: card 1 (blue) 'What's different?' rises and on 'Nothing' a green check 'Nothing' pops beside it; card 2 (violet) 'What could hurt us?' rises and on 'heavy' a check pops with 'A heavy roll' while a small weight icon sets on the roll. Line 3: card 3 (teal) 'Checked or assumed?' rises; on the first 'Checked' the roll lifts a finger's width and settles, a green ring circles the grip arms, and a check pops: 'Checked: grip tested'. Line 4: card 4 (plum) 'What if it goes wrong?' rises; on 'aisle' the aisle lines glow green, empty of people, and a check pops: 'Nobody in the aisle'. On 'Your call?' a row appears under the cards: 'Your call?' with a filling ring and Go, Fix it and Stop & get help in outline; it holds through the 2.4 s pause. Line 5: Go fills green, the other two fade, 'A few seconds.' rises below, and the lifter rolls off slowly along the aisle toward the unwind, with the roll first lowered to carry it low.",
+   "cues": [
+    {
+     "text": "First job: moving a laminate roll with the roll lifter.",
+     "on_screen": "A routine Go · Before you start · Moving a laminate roll · Roll lifter: lifts a roll by its core",
+     "id": "s5-1"
+    },
+    {
+     "text": "What's different? Nothing. What could hurt us? A heavy roll.",
+     "on_screen": "What's different? ✓ Nothing · What could hurt us? ✓ A heavy roll",
+     "id": "s5-2"
+    },
+    {
+     "text": "Checked or assumed? Checked: you tested the grip.",
+     "on_screen": "Checked or assumed? ✓ Checked: grip tested",
+     "id": "s5-3"
+    },
+    {
+     "text": "What if it goes wrong? Nobody's in the aisle. Your call?",
+     "on_screen": "What if it goes wrong? ✓ Nobody in the aisle · Your call? Go · Fix it · Stop & get help, in outline (pause)",
+     "id": "s5-4"
+    },
+    {
+     "text": "Go. That took seconds.",
+     "on_screen": "Go fills in · A few seconds.",
+     "id": "s5-5"
+    }
+   ]
+  },
+  {
+   "id": "four-saves",
+   "chapter": "Four saves",
+   "purpose": "Set the base rate: most pauses end in Go. Define a save as a pause where a question catches a problem. Introduce four saves, say once that they are examples, not real events, and tell the viewer each save asks twice: find the problem, then pick the call.",
+   "visual": "(~16 s) Light theme. Line 1: the heading 'Most pauses end in Go' rises top-left with the muted 'In seconds' under it. The shift strip from the title grows into a full-width shift timeline across the middle of the stage, 'Start of shift' at the left, a small cup icon for the break, 'End of shift' at the right. It holds a dense run of small grey ticks, too many to count, which flip green in a fast wave from left to right over about 2 s. Four larger amber-outlined rings, irregularly spaced (one early, one just after the cup, one mid-shift, one late), stay outlined. A legend fades in under it: a green tick 'A pause that ended in Go' and an amber ring 'A pause that caught something'. Line 2: on 'catches', the four rings swell and settle once; on 'save', the title 'Four two-minute saves' starts to rise. Line 3: the timeline slides up to become the shift strip; the title 'Four two-minute saves' rises with the muted 'A save = a pause that caught a problem' beside it. Four tiles pop in a row, in shift order, each under its ring, with a left stripe in the colour of the question that catches it, an icon, a title and a trigger chip: 1 drum 'Solvent transfer', 'Before you start' (teal); 2 pallet-of-rolls 'Roll staging', 'After a break' (blue); 3 die cylinder 'Die cutter', 'Handover' (teal); 4 glove 'Potent product', 'Change' (violet). On 'examples', a small grey tag fades in under the row: 'Examples built from common patch-line hazards, not real events'. Line 4: an amber pill with a magnifier pops in beside the tag: 'The video waits: find the problem, pick your call'. Everything holds to the end of the scene.",
+   "cues": [
+    {
+     "text": "Most pauses end like that.",
+     "on_screen": "Most pauses end in Go · In seconds · shift timeline",
+     "id": "s6-1"
+    },
+    {
+     "text": "But sometimes a question catches a problem. That's a save.",
+     "on_screen": "Four two-minute saves · A save = a pause that caught a problem",
+     "id": "s6-2"
+    },
+    {
+     "text": "Here are four examples, not real events.",
+     "on_screen": "Solvent transfer · Roll staging · Die cutter · Potent product · Examples, not real events",
+     "id": "s6-3"
+    },
+    {
+     "text": "Each one asks twice: find the problem, then pick your call.",
+     "on_screen": "The video waits: find the problem, pick your call",
+     "id": "s6-4"
+    }
+   ]
+  },
+  {
+   "id": "save-1-solvent-bonding",
+   "chapter": "Save 1 · Solvent transfer",
+   "purpose": "Q3, Checked or assumed?, before you start in the mix room. You're about to transfer flammable solvent from a drum to the adhesive mix tank with an air drum pump. Both green bonding clamps still hang on their hook by the wall bonding reel, not on the drum or pump, and the BOND lamp is red. An unbonded drum or pump can hold a static charge and spark where solvent vapor comes out (fact-check wording). Fix it: bonding is a step in your procedure. Clamps first, on bare metal on the drum and the pump, before the bung is opened or the wand goes in; the hose is the conductive type; the lamp turns green; then Go. If it won't go green, Stop & get help (on screen; this also shows 'the fix doesn't work'). Prevented: no static spark where the vapor comes out (mostly at the receiving tank, where vapor is pushed out as it fills; fact-check). The 'what if' spark and the vapor are drawn in the same place. The silhouette wears the site's solvent PPE. No flame and no named solvent.",
+   "visual": "SAVE TEMPLATE for scenes 7 to 10. Each save opens with the 1 s sting, no narration: four amber-bordered tiles, STOP · LOOK · ASK · DECIDE, pop in across the centre and fade. Then the top band, stage and case card fade in together. The top band holds the save tag ('Save N · title') and the trigger chip (with the same icon as the rule scene) on the left. Directly under it runs the SHIFT STRIP: a thin line from 'Start of shift' to 'End of shift', a small cup icon at the break, and an amber dot marking where this save happens. The dot is the only thing on the strip that changes between saves, so each chapter still plays alone. Right-aligned under the band sits the question rail: four numbered pills, '1 What's different?' (blue), '2 What could hurt us?' (violet), '3 Checked or assumed?' (teal), '4 What if it goes wrong?' (plum), dimmed to about 60% until asked. The stage is 1080 x 642 with the floor at y = 600, drawn flat in the TD palette; the case card sits to the right of the stage with the rows 'The catch' (magnifier), 'The call' (signpost) and 'What it prevented' (shield). The clue is drawn in the very first frame and is never highlighted before the narration names it. Hold 1: a 'What would make you stop here?' card pops over the case card (amber border, magnifier, 'Look at the picture.' / 'Watching alone? Pause now.'); its amber ring fills through the 3 s silent hold and it fades just before the next line. The card text never changes. When the catch is named, a red ring lands on the clue and throbs, and 'The catch' fills. Hold 2: a 'Your call?' card pops over the case card with Go, Fix it and Stop & get help in outline; its ring fills through 2.4 s; on the reveal the right call fills, and about 1.6 s later the card fades to show the decision chip in 'The call' with its spoken reason in bold under it. Later a grey arrow and a green 'Go' chip join the decision chip. One circular close-up inset component (centre about (900, 135), r about 105, thin leader line) serves Save 2's TRAINED ON card and Save 4's wrist. No flames, injuries, falling loads or collapsed figures anywhere in the saves. ─ SAVE 1 (~42 s, including the 1 s sting). Top band: 'Save 1 · Solvent transfer' with the chip 'Before you start' (play icon); the shift-strip dot sits early in the shift, after the routine Go; question pill 3 is teal. Stage, from the first frame: the mix room. Left of centre, a steel drum labelled 'SOLVENT' with a small flammable pictogram, its bung closed. Beside it, an air drum pump: its wand (the long tube that goes into the drum) stands in a wall holder, not in the drum; a thin air line runs to its motor, and a black hose labelled 'conductive hose' runs right to the 'ADHESIVE MIX TANK' (a tank with an agitator motor on top and a small fixed ground symbol at its foot, so the tank doesn't read as a second catch). THE CLUE: on the wall left of the drum, a bonding reel with a hook; both green bonding clamps hang on the hook, and nothing is clipped to the drum or the pump. Next to the reel, a small 'BOND' indicator box with its lamp lit red. The silhouette stands by the drum, one hand near the pump's air valve, already in the site's solvent PPE (safety glasses and solvent-resistant gloves), so missing PPE never reads as a second catch. Line 1: on 'flammable', the pictogram pulses once. Line 2: on 'Hands off', the hand draws back from the valve; the hold card pops and its ring fills through 3 s. Line 3: pill 3 (teal, 'Checked or assumed?') lights. On 'bonding', the grey gloss tag 'Bonding = clamps and wires that stop static sparks' rises above the reel. On 'hook', a red ring lands on the two hanging clamps and the red lamp and throbs, and 'The catch' fills: 'Clamps on the hook · lamp red'. Line 4: at the mix tank's opening, where the hose enters, faint grey vapor lines rise, and in that same spot a faint, dashed amber bolt labelled 'Static charge' flickers once. It is dashed because it is a 'what if': nothing is flowing yet, and the drum's bung stays closed. The spark is never drawn away from the vapor. No flame. Line 5: the 'Your call?' card, 2.4 s. Line 6: 'Fix it' fills; the card fades to show the amber chip with the reason 'A step in your procedure'. The bolt and vapor fade. On 'clamps first', the clamps leave the hook and a muted label rises: 'You · first, before the drum is opened'. On 'bare metal', one clamp bites a small bright square on the drum rim labelled 'bare metal' and the other a bright square on the pump body. Line 7: on 'drum' and 'pump', ticks pop: 'Drum ✓', 'Pump ✓', then 'Hose: conductive ✓'. On 'green', the lamp turns green and reads 'BONDED', and a small grey tag sets under it: 'Won't go green? Stop & get help'. Only then do the bung open and the wand slide into the drum, as 'Go' is spoken (allow about 0.5 s); on 'Go', an arrow leads to a green 'Go' chip. The wand never enters the drum before the lamp is green. Line 8: the faint dashed bolt returns at that same spot, the tank opening where the vapor is, with a grey ✕ over it, and 'What it prevented' fills: 'No static spark at the vapor'.",
+   "cues": [
+    {
+     "text": "Mix room, before you start: you'll pump flammable solvent from a drum.",
+     "on_screen": "Save 1 · Solvent transfer · Before you start · Solvent drum · Air drum pump · Adhesive mix tank",
+     "id": "s7-1"
+    },
+    {
+     "text": "Hands off. What would make you stop here?",
+     "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)",
+     "id": "s7-2"
+    },
+    {
+     "text": "Checked or assumed? The bonding clamps, which stop static sparks, are still on their hook.",
+     "on_screen": "Bonding = clamps and wires that stop static sparks · The catch: Clamps on the hook · lamp red",
+     "id": "s7-3"
+    },
+    {
+     "text": "An unbonded drum or pump can hold a static charge and spark.",
+     "on_screen": "Static charge · vapor at the tank opening, shown as a 'what if' (no flame)",
+     "id": "s7-4"
+    },
+    {
+     "text": "Your call?",
+     "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)",
+     "id": "s7-5"
+    },
+    {
+     "text": "Fix it. Bonding is a step in your procedure: clamps first, on bare metal.",
+     "on_screen": "The call: Fix it · A step in your procedure · You, first, before the drum is opened · Bare metal",
+     "id": "s7-6"
+    },
+    {
+     "text": "With drum and pump bonded, the lamp turns green: Go.",
+     "on_screen": "Drum ✓ · Pump ✓ · Hose: conductive ✓ · Tank: grounded ✓ · BONDED (green) · Won't go green? Stop & get help → Go",
+     "id": "s7-7"
+    },
+    {
+     "text": "No static spark where the vapor comes out.",
+     "on_screen": "Prevented: No static spark at the vapor (✕ on the 'what if' spark at the tank opening)",
+     "id": "s7-8"
+    }
+   ]
+  },
+  {
+   "id": "save-2-material-handling",
+   "chapter": "Save 2 · Roll staging",
+   "purpose": "Q1, What's different?, after a break, in material handling. Roll staging is on the warehouse side of the line's material airlock, away from the coating, oven and solvent areas and out of classified rooms. Before your break, the pallet with the line's next master roll of backing film sat on the floor in the NEXT ROLL spot: a pallet-truck job. Now it is up on the rack's top beam: a forklift job. Your card says pallet truck only, and a friendly co-worker says 'Line's waiting. Just grab the forklift!' Stop & get help: not authorized (trained on the pallet truck, Class III, not the sit-down forklift, Class I; 29 CFR 1910.178(l) ties training to each type of truck, and a co-worker's 'just grab it' is neither training nor supervision). You keep off the forklift, don't reach the roll any other way (no climbing the rack, no pulling it down), speak up kindly and call your lead. The lead thanks you and sends a trained, authorized driver, belted in, who brings the pallet down with everyone clear of the forks and the truck's path (1910.178(m)(2)): back out until the pallet clears the beam, stop, then lower before moving. You take it to the line with your pallet truck and load the roll with your lifter (still your steps), then Go, spoken only once the pallet is down and the forks are flat. The lead fixes the system without blame: next rolls stay at floor level. Prevented: nobody drives a truck they're not trained on. It also models well-meant production pressure and how to speak up, which the earlier version only stated.",
+   "visual": "Save template (see Save 1). (~53 s, including the 1 s sting and a 2.0 s picture-only beat after line 9 for the slow lowering. It is shorter than the 2.4 s decision hold and shows no card.) Top band: 'Save 2 · Roll staging' with the chip 'After a break' (cup icon); the shift-strip dot sits just after the cup; question pill 1 is blue. Stage 1080x642, floor at y=600, drawn flat in the TD palette; the case card sits to the right of the stage as in the other saves. Keep the hold frame uncluttered: no decals, no HMI tile, no walkway stripe, no rack name, no key. From the first frame, left to right. PALLET RACK (x 30-330): steel uprights at x≈40 and x≈312 and a muted-orange beam at y≈300 (not the Fix amber). On the beam, a wooden pallet (x 60-300, y 280-300) holding two stretch-wrapped film rolls standing on end, each about 100x140 px with a core ellipse on top, one label 'BACKING FILM' (18 px). The bottom bay is open floor; below the pallet, an empty dashed flat outline (x 60-300, y 586-600) with the small muted label 'NEXT ROLL' (14 px). SIT-DOWN COUNTERBALANCE FORKLIFT (x 300-640), facing the rack and parked correctly: mast lowered (x≈360-380, top y≈280), forks flat on the floor reaching to x≈300, body x 390-620 / y 450-590, two wheels, overhead guard roof at y≈330, empty seat, 'FORKLIFT' (22 px) on the counterweight; no decal, no key. CO-WORKER (x 650-710): plain grey work clothes, unnamed, turned toward you, one open hand gesturing back at the forklift; speech bubble (x 450-770, y 200-280, 22 px): 'Line's waiting. Just grab the forklift!'. YOUR POWERED PALLET TRUCK (x 730-880, walk-behind): low forks pointing left toward the rack, battery body, tiller rising to about (900, 430), label 'PALLET TRUCK' (16 px) and a small teal chip 'YOURS'. YOU (x 895-950): the plain silhouette, hand on the tiller, a card on a lanyard. MATERIAL AIRLOCK DOOR (x 984-1076): pale door outline with a small window and the muted labels 'MATERIAL AIRLOCK' and 'TO LINE →', background only. People don't use it; pallets cross it only as the site's procedure says. TOP RIGHT, 'TRAINED ON' INSET: a close-up circle in the same style as Save 4's wrist inset, centre (900, 135), r≈105, with a thin leader line to your lanyard card; header 'TRAINED ON' (18 px); row 1, a small pallet-truck icon, 'Pallet truck' (26 px) and a green ✓; row 2, a small forklift icon, 'Forklift' (26 px) and a large empty 40x40 box with a dark outline; faint name and date lines underneath; clear of the question rail. It is the largest text block on screen. Eye path in the 3 s hold: bubble, the pallet up high, FORKLIFT, your truck marked YOURS, the TRAINED ON inset. Nothing is highlighted until the narration names it. Line 1: the silhouette walks in from the right edge of the frame (the warehouse side), empty-handed (no drink is carried into staging; the cup appears only on the 'After a break' chip), and takes the tiller. A small grey gloss tag sets under the band: 'Roll staging: rolls wait here for the line'. It fades as the hold card pops, so the hold frame stays uncluttered. Nothing on the stage is highlighted. Line 2: the hold card; its ring fills through 3 s. Line 3: pill 1 (blue, 'What's different?') lights. An inset bubble 'Before your break' appears at top centre (x 420-640, y 20-180), showing the same rack bay with the pallet on the floor in the NEXT ROLL spot. On 'up high', a red ring lands on the pallet on the top beam and throbs, with the chip 'Up high: forklift job' above it. On 'forklift job', muted sub-labels set under the two truck labels as glosses: 'ride-on · lifts loads high' under FORKLIFT and 'walk-behind · floor level' under PALLET TRUCK. Line 4: on 'card', a second red ring lands on the empty Forklift box in the inset, and 'The catch' fills: 'Up high: forklift job · card: pallet truck only'. On 'different to drive', a grey gloss tag sets under the forklift at y≈625: 'Different truck · its own training', and the small grey citation chip '29 CFR 1910.178(l)' sets under 'The catch'. Line 5: the co-worker's bubble pulses once, and a small clock icon 'Line waiting' pops at its corner. Line 6: the 'Your call?' card, 2.4 s. Line 7: 'Stop & get help' fills; the card fades to show the red chip with the bold reason 'Not authorized: trained on the pallet truck, not the forklift'. A grey stop-hand sets over the forklift seat with the muted label 'Not your truck', and under it a second muted tag: 'No climbing the rack · no pulling it down'. The 'Before your break' inset and the TRAINED ON inset fade. Line 8: your bubble: 'Thanks, but I'm not trained on that one. I'll call our lead.' The co-worker's bubble changes to a small 'Fair enough.' On 'call', a radio icon pops at your hand. Line 9, then a 2.0 s picture-only beat, all of it slow: the co-worker heads back to the line. On 'lead', a figure in a teal hi-vis vest comes in from the right edge, labelled 'Your lead', with the bubble 'Thanks. What did you see?'. On 'driver', a driver in a grey-blue vest is shown already seated on the forklift with the lap belt fastened, with the tags 'Trained driver' and 'Forklift ✓', and a muted tag sets: 'Stand clear · nobody under the forks or in its path'. You and the lead stand at the far right, outside the truck's path. Over the beat, a slow 1.2 s cross-dissolve shows the end state with no travel: the pallet on the floor in the NEXT ROLL spot and the forklift parked as before, forks flat. No forklift movement is animated. Line 10: on 'Then', the forklift and driver fade and your pallet truck glides slowly under the pallet. On 'Go', an arrow leads to a green 'Go' chip, and the muted fix chip 'Fixed: next rolls stay at floor level' sets beside it. 'Go' is heard only once the pallet is down and the forks are flat. Line 11: the figures fade, and 'What it prevented' fills: 'No driving a truck you're not trained on'. NEVER SHOWN: you or the co-worker on the forklift; anyone climbing the rack; anyone under or beside raised forks, or in the truck's path; a driver without the seatbelt; a pallet lowered while still over the beam; a key in the truck; a drink in staging; forklift travel near people; a roll falling, a pallet sliding, or a truck tipping or moving fast; any strain or injury imagery.",
+   "cues": [
+    {
+     "text": "After your break, you go for the next roll.",
+     "on_screen": "Save 2 · Roll staging · After a break · Roll staging: rolls wait here for the line · You walk in from the warehouse side, empty-handed",
+     "id": "s8-1"
+    },
+    {
+     "text": "Look closely. What would make you stop here?",
+     "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)",
+     "id": "s8-2"
+    },
+    {
+     "text": "What's different? The roll's up high now. That's a forklift job.",
+     "on_screen": "Before your break: pallet on the floor · Up high: forklift job · Forklift: ride-on, lifts loads high · Pallet truck: walk-behind, floor level",
+     "id": "s8-3"
+    },
+    {
+     "text": "Your card says pallet truck only. A forklift is different to drive and needs its own training.",
+     "on_screen": "The catch: Up high: forklift job · card: pallet truck only · Different truck · its own training · 29 CFR 1910.178(l)",
+     "id": "s8-4"
+    },
+    {
+     "text": "A co-worker wants to help: “Just grab the forklift.”",
+     "on_screen": "Co-worker: “Line's waiting. Just grab the forklift!” · Line waiting",
+     "id": "s8-5"
+    },
+    {
+     "text": "So, your call?",
+     "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)",
+     "id": "s8-6"
+    },
+    {
+     "text": "Stop & get help. You're not authorized to drive a forklift.",
+     "tts": "Stop and get help. You're not authorized to drive a forklift.",
+     "on_screen": "The call: Stop & get help · Not authorized: trained on the pallet truck, not the forklift · Not your truck · No climbing the rack · no pulling it down",
+     "id": "s8-7"
+    },
+    {
+     "text": "Say it kindly: “Thanks, but I'm not trained on that one. I'll call our lead.”",
+     "on_screen": "You: “Thanks, but I'm not trained on that one. I'll call our lead.” · Co-worker: “Fair enough.” · Radio: you call your lead",
+     "id": "s8-8"
+    },
+    {
+     "text": "Your lead sends a trained driver.",
+     "on_screen": "Your lead: “Thanks. What did you see?” · Trained driver · Forklift ✓ · Seatbelt on · Stand clear · The driver brings the pallet down (picture-only beat)",
+     "id": "s8-9"
+    },
+    {
+     "text": "Then it's Go.",
+     "on_screen": "Pallet in the NEXT ROLL spot · forks flat · your pallet truck → Go · Fixed: next rolls stay at floor level",
+     "id": "s8-10"
+    },
+    {
+     "text": "Nobody drives a truck they're not trained on.",
+     "on_screen": "Prevented: No driving a truck you're not trained on",
+     "id": "s8-11"
+    }
+   ]
+  },
+  {
+   "id": "save-3-die-cutter-lock",
+   "chapter": "Save 3 · Die cutter",
+   "purpose": "Q3, Checked or assumed?, at a handover on the rotary die cutter, as it comes back to production after a die change. The sticky note says 'Die change done. Ready to run', but the die station's clear guard is off and leaning on the frame, and someone else's padlock is still on the power switch. Stop & get help: someone else's unfinished work; you call your lead. The lock's tag carries its owner's name (drawn as an illegible scribble), as lockout devices must identify who applied them. Only the person whose lock it is removes it, or a supervisor under the site's documented lock-removal procedure (owner not on site, every reasonable effort to reach them, told before they're back at work; on screen). The owner finishes, puts the guard back and removes their own lock; you do the restart checks; then Go. You never touch the lock, the tag or the guard. Prevented: the die cutter never runs with the guard off and someone else's work open.",
+   "visual": "Save template (see Save 1). (~47 s, including the 1 s sting.) Top band: 'Save 3 · Die cutter' with the chip 'Handover' (two-people icon); the shift-strip dot sits mid-shift: the die cutter is being handed back to production after a die change. Stage, from the first frame: the rotary die cutter. A laminate roll unwinds at the left; the web runs into the die station, two stacked cylinders labelled 'DIE' (with a faint patch-shape pattern) and 'ANVIL'; cut patches and a lacy waste strip leave to the right. On the control panel at the left, a yellow sticky note reads 'Die change done. Ready to run ✓'. THE CLUE, two parts: the die station's clear guard panel is off, leaning against the machine frame on the floor, so the cylinders stand open; and on the 'POWER SWITCH' box at the right hangs a red padlock with a yellow tag ('DO NOT OPERATE' over a handwritten name, drawn as an illegible scribble) that is not yours. The silhouette stands at the left. Line 1: on 'note', the sticky note pulses once. Line 2: the hold card; ring fills through 3 s. Line 3: pill 3 (teal, 'Checked or assumed?') lights. The sticky note gets a small grey stamp 'Assumed'. On 'guard', a red ring lands on the leaning guard and throbs; on 'die station', the grey gloss tag 'Die station = where patches are cut' sets over the cylinders. Line 4: on 'lock', a second red ring lands on the padlock, a teal tag 'Checked' sets under the machine, and 'The catch' fills: 'Guard off · someone else's lock on'. Line 5: the 'Your call?' card, 2.4 s. Line 6: 'Stop & get help' lights; the card fades to show the red chip with the reason 'Someone else's unfinished work'. On 'help', a phone icon pops at your hand with the muted label 'You call your lead'. Line 7: on 'owner', a figure in blue gloves fades in beside the power switch, with a matching yellow tag icon and the label 'Technician · lock owner'; on 'supervisor', a muted three-line note sets under the figure: 'Or a supervisor, by the site's lock-removal procedure: owner not on site · every effort to reach them · told before they're back'. Line 8: on 'finishes', the technician closes out their work; on 'guard back', they lift the guard into place and a green check appears at its interlock; then they take off their own padlock and tag; on 'restart checks', a checklist ticks in at the top right with the label 'You': 'Guard on ✓', 'Area clear ✓', 'Restart checks ✓'. On 'Go', an arrow leads to a green 'Go' chip. Line 9: the technician and note fade, and 'What it prevented' fills: 'No start with the guard off and the work unfinished'. The silhouette never touches the lock, the tag or the guard.",
+   "cues": [
+    {
+     "text": "At handover, the die cutter's note says it's ready to run.",
+     "on_screen": "Save 3 · Die cutter · Handover · Note: Die change done. Ready to run ✓",
+     "id": "s9-1"
+    },
+    {
+     "text": "Now, what would make you stop here?",
+     "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)",
+     "id": "s9-2"
+    },
+    {
+     "text": "Checked or assumed? The guard's off the die station, where patches are cut.",
+     "on_screen": "Sticky note: Assumed · Die station = where patches are cut · Guard off",
+     "id": "s9-3"
+    },
+    {
+     "text": "And someone else's lock is still on.",
+     "on_screen": "The catch: Guard off · someone else's lock on · Checked",
+     "id": "s9-4"
+    },
+    {
+     "text": "What's your call?",
+     "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)",
+     "id": "s9-5"
+    },
+    {
+     "text": "Stop & get help. It's someone else's unfinished work.",
+     "tts": "Stop and get help. It's someone else's unfinished work.",
+     "on_screen": "The call: Stop & get help · Someone else's unfinished work · You call your lead",
+     "id": "s9-6"
+    },
+    {
+     "text": "Only the lock's owner removes it, or a supervisor under the site's lock-removal procedure.",
+     "on_screen": "Technician · lock owner · Or a supervisor, by the site's lock-removal procedure: owner not on site · every effort to reach them · told before they're back",
+     "id": "s9-7"
+    },
+    {
+     "text": "The owner finishes and puts the guard back. After your restart checks, it's Go.",
+     "on_screen": "Guard back on · Owner removes their own lock · You: Guard on ✓ · Area clear ✓ · Restart checks ✓ → Go",
+     "id": "s9-8"
+    },
+    {
+     "text": "The die cutter never runs with its guard off and the work unfinished.",
+     "on_screen": "Prevented: No start with the guard off and the work unfinished",
+     "id": "s9-9"
+    }
+   ]
+  },
+  {
+   "id": "save-4-potent-ppe",
+   "chapter": "Save 4 · Potent product",
+   "purpose": "Q2, What could hurt us?, at a product changeover on the slitter. The next product is potent (strong in tiny amounts). The PPE board at the door now reads POTENT PRODUCT with double gloves and sleeve covers marked NEW (the coat is unchanged, and you already wear it); you are in single gloves with no sleeve covers, handling sticky trim, and a close-up shows bare skin at your wrist between sleeve and glove. Fix it: putting on the product's PPE is your own gowning step. Step away to the gowning point, take off your gloves as your procedure says, wash hands and wrists with soap and water (no alcohol rub), put on double gloves and sleeve covers with no skin showing, then Go. The slitter comes to a normal stop before you step away, and trim goes to the designated potent waste. If adhesive has touched skin, follow the site's steps and report it (on screen). Prevented: small, repeated doses through the skin from a product made to pass through skin. No overdose framing and no exposure-band numbers.",
+   "visual": "Save template (see Save 1). (~46 s, including the 1 s sting.) Top band: 'Save 4 · Potent product' with the chip 'Change' (two swapping arrows); the shift-strip dot sits late in the shift. Stage, from the first frame: the slitting room. Centre, the slitter: a wide laminate roll unwinding into a guarded knife housing and two narrow rolls rewinding below it, with a trim chute at the side. At the left edge, the room door with the PPE board beside it. THE CLUE, two parts: the board's top strip reads 'NOW: POTENT PRODUCT' over three icons, a coat, double gloves and sleeve covers; only the double gloves and sleeve covers carry a small 'NEW' tag, and the old single-glove icon is greyed and crossed; and the silhouette at the slitter is already in the coat but wears single gloves and no sleeve covers, holding a strip of trim, with a close-up circle at top right (the shared close-up component, centre about (900, 135), r≈105, the same one Save 2 uses for its card) joined by a thin leader line to the wrist: it shows the bare band of skin between the glove cuff and the sleeve. Line 1: on 'changes over', the label on the unwinding roll flips from 'PRODUCT A' to 'PRODUCT B · POTENT'; on 'potent', the grey gloss tag 'Potent = strong in tiny amounts' rises beside it. Line 2: the hold card; ring fills through 3 s. Line 3: pill 2 (violet, 'What could hurt us?') lights. On 'wrists', a red ring lands on the bare wrist in the close-up and throbs. On 'board', a second red ring lands on the board's two NEW rows (double gloves, sleeve covers), and 'The catch' fills: 'Wrists bare · board: double gloves + sleeve covers'. Line 4: the 'Your call?' card, 2.4 s. Line 5: 'Fix it' lights; the card fades to show the amber chip with the reason 'Your own gowning step'. Line 6: the wrist close-up fades. On 'Step away', the slitter first comes to a normal stop ('Slitter: normal stop'), then the silhouette walks to the gowning point by the door with a small sink; on 'gloves', the muted label 'Gloves off to potent waste, as your procedure says' sets; on 'wash', water drops fall over hands and wrists. Line 7: on 'Soap', a soap icon pops with a green ✓ 'Soap and water'; on 'sanitizer', a red ✕ 'No hand sanitizer'. The gear goes on in the site's donning order, not the word order: inner gloves, then sleeve covers over the coat sleeves, then outer gloves over the sleeve-cover cuffs, and a green check reads 'No skin showing'. On 'Go', an arrow leads to a green 'Go' chip and the silhouette is back at the slitter. Line 8: 'What it prevented' fills: 'No small, repeated doses through skin', and a muted line sets under the case card: 'Adhesive on skin? Wash and report it, as your site says.'",
+   "cues": [
+    {
+     "text": "The slitter changes over to a potent product, strong in tiny amounts.",
+     "on_screen": "Save 4 · Potent product · Change · PRODUCT B · POTENT · Potent = strong in tiny amounts",
+     "id": "s10-1"
+    },
+    {
+     "text": "Your turn. What would make you stop here?",
+     "on_screen": "Card: What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)",
+     "id": "s10-2"
+    },
+    {
+     "text": "What could hurt us? This product, on bare wrists. The board now says double gloves.",
+     "on_screen": "Wrist close-up · Board: double gloves + sleeve covers (NEW) · The catch: Wrists bare · board: double gloves + sleeve covers",
+     "id": "s10-3"
+    },
+    {
+     "text": "And your call?",
+     "on_screen": "Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)",
+     "id": "s10-4"
+    },
+    {
+     "text": "Fix it. Putting on this product's protective gear is your own gowning step.",
+     "on_screen": "The call: Fix it · Your own gowning step",
+     "id": "s10-5"
+    },
+    {
+     "text": "Step away, take off your gloves as your procedure says, and wash hands and wrists.",
+     "on_screen": "Slitter: normal stop · Trim to potent trim waste · Gowning point · Gloves off, as your procedure says · Wash hands and wrists",
+     "id": "s10-6"
+    },
+    {
+     "text": "Soap and water, not hand sanitizer. Then put on double gloves and sleeve covers: Go.",
+     "on_screen": "Soap and water ✓ · No hand sanitizer ✕ · Inner gloves, sleeve covers, outer gloves over the cuffs · No skin showing ✓ → Go",
+     "id": "s10-7"
+    },
+    {
+     "text": "No small, repeated doses from a product made to pass through skin.",
+     "on_screen": "Prevented: No small, repeated doses through skin · Adhesive on skin? Wash and report it, as your site says",
+     "id": "s10-8"
+    }
+   ]
+  },
+  {
+   "id": "all-four-end-in-go",
+   "chapter": "All four end in Go",
+   "purpose": "Pay off the shift: two saves were Fix it and two were Stop & get help, and all four end in Go once it's safe. Most pauses end in Go right away. The goal is a safe start, not a slow one; no catch rate is implied.",
+   "visual": "(~12 s) Light theme. As the line starts, four compact case cards pop in left to right, each with its question-coloured top stripe (teal, blue, teal, violet), number, icon (drum, pallet of rolls, die cylinder, glove) and name: 'Solvent transfer', 'Roll staging', 'Die cutter', 'Potent product'. Line 1: on 'Fix it', amber 'Fix it' chips pop on cards 1 and 4, each with its reason ('In procedure', 'Own gowning step'); on 'Stop', red 'Stop & get help' chips pop on cards 2 and 3, each with its reason ('Not authorized', 'Someone else's unfinished work'). On 'all four', the title 'All four end in Go' rises above, and a green 'Go' chip pops at the foot of each card in quick sequence. Line 2: the cards shrink and drop onto the shift timeline at their points, now four solid green dots among a long run of green ticks, from 'Start of shift' to 'End of shift'. The heading becomes 'Most pauses end in Go' with 'Good for people, product and the line' beneath, and the legend reads 'Four saves, among all the pauses that simply ended in Go'. Holds about 1.5 s after the line.",
+   "cues": [
+    {
+     "text": "Two were Fix it, two were Stop & get help. All four end in Go once it's safe.",
+     "tts": "Two were Fix it, two were Stop and get help. All four end in Go once it's safe.",
+     "on_screen": "Fix it ×2 (In procedure · Own gowning step) · Stop & get help ×2 (Not authorized · Someone else's unfinished work) · All four end in Go",
+     "id": "s11-1"
+    },
+    {
+     "text": "Most pauses end in Go right away.",
+     "on_screen": "Most pauses end in Go · Good for people, product and the line · End of shift",
+     "id": "s11-2"
+    }
+   ]
+  },
+  {
+   "id": "what-makes-it-work",
+   "chapter": "What leaders commit to",
+   "purpose": "State the commitments plainly: anyone, staff or contractor, can stop a job, even on a late batch, with no punishment and no blame. Stopping means stopping the task; running processes are stopped only through operating procedures. Leaders come quickly, thank you, fix the cause and tell you what changed. The pause isn't a form.",
+   "visual": "(~17 s) Dark slate for emphasis, no hazard imagery. Line 1: the lit STOP tile pops in on the left. On 'staff', a worker silhouette fades in beside it; on 'contractor', a second silhouette with an amber hard-hat icon joins. Labels build on the right: 'Anyone can stop a job', 'Staff & contractors' on 'contractor', a clock icon with 'Even on a late batch' on 'late', and 'No punishment · No blame' in amber on 'punishment'. A small line fades in beneath: 'Stop the task. Running processes are stopped only through your operating procedures.' Line 2: the panel clears for the heading 'Leaders commit to'. A silhouette labelled 'You' stands at the left with an amber raised-hand icon; on 'come', a figure in a teal hi-vis vest slides in, labelled 'Your lead'. Four rows build on the right, one per phrase: clock 'Come quickly', check 'Thank you', wrench 'Fix the cause', speech icon 'Tell you what changed'. On 'thank', a bubble above the figures reads 'Thanks. What did you see?'; on 'tell', it changes to 'Fixed. Here's what changed.' Line 3: the panel clears; a large form icon appears with a grey slash across it and the label 'Not a form', and as the line ends the muted line 'Report what you caught the usual way' rises beneath.",
+   "cues": [
+    {
+     "text": "Anyone can stop a job, staff or contractor, even on a late batch. No punishment, no blame.",
+     "on_screen": "Anyone can stop a job · Staff & contractors · Even on a late batch · No punishment · No blame · Stop the task. Running processes are stopped only through your operating procedures.",
+     "id": "s12-1"
+    },
+    {
+     "text": "Leaders come quickly and thank you, fix the cause and tell you what changed.",
+     "on_screen": "Leaders commit to: Come quickly · Thank you · Fix the cause · Tell you what changed · Lead: “Thanks. What did you see?” then “Fixed. Here's what changed.”",
+     "id": "s12-2"
+    },
+    {
+     "text": "The pause isn't a form.",
+     "on_screen": "Not a form · Report what you caught the usual way",
+     "id": "s12-3"
+    }
+   ]
+  },
+  {
+   "id": "close-recap",
+   "chapter": "Recap card",
+   "purpose": "Close on the recap card: when to pause (all five triggers), Stop · Look · Ask · Decide, the four questions, the three calls with the Stop & get help criteria on screen, the Fix-it rule spoken in full, and 'When in doubt, get help'. End on 'That's the 2-minute rule: line clearance for people.' Then the voiced 'Your site' slate and the voiced end card.",
+   "visual": "(~44 s: the recap card through line 6 and a ~2.5 s hold, the voiced 'Your site' slate for ~8 s, then the end card for ~8 s and a fade to black) A light recap card sits inside a dark slate frame; the stopwatch icon, the title 'The 2-Minute Rule' and, in teal, 'Line clearance for people' fade in across its top, with the shift strip as a thin line just under them. Line 1: the label 'PAUSE:' fades in along the bottom of the card, and five amber-edged pills pop in beside it on their words, with their icons: 'Before you start', 'After a break', 'Handover', 'Interruption', 'Change'. On 'stop' and 'look', the STOP and LOOK pills pop in at the left of the row under the title. Line 2: the ASK pill pops in, and card 1 (blue) 'What's different?' and card 2 (violet) 'What could hurt us?' fill the top row of a 2 x 2 grid. Line 3: card 3 (teal) 'Checked or assumed?' and card 4 (plum) 'What if it goes wrong?' fill the bottom row. Line 4: the DECIDE pill pops in, and green 'Go', amber 'Fix it' and red 'Stop & get help' pop in under the grid on their words; just after 'help', the taught rule words set under the red button: 'No permit yet · Someone else's unfinished work · Not authorized · Not sure → your lead'. Line 5: on 'procedure', 'Only if trained, authorized & in procedure' sets under the amber button. Line 6: on 'line clearance', a small amber raised-hand icon lights along the shift strip (drawn thin under the title) in a quick wave from 'Start of shift' to 'End of shift'; the card holds through the line and about 2.5 s after it. Line 7: half a second before the line, a light full-frame slate rises over the card and the chapter label changes to 'Your site'. Kicker 'Your site · before your next shift', heading 'Who do you call for help?', then write-in lines, each an icon, a label and a blank rule: 'Your lead: days ____ · nights ____ · weekends ____', 'Radio or phone: ____', 'No answer? Call: ____', 'Report what I caught to: ____', and in amber with a form icon 'Write it on your pocket card.' It holds about 3.5 s after the line. Line 8: the end card rises; the chapter label changes to 'Sources'. It reads 'Follow your site's procedures, permits and lockout. This video is awareness training, not lockout, solvent-bonding, forklift-operator or potent-compound handling training.' Under the kicker 'Sources', in small type: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147, including (e)(3) on lock removal; 29 CFR 1910.106(e)(6)(ii) and NFPA 77 (bond nozzle and container before dispensing Category 1 or 2 flammable liquids, or Category 3 below 100 °F); OSHA 29 CFR 1910.178(l) (powered industrial truck operator training) and (m)(2) (no one under raised forks); NIOSH guidance on washing skin with soap and water. Then the note 'Use cases are illustrative composites, not real incidents. Narration is a synthesized voice.' Over the last 1.3 s, everything fades to black.",
+   "cues": [
+    {
+     "text": "Before you start, and after any break, handover, interruption or change: stop and look.",
+     "on_screen": "Before you start · After a break · Handover · Interruption · Change · STOP · LOOK",
+     "id": "s13-1"
+    },
+    {
+     "text": "Ask: What's different? What could hurt us?",
+     "on_screen": "ASK · What's different? · What could hurt us?",
+     "id": "s13-2"
+    },
+    {
+     "text": "Checked or assumed? What if it goes wrong?",
+     "on_screen": "Checked or assumed? · What if it goes wrong?",
+     "id": "s13-3"
+    },
+    {
+     "text": "Decide: Go, Fix it, or Stop & get help.",
+     "tts": "Decide: Go, | fix it, | or stop and get help.",
+     "on_screen": "DECIDE · Go · Fix it · Stop & get help (No permit yet · Someone else's unfinished work · Not authorized · Not sure → your lead)",
+     "id": "s13-4"
+    },
+    {
+     "text": "Fix it only if you're trained and authorized, and it's a step in your procedure.",
+     "on_screen": "Fix it: only if trained, authorized & in procedure",
+     "id": "s13-5"
+    },
+    {
+     "text": "When in doubt, get help. That's the 2-minute rule: line clearance for people.",
+     "tts": "When in doubt, get help. That's the two-minute rule: line clearance for people.",
+     "on_screen": "The 2-Minute Rule · Line clearance for people",
+     "id": "s13-6"
+    },
+    {
+     "text": "Find out who to call for help: days, nights and weekends.",
+     "on_screen": "Who do you call for help? Your lead: days · nights · weekends · Radio or phone · No answer? Call · Report what I caught to · Write it on your pocket card.",
+     "id": "s13-7"
+    },
+    {
+     "text": "Follow your site's procedures. This video is awareness training only.",
+     "on_screen": "End card: awareness training, not lockout, solvent-bonding, forklift-operator or potent-compound handling training · Sources",
+     "id": "s13-8"
+    }
+   ]
+  }
+ ]
 }

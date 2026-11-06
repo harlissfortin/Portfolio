@@ -18,7 +18,7 @@
     ?view=sign-a4        sign for the point of work, A4 landscape       ?view=sign-letter     US Letter landscape
     ?view=sorting        the ten sorting cards, four to an A4 page, fronts and backs for long-edge duplex
     ?view=callcards      call cards (Go, Fix it, Stop & get help), four sets on A4
-    ?view=huddle         the huddle sheet: the six steps on one A4 page
+    ?view=huddle         the huddle sheet: the four saves and the six huddle steps on one A4 page
     no view              everything, for checking on screen
   render.js turns these into the PDFs and PNGs in this folder.
 -->
@@ -231,14 +231,14 @@
   .cc .w { font-size: 21pt; font-weight: 850; text-transform: uppercase; letter-spacing: .03em; line-height: 1.05; }
 
   /* ---------- huddle sheet: A4 portrait, for the facilitator ---------- */
-  .huddle { width: 210mm; height: 297mm; padding: 10mm 12mm 9mm; display: flex; flex-direction: column; font-size: 9.2pt; line-height: 1.25; background: #fff; }
+  .huddle { width: 210mm; height: 297mm; padding: 8.5mm 12mm 7.5mm; display: flex; flex-direction: column; font-size: 9pt; line-height: 1.25; background: #fff; }
   .huddle .hd { display: flex; align-items: center; gap: 2.4mm; padding-bottom: 2.4mm; border-bottom: .35mm solid var(--line); }
   .huddle .hd svg { width: 8mm; height: 8mm; color: var(--amber); }
   .huddle .hd .title { font-size: 18pt; font-weight: 850; letter-spacing: -.02em; line-height: 1; }
   .huddle .hd .sub { margin-left: auto; font-weight: 700; color: var(--ok-text); text-align: right; }
-  .huddle h3 { margin: 2.8mm 0 1.2mm; font-size: 10pt; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--amber-text); line-height: 1; }
+  .huddle h3 { margin: 2.5mm 0 1mm; font-size: 10pt; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--amber-text); line-height: 1; }
   .huddle table { width: 100%; border-collapse: collapse; }
-  .huddle td, .huddle th { border-bottom: .25mm solid var(--line); padding: 1.1mm 1.6mm 1.2mm; vertical-align: top; text-align: left; }
+  .huddle td, .huddle th { border-bottom: .25mm solid var(--line); padding: 1mm 1.6mm 1.1mm; vertical-align: top; text-align: left; }
   .huddle th { font-size: 9pt; color: var(--muted); font-weight: 700; border-bottom-width: .4mm; }
   .huddle td.s { width: 30mm; font-weight: 800; }
   .huddle td.t { width: 15mm; white-space: nowrap; color: var(--muted); font-weight: 700; }
@@ -246,6 +246,21 @@
   .huddle li { margin: .5mm 0; }
   .huddle .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6mm; }
   .huddle .say { font-weight: 700; }
+  .huddle h3 .hn { margin-left: 2mm; font-size: 9pt; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--muted); }
+  .huddle .saves th { padding-top: .2mm; padding-bottom: .8mm; white-space: nowrap; }
+  .huddle .saves td, .huddle .saves th { padding-left: .8mm; padding-right: .8mm; }
+  .huddle .saves td { vertical-align: middle; padding-top: .6mm; padding-bottom: .6mm; }
+  .huddle .saves td:first-child, .huddle .saves th:first-child { padding-left: 1.6mm; }
+  .huddle .saves td.sv { font-weight: 800; white-space: nowrap; }
+  .huddle .saves td.sv .sn { color: var(--muted); margin-right: 1.2mm; }
+  .huddle .saves td.tr { white-space: nowrap; font-weight: 650; }
+  .huddle .saves td.qc, .huddle .saves td.cl { white-space: nowrap; }
+  .huddle .saves .qq { display: inline-flex; align-items: center; gap: 1mm; }
+  .huddle .saves .qq { font-weight: 700; }
+  .huddle .saves .n { width: 4.4mm; height: 4.4mm; font-size: 9pt; }
+  .huddle .saves .n.q3 { background: var(--ok-text); }
+  .huddle .saves .pill { height: 4.8mm; padding: 0 1.6mm 0 1.3mm; gap: .7mm; font-size: 9pt; letter-spacing: .02em; }
+  .huddle .saves .pill svg { width: 3mm; height: 3mm; stroke-width: 6; }
   .huddle .foot { margin-top: auto; padding-top: 2mm; border-top: .35mm solid var(--line); color: var(--muted); font-weight: 600; font-size: 9pt; }
 </style>
 </head>
@@ -280,9 +295,9 @@ const LOCAL = {
   backup: '',      // who covers when your lead doesn't answer: shift manager, control room or on-call
   report: '',
   names: {
-    packer: 'blister packer', warehouse: 'warehouse', route: 'forklift route', drum: 'drum', solventLine: 'solvent line',
-    sampling: 'sampling from the reactor', cartoner: 'cartoner', labeler: 'labeler', granulator: 'granulator',
-    filler: 'capsule filler', reactor: 'reactor', isolator: 'isolator',
+    pouch: 'pouching machine', warehouse: 'warehouse', aisle: 'main aisle', coater: 'coater',
+    sampling: 'taking a sample from the adhesive mixer', cartoner: 'cartoner', labeler: 'labeler',
+    laminator: 'laminator', mixer: 'adhesive mixer',
   },
 };
 
@@ -294,12 +309,12 @@ const T = {
   title: 'The 2-Minute Rule',                                   // LOCKED
   rule: 'A short pause at the point of work',
   ruleNote: 'Two minutes is a guide. A repeat task takes seconds.',
-  triggers: [                                                   // LOCKED: the five times to pause
+  triggers: [                                                   // LOCKED: the five times to pause, word for word as on the video's recap card
     ['start', 'Before you start'],
     ['cup', 'After a break'],
-    ['handover', 'At handover'],
-    ['bell', 'After an interruption'],
-    ['change', 'After any change'],
+    ['handover', 'Handover'],
+    ['bell', 'Interruption'],
+    ['change', 'Change'],
   ],
   steps: [                                                      // LOCKED step names (second item); third is the plain meaning
     ['hand', 'Stop', 'Hands off.'],
@@ -309,7 +324,7 @@ const T = {
   ],
   questions: [                                                  // LOCKED: the four questions (first item) and their plain meanings
     ['What’s different?', 'Anything new, changed, or not as planned?'],
-    ['What could hurt us?', 'Moving parts, power, pressure, heat, sparks, chemicals, low oxygen?'],
+    ['What could hurt us?', 'Moving parts, power, heat, sparks, solvents, heavy loads, potent product?'],
     ['Checked or assumed?', 'Did you look or test it yourself, or are you guessing?'],
     ['What if it goes wrong?', 'Where does it go? Who is in the way?'],
   ],
@@ -318,7 +333,7 @@ const T = {
     ['fix', 'wrench', 'Fix it', '<b>Only if</b> you’re trained and authorized, <b>and</b> it’s a step in your procedure.'],
     ['stop', 'phone', 'Stop & get help', '<b>Hands off. Leave it as it is. Call your lead.</b> No permit yet? Someone else’s unfinished work? Not authorized? The fix doesn’t work?'],
   ],
-  stopExamples: 'For example: a glove change, guard or interlock work, opening a vessel.',   // sign only; check locally
+  stopExamples: 'For example: guard or interlock work, an alarm you don’t recognize, reaching into a mixer.',   // sign only; check locally
   doubt: 'When in doubt, get help.',                            // LOCKED
   turn: 'See the back.',
   base: 'This rule adds to your procedures, permits and lockout. It never replaces them.',
@@ -336,20 +351,22 @@ const T = {
 };
 
 /* ===== CARDS: the ten sorting cards (facilitator guide, section 4). {name} is replaced from LOCAL.names.
-   call: go, fix or stop. local: true = "check locally", false = "names only". Translate like T. ===== */
+   call: go, fix or stop. local: true = "check locally", false = "names only". Translate like T.
+   None of them is one of the video's four saves (solvent transfer, roll staging, die cutter, potent product), so the
+   crew practises the rule, not the video. ===== */
 const CARDS = [
   { call: 'go', local: false,
-    s: 'Start of shift. You run the same {packer} as yesterday. The handover note says nothing changed. You check: guards closed, interlock light green, no locks or tags, materials match the batch record.',
+    s: 'Start of shift. You run the same {pouch} as yesterday. The handover note says nothing changed. You check: guards closed, interlock light green, no locks or tags, materials match the batch record.',
     r: 'You looked and asked, and you checked instead of assuming. Nothing is different. Most pauses end like this, in seconds.' },
   { call: 'go', local: false,
-    s: 'You’re a contractor painting in the {warehouse}. Your permit covers this area and says the {route} is closed. You check: permit in date, barrier up, route closed.',
+    s: 'You’re a contractor painting in the {warehouse}. Your permit covers this area and says the {aisle} is closed. You check: permit in date, barrier up, aisle closed.',
     r: 'The permit, your checks and what you see all match. Checked, not assumed.' },
   { call: 'fix', local: true,
-    s: 'You’re about to fill a {drum} from a {solventLine}. Your procedure says: clip the grounding clamp to the drum, and check the indicator. You’re trained and authorized to fill drums. The clamp is hanging on its hook. The cable looks fine.',
-    r: 'Clipping on the clamp is a step in your own procedure, and you’re trained and authorized. Check the indicator, then Go. If the cable is damaged or the indicator stays red: Stop & get help.' },
+    s: 'At the {coater}, used solvent wipes are on the bench, and the lid of the metal waste can is propped open. Your procedure says: wipes in the can, lid shut. You’re trained and authorized to do it.',
+    r: 'It’s a step in your own procedure, and you’re trained and authorized. Wipes in the can, lid shut, then Go. If the can is full or the lid won’t close: Stop & get help.' },
   { call: 'fix', local: true,
-    s: 'Your procedure for {sampling} says face shield and chemical gloves. You have your chemical gloves on, but only safety glasses. The face shield is on the rack beside you.',
-    r: 'The right PPE is part of your procedure. Put the face shield on over your glasses, then Go.' },
+    s: 'Your procedure for {sampling} says face shield and solvent gloves. You have your solvent gloves on, but only safety glasses. The face shield is on the rack beside you.',
+    r: 'Your protective gear is part of your procedure. Put the face shield on over your glasses, then Go.' },
   { call: 'fix', local: true,
     s: 'A jam on the {cartoner} where your jam tool can’t reach. You’ve locked out power and air under your own lock. The gauge still shows air pressure. Your procedure says bleed it through the lockable dump valve, and you’re trained and authorized to do it.',
     r: 'Bleeding to zero under your own lock is in your procedure. Stand clear while it bleeds. Bleed to zero, try START, nothing moves, then Go.' },
@@ -357,17 +374,17 @@ const CARDS = [
     s: 'The same kind of jam, on the {labeler}. You’ve locked out power and air. The gauge still shows pressure. There’s no lockable dump valve, and your procedure doesn’t say how to bleed it.',
     r: 'It isn’t a step in your procedure. Don’t loosen fittings or make up a way to bleed it. Your lead gets maintenance.' },
   { call: 'stop', local: false,
-    s: 'Night shift. You arrive to clean the {granulator}. Someone else’s lock and tag is on it. Nobody’s around, and your lead doesn’t answer the radio.',
-    r: 'Someone else’s lock means someone else’s unfinished work. Never remove or work around another person’s lock. Call the “No answer?” contact on your job aid. Don’t start until someone comes.' },
+    s: 'Night shift. On the {laminator}, someone has started a roll change. The new roll is on its shaft, but it isn’t locked in place. Nobody’s around, and your lead doesn’t answer the radio.',
+    r: 'It’s someone else’s unfinished work. Don’t finish it for them, and don’t run the {laminator}. Call the “No answer?” contact on your job aid. Don’t start until someone comes.' },
   { call: 'stop', local: false,
-    s: 'Changeover on the {filler}. A guard won’t close fully, so the machine won’t start. A colleague says: “Just tape the switch. Maintenance knows.”',
+    s: 'Changeover on the {pouch}. A guard won’t close fully, so the machine won’t start. A co-worker says: “Tape the switch for now. Maintenance knows.”',
     r: 'Guard and interlock work needs someone authorized. Taping or bypassing an interlock is never a fix.' },
   { call: 'stop', local: false,
-    s: 'After cleaning, the manway on the {reactor} is open. A gasket has dropped inside, an arm’s length away.',
-    r: 'Reaching or leaning into a vessel needs a gas test and a permit, whether it’s your arm or your whole body. No permit, no Go. Your lead also brings in QA, because the reactor may need re-cleaning.' },
+    s: 'After cleaning, the hatch on the {mixer} is open. A scraper has dropped inside, an arm’s length away.',
+    r: 'Reaching or leaning into a vessel needs a gas test and a permit, whether it’s your arm or your whole body. No permit, no Go. Your lead also brings in QA, because the {mixer} may need re-cleaning.' },
   { call: 'stop', local: false,
-    s: 'A glove finger on the {isolator} looks thin. Spare gloves are in the cabinet, and you’ve watched a glove change many times.',
-    r: 'A damaged glove may be a break in the barrier. Your lead and QA must know. An authorized person changes the glove and leak-tests it. Glove changes are always Stop & get help, however often you’ve watched one.' },
+    s: 'Before you start the {coater}, your procedure says test the emergency stop. You run it slowly and press the emergency stop. The rollers keep turning.',
+    r: 'A safety stop that fails its test isn’t yours to fix. Stop the {coater} the normal way, leave it as it is, and call your lead. It doesn’t run until it’s repaired and tested.' },
 ];
 
 /* ===== HUDDLE: the facilitator's one-page huddle sheet (facilitator guide, section 3). English; translate only if your
@@ -376,28 +393,37 @@ const HUDDLE = {
   title: 'Run a huddle',
   sub: '10–15 minutes, once a week, beside the machine<br>you’ll use for the talk-through',
   bring: 'The save downloaded to the tablet (don’t stream it) · call cards for everyone · this week’s sorting cards, or a flipchart or whiteboard · this week’s huddle note · spare pocket cards. <b>When:</b> at shift start before the line runs, at a planned stop, or with the crew split in two so the line stays covered.',
+  // the video's four saves, one a week: [save, trigger (one of the five), question that catches it (1-4), call, reason]
+  saves: [
+    ['Solvent transfer', 'Before you start', 3, 'fix', 'A step in your procedure'],
+    ['Roll staging', 'After a break', 1, 'stop', 'Not authorized: trained on the pallet truck, not the forklift'],
+    ['Die cutter', 'Handover', 3, 'stop', 'Someone else’s unfinished work'],
+    ['Potent product', 'Change', 2, 'fix', 'Your own gowning step'],
+  ],
+  savesHead: ['Save', 'When', 'Question that catches it', 'Call', 'Reason'],
+  savesNote: 'All four end in Go. Question 4 is answered in the routine Go.',
   steps: [
-    ['1. Recall', '1.5 min', 'Ask the whole crew: <span class="say">“When do we pause?” “What are the four questions?” “What are the three calls? When is it Fix it, and when is it Stop &amp; get help?”</span> Let them fill gaps for each other before you point to the job aid. First huddle: build the list together. From the third: <span class="say">“Name a time you paused this week. Which trigger was it? Which question did the work?”</span>'],
-    ['2. Play the save', '3–4 min', '<span class="say">“It will stop twice. Answer before it moves on.”</span> Pause at <b>“What would make you stop here?”</b>: get two or three answers, don’t say who’s right. Pause at <b>“Your call?”</b>: <span class="say">“On three, hold up your call.”</span> Ask a volunteer from each answer why. Play to the end of the chapter, then stop.'],
-    ['3. The reason and the twist', '2 min', '<span class="say">“Why that call, and not the other one?”</span> Bring it back to the boundary rule, using the reason in the note. Then read the <b>twist</b> (one changed fact). The crew votes again; one volunteer says why.'],
-    ['4. Cards or our version', '3 min', '<b>Saves 1, 4, 6:</b> three sorting cards; vote on each; for one card ask <span class="say">“What one change would flip this call?”</span> <b>Saves 2, 3, 5:</b> the prompt in the note; pairs talk for 30 seconds; write Clue · Our call · Who we’d call · Action needed on the flipchart. Ask: <span class="say">“What would make ours a Fix it, and what would make it Stop &amp; get help?”</span>'],
-    ['5. Talk-through at the machine', '3 min', 'A volunteer (rotate; own language, card in hand, or in pairs) talks through their two minutes aloud: Stop, Look, Ask, Decide. Then: <span class="say">“Now imagine you find this:”</span> and read the situation in the note. They stop and call. You answer: <span class="say">“Thanks. What did you see?”</span> Then to everyone: <span class="say">“At your station, do your two minutes before you start. I’ll come by and ask one of you.”</span>'],
+    ['1. Recall', '1.5 min', 'Ask the whole crew: <span class="say">“When do we pause?” “What are the four questions?” “What are the three calls? When is it Fix it, and when is it Stop &amp; get help?”</span> Let them fill gaps before you point to the job aid. First huddle: build the list together. From the third: <span class="say">“Name a time you paused this week. Which trigger was it? Which question did the work?”</span>'],
+    ['2. Play the save', '3–4 min', '<span class="say">“It will stop twice. Answer before it moves on.”</span> Pause at <b>“What would make you stop here?”</b>: get two or three answers, don’t say who’s right. Pause at <b>“Your call?”</b>: <span class="say">“On three, hold up your call.”</span> Ask a volunteer from each answer why. Stop at the end of the chapter.'],
+    ['3. The reason and the twist', '2 min', '<span class="say">“Why that call, and not the other one?”</span> Bring it back to the boundary rule and the reason in the note. Read the <b>twist</b> (one changed fact). Vote again; one volunteer says why.'],
+    ['4. Cards or our version', '3 min', 'The save’s note says which. <b>Cards:</b> three sorting cards; vote on each; for one card ask <span class="say">“What one change would flip this call?”</span> <b>Our version:</b> the prompt in the note; pairs talk for 30 seconds; write Clue · Our call · Who we’d call · Action needed on the flipchart. Ask: <span class="say">“What would make ours a Fix it, and what would make it Stop &amp; get help?”</span>'],
+    ['5. Talk-through at the machine', '3 min', 'A volunteer (rotate; own language, card in hand, or in pairs) talks through their two minutes: Stop, Look, Ask, Decide. Then: <span class="say">“Now imagine you find this:”</span> and read the situation in the note. They stop and call. You answer: <span class="say">“Thanks. What did you see?”</span> To everyone: <span class="say">“At your station, do your two minutes before you start. I’ll come by and ask one of you.”</span>'],
     ['6. Close', '1.5 min', 'What changed since last time. <span class="say">“Catch anything this week?”</span> Take one story. <span class="say">“Who do you call on this shift? And if they don’t answer?”</span> Thank the volunteer. Name the next save. Last huddle: <span class="say">“In the next two weeks, some of you will be asked three quick questions, one to one. No names.”</span>'],
   ],
   misses: [
     'Stop &amp; get help where it was Fix it: <span class="say">“That’s safe. When in doubt, get help. Here’s why this one is in your procedure.”</span>',
     'Go or Fix it where it was Stop &amp; get help: walk through the boundary rule again, kindly.',
-    'Go while something was still wrong: <span class="say">“Checked or assumed?”</span> Go back to the picture at hold 1 and find the clue together.',
+    'Go while something was still wrong: <span class="say">“Checked or assumed?”</span> Go back to hold 1 and find the clue.',
     '“No permit yet” means Stop &amp; get help. Hold the permit and the step is in it: it can be Fix it.',
   ],
   short: 'Recall 1.5 min · play the save with the reason in one line, no twist, 4 min · one card or one example 1.5 min · talk-through 2.5 min · close 0.5 min. <b>Never drop the talk-through.</b>',
-  safe: 'Talk only: nobody touches controls, guards, valves, locks or gloves. Use a stopped machine, or stand well back from a running one and don’t distract whoever runs it. Cleanrooms and potent-compound areas: a station outside, or a photo. If someone spots something real, treat it as a real catch.',
+  safe: 'Talk only: nobody touches controls, guards, valves, locks, clamps or trucks. Use a stopped machine, or stand well back from a running one and don’t distract whoever runs it. In gowned areas: a station outside, or a photo. If someone spots something real, it’s a real catch.',
   never: [
     ['“Why is the line down?”', '“Thanks. What did you see?”'],
     ['“Just get it running.” · “We’re behind.”', '“We’ll sort this, then we run.”'],
     ['“You could have fixed that yourself.”', '“Thanks for checking.”'],
-    ['“Who left it like this?”', '“Let’s find out what happened at handover.”'],
-    ['“That light’s always red.”', '“Let’s check it.”'],
+    ['“Who left it like this?”', '“Let’s find out what happened, and fix it.”'],
+    ['“That lamp’s always red.”', '“Let’s check it.”'],
   ],
   after: 'After the huddle (2 min): record attendance, copy the flipchart into the local examples log, pass on any catch today.',
   foot: 'Awareness training only: it never replaces your procedures, permits or lockout. Full notes: facilitator guide, section 3.',
@@ -540,6 +566,12 @@ function huddle() {
   return `<section class="page huddle" data-kind="huddle" data-layout="huddle">
     <div class="hd">${I('watch')}<div class="title">${H.title}</div><div class="sub">${H.sub}</div></div>
     <h3>Bring</h3><p>${H.bring}</p>
+    <h3>The four saves <span class="hn">${H.savesNote}</span></h3>
+    <table class="saves"><tr>${H.savesHead.map(h => `<th>${h}</th>`).join('')}</tr>${H.saves.map(([s, t, q, c, r], i) => {
+      return `<tr><td class="sv"><span class="sn">${i + 1}</span>${esc(s)}</td><td class="tr">${esc(t)}</td>`
+        + `<td class="qc"><span class="qq"><span class="n q${q}">${q}</span>${esc(T.questions[q - 1][0])}</span></td>`
+        + `<td class="cl">${pill(callOf(c))}</td><td>${esc(r)}</td></tr>`;
+    }).join('')}</table>
     <h3>The six steps</h3>
     <table>${H.steps.map(([s, t, d]) => `<tr><td class="s">${s}</td><td class="t">${t}</td><td>${d}</td></tr>`).join('')}</table>
     <div class="two">
