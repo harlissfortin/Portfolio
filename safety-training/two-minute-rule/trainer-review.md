@@ -303,8 +303,8 @@ main ones:
 
 **Drawn safely.** The slitter is locked out (power and air) under your own locks, each with its tag, from first frame
 to last, and its control screen is dark. Nobody puts on or removes a lock on screen. The cut-resistant gloves go on
-over your thin gloves only while it's locked out, and come off, back on their hook, before Go ("Gloves off before it
-runs"), because a glove can be caught by moving parts. Each knife is held by its holder, never the edge, and moves
+over your thin gloves only while it's locked out, and come off, back on their hook, before Go ("Cut-resistant gloves
+off before it runs"), because a glove can be caught by moving parts. Each knife is held by its holder, never the edge, and moves
 only as your gloved fist slides it in the close-up. No blade leaves its holder, and no cut level, brand or injury is
 shown: the site sets the gloves from its own hazard assessment.
 
