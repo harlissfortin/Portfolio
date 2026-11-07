@@ -212,7 +212,7 @@
 
   // 6 ─ four saves ──────────────────────────────────────────────────────────
   const SAVES = SC.SAVES = [['Solvent transfer', 'start', 'q3', 'drum', SC.WHEN.s1], ['Roll staging', 'break', 'q1', 'pallet', SC.WHEN.s2],
-    ['Die cutter', 'handover', 'q3', 'die', SC.WHEN.s3], ['Potent product', 'change', 'q2', 'glove', SC.WHEN.s4]];
+    ['Die cutter', 'handover', 'q3', 'die', SC.WHEN.s3], ['Slitter knives', 'change', 'q2', 'glove', SC.WHEN.s4]];
   html.push(SC.scene('four-saves', '', `
     <div class="abs" style="inset:0" data-out="up s6-2~save-0.1 0.5">
       ${A(0, 0, `<div class="h1">Most pauses end in Go</div>`, 'data-in="up s6-1"')}

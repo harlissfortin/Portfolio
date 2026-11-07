@@ -1,6 +1,6 @@
 # The 2-Minute Rule: One Shift on a Patch Line — transcript
 
-Runtime 6:42. Narration is a synthesized voice (Kokoro, `af_heart`, speed 0.8). Times are when each line starts in `two-minute-rule.mp4`; the same lines are in `captions.vtt`. Italic text describes what is on screen. In each save, the video pauses twice and asks you to answer first: the cards read “What would make you stop here?” and “Your call?”.
+Runtime 6:39. Narration is a synthesized voice (Kokoro, `af_heart`, speed 0.8). Times are when each line starts in `two-minute-rule.mp4`; the same lines are in `captions.vtt`. Italic text describes what is on screen. In each save, the video pauses twice and asks you to answer first: the cards read “What would make you stop here?” and “Your call?”.
 
 ## 0:00 · Intro
 
@@ -44,7 +44,7 @@ Runtime 6:42. Narration is a synthesized voice (Kokoro, `af_heart`, speed 0.8). 
 
 **1:49** Most pauses end in Go. — *Most pauses end in Go · shift timeline · legend: A pause that ended in Go / A pause that caught a problem*  
 **1:51** But sometimes a pause catches a problem. That's a save. — *Four two-minute saves · A save = a pause that caught a problem*  
-**1:56** Here are four examples, not real events. — *Solvent transfer · Roll staging · Die cutter · Potent product · Four examples, not real events*  
+**1:56** Here are four examples, not real events. — *Solvent transfer · Roll staging · Die cutter · Slitter knives · Four examples, not real events*  
 **1:59** Each one asks you twice: find the problem, then pick your call. — *Each one asks you twice: find the problem, then pick your call*  
 
 ## 2:05 · Save 1 · Solvent transfer
@@ -84,46 +84,46 @@ Runtime 6:42. Narration is a synthesized voice (Kokoro, `af_heart`, speed 0.8). 
 **4:16** The owner finishes, puts the guard back and removes their lock. You run restart checks. Go. — *Guard back on · Owner removes their lock (on 'removes') · YOU (lands on 'You run'): Guard on ✓ · Area clear ✓ · Restart checks ✓ → Go*  
 **4:23** The die cutter never starts with the guard off and the work unfinished. — *Prevented: No start with the guard off and the work unfinished*  
 
-## 4:29 · Save 4 · Potent product
+## 4:29 · Save 4 · Slitter knives
 
-**4:30** The slitter changes over to a potent product, strong in tiny amounts. — *Save 4 · Potent product · Change · PRODUCT B · POTENT · Potent = strong in tiny amounts*  
+**4:30** At changeover, you've locked out the slitter to move its knives to new widths. — *Save 4 · Slitter knives · Change · PRODUCT A → PRODUCT B · Locked out (your locks on POWER and AIR, each tagged · YOURS)*  
 **4:36** Your turn. What would make you stop here? — *Card: Find the problem · What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause)*  
-**4:42** What could hurt us? This product, on bare wrists. Now it's double gloves and sleeve covers. — *Wrist close-up · Board: double gloves + sleeve covers (NEW), boxed on 'Now' · The catch: Bare wrists · now double gloves + sleeve covers*  
-**4:49** And your call? — *Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)*  
-**4:52** Fix it. Putting on the right gear is your own gowning step. — *The call: Fix it · Your own gowning step*  
-**4:57** Do a normal stop, step away, and take off your gloves as your procedure says. — *Normal stop (at the slitter) · Gloves off, as your procedure says · walk to the gowning point*  
-**5:03** Wash hands and wrists with soap and water, not hand sanitizer. — *Wash at the sink · Soap and water ✓ · No hand sanitizer ✕*  
-**5:08** Then put on inner gloves, sleeve covers, and outer gloves over the cuffs. Go. — *1 Inner gloves · 2 Sleeve covers · 3 Outer gloves over the cuffs · No skin showing ✓ → Go (walk back to the slitter)*  
-**5:14** No small, repeated doses from a product made to pass through skin. — *Prevented: No small, repeated doses through skin · Adhesive on skin? Wash and report it, as your site says*  
+**4:41** What could hurt us? Razor-sharp knives. Your thin gloves aren't made for blades. — *Rings on the knives and the thin glove · The catch: Razor-sharp knives · thin gloves*  
+**4:48** And your call? — *Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause)*  
+**4:51** Fix it. Getting the right gloves on is your own PPE step. — *The call: Fix it · Your own PPE step*  
+**4:56** Put on the cut-resistant gloves your procedure names. — *Cut-resistant gloves on, over your thin gloves · Card: Cut-resistant gloves ✓ · Cut-resistant gloves your procedure names ✓*  
+**5:00** Even in those gloves, hold each knife by its holder, never the edge. — *Cover up, your locks still on · Close-up: your gloved hand on the holder, blade clear · By its holder, never the edge ✓*  
+**5:05** Then slide the knives to their new widths. Cut-resistant gloves off before it runs. Go. — *The knives slide to new widths, one at a time · New widths ✓ · Cut-resistant gloves off before it runs ✓ (back on the hook, cover down) → Go*  
+**5:13** No cut from a knife that's stopped, but still sharp. — *Prevented: No cut from a knife that's stopped, but still sharp*  
 
-## 5:21 · All four end in Go
+## 5:18 · All four end in Go
 
-**5:21** Two were Fix it, two were Stop & get help. All four end in Go once it's safe. — *Fix it ×2 (A step in your procedure · Your own gowning step) · Stop & get help ×2 (Not authorized · Someone else's unfinished work) · All four end in Go*  
-**5:27** Most pauses end in Go, right away. — *Most pauses end in Go · shift timeline, all green · legend: Four saves, among all the pauses that simply ended in Go*  
+**5:18** Two were Fix it, two were Stop & get help. All four end in Go once it's safe. — *Fix it ×2 (A step in your procedure · Your own PPE step) · Stop & get help ×2 (Not authorized · Someone else's unfinished work) · All four end in Go*  
+**5:24** Most pauses end in Go, right away. — *Most pauses end in Go · shift timeline, all green · legend: Four saves, among all the pauses that simply ended in Go*  
 
-## 5:31 · What leaders commit to
+## 5:28 · What leaders commit to
 
-**5:31** Anyone can stop a job, staff or contractor, even on a late batch. No punishment, no blame. — *Anyone can stop a job · Staff or contractor · Even on a late batch · No punishment · No blame · Stop the task. Running processes are stopped only through your operating procedures.*  
-**5:40** Leaders commit to come quickly, thank you, fix the cause and tell you what changed. — *Leaders commit to (spoken as the line opens): Come quickly · Thank you · Fix the cause · Tell you what changed · Lead: “Thanks. What did you see?” then “Fixed. Here's what changed.”*  
-**5:46** The pause isn't a form. Report what you caught the usual way. — *Not a form · Report what you caught the usual way (on 'Report')*  
+**5:28** Anyone can stop a job, staff or contractor, even on a late batch. No punishment, no blame. — *Anyone can stop a job · Staff or contractor · Even on a late batch · No punishment · No blame · Stop the task. Running processes are stopped only through your operating procedures.*  
+**5:37** Leaders commit to come quickly, thank you, fix the cause and tell you what changed. — *Leaders commit to (spoken as the line opens): Come quickly · Thank you · Fix the cause · Tell you what changed · Lead: “Thanks. What did you see?” then “Fixed. Here's what changed.”*  
+**5:43** The pause isn't a form. Report what you caught the usual way. — *Not a form · Report what you caught the usual way (on 'Report')*  
 
-## 5:52 · Recap card
+## 5:49 · Recap card
 
-**5:52** Pause before you start, and after any break, handover, interruption or change. Stop and look. — *PAUSE: (fades in on the spoken 'Pause') · Before you start · After a break · Handover · Interruption · Change · STOP · LOOK*  
-**6:00** Ask: What's different? What could hurt us? — *ASK · What's different? · What could hurt us?*  
-**6:02** Checked or assumed? What if it goes wrong? — *Checked or assumed? · What if it goes wrong?*  
-**6:06** Decide: Go, Fix it, or Stop & get help. — *DECIDE · Go · Fix it · Stop & get help (No permit yet · Someone else's unfinished work · Not authorized · Not sure → your lead)*  
-**6:11** Fix it only if you're trained and authorized, and it's a step in your procedure. — *Fix it: only if trained, authorized & in procedure*  
-**6:17** When in doubt, get help. That's the 2-minute rule: line clearance for people. — *The 2-Minute Rule · Line clearance for people*  
-**6:25** Find out who you call for help: days, nights and weekends. — *Who do you call for help? Your lead: days · nights · weekends · Radio or phone · No answer? Call · Report what I caught to · Write it on your pocket card.*  
-**6:32** Follow your site's procedures. This video is awareness training only. — *End card: Follow your site's procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or potent-compound handling training · Sources*  
+**5:49** Pause before you start, and after any break, handover, interruption or change. Stop and look. — *PAUSE: (fades in on the spoken 'Pause') · Before you start · After a break · Handover · Interruption · Change · STOP · LOOK*  
+**5:56** Ask: What's different? What could hurt us? — *ASK · What's different? · What could hurt us?*  
+**5:59** Checked or assumed? What if it goes wrong? — *Checked or assumed? · What if it goes wrong?*  
+**6:03** Decide: Go, Fix it, or Stop & get help. — *DECIDE · Go · Fix it · Stop & get help (No permit yet · Someone else's unfinished work · Not authorized · Not sure → your lead)*  
+**6:08** Fix it only if you're trained and authorized, and it's a step in your procedure. — *Fix it: only if trained, authorized & in procedure*  
+**6:14** When in doubt, get help. That's the 2-minute rule: line clearance for people. — *The 2-Minute Rule · Line clearance for people*  
+**6:22** Find out who you call for help: days, nights and weekends. — *Who do you call for help? Your lead: days · nights · weekends · Radio or phone · No answer? Call · Report what I caught to · Write it on your pocket card.*  
+**6:29** Follow your site's procedures. This video is awareness training only. — *End card: Follow your site's procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or knife-handling training · Sources*  
 
 ## The last screens
 
-**Your site slate** (6:24), spoken: *“Find out who you call for help: days, nights and weekends.”* On screen: *Who do you call for help?* Your lead: days ____ · nights ____ · weekends ____ · Radio or phone: ____ · No answer? Call: ____ · Report what I caught to: ____ · Write it on your pocket card.
+**Your site slate** (6:21), spoken: *“Find out who you call for help: days, nights and weekends.”* On screen: *Who do you call for help?* Your lead: days ____ · nights ____ · weekends ____ · Radio or phone: ____ · No answer? Call: ____ · Report what I caught to: ____ · Write it on your pocket card.
 
-**End card** (6:32), under the last spoken line: *Follow your site's procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or potent-compound handling training.*
+**End card** (6:29), under the last spoken line: *Follow your site's procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or knife-handling training.*
 
-Sources: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147 (lockout/tagout), including (e)(3) on removing another person's lock; OSHA 29 CFR 1910.106(e)(6)(ii) and NFPA 77 (bonding before dispensing flammable liquids); OSHA 29 CFR 1910.178(l) (powered industrial truck operator training) and (m)(2) (no one under raised forks); NIOSH skin-exposure guidance (wash skin with soap and water).
+Sources: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147 (lockout/tagout), including (e)(3) on removing another person's lock; OSHA 29 CFR 1910.106(e)(6)(ii) and NFPA 77 (bonding before dispensing flammable liquids); OSHA 29 CFR 1910.178(l) (powered industrial truck operator training) and (m)(2) (no one under raised forks); OSHA 29 CFR 1910.132(d) and 1910.138 (hazard assessment; hand protection chosen for the task); ANSI/ISEA 105 (glove cut ratings).
 
 *Use cases are illustrative composites, not real incidents. Narration is a synthesized voice.*

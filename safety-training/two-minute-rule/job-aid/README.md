@@ -24,7 +24,7 @@ saves, so the crew practises the rule, not the video. Every example is an illust
 | `badge-card.pdf`, `badge-card-sheet-a4.pdf`, `badge-card-sheet-letter.pdf` | Optional. The same words at credit-card size (85.6 × 54 mm) for a badge holder. The print is small (6.5 pt), so give it only as well as the pocket card, to people who ask. |
 | `sorting-cards.pdf` | The ten sorting cards from the facilitator guide, four to an A4 page: two Go, three Fix it, five Stop & get help. Pages alternate fronts (the situation) and backs (the model answer and reason), laid out for long-edge double-sided printing. |
 | `call-cards.pdf` | Go, Fix it, Stop & get help: one set per person, four sets to an A4 page. The crew holds them up to vote at the holds and on the cards. |
-| `huddle-sheet.pdf` | One A4 page for the facilitator: the four saves (Solvent transfer, Roll staging, Die cutter, Potent product, each with its trigger, the question that catches it, the call and the reason), then the six huddle steps with timings, what to say, the 10-minute version and the never-say lines. Which saves use sorting cards and which use "our version" is in each save's huddle note in the facilitator guide. |
+| `huddle-sheet.pdf` | One A4 page for the facilitator: the four saves (Solvent transfer, Roll staging, Die cutter, Slitter knives, each with its trigger, the question that catches it, the call and the reason), then the six huddle steps with timings, what to say, the 10-minute version and the never-say lines. Which saves use sorting cards and which use "our version" is in each save's huddle note in the facilitator guide. |
 | `*.png` | Screen previews at 2×. Don't print these. |
 | `job-aid.html` | The source for every layout. The words are in `T`, `CARDS` and `HUDDLE`, and the local entries in `LOCAL`, at the top of its script. Open it in a browser to see every layout at once. |
 | `render.js` | Rebuilds the PDFs and PNGs, and checks the layout. |
@@ -41,10 +41,10 @@ with "Fit to page".
   card. Cut on the corner marks, fold on the dashed line with the printed sides out, and laminate in an A6 pouch.
 - **Sign.** Print `machine-sign-a4.pdf` or `machine-sign-letter.pdf` and laminate it, or use the material QA approves.
   Post it at eye level where people start the job: on the machine, at the door to the room, or by the permit board.
-- **Clean and contained areas.** QA approves the sign as a controlled posting, including its material. In classified
-  rooms and potent-product areas, post the sign outside the gowning room or airlock door, or outside the viewing
-  window, or use a cleanroom-compatible version approved by QA that can be wiped with your disinfectant. Pocket cards
-  stay outside the gowning line unless your site has approved a cleanroom version.
+- **Classified areas.** QA approves the sign as a controlled posting, including its material. In classified rooms,
+  post the sign outside the gowning room or airlock door, or outside the viewing window, or use a cleanroom-compatible
+  version approved by QA that can be wiped with your disinfectant. Pocket cards stay outside the gowning line unless
+  your site has approved a cleanroom version.
 - **Sorting cards.** Print `sorting-cards.pdf` double-sided, flipping on the long edge, on card. Cut on the dashed
   lines on the fronts. Check that card 1's answer is behind card 1 before you cut the rest.
 - **Call cards.** Print `call-cards.pdf` single-sided on card, once for every four people. Cut on the dashed lines.

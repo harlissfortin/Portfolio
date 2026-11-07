@@ -324,7 +324,7 @@ const T = {
   ],
   questions: [                                                  // LOCKED: the four questions (first item) and their plain meanings
     ['What’s different?', 'Anything new, changed, or not as planned?'],
-    ['What could hurt us?', 'Moving parts, power, heat, sparks, solvents, heavy loads, potent product?'],
+    ['What could hurt us?', 'Moving parts, power, heat, sparks, solvents, heavy loads, sharp blades?'],
     ['Checked or assumed?', 'Checked means you saw or tested it yourself. Assumed means you’re guessing.'],
     ['What if it goes wrong?', 'Where does it go? Who is in the way?'],
   ],
@@ -352,7 +352,7 @@ const T = {
 
 /* ===== CARDS: the ten sorting cards (facilitator guide, section 4). {name} is replaced from LOCAL.names.
    call: go, fix or stop. local: true = "check locally", false = "names only". Translate like T.
-   None of them is one of the video's four saves (solvent transfer, roll staging, die cutter, potent product), so the
+   None of them is one of the video's four saves (solvent transfer, roll staging, die cutter, slitter knives), so the
    crew practises the rule, not the video. ===== */
 const CARDS = [
   { call: 'go', local: false,
@@ -398,7 +398,7 @@ const HUDDLE = {
     ['Solvent transfer', 'Before you start', 3, 'fix', 'A step in your procedure'],
     ['Roll staging', 'After a break', 1, 'stop', 'Not authorized: trained on the pallet truck, not the forklift'],
     ['Die cutter', 'Handover', 3, 'stop', 'Someone else’s unfinished work'],
-    ['Potent product', 'Change', 2, 'fix', 'Your own gowning step'],
+    ['Slitter knives', 'Change', 2, 'fix', 'Your own PPE step'],
   ],
   savesHead: ['Save', 'When', 'Question that catches it', 'Call', 'Reason'],
   savesNote: 'All four end in Go. Question 4 is answered in the routine Go.',
@@ -417,7 +417,7 @@ const HUDDLE = {
     '“No permit yet” means Stop &amp; get help. Hold the permit and the step is in it: it can be Fix it.',
   ],
   short: 'Recall 1.5 min · play the save with the reason in one line, no twist, 4 min · one card or one example 1.5 min · talk-through 2.5 min · close 0.5 min. <b>Never drop the talk-through.</b>',
-  safe: 'Talk only: nobody touches controls, guards, valves, locks, clamps or trucks. Use a stopped machine, or stand well back from a running one and don’t distract whoever runs it. In gowned areas: a station outside, or a photo. If someone spots something real, it’s a real catch.',
+  safe: 'Talk only: nobody touches controls, guards, valves, locks, clamps, knives or trucks. Use a stopped machine, or stand well back from a running one and don’t distract whoever runs it. Never at a running slitter. In gowned areas: a station outside, or a photo. If someone spots something real, it’s a real catch.',
   never: [
     ['“Why is the line down?”', '“Thanks. What did you see?”'],
     ['“Just get it running.” · “We’re behind.”', '“We’ll sort this, then we run.”'],

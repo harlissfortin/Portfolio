@@ -3,7 +3,7 @@
   const { I, A, P, html, SAVES } = window.SC, SC = window.SC;
 
   // 11 ─ all four end in Go ─────────────────────────────────────────────────
-  const calls = ['fix', 'stop', 'stop', 'fix'], why = ['A step in your procedure', 'Not authorized', 'Someone else’s<br>unfinished work', 'Your own gowning step'];
+  const calls = ['fix', 'stop', 'stop', 'fix'], why = ['A step in your procedure', 'Not authorized', 'Someone else’s<br>unfinished work', 'Your own PPE step'];
   html.push(SC.scene('all-four-end-in-go', '', `
     <div class="abs" style="inset:0" data-out="fade s11-1.end 0.4">
       ${A(0, 0, `<div class="h1">All four end in Go</div>`, 'data-in="up s11-1~all"')}
@@ -89,14 +89,14 @@
     </div>
     <div class="abs lightvars" style="inset:-110px -120px -198px -120px;background:#fbf9f4" data-in="up s13-8-0.6 0.6">
       <div class="abs" style="left:200px;top:140px;width:1520px">
-        <div class="h4">Follow your site’s procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or potent-compound handling training.</div>
+        <div class="h4">Follow your site’s procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or knife-handling training.</div>
         <div class="kicker" style="margin-top:34px">Sources</div>
         <ol style="margin:16px 0 0;padding-left:34px;font-size:25px;line-height:1.5;color:var(--ink)">
           <li>21 CFR 211.130(e), packaging and labeling operations (line clearance)</li>
           <li>OSHA 29 CFR 1910.147, control of hazardous energy (lockout/tagout), including (e)(3) on removing another person’s lock</li>
           <li>OSHA 29 CFR 1910.106(e)(6)(ii) and NFPA 77, <i>Recommended Practice on Static Electricity</i> (bonding before dispensing flammable liquids)</li>
           <li>OSHA 29 CFR 1910.178(l), powered industrial truck operator training, and (m)(2), no one under raised forks</li>
-          <li>NIOSH skin-exposure guidance: wash skin with soap and water</li>
+          <li>OSHA 29 CFR 1910.132(d) and 1910.138, hazard assessment and hand protection chosen for the task; ANSI/ISEA 105, glove cut ratings</li>
         </ol>
         <div class="srcline" style="margin-top:24px">Use cases are illustrative composites, not real incidents. Narration is a synthesized voice.</div>
       </div>
@@ -159,10 +159,22 @@
     const go = a.ease.inOut(a.prog(t, R('s9-8~finishes'), 0.9)), back = a.ease.inOut(a.prog(t, R('s9-8~removes+0.4'), 0.7));
     $('s9-tech').setAttribute('transform', `translate(${(-200 * (go - back)).toFixed(1)} 0)`);
   };
-  H['save-4-potent-ppe'] = (t, lt, a) => {
-    const R = r => a.ref(r, 'save-4-potent-ppe');
-    const away = a.ease.inOut(a.prog(t, R('s10-6~gloves+0.3'), 1.2)), back = a.ease.inOut(a.prog(t, R('s10-8~go-0.9'), 0.9));
-    $('s10-you').setAttribute('transform', `translate(${(-125 * (away - back)).toFixed(1)} 0)`);
+  H['save-4-slitter-knives'] = (t, lt, a) => {
+    const R = r => a.ref(r, 'save-4-slitter-knives');
+    const step = a.ease.inOut(a.prog(t, R('s10-6.end+0.1'), 0.8));                       // one step to the knife station, gloves on
+    $('s10-you').setAttribute('transform', `translate(${(60 * step).toFixed(1)} 0)`);
+    // One knife at a time, each moved only while the close-up shows your gloved fist sliding its holder (0.7 s), with a
+    // 0.2 s fade between slides while the close-up resets; the leader follows the knife being moved.
+    const s0 = R('s10-8~slide'), GAP = 0.9, DUR = 0.7;
+    const dx = TD.KNIVES.map((x, i) => (TD.KNIVES_NEW[i] - x) * a.ease.inOut(a.prog(t, s0 + GAP * i, DUR)));
+    dx.forEach((d, i) => $('s10-k' + i).setAttribute('transform', `translate(${d.toFixed(1)} 0)`));
+    const cur = Math.max(0, Math.min(2, Math.floor((t - s0 + (GAP - DUR) / 2) / GAP)));
+    const hold = $('s10-hold');
+    hold.setAttribute('transform', `translate(${(-26 * a.ease.inOut(a.prog(t, s0 + GAP * cur, DUR))).toFixed(1)} 0)`);
+    const dip = Math.min(1, ...[0, 1].map(i => Math.abs(t - (s0 + GAP * i + DUR + (GAP - DUR) / 2)) / ((GAP - DUR) / 2)));
+    hold.setAttribute('opacity', dip.toFixed(2));
+    $('s10-lead').setAttribute('stroke-opacity', dip.toFixed(2));
+    $('s10-lead').setAttribute('d', `M516 146 L${(TD.KNIVES[cur] + dx[cur] - 12).toFixed(1)} 262`);
   };
   H['all-four-end-in-go'] = (t, lt, a) => ticks('a4-ticks', t, a.ref('s11-1.end+0.4', 'all-four-end-in-go') - 3, true);
   H['close-recap'] = (t, lt, a) => {

@@ -182,72 +182,127 @@ window.TD = (function () {
       <g ${a(at, 'note')}><g transform="rotate(-3 675 556)"><rect x="606" y="526" width="138" height="62" rx="4" fill="#fff4b8" stroke="#b39500" stroke-width="2"/><text x="675" y="550" text-anchor="middle" font-size="15" font-weight="800" fill="#4a3c00">Die change done.</text><text x="675" y="574" text-anchor="middle" font-size="15" font-weight="800" fill="#4a3c00">Ready to run ✓</text></g></g>`;
   }
 
-  // Save 4: slitting at a product change. The slitter (unwind, knives, rewinds), the PPE board by the door, the gowning
-  // point with a sink, and the potent trim-waste bin. Parts: prodA / prodB (the roll's product label), boardNew (the
-  // NEW tags that pulse on "board").
+  // Save 4: the slitter at a changeover, locked out (power and air) for knife setting (no web threaded). Left to right:
+  // the SLITTER KNIVES procedure card (Lock out · Cut-resistant gloves); two isolation points, the POWER disconnect and
+  // the AIR lockout valve, each with your own teal lock and its own DO NOT OPERATE tag (name scribble), one YOURS pill
+  // under both; the unwind roll; a hook with a pair of light-grey knit cut-resistant gloves on the station's left side;
+  // the knife station drawn face-on (knife bar, three razor holders, blades above the anvil roll, hinged cover); the
+  // control panel with its screen unlit; and the rewinds.
+  // Parts: prodA / prodB (roll label), cardTick (✓ on the card's glove row), hookGloves, hookGlovesBack (the same pair
+  // back on the hook), cover / coverUp / coverBack (cover closed / hinged up, attached / closed again before Go), knife0..2 (attrs on each holder group,
+  // e.g. id="s10-k0", so a hook can slide it).
+  const KNIVES = [640, 712, 784], KNIVES_NEW = [604, 688, 772];   // every knife moves left, so one close-up arrow fits each slide
+  const KNIT = '#b4bbc3', KNIT_DK = '#7c848d';
+  const knitDef = id => `<defs><pattern id="${id}" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 5 L5 0 M-1 1 L1 -1 M4 6 L6 4" stroke="#8b929a" stroke-width="1.1"/></pattern></defs>`;
+  // a cut-resistant glove hanging fingers-down, palm facing out, thumb on the left. (x, y) = top centre of the cuff.
+  const GLOVE = 'M-12 12 H12 V47 Q12 50 9 50 Q6 50 6 47 V36 V53 Q6 56 3 56 Q0 56 0 53 V36 V55 Q0 58 -3 58 Q-6 58 -6 55 V36 V52 Q-6 55 -9 55 Q-12 55 -12 52 Z';
+  function cutGlove(x, y, s = 1, pat = 'knitS') {
+    return `<g transform="translate(${x} ${y}) scale(${s})">
+      <rect x="-19" y="20" width="8" height="19" rx="4" transform="rotate(28 -15 22)" fill="${KNIT}" stroke="var(--steel)" stroke-width="1.4"/>
+      <path d="${GLOVE}" fill="${KNIT}"/><path d="${GLOVE}" fill="url(#${pat})" stroke="var(--steel)" stroke-width="1.4" stroke-linejoin="round"/>
+      <rect x="-13" y="0" width="26" height="13" rx="3" fill="${KNIT_DK}"/><path d="M-8 1 v11 M-3 1 v11 M2 1 v11 M7 1 v11" stroke="#636a72" stroke-width="1.2"/></g>`;
+  }
+  function knifeHolder(x, attrs = '') {
+    return `<g ${attrs}><circle cx="${x}" cy="238" r="7" fill="var(--steel)"/>
+      <rect x="${x - 17}" y="242" width="34" height="48" rx="6" fill="var(--panel2)" stroke="var(--steel)" stroke-width="4"/>
+      <path d="M${x - 9} 290 L${x + 9} 290 L${x + 4} 322 L${x - 4} 322 Z" fill="#dfe7ef" stroke="var(--steel)" stroke-width="2.5"/>
+      <path d="M${x - 4} 322 L${x + 4} 322" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/></g>`;
+  }
   function slitter(at = {}) {
-    const row = (y, icon, t, isNew, crossed) => `<g ${crossed ? 'opacity=".45"' : ''}>${icon}<text x="98" y="${y + 6}" font-size="16" font-weight="800" fill="var(--ink)">${t}</text>
-      ${crossed ? `<path d="M44 ${y + 1} H236" stroke="var(--stop)" stroke-width="3"/>` : ''}
-      ${isNew ? `<g ${a(at, 'boardNew')}><rect x="198" y="${y - 32}" width="52" height="22" rx="11" fill="var(--q2)"/><text x="224" y="${y - 16}" text-anchor="middle" font-size="14" font-weight="900" fill="#fff">NEW</text></g>` : ''}</g>`;
-    const glove = (x, y, col = 'var(--q3)') => `<path d="M${x} ${y + 16} v-22 q0 -5 5 -5 q5 0 5 5 v-5 q0 -5 5 -5 q5 0 5 5 v3 q0 -5 5 -5 q5 0 5 5 v24 q0 9 -10 9 h-10 q-10 0 -10 -9 z" fill="${col}"/>`;
-    const board = `<rect x="30" y="110" width="232" height="280" rx="14" fill="var(--panel)" stroke="var(--q2)" stroke-width="5"/>
-      <rect x="30" y="110" width="232" height="46" rx="14" fill="var(--q2)"/><rect x="30" y="140" width="232" height="16" fill="var(--q2)"/>
-      <text x="146" y="140" text-anchor="middle" font-size="16" font-weight="900" fill="#fff">NOW: POTENT PRODUCT</text>
-      ${row(194, `<path d="M52 176 h28 l6 30 h-40 z" fill="#eef3f8" stroke="var(--steel)" stroke-width="3"/>`, 'Coat', false)}
-      ${row(250, `${glove(46, 242)}${glove(64, 246, 'var(--q1)')}`, 'Double gloves', true)}
-      ${row(306, `<rect x="48" y="290" width="40" height="22" rx="7" fill="color-mix(in srgb, var(--q2) 40%, var(--panel))" stroke="var(--q2)" stroke-width="3"/>`, 'Sleeve covers', true)}
-      ${row(360, glove(54, 352, 'var(--dim)'), 'Single gloves', false, true)}`;
-    return `${floor}
-      <path d="M278 600 V96" stroke="var(--line)" stroke-width="5" stroke-dasharray="14 10"/>${lbl(286, 262, 'DOOR', 13, 'start')}
-      <g transform="translate(0 -92)">${board}</g>
-      <!-- gowning point -->
-      <rect x="40" y="440" width="190" height="24" rx="6" fill="var(--panel2)" stroke="var(--steel)" stroke-width="4"/>
-      <path d="M70 464 V600 M200 464 V600" stroke="var(--steel)" stroke-width="6"/><path d="M110 440 v-30 h30" fill="none" stroke="var(--steel)" stroke-width="5" stroke-linecap="round"/>
-      ${lbl(110, 500, 'SINK', 15)}${lbl(110, 524, 'GOWNING', 13)}
-      <!-- slitter -->
-      <circle cx="500" cy="380" r="80" fill="var(--panel2)" stroke="var(--steel)" stroke-width="6"/><circle cx="500" cy="380" r="20" fill="var(--steel)"/>
-      <g ${a(at, 'prodA')}>${lbl(500, 346, 'PRODUCT A', 15, 'middle', 'var(--muted)', 'var(--panel2)')}</g>
-      <g ${a(at, 'prodB')}>${lbl(500, 342, 'PRODUCT B', 15, 'middle', 'var(--q2)', 'var(--panel2)')}${lbl(500, 432, 'POTENT', 15, 'middle', 'var(--q2)', 'var(--panel2)')}</g>
-      <path d="M500 300 L740 300" stroke="var(--q3)" stroke-width="5"/>
-      <rect x="650" y="240" width="150" height="120" rx="12" fill="var(--panel)" stroke="var(--steel)" stroke-width="5"/>
-      ${[0, 1, 2].map(i => `<circle cx="${690 + i * 36}" cy="300" r="15" fill="var(--panel2)" stroke="var(--steel)" stroke-width="4"/>`).join('')}
-      ${[0, 1, 2].map(i => `<path d="M800 ${292 + i * 8} L${930} ${330 + i * 70}" stroke="var(--q3)" stroke-width="3"/><circle cx="960" cy="${330 + i * 70}" r="34" fill="var(--panel2)" stroke="var(--steel)" stroke-width="5"/><circle cx="960" cy="${330 + i * 70}" r="9" fill="var(--steel)"/>`).join('')}
-      ${lbl(1004, 584, 'REWINDS', 14, 'start')}
-      <path d="M500 460 V600 M725 360 V600 M960 500 V600" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
-      ${lbl(725, 222, 'SLITTER', 18)}
-      <!-- trim chute to the potent trim-waste bin -->
-      <path d="M800 350 L846 470" stroke="var(--steel)" stroke-width="10" stroke-linecap="round" opacity=".7"/>
-      <rect x="806" y="478" width="96" height="122" rx="8" fill="color-mix(in srgb, var(--q2) 14%, var(--panel))" stroke="var(--q2)" stroke-width="4"/>
-      ${lbl(854, 522, 'POTENT', 14, 'middle', 'var(--q2)')}${lbl(854, 539, 'TRIM', 14, 'middle', 'var(--q2)')}${lbl(854, 556, 'WASTE', 14, 'middle', 'var(--q2)')}
-      <!-- a potent-waste bin at the working position, for used gloves -->
-      <rect x="404" y="540" width="62" height="60" rx="6" fill="color-mix(in srgb, var(--q2) 14%, var(--panel))" stroke="var(--q2)" stroke-width="3"/>${lbl(435, 566, 'POTENT', 13, 'middle', 'var(--q2)')}${lbl(435, 582, 'WASTE', 13, 'middle', 'var(--q2)')}`;
+    const card = `<rect x="20" y="18" width="216" height="142" rx="12" fill="var(--panel)" stroke="var(--steel)" stroke-width="4"/>
+      <path d="M20 30 Q20 18 32 18 H224 Q236 18 236 30 V52 H20 Z" fill="var(--steel)"/>
+      <text x="128" y="41" text-anchor="middle" font-size="15" font-weight="900" fill="var(--panel)" letter-spacing=".05em">SLITTER KNIVES</text>
+      <g style="color:var(--ink)"><svg x="34" y="60" width="32" height="32"><use href="#i-lock"/></svg></g><text x="78" y="83" font-size="18" font-weight="800" fill="var(--ink)">Lock out</text>
+      ${cutGlove(50, 100, 0.7)}<text x="78" y="120" font-size="18" font-weight="800" fill="var(--ink)">Cut-resistant</text><text x="78" y="142" font-size="18" font-weight="800" fill="var(--ink)">gloves</text>
+      <g ${a(at, 'cardTick')} style="color:var(--go)"><svg x="138" y="122" width="28" height="28"><use href="#i-check"/></svg></g>`;
+    return `${knitDef('knitS')}${floor}
+      ${card}
+      <!-- two isolation points, both locked out by you: the POWER disconnect and the AIR lockout valve for the pneumatic
+           knife holders (lever across the pipe = closed, exhaust muffler on top). Each has your teal lock with its own
+           DO NOT OPERATE tag (name scribble, Save 3's style) hung from the lock body; one YOURS pill under both tags. -->
+      ${lbl(49, 210, 'POWER', 13)}${lbl(119, 210, 'AIR', 13)}
+      <rect x="20" y="220" width="58" height="124" rx="10" fill="var(--panel)" stroke="var(--steel)" stroke-width="5"/>
+      <rect x="39" y="238" width="20" height="64" rx="6" fill="var(--steel)"/>
+      <path d="M90 262 H148" stroke="var(--steel)" stroke-width="9" stroke-linecap="round"/>
+      <rect x="114" y="236" width="10" height="12" rx="2" fill="var(--panel2)" stroke="var(--steel)" stroke-width="2.5"/><path d="M114 241 H124 M114 245 H124" stroke="var(--steel)" stroke-width="1.2"/>
+      <rect x="103" y="248" width="32" height="28" rx="6" fill="var(--panel)" stroke="var(--steel)" stroke-width="4"/>
+      <rect x="114" y="270" width="10" height="34" rx="4" fill="var(--steel)"/>
+      ${[49, 119].map(x => `<g style="color:var(--q3)"><svg x="${x - 17}" y="294" width="34" height="34"><use href="#i-lock"/></svg></g>
+      <path d="M${x} 324 V360" stroke="var(--steel)" stroke-width="2"/>
+      <rect x="${x - 26}" y="360" width="52" height="56" rx="5" fill="#ffd34d" stroke="#9a7400" stroke-width="2"/><circle cx="${x}" cy="367" r="3" fill="var(--panel)"/>
+      <text x="${x}" y="384" text-anchor="middle" font-size="10.5" font-weight="900" fill="#3d2d00">DO NOT</text><text x="${x}" y="397" text-anchor="middle" font-size="10" font-weight="900" fill="#3d2d00">OPERATE</text>
+      <path d="M${x - 22} 408 q5 -7 9 0 t9 0 t9 -2 t9 2 t9 0" fill="none" stroke="#3d2d00" stroke-width="2" stroke-linecap="round"/>`).join('')}
+      <rect x="30" y="424" width="116" height="22" rx="11" fill="var(--q3)"/><text x="88" y="440" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">YOURS</text>
+      <!-- unwind (new roll loaded, not yet threaded) -->
+      <circle cx="232" cy="372" r="72" fill="var(--panel2)" stroke="var(--steel)" stroke-width="6"/><circle cx="232" cy="372" r="18" fill="var(--steel)"/>
+      <g ${a(at, 'prodA')}>${lbl(232, 342, 'PRODUCT A', 14, 'middle', 'var(--muted)', 'var(--panel2)')}</g>
+      <g ${a(at, 'prodB')}>${lbl(232, 342, 'PRODUCT B', 14, 'middle', 'var(--q1)', 'var(--panel2)')}</g>
+      <path d="M232 444 V600" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
+      <!-- cut-resistant gloves on their hook, on the knife station's left side -->
+      <path d="M560 206 H522 v10" fill="none" stroke="var(--steel)" stroke-width="5" stroke-linecap="round"/>
+      <g ${a(at, 'hookGloves')}>${cutGlove(534, 220, 1.5)}${cutGlove(516, 216, 1.5)}</g>
+      <g ${a(at, 'hookGlovesBack')}>${cutGlove(534, 220, 1.5)}${cutGlove(516, 216, 1.5)}</g>
+      <!-- knife station, face-on -->
+      <rect x="560" y="196" width="300" height="214" rx="14" fill="var(--panel)" stroke="var(--steel)" stroke-width="6"/>
+      <rect x="574" y="226" width="272" height="10" rx="4" fill="var(--steel)"/>
+      <rect x="574" y="332" width="272" height="16" rx="8" fill="var(--panel2)" stroke="var(--steel)" stroke-width="3"/>
+      ${KNIVES.map((x, i) => knifeHolder(x, a(at, 'knife' + i))).join('')}
+      <rect x="568" y="206" width="284" height="156" rx="8" fill="color-mix(in srgb, var(--n2) 14%, transparent)" stroke="var(--steel)" stroke-width="4" ${a(at, 'cover')}/>
+      <path d="M568 206 L852 206 L840 164 L580 164 Z" fill="color-mix(in srgb, var(--n2) 14%, transparent)" stroke="var(--steel)" stroke-width="4" stroke-linejoin="round" ${a(at, 'coverUp')}/>
+      <rect x="568" y="206" width="284" height="156" rx="8" fill="color-mix(in srgb, var(--n2) 14%, transparent)" stroke="var(--steel)" stroke-width="4" ${a(at, 'coverBack')}/>
+      ${lbl(710, 394, 'SLITTER', 18)}
+      <!-- control panel: screen unlit (power locked out); the locks, tags and 'Locked out' label carry the state -->
+      <rect x="620" y="436" width="180" height="120" rx="10" fill="var(--panel)" stroke="var(--steel)" stroke-width="5"/>
+      <rect x="636" y="452" width="148" height="60" rx="6" fill="#1a2330"/>
+      <path d="M640 556 V600 M780 556 V600 M584 410 V600 M836 410 V600" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
+      <!-- rewinds (unloaded, not threaded) -->
+      ${[0, 1, 2].map(i => `<circle cx="966" cy="${332 + i * 70}" r="34" fill="var(--panel2)" stroke="var(--steel)" stroke-width="5"/><circle cx="966" cy="${332 + i * 70}" r="9" fill="var(--steel)"/>`).join('')}
+      <path d="M966 506 V600" stroke="var(--steel)" stroke-width="7" stroke-linecap="round"/>
+      ${lbl(1004, 584, 'REWINDS', 14, 'start')}`;
   }
-  // A knee-length lab coat over ART.person (same (x, y, h)); the sleeves stop just short of the glove, leaving the wrist.
-  function coat(x, y, h, attrs = '') {
+  // Cut-resistant gloves over the hands of ART.person (same (x, y, h)), worn over the thin gloves: light-grey knit with a
+  // steel outline and a dark cuff band, a little larger than the thin-glove dots so they never read as bare hands, with
+  // the thin glove's teal cuff showing just above the knit cuff.
+  function cutGloves(x, y, h, attrs = '') {
     const sc = h / 200;
-    return `<g ${attrs}><g transform="translate(${x},${y}) scale(${sc})"><path d="M-24 -156 Q0 -162 24 -156 Q32 -153 33 -144 L37 -101 L28 -99 L24 -128 L27 -44 L-27 -44 L-24 -128 L-28 -99 L-37 -101 L-33 -144 Q-32 -153 -24 -156 Z" fill="#eef3f8" stroke="var(--steel)" stroke-width="2"/><path d="M0 -150 V-44" stroke="var(--steel)" stroke-width="1.6"/></g></g>`;
+    return `<g ${attrs}><g transform="translate(${x},${y}) scale(${sc})">${[-1, 1].map(d => `<path d="M${d * 28} -98.9 L${d * 38} -100.9" stroke="var(--q3)" stroke-width="2" stroke-linecap="round"/><circle cx="${d * 33}" cy="-87" r="7.6" fill="${KNIT}"/><circle cx="${d * 33}" cy="-87" r="7.6" fill="url(#knitS)" stroke="var(--steel)" stroke-width="1.8"/><path d="M${d * 28} -95 L${d * 38} -97" stroke="#636a72" stroke-width="4.5" stroke-linecap="round"/>`).join('')}</g></g>`;
   }
-  // Sleeve covers and an outer pair of gloves over the coat cuffs (no skin showing).
-  function gowned(x, y, h, attrs = '', parts = 'sleeves gloves') {
-    const sc = h / 200, sl = parts.includes('sleeves'), gl = parts.includes('gloves');
-    return `<g ${attrs}><g transform="translate(${x},${y}) scale(${sc})">${[-1, 1].map(d => `${sl ? `<path d="M${d * 24} -132 L${d * 38} -92 L${d * 28} -90 L${d * 22} -124 Z" fill="color-mix(in srgb, var(--q2) 45%, var(--panel))" stroke="var(--q2)" stroke-width="1.6"/>` : ''}${gl ? `<circle cx="${d * 33}" cy="-89" r="8.5" fill="var(--q1)"/><path d="M${d * 27} -94 L${d * 39} -96" stroke="var(--q1)" stroke-width="5" stroke-linecap="round"/>` : ''}`).join('')}</g></g>`;
-  }
-
-
-  // A close-up of a wrist: sleeve, glove cuff, and the gap of bare skin between them (or no gap once gowned).
-  // Parts: gap (bare wrist), covered (second glove + sleeve cover over the cuff).
-  function wrist(at = {}) {
+  // Glove close-up in the shared circular inset (220 x 220): one hand, palm side, fingers up. Parts: thin (a thin,
+  // smooth teal disposable glove with a rolled cuff, always drawn), knit (a grey knit cut-resistant glove with a ribbed
+  // cuff, drawn over the thin glove and clipped above y 190, so the teal rolled cuff still shows below the knit cuff).
+  function gloveInset(at = {}) {
+    const HAND = 'M78 220 V150 q-22 -18 -26 -44 q-2 -10 8 -12 q9 -1 13 9 l10 22 V62 q0 -11 11 -11 q11 0 11 11 v52 V46 q0 -11 11 -11 q11 0 11 11 v68 V54 q0 -11 11 -11 q11 0 11 11 v62 V74 q0 -10 10 -10 q10 0 10 10 v74 q0 26 -18 40 V220 z';
     return `<svg viewBox="0 0 220 220" width="220" height="220" overflow="visible">
       <circle cx="110" cy="110" r="104" fill="var(--panel)" stroke="var(--steel)" stroke-width="5"/>
-      <clipPath id="wr-clip"><circle cx="110" cy="110" r="100"/></clipPath>
-      <g clip-path="url(#wr-clip)">
-        <rect x="-20" y="80" width="110" height="60" fill="var(--person)"/>
-        <g ${a(at, 'gap')}><rect x="88" y="84" width="36" height="52" fill="#e8b98f"/></g>
-        <path d="M122 82 h70 q30 0 30 28 q0 28 -30 28 h-70 z" fill="var(--q3)"/><rect x="118" y="80" width="14" height="60" rx="4" fill="color-mix(in srgb, var(--q3) 70%, #fff)"/>
-        <g ${a(at, 'covered')}><rect x="-20" y="74" width="132" height="72" rx="8" fill="color-mix(in srgb, var(--q2) 40%, var(--panel))" stroke="var(--q2)" stroke-width="3"/>
-          <path d="M100 76 h92 q36 0 36 34 q0 34 -36 34 h-92 z" fill="var(--q1)"/><rect x="96" y="74" width="16" height="72" rx="4" fill="color-mix(in srgb, var(--q1) 70%, #fff)"/></g>
+      <clipPath id="gl-clip"><circle cx="110" cy="110" r="100"/></clipPath><clipPath id="gl-knit"><path d="${HAND}"/></clipPath><clipPath id="gl-top"><rect x="0" y="0" width="220" height="190"/></clipPath>
+      <g clip-path="url(#gl-clip)">
+        <rect x="70" y="196" width="88" height="40" fill="var(--person)"/>
+        <g ${a(at, 'thin')}><path d="${HAND}" fill="color-mix(in srgb, var(--q3) 78%, #fff)"/><path d="M84 74 v52 M106 60 v40" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".55"/><rect x="74" y="188" width="84" height="10" rx="5" fill="var(--q3)"/></g>
+        <g ${a(at, 'knit')}><g clip-path="url(#gl-top)"><path d="${HAND}" fill="${KNIT}"/><g clip-path="url(#gl-knit)">${Array.from({ length: 17 }, (_, i) => `<path d="M40 ${40 + i * 9} H180" stroke="#8b929a" stroke-width="2" stroke-dasharray="3 4"/>`).join('')}</g>
+          <path d="${HAND}" fill="none" stroke="var(--steel)" stroke-width="2.5"/></g><rect x="72" y="172" width="88" height="18" rx="5" fill="${KNIT_DK}"/><path d="M80 175 v12 M92 175 v12 M104 175 v12 M116 175 v12 M128 175 v12 M140 175 v12 M152 175 v12" stroke="#6a7179" stroke-width="2"/></g>
+      </g></svg>`;
+  }
+  // Knife-holder close-up in the same inset: the knife bar, one razor holder, a cut-gloved fist round the holder body,
+  // and the blade below with its bright edge, clear of the fingers. g#s10-hold (holder + fist) is slid by the scene hook.
+  // Parts: arrow (a steel arrow above the bar, pointing the way the holder slides).
+  function holderInset(at = {}) {
+    return `<svg viewBox="0 0 220 220" width="220" height="220" overflow="visible">
+      <circle cx="110" cy="110" r="104" fill="var(--panel)" stroke="var(--steel)" stroke-width="5"/>
+      <clipPath id="ho-clip"><circle cx="110" cy="110" r="100"/></clipPath>
+      <g clip-path="url(#ho-clip)">
+        <rect x="0" y="34" width="220" height="16" fill="var(--steel)"/>
+        <g ${a(at, 'arrow')}><path d="M146 22 H80" stroke="var(--steel)" stroke-width="4" stroke-linecap="round"/><path d="M90 13 L79 22 L90 31" fill="none" stroke="var(--steel)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+        <g id="s10-hold">
+          <circle cx="110" cy="58" r="12" fill="var(--steel)"/>
+          <rect x="80" y="62" width="60" height="84" rx="10" fill="var(--panel2)" stroke="var(--steel)" stroke-width="5"/>
+          <path d="M96 146 L124 146 L116 196 L104 196 Z" fill="#dfe7ef" stroke="var(--steel)" stroke-width="4"/>
+          <path d="M103 197 H117" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+          <path d="M150 70 q-8 0 -14 8 l-62 0 q-10 0 -10 10 v4 q0 6 6 6 h60 M150 98 q-8 0 -14 8 l-58 0 q-10 0 -10 10 v2 q0 6 6 6 h56" fill="${KNIT}" stroke="#8b929a" stroke-width="2"/>
+          <rect x="140" y="62" width="90" height="62" rx="12" fill="${KNIT}"/>
+          ${[0, 1, 2, 3, 4, 5].map(i => `<path d="M144 ${70 + i * 9} H230" stroke="#8b929a" stroke-width="2" stroke-dasharray="3 4"/>`).join('')}
+          <rect x="196" y="56" width="40" height="74" fill="${KNIT_DK}"/></g>
       </g></svg>`;
   }
 
-  return { coat, gowned, mixRoom, staging, rollsPallet, palletTruck, forklift, cardInset, beforeBreak, rollRoom, dieCutter, slitter, wrist };
+  return { mixRoom, staging, rollsPallet, palletTruck, forklift, cardInset, beforeBreak, rollRoom, dieCutter, slitter, cutGloves, gloveInset, holderInset, KNIVES, KNIVES_NEW };
 })();

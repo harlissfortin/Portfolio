@@ -117,37 +117,38 @@
     ${SC.yourCall(S3, 's9-5', 2.4, 'stop', 's9-6', 's9-6+1.6')}
   `));
 
-  // 10 ─ Save 4 · Potent product at a change ─────────────────────────────────
-  // Fix it: gowning is your own step. Normal stop, gloves off as the procedure says, soap-and-water wash, then
-  // inner gloves, sleeve covers, and outer gloves over the cuffs. No skin showing.
-  const S4 = 'save-4-potent-ppe';
+  // 10 ─ Save 4 · Slitter knives at a changeover ─────────────────────────────
+  // Fix it: getting the right gloves on is your own PPE step. The slitter is locked out (power and air) under your own
+  // locks (YOURS) from the first frame to the last; nothing runs, and no gloves are near moving parts. Cut-resistant
+  // gloves go on over your thin gloves; hold each knife by its holder, never the edge; slide the knives to their new
+  // widths, one at a time, each moved by your gloved fist in the close-up; gloves off before it runs (back on the
+  // hook); Go.
+  const S4 = 'save-4-slitter-knives';
   html.push(SC.scene(S4, '', `
     ${SC.sting()}
-    ${SC.topband(4, 'Potent product', 'change', ['', 's10-3 s10-4', '', ''], SC.WHEN.s4)}
+    ${SC.topband(4, 'Slitter knives', 'change', ['', 's10-3 s10-4', '', ''], SC.WHEN.s4)}
     ${stage(`
-      ${svg(`${TD.slitter({ prodA: 'data-out="fade s10-1~changes 0.3"', prodB: 'data-in="fade s10-1~changes 0.3"' })}
-        <g data-in="fade s10-7~wash 0.3" data-out="fade s10-8~then 0.3" fill="var(--q1)">${[0, 1, 2, 3].map(i => `<circle cx="${140 + i * 10}" cy="${420 + (i % 2) * 12}" r="4"/>`).join('')}</g>
-        <g id="s10-you">${P(340, 600, 300, { gloves: 'var(--q3)', ppeAttrs: 'data-out="fade s10-6~gloves-0.4 0.3"' })}
-          ${P(340, 600, 300, { ppeOnly: true, gloves: 'var(--q3)', ppeAttrs: 'opacity="0" data-in="fade s10-8~inner 0.3"' })}
-          ${TD.coat(340, 600, 300)}${TD.gowned(340, 600, 300, 'data-in="fade s10-8~sleeve 0.5"', 'sleeves')}${TD.gowned(340, 600, 300, 'data-in="fade s10-8~outer 0.4"', 'gloves')}</g>
-        <path d="M390 236 V452" stroke="var(--steel)" stroke-width="3" stroke-dasharray="6 5" data-in="fade ^1.3 0.4" data-out="fade s10-6 0.3"/>`)}
-      ${A(285, 15, TD.wrist({ covered: 'opacity="0"' }), 'data-in="fade ^1.3 0.4" data-out="fade s10-6 0.3"')}
-      ${A(560, 110, gloss('Potent = strong in tiny amounts'), 'data-in="up s10-1~potent" data-out="fade s10-2~what-0.3 0.3"')}
-      ${A(620, 122, lab('Normal stop', '', 'font-size:20px'), 'data-in="up s10-6~normal" data-out="fade s10-7 0.3"')}
-      ${A(300, 20, gloss('Gloves off, as your procedure says'), 'data-in="up s10-6~gloves" data-out="fade s10-6.end 0.3"')}
-      <div class="abs steps" style="left:300px;top:14px;display:flex;flex-direction:column;gap:6px;white-space:nowrap">
-        <div data-in="pop s10-7~soap 0.3" style="display:flex;align-items:center;gap:10px">${I('soap', '', 'width:34px;height:34px;color:var(--q1)')}${check('Soap and water')}</div>
-        ${cross('No hand sanitizer', 'data-in="pop s10-7~sanitizer 0.3"')}
-        ${check('1 Inner gloves', 'data-in="pop s10-8~inner 0.3"', 'var(--q1)')}
-        ${check('2 Sleeve covers', 'data-in="pop s10-8~sleeve 0.3"', 'var(--q1)')}
-        ${check('3 Outer gloves over the cuffs', 'data-in="pop s10-8~outer 0.3"', 'var(--q1)')}
-        ${check('No skin showing', 'data-in="pop s10-8~cuffs+0.3 0.3"')}</div>
-      <div class="abs" style="left:0;top:0" data-out="fade s10-5 0.3">${ring(391, 125, 96, 's10-3~wrists')}</div>
-      <div class="abs" style="left:0;top:0" data-out="fade s10-5 0.3">${A(32, 118, '<div style="width:228px;height:116px;border:6px solid var(--stop);border-radius:18px"></div>', 'data-in="pop s10-3~now 0.45"')}</div>
+      ${svg(`${TD.slitter({ prodA: 'data-out="fade s10-1~changeover 0.3"', prodB: 'data-in="fade s10-1~changeover 0.3"',
+          cardTick: 'data-in="pop s10-6~procedure 0.3"', hookGloves: 'data-out="fade s10-6~gloves-0.2 0.3"', hookGlovesBack: 'opacity="0" data-in="fade s10-8~off 0.3"',
+          cover: 'data-out="fade s10-7+0.3 0.4"', coverUp: 'data-in="fade s10-7+0.3 0.4" data-out="fade s10-8~off 0.4"', coverBack: 'opacity="0" data-in="fade s10-8~off 0.4"',
+          knife0: 'id="s10-k0"', knife1: 'id="s10-k1"', knife2: 'id="s10-k2"' })}
+        <g id="s10-you">${P(440, 600, 280, { gloves: 'var(--q3)' })}
+          ${TD.cutGloves(440, 600, 280, 'data-in="fade s10-6~gloves 0.3" data-out="fade s10-8~off 0.3"')}</g>
+        <path d="M440 220 L484 466" stroke="var(--steel)" stroke-width="3" stroke-dasharray="6 5" data-in="fade ^1.3 0.4" data-out="fade s10-6.end+0.1 0.3"/>
+        <path id="s10-lead" d="M516 146 L628 262" stroke="var(--steel)" stroke-width="3" stroke-dasharray="6 5" data-in="fade s10-7~hold 0.4" data-out="fade s10-8~off-0.2 0.3"/>`)}
+      ${A(300, 8, TD.gloveInset({ knit: 'data-in="fade s10-6~gloves 0.4"' }), 'data-in="fade ^1.3 0.4" data-out="fade s10-6.end+0.1 0.3"')}
+      ${A(300, 8, TD.holderInset({ arrow: 'data-in="fade s10-8~slide 0.3" data-out="fade s10-8~slide+2.6 0.3"' }), 'data-in="fade s10-7~hold 0.4" data-out="fade s10-8~off-0.2 0.3"')}
+      ${A(8, 456, lab('Locked out', '', 'font-size:20px'), 'data-in="up s10-1~locked" data-out="fade s10-2~what-0.3 0.3"')}
+      <div class="abs steps" style="left:544px;top:18px;display:flex;flex-direction:column;gap:6px;white-space:nowrap">
+        ${check('Cut-resistant gloves your procedure names', 'data-in="pop s10-6~names 0.3"')}
+        ${check('By its holder, never the edge', 'data-in="pop s10-7~holder 0.3"')}
+        ${check('New widths', 'data-in="pop s10-8~widths+0.4 0.3"')}
+        ${check('Cut-resistant gloves off before it runs', 'data-in="pop s10-8~off 0.3"')}</div>
+      <div class="abs" style="left:0;top:0" data-out="fade s10-5 0.3">${ring(712, 276, 200, 's10-3~knives')}</div>
+      <div class="abs" style="left:0;top:0" data-out="fade s10-5 0.3">${ring(410, 118, 176, 's10-3~thin')}</div>
     `)}
-    ${SC.casecard({ catch: 'Bare wrists · now double gloves + sleeve covers', catchAt: 's10-3~now', call: 'fix', callAt: 's10-5', why: 'Your own gowning step', goAt: 's10-8~go', prev: 'No small, repeated doses through skin', prevAt: 's10-9' })}
-    ${A(1120, 640, `<div class="small" style="width:560px;font-weight:650">Adhesive on skin? Wash and report it, as your site says.</div>`, 'data-in="fade s10-9+0.6 0.5"')}
+    ${SC.casecard({ catch: 'Razor-sharp knives · thin&nbsp;gloves', catchAt: 's10-3~thin', call: 'fix', callAt: 's10-5', why: 'Your own PPE step', goAt: 's10-8~go', prev: 'No cut from a knife that’s stopped, but still sharp', prevAt: 's10-9' })}
     ${SC.predict(S4, 's10-2', 3.0, 's10-3-0.1')}
-    ${SC.yourCall(S4, 's10-4', 2.4, 'fix', 's10-5', 's10-5+1.6')}
+    ${SC.yourCall(S4, 's10-4', 2.4, 'fix', 's10-5', 's10-5~is-0.3')}
   `));
 })();

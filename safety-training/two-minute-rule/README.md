@@ -1,6 +1,6 @@
 # The 2-Minute Rule: One Shift on a Patch Line
 
-A narrated motion-graphics safety training video (about 6:42) about the **2-minute rule**: a short pause, on purpose,
+A narrated motion-graphics safety training video (about 6:39) about the **2-minute rule**: a short pause, on purpose,
 at the point of work, before you start and again after any break, handover, interruption or change. It is set at a
 transdermal patch manufacturing site. It teaches the rule and where its limits are, models a routine pause that finds
 nothing, then follows one shift on a patch line through four **two-minute saves**. A shift strip shows where each one
@@ -45,7 +45,7 @@ their supervisors.
 | 1 | Solvent transfer | Early | Before you start | Checked or assumed? | Fix it | A step in your procedure |
 | 2 | Roll staging | Just after the break | After a break | What's different? | Stop & get help | Not authorized: trained on the pallet truck, not the forklift |
 | 3 | Die cutter | Mid-shift | Handover | Checked or assumed? | Stop & get help | Someone else's unfinished work |
-| 4 | Potent product | Late | Change | What could hurt us? | Fix it | Your own gowning step |
+| 4 | Slitter knives | Late | Change | What could hurt us? | Fix it | Your own PPE step |
 
 Two Fix it, two Stop & get help, and all four end in Go once it's safe.
 
@@ -62,10 +62,10 @@ Two Fix it, two Stop & get help, and all four end in Go once it's safe.
 | 2:05 | Save 1 · Solvent transfer | **Checked or assumed?** You're about to pump flammable solvent from a drum, but the bonding clamps are still on their hook and the lamp is red. → Fix it (a step in your procedure): clamps on bare metal, lamp green, then Go. Won't go green? Stop & get help. |
 | 2:47 | Save 2 · Roll staging | **What's different?** After your break, the next pallet of rolls is up on the rack: a forklift job, and your card says pallet truck only. A co-worker means well: "Line's waiting. Just grab the forklift!" → Stop & get help (not authorized). You say so kindly and call your lead, who sends a trained driver while you stand clear. |
 | 3:41 | Save 3 · Die cutter | **Checked or assumed?** At handover the note says "ready to run", but the guard is off the die station and someone else's lock is still on. → Stop & get help (someone else's unfinished work). Only the lock's owner removes it, or a supervisor, using the site's lock-removal procedure. The owner puts the guard back and removes their lock; you run the restart checks. |
-| 4:29 | Save 4 · Potent product | **What could hurt us?** The slitter changes over to a potent product. Your wrists are bare, and the board now says double gloves and sleeve covers. → Fix it (your own gowning step): a normal stop, gloves off as your procedure says, soap and water (not hand sanitizer), then inner gloves, sleeve covers and outer gloves over the cuffs, no skin showing. |
-| 5:21 | All four end in Go | Two Fix it, two Stop & get help, each with its reason; all four end in Go, and most pauses end in Go right away |
-| 5:31 | What leaders commit to | Anyone can stop a job. Leaders commit to come quickly ("Thanks. What did you see?"), thank you, fix the cause and tell you what changed. The pause isn't a form: report what you caught the usual way. |
-| 5:52 | Recap card | The rule on one card, both halves, with all five triggers; then "Who do you call for help?" (6:24) and the sources (6:32) |
+| 4:29 | Save 4 · Slitter knives | **What could hurt us?** At changeover you've locked out the slitter, with your own locks on power and air, to move its knives to new widths. The knives are razor-sharp, and your thin gloves aren't made for blades. → Fix it (your own PPE step): the cut-resistant gloves your procedure names go on over your thin gloves; even in those gloves, each knife by its holder, never the edge; the knives slide to their new widths; cut-resistant gloves off before it runs, then Go. |
+| 5:18 | All four end in Go | Two Fix it, two Stop & get help, each with its reason; all four end in Go, and most pauses end in Go right away |
+| 5:28 | What leaders commit to | Anyone can stop a job. Leaders commit to come quickly ("Thanks. What did you see?"), thank you, fix the cause and tell you what changed. The pause isn't a form: report what you caught the usual way. |
+| 5:49 | Recap card | The rule on one card, both halves, with all five triggers; then "Who do you call for help?" (6:21) and the sources (6:29) |
 
 Each save follows the same template so a facilitator can show it on its own:
 1. A one-second Stop · Look · Ask · Decide sting.
@@ -93,32 +93,38 @@ Each save follows the same template so a facilitator can show it on its own:
   so the holds test the rule, not recall.
 - **Each save teaches a different part of the rule.** Save 1: a step in your procedure (and "Won't go green? Stop & get
   help" for a fix that doesn't work). Save 2: not authorized. Save 3: someone else's unfinished work. Save 4: your own
-  gowning step.
+  PPE step.
 - **The routine pause is modelled.** Most pauses find nothing and take seconds, so the first worked example is one of
   those. It also sets up Save 2's contrast: roll handling is a Go with the lifter you're trained on, and a Stop with a
   truck you're not.
 - **Pressure and speaking up are shown.** In Save 2 a co-worker means well ("Line's waiting. Just grab the
   forklift!"), and you answer kindly: "Thanks, but I'm not trained on that one. I'll call our lead."
-- **Impactful, not morbid.** No death, injury, flame, falling load or overdose is shown or described. The impact comes
+- **Impactful, not morbid.** No death, injury, flame or falling load is shown or described. The impact comes
   from the moment of the catch and a plain line on what it prevented, such as "No static spark where the vapor comes
   out" or "Nobody drives a truck they're not trained on". Save 1's spark is drawn dashed, as a "what if". Save 4
-  speaks of small, repeated doses through the skin, with no exposure-band numbers.
+  shows no cut: the slitter stays locked out under your own locks, and your fingers stay clear of every edge.
 - **Drawn safely.** Save 2 never shows anyone on a truck they're not trained on, climbing the rack or under the forks.
   Everyone stands clear of the forks and the truck's path, the driver wears the seatbelt, and the trip down is shown
   as a slow dissolve to the end state, so no forklift is seen moving near people. "Go" is heard only once the pallet
-  is down and the forks are flat.
+  is down and the forks are flat. In Save 4 the slitter is locked out (power and air) under your own locks, each with
+  its DO NOT OPERATE tag, from the first frame to the last; its control screen is dark, it never runs, and nobody puts
+  on or removes a lock. The cut-resistant gloves go on over your thin gloves only while it's locked out, and they are
+  never near anything moving: they come off, back on their hook, before Go ("Cut-resistant gloves off before it runs"), because a
+  glove can be caught by moving parts. A knife is only ever held by its holder, never the edge; each knife moves only
+  as your gloved fist slides it in the close-up, and no blade leaves its holder. Cut-resistant gloves aren't cut-proof,
+  so the holder rule still applies in them. No cut level or glove brand is shown.
 - **Proportionate.** The four saves split two fixes and two calls for help, and every one ends in Go once it's safe.
 - **Natural delivery.** Each line is voiced in one pass, so the voice keeps its intonation and punctuation carries the
   pauses. Six short lines are the exception: each is split once or twice (" | " in the script) and joined with 0.16 s of
   silence, to hold a pause the voice would rush. The spoken prompts at the holds vary from save to save while the cards stay the same, and every save names
   its trigger out loud.
 - **Plain language for a multilingual floor.** About 150 words a minute while speaking, a calm conversational pace.
-  Jargon is glossed on first use: bonding, die station, potent ("strong in tiny amounts"), roll lifter, forklift and
-  pallet truck, roll staging and checked or assumed. The transcript describes
+  Jargon is glossed on first use: bonding, die station, roll lifter, forklift and pallet truck, roll staging and
+  checked or assumed. The transcript describes
   what is on screen as well as what is said.
 - **Who's on screen.** An operator in solvent PPE, a co-worker who wants to help, your lead in a teal vest, a trained
-  forklift driver, the technician who owns the lock, and an operator in a coat who adds double gloves and sleeve
-  covers. Faces are never drawn.
+  forklift driver, the technician who owns the lock, and an operator who puts cut-resistant gloves on over thin gloves
+  for knife work, and takes them off before the slitter runs. Faces are never drawn.
 - **Sound.** A quiet pad sits about 25 dB under the voice so pauses aren't dead air, and soft cues mark each save, each
   catch, each call, each Go and the seconds of each hold. Everything is synthesized in [`tooling/mix.py`](tooling/mix.py)
   (no samples, no licences).
@@ -127,35 +133,42 @@ Each save follows the same template so a facilitator can show it on its own:
 - **Earlier versions.** The first version used a real 2011 fatality as its example; it was replaced at the user's
   request with focused, non-morbid use cases. The versions after it, up to version 4, were set in pharmaceutical
   manufacturing, with six saves (8:57 in version 4). Version 5 is this one: a transdermal patch site, four saves on
-  one shift, and a material-handling Save 2 in place of a drying-oven save, at the user's request. See
-  [`trainer-review.md`](trainer-review.md).
+  one shift, and a material-handling Save 2 in place of a drying-oven save, at the user's request. Later, on
+  2026-11-06 and at the user's request, Save 4 was re-themed from a potent product to cut-resistant gloves at the
+  slitter knives. See [`trainer-review.md`](trainer-review.md).
 
 ## Sources
 
 On the end card:
 - [21 CFR 211.130(e)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211/subpart-G/section-211.130), packaging and labeling facilities inspected immediately before use (line clearance)
-- [OSHA 29 CFR 1910.147](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147), the control of hazardous energy (lockout/tagout), including (e)(3) on removing another person's lock (Save 3)
+- [OSHA 29 CFR 1910.147](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147), the control of hazardous energy (lockout/tagout), including (e)(3) on removing another person's lock (Save 3), and (b), where "servicing" includes setting up, adjustments and tool changes, so Save 4's changeover knife setting is done locked out, power and air, under your own locks (Save 4)
 - [OSHA 29 CFR 1910.106(e)(6)(ii)](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.106) and NFPA 77, *Recommended Practice on Static Electricity*: bond the nozzle and the container before dispensing Category 1 or 2 flammable liquids, or Category 3 below 100 °F (Save 1)
 - [OSHA 29 CFR 1910.178(l)](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.178), powered industrial truck operator training and evaluation for each type of truck, and (m)(2), no one under raised forks (Save 2). OSHA issues no forklift licence or card: the employer trains, evaluates and certifies each operator.
-- NIOSH skin-exposure guidance: wash skin with soap and water (Save 4). NIOSH's fentanyl guidance was written for responders, so it is background only; on a patch line, PPE comes from the site's own exposure assessment.
+- [OSHA 29 CFR 1910.132(d)](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.132), the hazard assessment, certified in writing, and [1910.138(a)-(b)](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.138), hand protection chosen for the task; and ANSI/ISEA 105, glove cut ratings (Save 4). Cut-resistant gloves resist cuts; they aren't cut-proof. No cut level is shown on screen: your site sets it from its own hazard assessment.
 
 Before release, check the cited paragraphs on eCFR: this project confirmed 1910.178(c), (l) including (l)(6), (m)(2), (m)(5), (n)(4) and (q)(7); 1910.147(c)(5)(ii)(D), (e)(3) and (f)(4); 1910.106(e)(6)(ii); and 1910.176 only through
-reproductions (the same list is in the rollout guide).
+reproductions, and 1910.132(d), 1910.138(a)-(b) and 1910.147(b) (with the minor-servicing note to (a)(2)(ii)) only
+through search-result excerpts (the rollout guide has the same check).
 
 ## How it was made
 
 1. **Research.** For the pharma versions, parallel researchers mapped the rule's variants and evidence, and pharma
    task hazards with their controls and citations. For version 5, researchers walked through a transdermal patch plant
    (mixing, coating and drying, laminating, slitting, die cutting, pouching), its hazards and candidate saves, and a
-   verifier corrected the facts (for example, how bonding prevents static sparks, the full lock-removal procedure,
-   soap and water rather than an alcohol rub, and no exposure-band numbers).
+   verifier corrected the facts (for example, how bonding prevents static sparks and the full lock-removal procedure).
+   For the Save 4 re-theme, research covered cut-resistant gloves (ANSI/ISEA 105, OSHA 1910.132 and 1910.138),
+   gloves near moving machinery, lockout of power and air for knife setting, and safe blade handling.
 2. **Script.** The first short draft had a drying-oven Save 2. At the user's request it became a material-handling
    save: three candidates were researched, and two AI judges, one in an EHS role and one in a trainer role, chose
    "Pallet truck only". Three shorter drafts were then written from different angles and scored by two independent AI
    judges. The best was merged with trims from the others, reviewed for EHS accuracy, natural speech and teaching
    length, and a verifier read all 76 lines aloud in order. A final pass matched the narration to the on-screen
    text: a sync auditor, a naturalness editor and a voice specialist proposed edits, which were merged, checked for
-   EHS accuracy and read aloud in order (77 lines: the Save 4 wash and gowning steps are now two lines).
+   EHS accuracy and read aloud in order (77 lines). Save 4 was then re-themed at the user's request: three drafts (a
+   knife change, a hand knife at a roll change, and moving the slitter knives to new widths) were scored by two AI
+   judges, one in an EHS role and one in a trainer role. The knife-moving draft, with the highest combined score, was
+   merged with the knife-change draft's EHS strengths, then verifiers checked it for EHS accuracy and read it aloud,
+   and every issue they found was fixed (still 77 lines, now 787 words).
 3. **Stakeholder review.** AI reviewers read the version 3 script as a safety manager, an operations director and a
    site lead ([`stakeholder-review.md`](stakeholder-review.md)).
 4. **Master-trainer review, version 4 and version 5.** Four AI reviewers rated version 3 as master trainers
@@ -217,7 +230,8 @@ Work through the rollout guide in [`stakeholder-review.md`](stakeholder-review.m
 3. **A QA position.** A safety hold is not a deviation in itself.
 
 Then check the four saves against your site (the list is in the stakeholder review: who drives which truck and how
-authorization is shown, the lock-removal procedure, potent-product PPE from your own exposure assessment), and run the
+authorization is shown, the lock-removal procedure, whether operators may move slitter knives, your lockout points for
+power and air, and which cut-resistant gloves your hazard assessment names), and run the
 portfolio's SME, instructional-design and accessibility review gates, with real people in those roles. The perspective
 reviews in this folder are a starting point for them, not a substitute. Record the video as awareness training, not
-lockout, solvent-bonding, forklift-operator or potent-compound handling training.
+lockout, solvent-bonding, forklift-operator or knife-handling training.

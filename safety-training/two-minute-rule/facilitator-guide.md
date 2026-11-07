@@ -1,10 +1,10 @@
 # The 2-Minute Rule: facilitator guide
 
 This guide is for the launch session and the four weekly huddles that go with the video *The 2-Minute Rule: One Shift
-on a Patch Line* (about 6:42). The video follows one shift on a transdermal patch line: a routine Go, then four saves.
+on a Patch Line* (about 6:39). The video follows one shift on a transdermal patch line: a routine Go, then four saves.
 
-This is awareness training. It builds a habit. It is not lockout, solvent-bonding, forklift-operator or potent-compound
-handling training, and it does not qualify anyone to do any fix. Your site's procedures, permits and lockout always
+This is awareness training. It builds a habit. It is not lockout, solvent-bonding, forklift-operator or knife-handling
+training, and it does not qualify anyone to do any fix. Your site's procedures, permits and lockout always
 come first. The saves are illustrative composites, not real incidents. Your EHS, operations, QA and training leads
 review this guide and the video against your site before use.
 
@@ -118,10 +118,10 @@ It is not a form. No signatures, no tick boxes. Nobody hands it in.
 The video ends on a slate that asks "Who do you call for help?", with blanks for days, nights, weekends and the radio
 or phone, and says "Write it on your pocket card." The job aid is that card.
 
-**Classified and potent-product areas.** QA approves the sign as a controlled posting, including its material. In
-classified or potent-product rooms, post the sign outside the gowning room or airlock door, or outside the viewing
-window, or use a cleanroom-compatible version approved by QA that can be wiped with your cleaning agent. Pocket cards
-stay outside the gowning line unless your site has approved a cleanroom version.
+**Classified areas.** QA approves the sign as a controlled posting, including its material. In classified rooms, post
+the sign outside the gowning room or airlock door, or outside the viewing window, or use a cleanroom-compatible
+version approved by QA that can be wiped with your cleaning agent. Pocket cards stay outside the gowning line unless
+your site has approved a cleanroom version.
 
 ### Fill in the local contacts first
 
@@ -150,7 +150,7 @@ aid.
 | Part | Time | Who |
 |---|---|---|
 | 1. Live opening: leader commitments and the QA position | About 3 min | Site or area head |
-| 2. The full video | About 7 min (6:42, plus pauses at Save 1's holds) | Facilitator |
+| 2. The full video | About 7 min (6:39, plus pauses at Save 1's holds) | Facilitator |
 | 3. Discussion | About 8 min | Facilitator, with the head staying |
 | 4. Close | About 2 min | Facilitator |
 
@@ -233,12 +233,12 @@ to the floor.
 | 1 | Save 1 · Solvent transfer | Before you start | Fix it | Sorting cards 1, 5, 6 | A solvent drum station, a bonding reel, or any bonding clamp and lamp |
 | 2 | Save 2 · Roll staging | After a break | Stop & get help | Our version | Roll staging: a rack bay, the next-roll spot or where your pallet truck parks |
 | 3 | Save 3 · Die cutter | Handover | Stop & get help | Sorting cards 4, 7, 8 | Any machine with a guard and a lockout point, where handovers happen |
-| 4 | Save 4 · Potent product | Change | Fix it | Our version | A gowning point or PPE board outside a potent-product room |
+| 4 | Save 4 · Slitter knives | Change | Fix it | Our version | A slitter's knife station and its glove hook, stopped and locked out by its own operator, or a photo. Nobody touches knives or holders in a huddle |
 
 **Order.** Run them 1 to 4. That's the video's order and the order of the shift, and the calls go Fix it, Stop & get
 help, Stop & get help, Fix it. The boundary rule between those calls is what you're teaching. An area may start with
-the save closest to its work (mix room: 1; roll handling: 2; die cutting and other converting: 3; slitting and potent
-products: 4). Run all four. The huddle notes are written by save, so they work in any order.
+the save closest to its work (mix room: 1; roll handling: 2; die cutting and other converting: 3; slitting: 4). Run
+all four. The huddle notes are written by save, so they work in any order.
 
 ### Find the save and its holds
 
@@ -264,9 +264,9 @@ Chapter and hold times:
 | Save 1 · Solvent transfer | 2:05 | 2:12 (holds to 2:18) | 2:30 (holds to 2:33) |
 | Save 2 · Roll staging | 2:47 | 2:53 (holds to 2:59) | 3:16 (holds to 3:19) |
 | Save 3 · Die cutter | 3:41 | 3:47 (holds to 3:52) | 4:01 (holds to 4:04) |
-| Save 4 · Potent product | 4:29 | 4:36 (holds to 4:42) | 4:49 (holds to 4:52) |
+| Save 4 · Slitter knives | 4:29 | 4:36 (holds to 4:41) | 4:48 (holds to 4:51) |
 
-Other chapters: Intro 0:00 · The rule 0:15 · Line clearance for people 0:29 · Stop · Look · Ask · Decide 0:42 · A routine Go 1:26 · Four saves 1:49 · All four end in Go 5:21 · What leaders commit to 5:31 · Recap card 5:52. Full video: 6:42.
+Other chapters: Intro 0:00 · The rule 0:15 · Line clearance for people 0:29 · Stop · Look · Ask · Decide 0:42 · A routine Go 1:26 · Four saves 1:49 · All four end in Go 5:18 · What leaders commit to 5:28 · Recap card 5:49. Full video: 6:39.
 
 *Times come from `source/timing.json` (`python tooling/pause_points.py` refreshes them).*
 <!-- /PAUSE-POINTS -->
@@ -360,10 +360,11 @@ paused this week. Which trigger was it? Which question did the work?" Then ask f
    call, in any words. The supervisor responds as in section 5, starting with: **"Thanks. What did you see?"**
 5. Then say to everyone: "When you get back to your station, do your two minutes before you start. I'll come by this
    shift and ask one of you to talk me through it." Then do it.
-6. Keep it safe. This is talk only. Nobody touches controls, guards, valves, locks, clamps or trucks. Stay outside
-   guarding and barriers, and out of truck aisles. In the mix room and in potent-product rooms, don't break PPE,
-   gowning or entry rules for a huddle: use a station outside, or a photo. If the volunteer spots something real,
-   treat it as a real catch.
+6. Keep it safe. This is talk only. Nobody touches controls, guards, valves, locks, clamps, knives or trucks. Stay
+   outside guarding and barriers, and out of truck aisles. In the mix room and in classified rooms, don't break PPE,
+   gowning or entry rules for a huddle: use a station outside, or a photo. Never hold a huddle at a running slitter.
+   Use a knife station only when it's stopped and locked out by its own operator, or use a photo. If the volunteer
+   spots something real, treat it as a real catch.
 
 **Step 6. Close (1.5 min)**
 
@@ -520,41 +521,57 @@ say, and who signs off the restart?
 6. **Close.** As step 6, plus: "At handover this week, ask the person going off shift, face to face, about locks,
    guards and anything half done."
 
-#### Save 4 huddle · Potent product
+#### Save 4 huddle · Slitter knives
 
-The slitter changes over to a potent product: strong in tiny amounts. You're in the coat, with single gloves and no
-sleeve covers, handling sticky trim.
+At changeover, you've locked out the slitter to move its knives to new widths: your own locks are on its POWER
+disconnect and its AIR valve. You're still in the thin gloves you run it in, and the cut-resistant gloves hang on
+their hook.
 
-**Check first.** Each product's PPE comes from your site's own exposure assessment, not from this video; don't quote
-exposure-band numbers. Is a coat standard in the room? Do potent products run only in dedicated rooms, with gowning
-outside? Where is the potent waste? What are your steps if product touches skin?
+**Check first.**
+
+- **Who moves the knives.** Are operators trained and authorized to move or change slitter knives here? If it's a
+  mechanic's job on your line, the model call there is **Stop & get help**. Say so.
+- **The lockout.** Is it locked out as your procedure says, including air for pneumatic knife holders? Setting up,
+  adjustments and tool changes count as servicing (29 CFR 1910.147(b)). The minor-servicing exception only covers
+  routine work during normal production with other effective protection, so don't offer it for changeover knife
+  setting. Any other method is EHS's call, in writing.
+- **The gloves.** Which cut-resistant gloves does your procedure name? Your hazard assessment sets them: don't quote a
+  cut level, brand or fibre from this video. Are they worn over your thin gloves, as the video draws them, or as a
+  liner under them? Where are they kept, and in which sizes? Do they come off before threading and restart, as your
+  procedure says? The video says "Cut-resistant gloves off before it runs."
+- **Blades.** Where do used blades go, and where are blade changes done (at a bench, if your procedure says so)?
 
 1. **Recall.** As step 1.
 2. **Play.**
-   - Hold 1 ("Your turn. What would make you stop here?"), the clue: a close-up shows bare skin at your wrist, between
-     the glove cuff and the coat sleeve. The PPE board by the door now says POTENT PRODUCT, with double gloves and
-     sleeve covers marked NEW. The question that catches it: **What could hurt us?** ("What's different?" also fits:
-     the board changed.)
+   - Hold 1 ("Your turn. What would make you stop here?"), the clue: the three razor knives, the thin teal glove in
+     the close-up, and the cut-resistant gloves unused on their hook. The posted SLITTER KNIVES card says Lock out and
+     Cut-resistant gloves. The question that catches it: **What could hurt us?** ("What's different?" also fits: the
+     job changed from running the slitter to knife work.)
    - Hold 2 ("And your call?"), the call: **Fix it.**
-3. **The reason.** Putting on the right gear for this product is your own gowning step, and you're trained on it. Bring
-   the slitter to a normal stop and put the trim in the potent waste. At the gowning point, take off your gloves as
-   your procedure says, and wash hands and wrists with soap and water, not hand sanitizer. Then inner gloves, sleeve
-   covers, and outer gloves over the cuffs. No skin showing. Then Go.
-   - Why it matters, said calmly: the product is made to pass through skin. The concern is small, repeated doses, not
-     one touch. Soap and water washes it off; hand sanitizer doesn't, and may help it into the skin. If product touches
-     skin: wash it off and report it, as your site says.
-   - Listen for: "I'd finish the roll first" (stop the slitter first); "I'd tape the gap" (the board says what to
-     wear); "Will one touch hurt me?" (answer calmly: one touch isn't the worry).
-   - Prevented: no small, repeated doses from a product made to pass through skin.
-   - **Twist:** "What if there are no sleeve covers at the gowning point?" Model call: **Stop & get help.** You can't
-     do your gowning step, so you don't handle the potent product. Call your lead.
-4. **Our version.** Ask: "What changes here at a product changeover? The PPE board, the procedure, the waste bins, the
-   labels? Where could we be assuming the last product's set-up still fits?" Capture one or two (section 8).
-5. **Talk-through.** A gowning point or PPE board outside a potent-product room. Don't go in or break gowning for a
-   huddle: use a station outside, or a photo.
-   "Now imagine you find this: halfway through a roll, you see a split in your outer glove." (Model: normal stop, step
-   away, change gloves and wash as your procedure says: your own gowning step.)
-6. **Close.** As step 6, plus: "At every changeover this week, read the board before you go back to the line."
+3. **The reason.** Getting the right gloves on is your own PPE step: it's in your procedure, and you're trained and
+   authorized. Put on the cut-resistant gloves your procedure names, after looking them over: no cuts, holes or worn
+   spots (a damaged pair goes out as your procedure says). Even in those gloves, hold each knife by its holder, never
+   the edge. Slide the knives to their new widths. Cut-resistant gloves off before it runs. Then Go, still locked out: your own
+   locks come off only with your restart checks, as your procedure says.
+   - Why it matters, said calmly: locking out stops the knives moving, but it doesn't make them blunt. Cut-resistant
+     isn't cut-proof. The gloves come off before the slitter is threaded or runs again, because gloves can be caught
+     by moving rolls. If a knife or blade drops, let it fall, step back and warn others. Never catch it.
+   - Listen for: "It's only a quick nudge" (it's still knife work, done locked out); "It's locked out, so it's safe"
+     (stopped isn't blunt); "Cut-resistant gloves mean I can't get cut" (resistant, not cut-proof: hold the holder);
+     "I'd keep them on to thread up" (cut-resistant gloves off before it runs); "If a blade slips I'd grab it" (let it fall, step
+     back, warn others).
+   - Prevented: no cut from a knife that's stopped, but still sharp.
+   - **Twist:** "What if there are no cut-resistant gloves in your size on the hook?" Model call: **Stop & get help.**
+     You can't do your PPE step, so the knife work waits. Call your lead.
+4. **Our version.** Ask: "Which jobs on our line need different gloves from the ones we run it in: knife setting, die
+   changes, splices? Where could we slip into a knife job in our running gloves?" Capture one or two (section 8).
+5. **Talk-through.** A slitter knife station, only when it's stopped and locked out by its own operator, or a photo.
+   Hands off knives and holders: nobody handles a blade for a huddle.
+   "Now imagine you find this: halfway through setting the knives, you see a cut in your glove." (Model: stop, hands
+   off the knives, and swap for a sound pair from the hook as your procedure says: your own PPE step. Report it the
+   usual way: a cut glove is a near miss. No spare pair? Stop & get help.)
+6. **Close.** As step 6, plus: "At every changeover this week, ask: does this job need different gloves? And are they
+   off before it runs?"
 
 #### After the last huddle
 
@@ -665,8 +682,8 @@ Work in pairs. One plays the person who stops, one responds. Two minutes each, t
    I'm not starting."
    Coaching point: never ask them to remove the lock or finish the job. Reach the owner, or follow the site's
    lock-removal procedure.
-5. At a potent-product changeover, an operator calls to check they should stop and put on sleeve covers, which is in
-   their own gowning procedure. The line is behind plan.
+5. At a changeover, an operator calls to check they should put on cut-resistant gloves before moving the slitter
+   knives, which is in their own procedure. The line is behind plan.
    Coaching point: thank them anyway. When in doubt, get help. Don't let the plan show in your voice.
 
 **What the watcher looks for**
@@ -704,7 +721,8 @@ call is what keeps people safe. It also checks objectives 1, 2 and 4 (section 1)
 - Keep the scenarios out of huddles, sorting cards and posters. None of them is one of the four saves.
 - Trial both sets with about five people from an area that is in neither the pilot nor the comparison. Replace any
   item that nearly everyone gets right with a new one that has the same call.
-- EHS checks both sets, and any local names you swap in.
+- EHS checks both sets, and any local names you swap in. Save 4 is a glove change, so EHS also confirms that B1 (the
+  right gloves for a solvent clean) still tests transfer, not recall of Save 4.
 
 ### How to run it (about 5 minutes per person)
 
@@ -732,10 +750,9 @@ call is what keeps people safe. It also checks objectives 1, 2 and 4 (section 1)
 
 Read them as written. Swap the names in [brackets] for local ones.
 
-1. You're about to splice a new roll of [release liner] at the [coater unwind]. Your splice procedure says: unwind
-   stopped, splice on the splice table, and cut-resistant gloves for the splice knife. You're trained and authorized
-   to splice. The unwind is stopped. You have your normal work gloves on. Your cut-resistant gloves are on the shelf
-   beside you.
+1. You're about to start the [pouching machine]. You're trained and authorized to run it. The area is posted for
+   hearing protection while it runs, and your procedure says earplugs in before you start. Your earplugs are in your
+   pocket.
 2. A fitting on the [coater's solvent wash line] is weeping. You have the right wrench, and tightening it would take a
    minute. Maintenance does this work, and there's no permit.
 3. After your break, you go back to the [laminator] you were running. Same batch, same materials. You look: the nip
@@ -758,7 +775,7 @@ Read them as written. Swap the names in [brackets] for local ones.
 
 | # | The clue | Which question catches it | Model call | Reasons that fit | Other calls |
 |---|---|---|---|---|---|
-| A1 | Normal gloves, not the cut-resistant gloves the procedure names | What could hurt us? (also fits: Checked or assumed?) | **Fix it** | The gloves are part of your splice procedure, and you're trained and authorized. Gloves on, then Go. | Stop & get help: a safe miss. Go: an unsafe miss. |
+| A1 | No earplugs in, though the sign and your procedure say so | What could hurt us? (also fits: Checked or assumed?) | **Fix it** | Hearing protection is part of your procedure, and you're trained and authorized. The earplugs are your own. Earplugs in, then Go. | Stop & get help: a safe miss. Go: an unsafe miss. |
 | A2 | A weeping fitting on a solvent line that isn't your job | What could hurt us? (also fits: What if it goes wrong?) | **Stop & get help** | It's a repair you're not authorized for, and there's no permit yet. The line may be under pressure, and the solvent is flammable. Having the tool doesn't make it your job. | Fix it or Go: an unsafe miss. |
 | A3 | No clue: nothing is different, and it was checked | What's different? Nothing, and it was checked | **Go** | Nothing's different, and you checked instead of assuming. The pause took seconds. The time to pause: after a break. | Stop & get help: a safe miss; coach "Most pauses end in Go." Fix it: a miss, not an unsafe miss; ask what they'd fix. |
 | B1 | Cut-resistant gloves, not the solvent-resistant gloves the procedure names | What could hurt us? (also fits: Checked or assumed?) | **Fix it** | The gloves are part of your cleaning procedure, and you're trained and authorized. The lockout is your own, so the job is yours to carry on. Gloves on, then Go. | Stop & get help: a safe miss. Go: an unsafe miss. |
@@ -840,8 +857,8 @@ looks at the practice, not at people. No names.
 - **Sample.** Two handovers or changeovers per area per week, spread across shifts, nights and weekends included. Do the
   same in the comparison area. Start four weeks before the launch, for a baseline.
 - **Tell the crew.** "I'm looking at how handovers work, not at you. No names go on this sheet."
-- **Watch** the first few minutes after the handover or changeover, from a safe spot, outside any gowned or potent
-  room. Don't coach while you watch. If you see danger, stop the job: anyone can.
+- **Watch** the first few minutes after the handover or changeover, from a safe spot, outside any gowned room, and
+  never at a running slitter. Don't coach while you watch. If you see danger, stop the job: anyone can.
 - **Ask one question after:** "What made the pause easier or harder today?"
 - **Feed back** to the crew in general terms at the next huddle: "At handovers this week, we saw..." Never "X didn't...".
 - **Keep it anonymous.** On a small crew, a sheet can point to one person even without a name. EHS holds the raw sheets,
@@ -859,7 +876,7 @@ names)
 | The outgoing and incoming person talk face to face | | | |
 | The handover record shows lock, guard and interlock state (die cutter, slitter, laminator, pouching) | | | |
 | The handover record shows anything unfinished: a die or knife change, a clean, a maintenance tag | | | |
-| At a changeover: the product and its PPE board are checked before hands-on work | | | |
+| At a changeover: the PPE the procedure names for the new job goes on before hands-on work, and comes off before the machine runs where the procedure says so (such as cut-resistant gloves for knife setting) | | | |
 | The next rolls are staged where the line's own trucks and lifters can reach them | | | |
 | Hands off before starting: a pause at the point of work | | | |
 | They look at the equipment: guards, locks, tags, lamps, the PPE board | | | |
@@ -1001,7 +1018,7 @@ locked.
 | Look | Around the job and compare with the plan. |
 | Ask | Ask yourself the four questions. |
 | What's different? | Anything new, changed, or not as planned? |
-| What could hurt us? | Moving parts, power, heat, sparks, solvents, heavy loads, potent product? |
+| What could hurt us? | Moving parts, power, heat, sparks, solvents, heavy loads, sharp blades? |
 | Checked or assumed? | Checked means you saw or tested it yourself. Assumed means you're guessing. |
 | What if it goes wrong? | Where does it go? Who is in the way? |
 | Decide | Make one of three calls. |
@@ -1020,9 +1037,8 @@ locked.
 | Handover · Changeover | One person or shift passes the job to the next. At a changeover, the line switches to a new product or batch. |
 | Line clearance | Checking the line is clear before each run. The 2-minute rule is line clearance for people. |
 | Bonding · BOND lamp | Clamps and wires that join the drum, the pump and the tank, so static charge can't build up and spark. The lamp shows it's connected: red, not bonded; green, bonded. |
-| Potent | Strong in tiny amounts. |
-| PPE · PPE board | Your protective gear. The board at the room door shows the PPE for the product running now. |
-| Gowning step · Gowning point | Putting on the PPE the board and your procedure name, and the place by the door where you do it. |
+| PPE · PPE board | Your protective gear. Your procedure names the PPE for each job; a PPE board shows it at a room or machine. |
+| Cut-resistant gloves | Gloves made to resist cuts from blades. Resistant, not cut-proof. Your procedure names which ones, from your site's hazard assessment. Look them over before use. Worn for knife work on a stopped, locked-out machine; off before it runs again, as your procedure says. |
 | Roll staging | Where rolls wait for the line, on the warehouse side of the line's material airlock. |
 | Pallet truck · Forklift | A pallet truck is walk-behind and moves pallets at floor level. A forklift is ride-on and lifts loads high. They are different types of truck, and each needs its own training. |
 | Trained on | Your site's record of the trucks you're trained, evaluated and authorized to drive: a card, a badge or a posted list. OSHA doesn't issue licences or cards. |
@@ -1038,7 +1054,9 @@ locked.
 | Permit | Written permission for a higher-risk job, like reaching into a vessel or hot work. "No permit yet" means Stop & get help. If you hold the permit and the step is in it, it can be Fix it. |
 | Guard · Interlock | A guard keeps hands out. An interlock stops the machine when the guard opens. |
 | Die station | Where the die cutter cuts the patches. |
-| Awareness training | Training that builds a habit. It doesn't qualify you for lockout, solvent bonding, driving a truck, potent-product handling or any procedure. |
+| Slitter · Knife setting | A slitter cuts a wide roll into narrow ones with a row of razor knives. Knife setting: moving the knives to the new product's widths, with the slitter locked out (power and air). |
+| Knife holder | Holds a slitter knife on the knife bar. You hold the holder, never the edge. |
+| Awareness training | Training that builds a habit. It doesn't qualify you for lockout, solvent bonding, driving a truck, knife handling or any procedure. |
 
 **Translation notes**
 
@@ -1048,7 +1066,8 @@ locked.
   can't be confused, because the difference is the whole point of Save 2.
 - "Bonding" and "grounding" are different ideas. Bonding joins two things; grounding connects them to earth. If your
   language has one word for both, add the plain meaning the first time.
-- "Potent" means strong in tiny amounts. Don't translate it as "poison" or "toxic".
+- "Cut-resistant gloves" resist cuts; they aren't cut-proof. Don't translate it as "cut-proof", or as gloves that are
+  cut.
 - "Line" means the production line. This guide calls the limit between Fix it and Stop & get help the "boundary rule",
   never "the line". Keep it that way in translation.
 - Test each translation with two or three people from the floor before you print.

@@ -340,23 +340,22 @@
    "post": 0.6
   },
   {
-   "id": "save-4-potent-ppe",
-   "chapter": "Save 4 · Potent product",
+   "id": "save-4-slitter-knives",
+   "chapter": "Save 4 · Slitter knives",
    "cues": [
     {
      "id": "s10-1",
-     "text": "The slitter changes over to a potent product, strong in tiny amounts.",
+     "text": "At changeover, you've locked out the slitter to move its knives to new widths.",
      "after": 0.6
     },
     {
      "id": "s10-2",
      "text": "Your turn. What would make you stop here?",
-     "after": 3.0
+     "after": 3
     },
     {
      "id": "s10-3",
-     "text": "What could hurt us? This product, on bare wrists.\nNow it's double gloves and sleeve covers.",
-     "tts": "What could hurt us? This product, on bare wrists. Now it's double gloves and sleeve covers.",
+     "text": "What could hurt us? Razor-sharp knives. Your thin gloves aren't made for blades.",
      "after": 0.7
     },
     {
@@ -366,27 +365,28 @@
     },
     {
      "id": "s10-5",
-     "text": "Fix it. Putting on the right gear is your own gowning step.",
+     "text": "Fix it. Getting the right gloves on is your own PPE step.",
      "after": 0.5
     },
     {
      "id": "s10-6",
-     "text": "Do a normal stop, step away,\nand take off your gloves as your procedure says.",
-     "tts": "Do a normal stop, step away, and take off your gloves as your procedure says.",
-     "after": 0.4
+     "text": "Put on the cut-resistant gloves your procedure names.",
+     "after": 0.6
     },
     {
      "id": "s10-7",
-     "text": "Wash hands and wrists with soap and water, not hand sanitizer."
+     "text": "Even in those gloves, hold each knife by its holder, never the edge.",
+     "after": 0.4
     },
     {
      "id": "s10-8",
-     "text": "Then put on inner gloves, sleeve covers, and outer gloves over the cuffs. Go.",
+     "text": "Then slide the knives to their new widths.\nCut-resistant gloves off before it runs. Go.",
+     "tts": "Then slide the knives to their new widths. Cut-resistant gloves off before it runs. Go.",
      "after": 0.6
     },
     {
      "id": "s10-9",
-     "text": "No small, repeated doses from a product made to pass through skin."
+     "text": "No cut from a knife that's stopped, but still sharp."
     }
    ],
    "pre": 1.4,

@@ -27,8 +27,8 @@ out += ["## The last screens", "",
         "Your lead: days ____ · nights ____ · weekends ____ · Radio or phone: ____ · No answer? Call: ____ · "
         "Report what I caught to: ____ · Write it on your pocket card.", "",
         f"**End card** ({mmss(end)}), under the last spoken line: *Follow your site's procedures. "
-        "This video is awareness training only: not lockout, solvent-bonding, forklift-operator or potent-compound handling training.*", "",
-        "Sources: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147 (lockout/tagout), including (e)(3) on removing another person's lock; OSHA 29 CFR 1910.106(e)(6)(ii) and NFPA 77 (bonding before dispensing flammable liquids); OSHA 29 CFR 1910.178(l) (powered industrial truck operator training) and (m)(2) (no one under raised forks); NIOSH skin-exposure guidance (wash skin with soap and water).", "",
+        "This video is awareness training only: not lockout, solvent-bonding, forklift-operator or knife-handling training.*", "",
+        "Sources: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147 (lockout/tagout), including (e)(3) on removing another person's lock; OSHA 29 CFR 1910.106(e)(6)(ii) and NFPA 77 (bonding before dispensing flammable liquids); OSHA 29 CFR 1910.178(l) (powered industrial truck operator training) and (m)(2) (no one under raised forks); OSHA 29 CFR 1910.132(d) and 1910.138 (hazard assessment; hand protection chosen for the task); ANSI/ISEA 105 (glove cut ratings).", "",
         "*Use cases are illustrative composites, not real incidents. Narration is a synthesized voice.*", ""]
 (ROOT / "transcript.md").write_text("\n".join(out))
 print("transcript.md:", len(t["cues"]), "lines")

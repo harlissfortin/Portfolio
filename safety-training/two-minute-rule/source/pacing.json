@@ -33,7 +33,7 @@
    "pre": 1.4,
    "post": 0.6
   },
-  "save-4-potent-ppe": {
+  "save-4-slitter-knives": {
    "pre": 1.4,
    "post": 1.4
   },
@@ -155,7 +155,7 @@
    "after": 0.6
   },
   "s10-2": {
-   "after": 3.0
+   "after": 3
   },
   "s10-3": {
    "after": 0.7
@@ -167,6 +167,9 @@
    "after": 0.5
   },
   "s10-6": {
+   "after": 0.6
+  },
+  "s10-7": {
    "after": 0.4
   },
   "s10-8": {

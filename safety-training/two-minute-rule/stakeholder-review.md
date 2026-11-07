@@ -1,9 +1,9 @@
 # The 2-Minute Rule: stakeholder review and rollout guide
 
-The video is now **"The 2-Minute Rule: One Shift on a Patch Line"** (about 6:42), set at a transdermal patch
-manufacturing site. It follows one shift through four saves: solvent transfer, roll staging, the die cutter and a
-potent product. This document has two parts: the leadership review and where its changes stand in this version, and
-the rollout guide.
+The video is now **"The 2-Minute Rule: One Shift on a Patch Line"** (about 6:39), set at a transdermal patch
+manufacturing site. It follows one shift through four saves: solvent transfer, roll staging, the die cutter and the
+slitter knives at a changeover. This document has two parts: the leadership review and where its changes stand in
+this version, and the rollout guide.
 
 > **What this review is, and isn't.** Every review in this document was simulated: independent AI reviewers, each
 > briefed to read the script in one role (a site safety (EHS) manager, an operations director and a manufacturing site
@@ -14,6 +14,8 @@ the rollout guide.
 > **Version note.** The three leadership perspectives reviewed version 3, an earlier pharma script with six saves.
 > They have not re-reviewed this version. Version 4 implemented a master-trainer review, and version 5 rebuilt the
 > video for a transdermal patch site, shorter and with four saves on one shift; see [`trainer-review.md`](trainer-review.md).
+> 2026-11-06: at the user's request, Save 4 changed from a potent product to cut-resistant gloves at the slitter
+> knives (Fix it: your own PPE step).
 > The tables below show where each change the leaders asked for stands now. The **rollout guide** at the end of this
 > document is current for version 5 and matches [`facilitator-guide.md`](facilitator-guide.md).
 
@@ -24,7 +26,7 @@ the rollout guide.
 | 1 · Solvent transfer | Early | Before you start | Checked or assumed? | Fix it | A step in your procedure: bonding clamps on bare metal, lamp green, before you pump flammable solvent from a drum into the adhesive mix tank. "Won't go green? Stop & get help." |
 | 2 · Roll staging | Just after the break | After a break | What's different? | Stop & get help | Not authorized: trained on the pallet truck, not the forklift. |
 | 3 · Die cutter | Mid-shift | Handover | Checked or assumed? | Stop & get help | Someone else's unfinished work: the guard is off the die station and someone else's lock is on the power switch. |
-| 4 · Potent product | Late | Change | What could hurt us? | Fix it | Your own gowning step: double gloves and sleeve covers, no skin showing. |
+| 4 · Slitter knives | Late | Change | What could hurt us? | Fix it | Your own PPE step: the cut-resistant gloves your procedure names, with the slitter locked out (power and air) under your own locks; each knife by its holder, never the edge; cut-resistant gloves off before it runs. |
 
 A routine Go comes first: moving a laminate roll with the roll lifter, before you start. It is the only place
 "What if it goes wrong?" is answered aloud ("Nobody's in the aisle"). Two saves are Fix it, two are Stop & get help,
@@ -52,10 +54,12 @@ These points from the leadership review carry over to the patch line:
 - **Technically specific controls.** Bonding clamps on bare metal on the drum and the pump before the drum is opened,
   a conductive hose, then a green lamp. Only the lock's owner removes it, or a supervisor under the site's
   lock-removal procedure (29 CFR 1910.147(e)(3)). Everyone stands clear before the forks rise (29 CFR 1910.178(m)(2)).
-  Hands and wrists washed with soap and water, not hand sanitizer, before the product's gloves go on.
+  Cut-resistant gloves on before knife work, with the slitter locked out (power and air) under your own locks, since
+  setting knives is servicing (29 CFR 1910.147(b)); each knife held by its holder, never the edge, because
+  cut-resistant isn't cut-proof; and the cut-resistant gloves off before it runs.
 - **No villains.** Every catch comes from a system gap: a pallet moved up high during your break, a handover note that
-  says "ready to run", a changeover to a stronger product. The co-worker in Save 2 means well and agrees ("Fair
-  enough."), and nobody is blamed.
+  says "ready to run", a changeover that turns running the slitter into knife work. The co-worker in Save 2 means
+  well and agrees ("Fair enough."), and nobody is blamed.
 - **Huddle-friendly structure.** The save template, the one-second sting and the recap card make each save usable on
   its own. The shift strip shows where each save happens, but only its dot changes, so each chapter still plays alone.
 
@@ -71,15 +75,15 @@ in the CIP save, which is not in this version.
 | The main control first (inerting before grounding, in the powder-charge save) | Safety manager, site lead | That save was cut. Save 1 follows the same order: clamps first, on bare metal, before the drum is opened or the pump's wand goes in. The wand never goes into the drum before the lamp is green. |
 | A non-routine jam, not "lock out every jam" (the blister-packer save) | Ops director, site lead, safety manager | That save was cut. The jam and re-thread boundary for each machine stays a site task in the rollout guide. |
 | Isolate, test, ventilate, retest, permit: "No permit, no Go" (the filter-dryer save) | Safety manager, site lead | That save was cut, and the video no longer covers confined spaces. The rule keeps the permit: "No permit yet? Someone else's unfinished work? Not authorized? Stop & get help." |
-| A visible glove cut, and a leak test before the new glove is used (the isolator save) | Site lead, safety manager | That save was cut. Potent products are now Save 4: your own gowning step, soap and water rather than hand sanitizer, and no exposure-band numbers on screen. |
+| A visible glove cut, and a leak test before the new glove is used (the isolator save) | Site lead, safety manager | That save was cut. Save 4 is now slitter knives at a changeover: your own PPE step (cut-resistant gloves). No glove cut or cut level is shown; the Save 4 huddle's talk-through asks what you do on finding a cut in your glove. |
 | Call your lead; the authorized person finishes; release checks before Go (the tablet-press save) | Ops director, safety manager | Carried into Save 3 (you call your lead; the lock's owner finishes and removes it; restart checks) and Save 2 (your lead sends a trained driver). |
 | "On a repeat task with nothing different, it takes seconds." | Ops director | Kept: the routine Go ends "Go. That took seconds." |
 | No spoken CFR citation; the citation stays on screen | Ops director, site lead | Kept. 21 CFR 211.130(e) and 29 CFR 1910.178(l) appear on screen only. |
 | "Anyone can stop a job, staff or contractor, even on a late batch." | Safety manager, site lead | Kept, with "No punishment, no blame." |
 | "Leaders come quickly, thank you, fix the cause, and tell you what changed." | Site lead, ops director | Kept, and now also shown in Save 2: the lead asks "Thanks. What did you see?" and sends a trained driver; the leaders scene shows "Fixed. Here’s what changed." |
 | "It's not a form. Report what you caught through your usual channels." | Safety manager, ops director, site lead | Kept: "The pause isn't a form." On screen: "Report what you caught the usual way". |
-| A "Your site" slate, and an end-card line saying it is awareness training only | All three | Kept. The end card now reads: *awareness training only: not lockout, solvent-bonding, forklift-operator or potent-compound handling training*. |
-| Chapters named by save | Site lead | Kept: "Save 1 · Solvent transfer", "Save 2 · Roll staging", "Save 3 · Die cutter", "Save 4 · Potent product". |
+| A "Your site" slate, and an end-card line saying it is awareness training only | All three | Kept. The end card now reads: *awareness training only: not lockout, solvent-bonding, forklift-operator or knife-handling training*. |
+| Chapters named by save | Site lead | Kept: "Save 1 · Solvent transfer", "Save 2 · Roll staging", "Save 3 · Die cutter", "Save 4 · Slitter knives". |
 
 Where two reviewers proposed different wordings for the same issue, technical safety accuracy won, then the brief
 (focused, practical, not morbid), then operational realism, then adoption. The version 5 script checks used the same
@@ -146,8 +150,9 @@ before anyone sees it.
   whose transfer procedure has the bonding step; in Save 2, "you" are trained on the pallet truck and the roll lifter,
   and only a driver trained, evaluated and authorized on that forklift brings the pallet down; in Save 3, only the
   lock's owner, or a supervisor under the documented lock-removal procedure, removes the lock; in Save 4, putting on
-  the product's protective gear is the operator's own gowning step. Each area confirms its list. The sorting cards are
-  built from it, and none of them is one of the four saves, so they test the rule, not recall of the video.
+  the cut-resistant gloves the procedure names is the operator's own PPE step, where operators are trained and
+  authorized to move slitter knives. Each area confirms its list. The sorting cards are built from it, and none of
+  them is one of the four saves, so they test the rule, not recall of the video.
 - **Check the four saves against your site.** The video shows one composite patch line. Where yours differs, say so at
   that save's huddle, or change the drawing and re-render (see the [README](README.md)). Confirm each of these with EHS and the
   area lead:
@@ -175,24 +180,31 @@ before anyone sees it.
   - **Save 3, die cutter:** whether lockout tags carry a name or a badge number; your documented lock-removal
     procedure (the owner is not on site, every reasonable effort is made to reach them, and they are told before they
     are back at work); and who signs off the restart.
-  - **Save 4, potent product:** PPE comes from your site's own exposure assessment (OEL or OEB), with no band numbers
-    on screen; whether a coat is standard in the room; whether potent products run only in dedicated suites with
-    gowning outside the room; and your skin-contact reporting steps.
-  - **The rule card's Fix-it example:** whether operators may clean drug-in-adhesive drips on potent lines. If not,
+  - **Save 4, slitter knives:**
+    - *Who moves the knives.* Whether operators are trained and authorized to move or change slitter knives. If not,
+      the call on that line is Stop & get help.
+    - *Lockout points.* Where power and air (for pneumatic knife holders) are locked out, and confirm that changeover
+      knife setting is done locked out: setting up is servicing (1910.147(b)).
+    - *The gloves.* Which cut-resistant gloves the hazard assessment names, and whether they're worn over product
+      gloves (as drawn) or as a liner under them. No cut level or brand is shown on screen.
+    - *Gloves off.* That the gloves come off before threading and restart.
+    - *Used blades.* Where used blades go.
+  - **The rule card's Fix-it example:** whether operators may clean drug-in-adhesive drips on your lines. If not,
     use the trim-waste bag example alone.
   - **Not shown:** lines with DEA-controlled products. Add your own accountability steps for those lines.
   - **Before release, check the cited text on eCFR:** 1910.178(c), (l) including (l)(6), (m)(2), (m)(5), (n)(4) and
     (q)(7); 1910.147(c)(5)(ii)(D), (e)(3) and (f)(4); 1910.106(e)(6)(ii); 1910.176. This project confirmed them only
-    through reproductions.
+    through reproductions. Also check 1910.132(d), 1910.138(a)-(b) and 1910.147(b), with the minor-servicing note to
+    (a)(2)(ii), which it confirmed only through search-result excerpts.
 - **A job aid for every person and every point of work.** Print the [job aid](job-aid/): an A6 pocket card for each
   person, and a sign (A4 or US Letter) at each point of work. An optional badge card carries the same words in small
   print. Fill in the local help: your lead (days, nights, weekends), radio or phone, who to call if there's no answer,
   and where to report a catch. Contractors write the host area lead or their permit issuer. It is not a form: no
-  signatures, no tick boxes. In classified rooms and potent-product suites, post the sign outside the gowning room or
-  airlock door, or outside the viewing window, or use a wipe-clean version approved by QA. Pocket cards stay outside
-  the gowning point unless your site has approved a version for inside. The video's closing slate asks "Who do you
-  call for help?", with blanks for days, nights, weekends and the radio channel or extension, and says "Write it on
-  your pocket card." The job aid is where the answer goes.
+  signatures, no tick boxes. In classified rooms, post the sign outside the gowning room or airlock door, or outside
+  the viewing window, or use a wipe-clean version approved by QA. Pocket cards stay outside the gowning point unless
+  your site has approved a version for inside. The video's closing slate asks "Who do you call for help?", with blanks
+  for days, nights, weekends and the radio channel or extension, and says "Write it on your pocket card." The job aid
+  is where the answer goes.
 - **Sorting cards and call cards printed, with local names.** Swap in your own equipment and permit names. The area
   lead and EHS confirm the model answers on the cards marked "check locally" against the fix list. Each card set keeps
   at least one Fix it and one Stop & get help.
@@ -206,8 +218,8 @@ before anyone sees it.
 - **Facilitators ready.** Each has watched the full video, read the facilitator guide, done the response rehearsal, and
   has their sorting cards, call cards and the huddle sheet.
 - **Record it as awareness training only.** Don't credit it toward 1910.147 lockout, 1910.178(l) powered-truck
-  operator training or evaluation, solvent-bonding or potent-compound handling training, or toward a procedure
-  qualification. Watching Save 2 authorizes nobody to drive anything.
+  operator training or evaluation, solvent-bonding or knife-handling training, or toward a procedure qualification.
+  Watching Save 2 authorizes nobody to drive anything, and watching Save 4 authorizes nobody to move slitter knives.
 - **Localize and translate.** Use local permit, equipment and truck names on the job aid and sorting cards. Non-US sites
   swap in their own line-clearance, lockout, flammable-liquid and lift-truck references (e.g. EU GMP Part I Ch. 5 for
   line clearance). Translate captions, voice, job aid, cards and decision check with the one locked glossary in the
@@ -241,8 +253,8 @@ before anyone sees it.
   the other steps, but never drop the talk-through.
 - **Every area runs all four saves.** The default order is 1 to 4, the order of the shift: Fix it, Stop & get help,
   Stop & get help, Fix it. Areas may start with the save closest to their work: mixing and coating, Save 1;
-  warehouse, staging and roll handling, Save 2; die cutting and other converting, Save 3; slitting and potent-product
-  suites, Save 4. The huddle notes are written by save, so any order works.
+  warehouse, staging and roll handling, Save 2; die cutting and other converting, Save 3; slitting, Save 4. The huddle
+  notes are written by save, so any order works.
 - **The Save 2 huddle.** Use the two candidates that were not chosen as extra twists or discussion prompts: a roll
   heavier than the roll lifter's rated capacity, and a bent rack upright. Cover the forklift pre-use check and the horn
   at cross aisles here, not as a reason to drive: they are the trained driver's steps. Invite a trained driver or the
@@ -265,8 +277,8 @@ before anyone sees it.
 - **Fix staging.** Decide where each line's next rolls wait, so the line's own pallet truck can reach them, and who
   drives when a forklift is needed, breaks included. Save 2 is exactly this gap.
 - **Engineer catches out** under management of change. Examples: a bonding monitor that keeps the drum pump off until
-  the bond is proven; a die-station guard interlock; floor-level spots for each line's next roll; a PPE board that
-  changes with the product at changeover.
+  the bond is proven; a die-station guard interlock; floor-level spots for each line's next roll; cut-resistant gloves
+  in every size stocked at each knife station.
 - **Recognize catches without a quota.** Thank people in the moment, share stories with consent, and post fixes on a
   "You caught it, we fixed it" board. No targets, prizes or league tables.
 - **Guard investigations against blame.** "Failed to perform the 2-minute rule" is not an acceptable root cause or a
