@@ -74,20 +74,20 @@ Scene plan and narration. Cue ids match `captions.vtt`, `source/timing.json` and
 
 **Purpose.** Set the base rate: most pauses end in Go. Define a save as a pause where a question catches a problem. Introduce four saves, say once that they are examples, not real events, and tell the viewer each save asks twice: find the problem, then pick the call.
 
-**Visual.** (~16 s) Light theme. Line 1: the heading 'Most pauses end in Go' rises top-left. The shift strip from the title grows into a full-width shift timeline across the middle of the stage, 'Start of shift' at the left, a small cup icon for the break, 'End of shift' at the right. It holds a dense run of small grey ticks, too many to count, which flip green in a fast wave from left to right over about 2 s. Four larger amber-outlined rings, irregularly spaced (one early, one just after the cup, one mid-shift, one late), stay outlined. A legend fades in under it: a green tick 'A pause that ended in Go' and an amber ring 'A pause that caught a problem'. Line 2: on 'catches', the four rings swell and settle once; on 'save', the title 'Four two-minute saves' starts to rise. Line 3: the timeline slides up to become the shift strip; the title 'Four two-minute saves' rises with the muted 'A save = a pause that caught a problem' beside it. Four tiles pop in a row, in shift order, each under its ring, with a left stripe in the colour of the question that catches it, an icon, a title and a trigger chip: 1 drum 'Solvent transfer', 'Before you start' (teal); 2 pallet-of-rolls 'Roll staging', 'After a break' (blue); 3 die cylinder 'Die cutter', 'Handover' (teal); 4 glove 'Slitter knives', 'Change' (violet). On 'examples', a small grey tag fades in under the row: 'Four examples, not real events'. Line 4: an amber pill with a magnifier pops in beside the tag: 'Each one asks you twice: find the problem, then pick your call'. Everything holds to the end of the scene.
+**Visual.** (~16 s) Light theme. Line 1: the heading 'Most pauses end in Go' rises top-left. The shift strip from the title grows into a full-width shift timeline across the middle of the stage, 'Start of shift' at the left, a small cup icon for the break, 'End of shift' at the right. It holds a dense run of small grey ticks, too many to count, which flip green in a fast wave from left to right over about 2 s. Four larger amber-outlined rings, irregularly spaced (one early, one just after the cup, one mid-shift, one late), stay outlined. A legend fades in under it: a green tick 'A pause that ended in Go' and an amber ring 'A pause that caught a problem'. Line 2: on 'catches', the four rings swell and settle once; on 'save', the title 'Four two-minute saves' starts to rise. Line 3: the timeline slides up to become the shift strip; the title 'Four two-minute saves' rises with the muted 'A save = a pause that caught a problem' beside it. Four tiles pop in a row, in shift order, each under its ring, with a left stripe in the colour of the question that catches it, an icon, a title and a trigger chip: 1 drum 'Solvent transfer', 'Before you start' (teal); 2 pallet-of-rolls 'Roll staging', 'After a break' (blue); 3 die cylinder 'Die cutter', 'Handover' (teal); 4 glove 'Blade change', 'Change' (violet). On 'examples', a small grey tag fades in under the row: 'Four examples, not real events'. Line 4: an amber pill with a magnifier pops in beside the tag: 'Each one asks you twice: find the problem, then pick your call'. Everything holds to the end of the scene.
 
 | Cue | Narration | On screen |
 |---|---|---|
 | `s6-1` | Most pauses end in Go. | Most pauses end in Go · shift timeline · legend: A pause that ended in Go / A pause that caught a problem |
 | `s6-2` | But sometimes a pause catches a problem. That's a save. | Four two-minute saves · A save = a pause that caught a problem |
-| `s6-3` | Here are four examples, not real events. | Solvent transfer · Roll staging · Die cutter · Slitter knives · Four examples, not real events |
+| `s6-3` | Here are four examples, not real events. | Solvent transfer · Roll staging · Die cutter · Blade change · Four examples, not real events |
 | `s6-4` | Each one asks you twice: find the problem, then pick your call. | Each one asks you twice: find the problem, then pick your call |
 
 ## 7. save-1-solvent-bonding — Save 1 · Solvent transfer
 
 **Purpose.** Q3, Checked or assumed?, before you start in the mix room. You're about to transfer flammable solvent from a drum to the adhesive mix tank with an air drum pump. Both green bonding clamps still hang on their hook by the wall bonding reel, not on the drum or pump, and the BOND lamp is red. An unbonded drum or pump can hold a static charge and spark where solvent vapor comes out (fact-check wording). Fix it: bonding is a step in your procedure. Clamps first, on bare metal on the drum and the pump, before the bung is opened or the wand goes in; the hose is the conductive type; the lamp turns green; then Go. If it won't go green, Stop & get help (on screen; this also shows 'the fix doesn't work'). Prevented: no static spark where the vapor comes out (mostly at the receiving tank, where vapor is pushed out as it fills; fact-check). The 'what if' spark and the vapor are drawn in the same place. The silhouette wears the site's solvent PPE. No flame and no named solvent.
 
-**Visual.** SAVE TEMPLATE for scenes 7 to 10. Each save opens with the 1 s sting, no narration: four amber-bordered tiles, STOP · LOOK · ASK · DECIDE, pop in across the centre and fade. Then the top band, stage and case card fade in together. The top band holds the save tag ('Save N · title') and the trigger chip (with the same icon as the rule scene) on the left. Directly under it runs the SHIFT STRIP: a thin line from 'Start of shift' to 'End of shift', a small cup icon at the break, and an amber dot marking where this save happens. The dot is the only thing on the strip that changes between saves, so each chapter still plays alone. Right-aligned under the band sits the question rail: four numbered pills, '1 What's different?' (blue), '2 What could hurt us?' (violet), '3 Checked or assumed?' (teal), '4 What if it goes wrong?' (plum), dimmed to about 60% until asked. The stage is 1080 x 642 with the floor at y = 600, drawn flat in the TD palette; the case card sits to the right of the stage with the rows 'The catch' (magnifier), 'The call' (signpost) and 'What it prevented' (shield). The clue is drawn in the very first frame and is never highlighted before the narration names it. Hold 1: a 'What would make you stop here?' card pops over the case card (amber border, magnifier, 'Look at the picture.' / 'Watching alone? Pause now.'); its amber ring fills through the 3 s silent hold and it fades just before the next line. The card text never changes. When the catch is named, a red ring lands on the clue and throbs, and 'The catch' fills. Hold 2: a 'Your call?' card pops over the case card with Go, Fix it and Stop & get help in outline; its ring fills through 2.4 s; on the reveal the right call fills, and about 1.6 s later the card fades to show the decision chip in 'The call' with its spoken reason in bold under it. Later a grey arrow and a green 'Go' chip join the decision chip. One circular close-up inset component (centre about (900, 135), r about 105, thin leader line) serves Save 2's TRAINED ON card (centre about (900, 135)) and Save 4's glove and knife-holder close-ups (centre about (410, 118), above you). No flames, injuries, falling loads or collapsed figures anywhere in the saves. ─ SAVE 1 (~42 s, including the 1 s sting). Top band: 'Save 1 · Solvent transfer' with the chip 'Before you start' (play icon); the shift-strip dot sits early in the shift, after the routine Go; question pill 3 is teal. Stage, from the first frame: the mix room. Left of centre, a steel drum labelled 'FLAMMABLE SOLVENT', its bung closed. Beside it, an air drum pump: its wand (the long tube that goes into the drum) stands in a wall holder, not in the drum; a thin air line runs to its motor, and a black hose runs right to the 'ADHESIVE MIX TANK' (a tank with an agitator motor on top and a small fixed ground symbol at its foot, so the tank doesn't read as a second catch). THE CLUE: on the wall left of the drum, a bonding reel with a hook; both green bonding clamps hang on the hook, and nothing is clipped to the drum or the pump. The reel sits in a small wall panel labelled 'BONDING', with an indicator lamp lit red. The silhouette stands by the drum, one hand near the pump's air valve, already in the site's solvent PPE (safety glasses and solvent-resistant gloves), so missing PPE never reads as a second catch. Line 1: the drum's 'FLAMMABLE SOLVENT' label is already in view. Line 2: on 'Hands off', the hand draws back from the valve; the hold card pops and its ring fills through 3 s. Line 3: pill 3 (teal, 'Checked or assumed?') lights. On 'bonding', the grey gloss tag 'Bonding = clamps and wires that stop static sparks' rises above the reel. On 'hook', a red ring lands on the two hanging clamps and the red lamp and throbs, and 'The catch' fills: 'Clamps still on their hook'. Line 4: at the mix tank's opening, where the hose enters, faint grey vapor lines rise, and in that same spot a faint, dashed amber bolt labelled 'Static charge' flickers once. It is dashed because it is a 'what if': nothing is flowing yet, and the drum's bung stays closed. The spark is never drawn away from the vapor. No flame. Line 5: the 'Your call?' card, 2.4 s. Line 6: 'Fix it' fills; the card fades to show the amber chip with the reason 'A step in your procedure'. The bolt and vapor fade. On 'clamps first', the clamps leave the hook and a muted label rises: 'Clamps first, on bare metal'. On 'bare metal', one clamp bites a small bright square on the drum rim labelled 'bare metal' and the other a bright square on the pump body. Line 7: on 'drum' and 'pump', ticks pop: 'Drum ✓', 'Pump ✓', then, on 'bonded', 'Hose: conductive ✓' and 'Tank: grounded ✓'. On 'green', the lamp turns green and reads 'BONDED', and a small grey tag sets under it: 'Won't go green? Stop & get help'. Only then do the bung open and the wand slide into the drum, as 'Go' is spoken (allow about 0.5 s); on 'Go', an arrow leads to a green 'Go' chip. The wand never enters the drum before the lamp is green. Line 8: the faint dashed bolt returns at that same spot, the tank opening where the vapor is, with a grey ✕ over it, and 'What it prevented' fills: 'No static spark where the vapor comes out'.
+**Visual.** SAVE TEMPLATE for scenes 7 to 10. Each save opens with the 1 s sting, no narration: four amber-bordered tiles, STOP · LOOK · ASK · DECIDE, pop in across the centre and fade. Then the top band, stage and case card fade in together. The top band holds the save tag ('Save N · title') and the trigger chip (with the same icon as the rule scene) on the left. Directly under it runs the SHIFT STRIP: a thin line from 'Start of shift' to 'End of shift', a small cup icon at the break, and an amber dot marking where this save happens. The dot is the only thing on the strip that changes between saves, so each chapter still plays alone. Right-aligned under the band sits the question rail: four numbered pills, '1 What's different?' (blue), '2 What could hurt us?' (violet), '3 Checked or assumed?' (teal), '4 What if it goes wrong?' (plum), dimmed to about 60% until asked. The stage is 1080 x 642 with the floor at y = 600, drawn flat in the TD palette; the case card sits to the right of the stage with the rows 'The catch' (magnifier), 'The call' (signpost) and 'What it prevented' (shield). The clue is drawn in the very first frame and is never highlighted before the narration names it. Hold 1: a 'What would make you stop here?' card pops over the case card (amber border, magnifier, 'Look at the picture.' / 'Watching alone? Pause now.'); its amber ring fills through the 3 s silent hold and it fades just before the next line. The card text never changes. When the catch is named, a red ring lands on the clue and throbs, and 'The catch' fills. Hold 2: a 'Your call?' card pops over the case card with Go, Fix it and Stop & get help in outline; its ring fills through 2.4 s; on the reveal the right call fills, and about 1.6 s later the card fades to show the decision chip in 'The call' with its spoken reason in bold under it. Later a grey arrow and a green 'Go' chip join the decision chip. One circular close-up inset component (centre about (900, 135), r about 105, thin leader line) serves Save 2's TRAINED ON card (centre about (900, 135)) and Save 4's glove and blade-change close-ups (centre about (410, 118), above you). No flames, injuries, falling loads or collapsed figures anywhere in the saves. ─ SAVE 1 (~42 s, including the 1 s sting). Top band: 'Save 1 · Solvent transfer' with the chip 'Before you start' (play icon); the shift-strip dot sits early in the shift, after the routine Go; question pill 3 is teal. Stage, from the first frame: the mix room. Left of centre, a steel drum labelled 'FLAMMABLE SOLVENT', its bung closed. Beside it, an air drum pump: its wand (the long tube that goes into the drum) stands in a wall holder, not in the drum; a thin air line runs to its motor, and a black hose runs right to the 'ADHESIVE MIX TANK' (a tank with an agitator motor on top and a small fixed ground symbol at its foot, so the tank doesn't read as a second catch). THE CLUE: on the wall left of the drum, a bonding reel with a hook; both green bonding clamps hang on the hook, and nothing is clipped to the drum or the pump. The reel sits in a small wall panel labelled 'BONDING', with an indicator lamp lit red. The silhouette stands by the drum, one hand near the pump's air valve, already in the site's solvent PPE (safety glasses and solvent-resistant gloves), so missing PPE never reads as a second catch. Line 1: the drum's 'FLAMMABLE SOLVENT' label is already in view. Line 2: on 'Hands off', the hand draws back from the valve; the hold card pops and its ring fills through 3 s. Line 3: pill 3 (teal, 'Checked or assumed?') lights. On 'bonding', the grey gloss tag 'Bonding = clamps and wires that stop static sparks' rises above the reel. On 'hook', a red ring lands on the two hanging clamps and the red lamp and throbs, and 'The catch' fills: 'Clamps still on their hook'. Line 4: at the mix tank's opening, where the hose enters, faint grey vapor lines rise, and in that same spot a faint, dashed amber bolt labelled 'Static charge' flickers once. It is dashed because it is a 'what if': nothing is flowing yet, and the drum's bung stays closed. The spark is never drawn away from the vapor. No flame. Line 5: the 'Your call?' card, 2.4 s. Line 6: 'Fix it' fills; the card fades to show the amber chip with the reason 'A step in your procedure'. The bolt and vapor fade. On 'clamps first', the clamps leave the hook and a muted label rises: 'Clamps first, on bare metal'. On 'bare metal', one clamp bites a small bright square on the drum rim labelled 'bare metal' and the other a bright square on the pump body. Line 7: on 'drum' and 'pump', ticks pop: 'Drum ✓', 'Pump ✓', then, on 'bonded', 'Hose: conductive ✓' and 'Tank: grounded ✓'. On 'green', the lamp turns green and reads 'BONDED', and a small grey tag sets under it: 'Won't go green? Stop & get help'. Only then do the bung open and the wand slide into the drum, as 'Go' is spoken (allow about 0.5 s); on 'Go', an arrow leads to a green 'Go' chip. The wand never enters the drum before the lamp is green. Line 8: the faint dashed bolt returns at that same spot, the tank opening where the vapor is, with a grey ✕ over it, and 'What it prevented' fills: 'No static spark where the vapor comes out'.
 
 | Cue | Narration | On screen |
 |---|---|---|
@@ -138,109 +138,147 @@ Scene plan and narration. Cue ids match `captions.vtt`, `source/timing.json` and
 | `s9-8` | The owner finishes, puts the guard back and removes their lock. You run restart checks. Go. | Guard back on · Owner removes their lock (on 'removes') · YOU (lands on 'You run'): Guard on ✓ · Area clear ✓ · Restart checks ✓ → Go |
 | `s9-9` | The die cutter never starts with the guard off and the work unfinished. | Prevented: No start with the guard off and the work unfinished |
 
-## 10. save-4-slitter-knives — Save 4 · Slitter knives
+## 10. save-4-blade-change — Save 4 · Blade change
 
-**Purpose.** Q2, What could hurt us?, at a changeover on the slitter. The job changes from running the slitter to knife work. You've locked out the slitter yourself at both of its isolation points, with your own locks on POWER and on AIR (for the pneumatic knife holders), to move its razor knives to new widths. You're still in the thin gloves you run the line in. The posted SLITTER KNIVES card says "Lock out" and "Cut-resistant gloves", and the cut-resistant gloves hang unused on their hook.
+**Purpose.** Q2, What could hurt us?, at a changeover on the slitter. The job changes from running the slitter to blade work: you replace its worn razor blades, in place on the knife bar. You've already locked out the slitter yourself at both of its isolation points: your own locks are on POWER and on AIR (for the air-actuated knife holders). A blade change is a tool change, and a tool change counts as servicing. You're still in the thin gloves you run the line in. The posted BLADE CHANGE card says "Lock out" and "Cut-resistant gloves", and the cut-resistant gloves hang unused on their hook.
 
-Fix it: getting the right gloves on is your own PPE step. The cut-resistant gloves your procedure names go on, drawn over the thin gloves, which stay on. Even in those gloves, hold each knife by its holder, never the edge. Slide the knives to their new widths one at a time, each moved by your gloved hand. Cut-resistant gloves off before it runs: they go back on their hook. Then Go.
+Fix it: getting the right gloves on is your own PPE step. You put on the cut-resistant gloves your procedure names, drawn over the thin gloves, which stay on. Even in those gloves, hold each blade by its back, never the edge. Change the blades one at a time:
+1. Open the clamp.
+2. Slide the worn blade out by its back.
+3. Put it straight into the used-blade box, edge first. Your fingers stop at the slot.
+4. Take a new blade by its back from the dispenser.
+5. Seat it to its stop.
+6. Close the clamp.
+
+When all three are done, the cover closes. Then the cut-resistant gloves come off before it runs, back onto their hook. Then Go.
 
 The teaching points:
-- Locking out stops the knives, but it doesn't make them blunt.
+- Worn doesn't mean blunt.
 - Cut-resistant isn't cut-proof.
-- The gloves are for the knife work only, and they're off before the slitter runs.
+- A used blade goes straight into the blade box.
+- The gloves are only for the blade work, and they're off before the slitter runs.
 
-The slitter never runs in the scene. No blade leaves its holder, and nobody puts on or removes a lock on screen. No cut level, glove brand or injury is shown. Prevented: no cut from a knife that's stopped, but still sharp.
+The slitter never runs in the scene, and nobody puts on or removes a lock on screen. Only one blade is ever out of a holder. No blade falls, is set down, carried, passed, caught or chipped, and no hand goes into the box. No cut level, glove brand, blade tool, sleeve, blade log or injury is shown.
 
-**Visual.** Save template (see Save 1). About 49 s, including the 1 s sting. Top band: 'Save 4 · Slitter knives' with the 'Change' chip (two swapping arrows). The shift-strip dot sits late in the shift.
+Prevented: no cut from a blade that's worn, but still sharp.
 
-From the first frame, the stage shows the slitter at a changeover: locked out (power and air), and not yet threaded.
-- Top left: a small posted procedure card, 'SLITTER KNIVES', with two rows: a lock icon with 'Lock out', and a knit-glove icon with 'Cut-resistant gloves'.
-- Below the card are two isolation points, both already locked by you:
-  - Left: the POWER disconnect, labelled 'POWER'.
-  - Right: the AIR lockout valve for the pneumatic knife holders, labelled 'AIR'. It's a short pipe stub with a lever valve (lever across the pipe, closed) and a small exhaust muffler.
-  - Each has your own lock, drawn in teal, with its own DO NOT OPERATE tag hung from the lock body. Each tag carries a handwritten-name scribble, as in Save 3.
-  - One teal 'YOURS' pill runs under both tags.
+**Visual.** Save template (see Save 1). About 49.4 s, including the 1 s sting. The top band reads 'Save 4 · Blade change' with the 'Change' chip (two swapping arrows), and the shift-strip dot sits late in the shift.
+
+THE STAGE, from the first frame: the slitter at a changeover, locked out (power and air) and not threaded.
+- Top left: a posted procedure card headed 'BLADE CHANGE'. It has two rows: a lock icon with 'Lock out', and a knit-glove icon with 'Cut-resistant gloves'.
+- Below the card: the two isolation points, both already locked by you.
+  - The POWER disconnect.
+  - The AIR lockout valve for the air-actuated knife holders.
+  - Each has your own teal lock with its own DO NOT OPERATE tag (a name scribble).
+  - One teal YOURS pill runs under both tags.
   - Nobody puts on or removes a lock in this save.
 - The unwind roll reads PRODUCT A.
-- Right of centre: the knife station, drawn face-on. It has a knife bar with three razor knife holders, and their blades sit above the anvil roll behind a closed translucent cover. 'SLITTER' is written inside.
-- Under the station, the control panel's screen is dark (unlit), because power is locked out. There's no STOPPED text and no green light. The rewinds are at the right.
-- On the station's left side, a hook holds a pair of light-grey knit cut-resistant gloves.
+- On the knife station's left side:
+  - a hook with a pair of light-grey knit cut-resistant gloves;
+  - under the hook, a small bracket shelf holding a yellow box labelled USED BLADES (a dark slot in its lid) and a small grey blade dispenser with the back of one new blade showing. Both sit outside the knife area, beside where you stand.
+- Right of centre: the knife station, face-on behind a closed translucent cover.
+  - A knife bar with three razor holders. Each has a clamp with a small clamp knob, and a razor blade below it.
+  - Each blade is wider at the edge than at the back and has a dull grey worn edge band, with no nicks or chips.
+  - 'SLITTER' is written inside.
+- Under the station: the control panel, its screen dark.
+- The rewinds, at the right.
 
-THE CLUE is in view from the start, with no ring and no label. You stand left of the station in thin teal gloves, hands at your sides. Above you, the shared close-up circle has a thin leader to your right hand and shows a thin, smooth teal disposable glove. The cut-resistant gloves hang unused on the hook.
+THE CLUE is in view from the start, with no ring and no label:
+- You stand left of the station in thin teal gloves, hands at your sides.
+- Above you, the shared close-up circle has a thin leader to your right hand. It shows a thin, smooth teal disposable glove.
+- The cut-resistant gloves hang unused on the hook.
 
 Line 1:
 - On 'changeover', the roll label flips from PRODUCT A to PRODUCT B.
-- On 'locked', a 'Locked out' tag rises under your locks and the YOURS pill.
+- On 'locked', a 'Locked out' tag rises under your locks.
 
 Line 2: the hold card appears, and its ring fills through 3 s.
 
 Line 3:
 - Pill 2 (violet, 'What could hurt us?') lights.
-- On 'knives', a red ring lands on the three razor knives and throbs.
-- On 'thin', a second red ring lands on the thin glove in the close-up, and 'The catch' fills: 'Razor-sharp knives · thin gloves'. It wraps after the '·', so 'thin gloves' stays on one line.
+- On 'blades', a red ring lands round the three razor blades and throbs.
+- On 'thin', a second red ring lands on the thin glove in the close-up, and 'The catch' fills: 'Razor-sharp blades · thin gloves'. It wraps after the '·'.
 
 Line 4: the 'Your call?' card, for 2.4 s.
 
-Line 5: 'Fix it' lights. The card fades to show the amber chip with the reason 'Your own PPE step'.
+Line 5:
+- 'Fix it' lights, and the rings fade.
+- The card leaves on 'is', so the reason 'Your own PPE step' appears on its own words.
 
 Line 6:
-- On 'gloves', the gloves leave the hook and go on over your thin gloves. Your hands become light-grey knit, with a thin teal cuff still showing. In the close-up, a grey knit cut-resistant glove with a ribbed cuff appears over the teal glove, with the teal rolled cuff still visible below it. Nothing is taken off.
+- On 'gloves', the gloves leave the hook and go on over your thin gloves. Your hands turn light-grey knit, with a thin teal cuff still showing.
+- In the close-up, a grey knit glove with a ribbed cuff covers the teal glove. The teal rolled cuff is still visible below it.
 - On 'procedure', a green ✓ sets on the card's glove row.
 - On 'names', a green check appears: 'Cut-resistant gloves your procedure names'.
-- After the line, the close-up fades and you take one step to the knife station.
+- After the line, the glove close-up fades. You stay where you are.
 
 Line 7:
-- The cover hinges up and stays attached. The screen stays dark and both your locks stay on.
-- On 'hold', the close-up returns as a knife-holder close-up, with a leader to the first holder. It shows your cut-resistant-gloved fist round the holder body, with the blade below it, clear of your fingers.
-- On 'holder', a green check appears: 'By its holder, never the edge'.
+- The cover hinges up and stays attached. The screen stays dark and both locks stay on.
+- On 'hold', the close-up returns as the blade-change close-up, with a leader to the first holder:
+  - at the top, the knife bar and one holder;
+  - lower left, the USED BLADES box, with a slot in its lid;
+  - lower right, the dispenser, with the back of a new blade showing.
+- BLADE 1 is tied to the words:
+  1. Your gloved fingertips grip the clamp knob by its rim and turn it open (a small arc arrow).
+  2. Thumb and finger pinch the top of the blade's dark back strip. The edge points down and away.
+  3. On 'back', the blade slides down out of the clamp, and stage blade 1 leaves its holder. A check appears: 'By its back, never the edge'.
+  4. A short move carries the blade over the box, clear of the lid. Then it goes straight down, edge first, into the slot as 'edge' is spoken.
+  5. The fingers stop at the slot mouth. They let go only once the blade is inside.
+  6. In the pause, the fingers take a new blade by its back from the dispenser, lift it clear, and slide it up into the clamp to its stop.
+  7. The knob turns closed. Stage blade 1 appears with a bright new edge as it is seated.
 
 Line 8:
-- On 'slide', a small left arrow shows in the close-up, and the knives move one at a time. For each knife:
-  - the close-up's leader points to that knife and follows it;
-  - your gloved fist slides its holder along the bar;
-  - that stage knife moves only while the slide plays;
-  - then the close-up resets with a quick fade for the next knife.
-- All three end at their new widths: each moved left, to wider spacing.
-- As the third knife lands, a green check appears: 'New widths'.
+- After a short fade (no blink), the leader moves to holder 2. Blade 2 is changed the same way, faster, and goes into the slot on 'used one straight'.
+- Another short fade, then holder 3. On 'box', a check appears: 'Each used one straight into the blade box', as blade 3 crosses to the slot.
+- Only one blade is ever out of a holder.
+- When all three blades are new, the close-up and its leader fade.
+- The cover closes while your cut-resistant gloves are still on.
 - On 'off':
-  - the close-up and its leader fade;
-  - the cut-resistant gloves come off and appear back on their hook;
+  - the cut-resistant gloves come off and hang back on their hook;
   - your thin teal gloves show again;
-  - the knife cover closes again (your locks stay on);
-  - a green check appears: 'Cut-resistant gloves off before it runs'.
-- On 'Go', an arrow leads to a green 'Go' chip. No cut-resistant gloves are on at this point.
+  - a check appears: 'Cut-resistant gloves off before it runs'.
+- On 'Go', an arrow leads to a green 'Go' chip. At that moment:
+  - the cover is closed;
+  - no cut-resistant gloves are on;
+  - both locks, both tags and YOURS are on;
+  - the screen is dark.
 
-Line 9: 'What it prevented' fills: 'No cut from a knife that’s stopped, but still sharp'.
+Line 9: 'What it prevented' fills: 'No cut from a blade that's worn, but still sharp'.
 
-The final picture holds, and nothing moves:
-- you at the station in your thin gloves, hands at your sides;
-- the cut-resistant gloves back on their hook;
-- the cover down again;
-- the knives at their new widths;
+THE FINAL PICTURE holds, and nothing moves:
+- you, left of the station, in thin gloves;
+- the cut-resistant gloves on their hook;
+- the USED BLADES box and the dispenser on their shelf;
+- the cover down over three bright-edged blades;
 - the screen dark;
-- both your locks with their tags and the YOURS pill;
+- both locks with their tags and the YOURS pill;
 - all four checks;
 - Fix it → Go.
 
-The slitter stays locked out (power and air) to the end of the scene. Nothing runs, and no gloved hand is near anything moving. The cut-resistant gloves are off before Go, and no blade ever leaves its holder.
+Throughout the save:
+- The slitter stays locked out (power and air) to the end of the scene, and nothing runs.
+- No blade falls, is set down, carried, passed, caught or chipped.
+- No hand goes into the box.
+- You stay beside the shelf on stage, with no step (a step right would put your head over the USED BLADES box); the close-up shows your hand, in its cut-resistant glove, at each holder, and its leader points to that holder.
+- No blade tool, sleeve, blade log or cut level is shown.
 
 | Cue | Narration | On screen |
 |---|---|---|
-| `s10-1` | At changeover, you've locked out the slitter to move its knives to new widths. | Save 4 · Slitter knives · Change · PRODUCT A → PRODUCT B · Locked out (your locks on POWER and AIR, each tagged · YOURS) |
+| `s10-1` | At changeover, you've locked out the slitter to replace its worn blades. | Save 4 · Blade change · Change · PRODUCT A → PRODUCT B · Locked out (your locks on POWER and AIR, each tagged · YOURS) · Drawing labels: BLADE CHANGE card (Lock out · Cut-resistant gloves), USED BLADES box |
 | `s10-2` | Your turn. What would make you stop here? | Card: Find the problem · What would make you stop here? Look at the picture. Watching alone? Pause now. (3-second pause) |
-| `s10-3` | What could hurt us? Razor-sharp knives. Your thin gloves aren't made for blades. | Rings on the knives and the thin glove · The catch: Razor-sharp knives · thin gloves |
+| `s10-3` | What could hurt us? Razor-sharp blades. Your thin gloves aren't made for them. | Rings on the blades and the thin glove · The catch: Razor-sharp blades · thin gloves |
 | `s10-4` | And your call? | Card: Your call? Go · Fix it · Stop & get help, in outline; the right one fills in (pause) |
 | `s10-5` | Fix it. Getting the right gloves on is your own PPE step. | The call: Fix it · Your own PPE step |
 | `s10-6` | Put on the cut-resistant gloves your procedure names. | Cut-resistant gloves on, over your thin gloves · Card: Cut-resistant gloves ✓ · Cut-resistant gloves your procedure names ✓ |
-| `s10-7` | Even in those gloves, hold each knife by its holder, never the edge. | Cover up, your locks still on · Close-up: your gloved hand on the holder, blade clear · By its holder, never the edge ✓ |
-| `s10-8` | Then slide the knives to their new widths. Cut-resistant gloves off before it runs. Go. | The knives slide to new widths, one at a time · New widths ✓ · Cut-resistant gloves off before it runs ✓ (back on the hook, cover down) → Go |
-| `s10-9` | No cut from a knife that's stopped, but still sharp. | Prevented: No cut from a knife that's stopped, but still sharp |
+| `s10-7` | Even in those gloves, hold each blade by its back, never the edge. | Cover up, your locks still on · Close-up: knob open, the used blade held by its back, slid out and posted edge-first into the USED BLADES box; a new blade by its back from the dispenser, seated, knob closed · By its back, never the edge ✓ |
+| `s10-8` | Put each used one straight into the blade box. Cut-resistant gloves off before it runs. Go. | Blades 2 and 3 changed the same way, one at a time · Each used one straight into the blade box ✓ · Cover down · Cut-resistant gloves off before it runs ✓ (back on the hook) → Go |
+| `s10-9` | No cut from a blade that's worn, but still sharp. | Prevented: No cut from a blade that's worn, but still sharp |
 
 ## 11. all-four-end-in-go — All four end in Go
 
 **Purpose.** Pay off the shift: two saves were Fix it and two were Stop & get help, and all four end in Go once it's safe. Most pauses end in Go right away. The goal is a safe start, not a slow one; no catch rate is implied.
 
-**Visual.** (~10 s) Light theme. As the line starts, four compact case cards pop in left to right, each with its question-coloured top stripe (teal, blue, teal, violet), number, icon (drum, pallet of rolls, die cylinder, glove) and name: 'Solvent transfer', 'Roll staging', 'Die cutter', 'Slitter knives'. Line 1: on 'Fix it', amber 'Fix it' chips pop on cards 1 and 4, each with its reason ('A step in your procedure', 'Your own PPE step'); on 'Stop', red 'Stop & get help' chips pop on cards 2 and 3, each with its reason ('Not authorized', 'Someone else's unfinished work'). On 'all four', the title 'All four end in Go' rises above, and a green 'Go' chip pops at the foot of each card in quick sequence. Line 2: the cards shrink and drop onto the shift timeline at their points, now four solid green dots among a long run of green ticks, from 'Start of shift' to 'End of shift'. The heading becomes 'Most pauses end in Go', and the legend reads 'Four saves, among all the pauses that simply ended in Go'. Holds about 1.5 s after the line.
+**Visual.** (~10 s) Light theme. As the line starts, four compact case cards pop in left to right, each with its question-coloured top stripe (teal, blue, teal, violet), number, icon (drum, pallet of rolls, die cylinder, glove) and name: 'Solvent transfer', 'Roll staging', 'Die cutter', 'Blade change'. Line 1: on 'Fix it', amber 'Fix it' chips pop on cards 1 and 4, each with its reason ('A step in your procedure', 'Your own PPE step'); on 'Stop', red 'Stop & get help' chips pop on cards 2 and 3, each with its reason ('Not authorized', 'Someone else's unfinished work'). On 'all four', the title 'All four end in Go' rises above, and a green 'Go' chip pops at the foot of each card in quick sequence. Line 2: the cards shrink and drop onto the shift timeline at their points, now four solid green dots among a long run of green ticks, from 'Start of shift' to 'End of shift'. The heading becomes 'Most pauses end in Go', and the legend reads 'Four saves, among all the pauses that simply ended in Go'. Holds about 1.5 s after the line.
 
 | Cue | Narration | On screen |
 |---|---|---|
@@ -263,7 +301,7 @@ The slitter stays locked out (power and air) to the end of the scene. Nothing ru
 
 **Purpose.** Close on the recap card: when to pause (all five triggers), Stop · Look · Ask · Decide, the four questions, the three calls with the Stop & get help criteria on screen, the Fix-it rule spoken in full, and 'When in doubt, get help'. End on 'That's the 2-minute rule: line clearance for people.' Then the voiced 'Your site' slate and the voiced end card.
 
-**Visual.** (~50 s: the recap card through line 6 and a ~2 s hold, the voiced 'Your site' slate for ~8 s, then the end card for ~11 s and a fade to black) A light recap card sits inside a dark slate frame; the stopwatch icon, the title 'The 2-Minute Rule' and, in teal, 'Line clearance for people' fade in across its top, with the shift strip as a thin line just under them. Line 1: the label 'PAUSE:' fades in along the bottom of the card, and five amber-edged pills pop in beside it on their words, with their icons: 'Before you start', 'After a break', 'Handover', 'Interruption', 'Change'. On 'stop' and 'look', the STOP and LOOK pills pop in at the left of the row under the title. Line 2: the ASK pill pops in, and card 1 (blue) 'What's different?' and card 2 (violet) 'What could hurt us?' fill the top row of a 2 x 2 grid. Line 3: card 3 (teal) 'Checked or assumed?' and card 4 (plum) 'What if it goes wrong?' fill the bottom row. Line 4: the DECIDE pill pops in, and green 'Go', amber 'Fix it' and red 'Stop & get help' pop in under the grid on their words; just after 'help', the taught rule words set under the red button: 'No permit yet · Someone else's unfinished work · Not authorized · Not sure → your lead'. Line 5: on 'only', 'Only if trained, authorized & in procedure' sets under the amber button. Line 6: on 'line clearance', a small amber raised-hand icon lights along the shift strip (drawn thin under the title) in a quick wave from 'Start of shift' to 'End of shift'; the card holds through the line and about 2.5 s after it. Line 7: half a second before the line, a light full-frame slate rises over the card and the chapter label changes to 'Your site'. Kicker 'Your site · before your next shift', heading 'Who do you call for help?', then write-in lines, each an icon, a label and a blank rule: 'Your lead: days ____ · nights ____ · weekends ____', 'Radio or phone: ____', 'No answer? Call: ____', 'Report what I caught to: ____', and in amber with a form icon 'Write it on your pocket card.' It holds about 3.5 s after the line. Line 8: the end card rises; the chapter label changes to 'Sources'. It reads 'Follow your site's procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or knife-handling training.' Under the kicker 'Sources', in small type: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147, including (e)(3) on lock removal; 29 CFR 1910.106(e)(6)(ii) and NFPA 77 (bond nozzle and container before dispensing Category 1 or 2 flammable liquids, or Category 3 below 100 °F); OSHA 29 CFR 1910.178(l) (powered industrial truck operator training) and (m)(2) (no one under raised forks); OSHA 29 CFR 1910.132(d) and 1910.138 (hazard assessment; hand protection chosen for the task); ANSI/ISEA 105 (glove cut ratings). Then the note 'Use cases are illustrative composites, not real incidents. Narration is a synthesized voice.' Over the last 1.3 s, everything fades to black.
+**Visual.** (~50 s: the recap card through line 6 and a ~2 s hold, the voiced 'Your site' slate for ~8 s, then the end card for ~11 s and a fade to black) A light recap card sits inside a dark slate frame; the stopwatch icon, the title 'The 2-Minute Rule' and, in teal, 'Line clearance for people' fade in across its top, with the shift strip as a thin line just under them. Line 1: the label 'PAUSE:' fades in along the bottom of the card, and five amber-edged pills pop in beside it on their words, with their icons: 'Before you start', 'After a break', 'Handover', 'Interruption', 'Change'. On 'stop' and 'look', the STOP and LOOK pills pop in at the left of the row under the title. Line 2: the ASK pill pops in, and card 1 (blue) 'What's different?' and card 2 (violet) 'What could hurt us?' fill the top row of a 2 x 2 grid. Line 3: card 3 (teal) 'Checked or assumed?' and card 4 (plum) 'What if it goes wrong?' fill the bottom row. Line 4: the DECIDE pill pops in, and green 'Go', amber 'Fix it' and red 'Stop & get help' pop in under the grid on their words; just after 'help', the taught rule words set under the red button: 'No permit yet · Someone else's unfinished work · Not authorized · Not sure → your lead'. Line 5: on 'only', 'Only if trained, authorized & in procedure' sets under the amber button. Line 6: on 'line clearance', a small amber raised-hand icon lights along the shift strip (drawn thin under the title) in a quick wave from 'Start of shift' to 'End of shift'; the card holds through the line and about 2.5 s after it. Line 7: half a second before the line, a light full-frame slate rises over the card and the chapter label changes to 'Your site'. Kicker 'Your site · before your next shift', heading 'Who do you call for help?', then write-in lines, each an icon, a label and a blank rule: 'Your lead: days ____ · nights ____ · weekends ____', 'Radio or phone: ____', 'No answer? Call: ____', 'Report what I caught to: ____', and in amber with a form icon 'Write it on your pocket card.' It holds about 3.5 s after the line. Line 8: the end card rises; the chapter label changes to 'Sources'. It reads 'Follow your site's procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or blade-handling training.' Under the kicker 'Sources', in small type: 21 CFR 211.130(e) (line clearance); OSHA 29 CFR 1910.147, including (e)(3) on lock removal; 29 CFR 1910.106(e)(6)(ii) and NFPA 77 (bond nozzle and container before dispensing Category 1 or 2 flammable liquids, or Category 3 below 100 °F); OSHA 29 CFR 1910.178(l) (powered industrial truck operator training) and (m)(2) (no one under raised forks); OSHA 29 CFR 1910.132(d) and 1910.138 (hazard assessment; hand protection chosen for the task); ANSI/ISEA 105 (glove cut ratings). Then the note 'Use cases are illustrative composites, not real incidents. Narration is a synthesized voice.' Over the last 1.3 s, everything fades to black.
 
 | Cue | Narration | On screen |
 |---|---|---|
@@ -274,4 +312,4 @@ The slitter stays locked out (power and air) to the end of the scene. Nothing ru
 | `s13-5` | Fix it only if you're trained and authorized, and it's a step in your procedure. | Fix it: only if trained, authorized & in procedure |
 | `s13-6` | When in doubt, get help. That's the 2-minute rule: line clearance for people. | The 2-Minute Rule · Line clearance for people |
 | `s13-7` | Find out who you call for help: days, nights and weekends. | Who do you call for help? Your lead: days · nights · weekends · Radio or phone · No answer? Call · Report what I caught to · Write it on your pocket card. |
-| `s13-8` | Follow your site's procedures. This video is awareness training only. | End card: Follow your site's procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or knife-handling training · Sources |
+| `s13-8` | Follow your site's procedures. This video is awareness training only. | End card: Follow your site's procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or blade-handling training · Sources |

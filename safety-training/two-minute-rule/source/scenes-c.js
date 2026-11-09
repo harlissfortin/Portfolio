@@ -89,7 +89,7 @@
     </div>
     <div class="abs lightvars" style="inset:-110px -120px -198px -120px;background:#fbf9f4" data-in="up s13-8-0.6 0.6">
       <div class="abs" style="left:200px;top:140px;width:1520px">
-        <div class="h4">Follow your site’s procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or knife-handling training.</div>
+        <div class="h4">Follow your site’s procedures. This video is awareness training only: not lockout, solvent-bonding, forklift-operator or blade-handling training.</div>
         <div class="kicker" style="margin-top:34px">Sources</div>
         <ol style="margin:16px 0 0;padding-left:34px;font-size:25px;line-height:1.5;color:var(--ink)">
           <li>21 CFR 211.130(e), packaging and labeling operations (line clearance)</li>
@@ -159,22 +159,55 @@
     const go = a.ease.inOut(a.prog(t, R('s9-8~finishes'), 0.9)), back = a.ease.inOut(a.prog(t, R('s9-8~removes+0.4'), 0.7));
     $('s9-tech').setAttribute('transform', `translate(${(-200 * (go - back)).toFixed(1)} 0)`);
   };
-  H['save-4-slitter-knives'] = (t, lt, a) => {
-    const R = r => a.ref(r, 'save-4-slitter-knives');
-    const step = a.ease.inOut(a.prog(t, R('s10-6.end+0.1'), 0.8));                       // one step to the knife station, gloves on
-    $('s10-you').setAttribute('transform', `translate(${(60 * step).toFixed(1)} 0)`);
-    // One knife at a time, each moved only while the close-up shows your gloved fist sliding its holder (0.7 s), with a
-    // 0.2 s fade between slides while the close-up resets; the leader follows the knife being moved.
-    const s0 = R('s10-8~slide'), GAP = 0.9, DUR = 0.7;
-    const dx = TD.KNIVES.map((x, i) => (TD.KNIVES_NEW[i] - x) * a.ease.inOut(a.prog(t, s0 + GAP * i, DUR)));
-    dx.forEach((d, i) => $('s10-k' + i).setAttribute('transform', `translate(${d.toFixed(1)} 0)`));
-    const cur = Math.max(0, Math.min(2, Math.floor((t - s0 + (GAP - DUR) / 2) / GAP)));
-    const hold = $('s10-hold');
-    hold.setAttribute('transform', `translate(${(-26 * a.ease.inOut(a.prog(t, s0 + GAP * cur, DUR))).toFixed(1)} 0)`);
-    const dip = Math.min(1, ...[0, 1].map(i => Math.abs(t - (s0 + GAP * i + DUR + (GAP - DUR) / 2)) / ((GAP - DUR) / 2)));
-    hold.setAttribute('opacity', dip.toFixed(2));
+  H['save-4-blade-change'] = (t, lt, a) => {
+    const R = r => a.ref(r, 'save-4-blade-change'), E = a.ease.inOut;
+    const lerp = (p, q, k) => [p[0] + (q[0] - p[0]) * k, p[1] + (q[1] - p[1]) * k];
+    // Three blade changes in the close-up, one blade at a time. Cycle 1 is tied to the words of s10-7: knob open after
+    // "hold", the pinch on the blade's back held until "back", the blade slid out of the clamp on "back", carried over the
+    // slot and posted edge-first into the USED BLADES box as "edge" is spoken (the fingers let go only at the slot mouth,
+    // with the blade already inside), then a new blade by its back from the dispenser, seated to its stop, knob closed,
+    // in the pause. Cycles 2 and 3 repeat the same 12 phases faster: cycle 3's blade reaches the slot 0.2 s after "box",
+    // each cycle at least 1.5 s, and all of it done by s10-8~off-0.7, when the close-up starts to fade (gone by off-0.4, as the
+    // cover starts to close). A 0.24 s dip between blades (close-up and leader together) hides the reset: no blink.
+    const H0 = R('s10-7~hold'), BK = R('s10-7~back'), ED = R('s10-7~edge');
+    const c1 = { open: [H0 + 0.5, H0 + 0.95], toBack: [H0 + 0.95, BK - 0.05], out: [BK, BK + 0.35], diag: [BK + 0.35, ED - 0.35],
+      slot: [ED - 0.35, ED + 0.05], rel: [ED + 0.05, ED + 0.2], toNew: [ED + 0.2, ED + 0.45], lift: [ED + 0.45, ED + 0.65],
+      carry: [ED + 0.65, ED + 0.9], seat: [ED + 0.9, ED + 1.1], toKnob: [ED + 1.1, ED + 1.2], close: [ED + 1.2, ED + 1.4] };
+    const FR = { open: [0, .10], toBack: [.10, .16], out: [.16, .26], diag: [.26, .40], slot: [.40, .50], rel: [.50, .55],
+      toNew: [.55, .64], lift: [.64, .72], carry: [.72, .82], seat: [.82, .90], toKnob: [.90, .95], close: [.95, 1] };
+    const DIP = 0.24, W0 = c1.close[1] + DIP, W1 = R('s10-8~off-0.7');
+    const D = Math.min((W1 - W0 - DIP) / 2, Math.max(1.5, (R('s10-8~box+0.2') - W0 - DIP) / (1 + FR.slot[0])));
+    const C = [c1, ...[0, 1].map(n => { const s = W0 + n * (D + DIP); return Object.fromEntries(Object.entries(FR).map(([k, [f0, f1]]) => [k, [s + f0 * D, s + f1 * D]])); })];
+    H['save-4-blade-change'].cycles = C;                                          // read by the frame checker
+    let i = 0; for (let k = 1; k < 3; k++) if (t >= C[k].open[0] - DIP / 2) i = k;   // switch at the dip's middle
+    const c = C[i], p = k => E(a.prog(t, c[k][0], c[k][1] - c[k][0])), raw = k => a.prog(t, c[k][0], c[k][1] - c[k][0]);
+    const { rest, out, hov, rls, gone, disp, lift, knob } = TD.IN;
+    const grip = [knob[0] + 12, knob[1] + 3], pinch = b => [b[0] + 16, b[1] - 1], up = [pinch(rls)[0] + 10, pinch(rls)[1] - 14];
+    let ob = lerp(rest, out, p('out')); ob = lerp(ob, hov, p('diag')); ob = lerp(ob, rls, p('slot')); ob = lerp(ob, gone, p('rel'));
+    let nb = lerp(disp, lift, p('lift')); nb = lerp(nb, out, p('carry')); nb = lerp(nb, rest, p('seat'));
+    let hd = grip;                                                   // fingertips on the knob's right rim, notch in view
+    if (t >= c.toBack[0]) hd = lerp(grip, pinch(rest), p('toBack'));
+    if (t >= c.out[0]) hd = pinch(ob);
+    if (t >= c.rel[0]) hd = lerp(pinch(rls), up, p('rel'));
+    if (t >= c.toNew[0]) hd = lerp(up, pinch(disp), p('toNew'));
+    if (t >= c.lift[0]) hd = pinch(nb);
+    if (t >= c.toKnob[0]) hd = lerp(pinch(rest), grip, p('toKnob'));
+    const f = v => v.map(n => n.toFixed(1)).join(' ');
+    $('s10-old').setAttribute('transform', `translate(${f(ob)})`); $('s10-old').setAttribute('opacity', t >= c.rel[1] ? '0' : '1');
+    $('s10-new').setAttribute('transform', `translate(${f(nb)})`);
+    $('s10-hd').setAttribute('transform', `translate(${f(hd)})`);
+    $('s10-kn').setAttribute('transform', `rotate(${(-110 * (p('open') - p('close'))).toFixed(1)} ${knob[0]} ${knob[1]})`);
+    $('s10-ao').setAttribute('opacity', Math.sin(Math.PI * raw('open')).toFixed(2));
+    $('s10-ac').setAttribute('opacity', Math.sin(Math.PI * raw('close')).toFixed(2));
+    const dip = Math.min(1, ...[1, 2].map(k => Math.abs(t - (C[k].open[0] - DIP / 2)) / (DIP / 2)));
+    $('s10-ih').setAttribute('opacity', dip.toFixed(2)); $('s10-hd').setAttribute('opacity', dip.toFixed(2));
     $('s10-lead').setAttribute('stroke-opacity', dip.toFixed(2));
-    $('s10-lead').setAttribute('d', `M516 146 L${(TD.KNIVES[cur] + dx[cur] - 12).toFixed(1)} 262`);
+    $('s10-lead').setAttribute('d', `M514 150 L${TD.KNIVES[i]} 240`);
+    // stage blades: holder k's worn blade fades while its close-up blade slides out; its new blade fades in while seated
+    C.forEach((cc, k) => {
+      $('s10-ob' + k).setAttribute('opacity', (1 - a.prog(t, cc.out[0], cc.out[1] - cc.out[0])).toFixed(2));
+      $('s10-nb' + k).setAttribute('opacity', a.prog(t, cc.seat[0], cc.seat[1] - cc.seat[0]).toFixed(2));
+    });
   };
   H['all-four-end-in-go'] = (t, lt, a) => ticks('a4-ticks', t, a.ref('s11-1.end+0.4', 'all-four-end-in-go') - 3, true);
   H['close-recap'] = (t, lt, a) => {

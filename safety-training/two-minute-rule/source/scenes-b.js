@@ -117,37 +117,38 @@
     ${SC.yourCall(S3, 's9-5', 2.4, 'stop', 's9-6', 's9-6+1.6')}
   `));
 
-  // 10 ─ Save 4 · Slitter knives at a changeover ─────────────────────────────
+  // 10 ─ Save 4 · Blade change at a changeover ──────────────────────────────
   // Fix it: getting the right gloves on is your own PPE step. The slitter is locked out (power and air) under your own
-  // locks (YOURS) from the first frame to the last; nothing runs, and no gloves are near moving parts. Cut-resistant
-  // gloves go on over your thin gloves; hold each knife by its holder, never the edge; slide the knives to their new
-  // widths, one at a time, each moved by your gloved fist in the close-up; gloves off before it runs (back on the
-  // hook); Go.
-  const S4 = 'save-4-slitter-knives';
+  // locks (YOURS) from the first frame to the last; nothing runs. Cut-resistant gloves go on over your thin gloves.
+  // In the close-up, one blade at a time: knob open, pinch the used blade by its back, slide it out, edge-first into the
+  // USED BLADES box slot (the fingers let go only at the slot mouth, with the blade already inside), a new blade by its
+  // back from the dispenser, seated to its stop, knob closed. Each stage blade fades out while its close-up blade slides
+  // out and the new one fades in while it is seated. Then: close-up away, cover closed (gloves still on), cut-resistant
+  // gloves off (back on the hook), Go.
+  const S4 = 'save-4-blade-change';
   html.push(SC.scene(S4, '', `
     ${SC.sting()}
-    ${SC.topband(4, 'Slitter knives', 'change', ['', 's10-3 s10-4', '', ''], SC.WHEN.s4)}
+    ${SC.topband(4, 'Blade change', 'change', ['', 's10-3 s10-4', '', ''], SC.WHEN.s4)}
     ${stage(`
-      ${svg(`${TD.slitter({ prodA: 'data-out="fade s10-1~changeover 0.3"', prodB: 'data-in="fade s10-1~changeover 0.3"',
+      ${svg(`${TD.slitter({ prodA: 'data-out="fade s10-1~changeover+0.4 0.3"', prodB: 'data-in="fade s10-1~changeover+0.4 0.3"',
           cardTick: 'data-in="pop s10-6~procedure 0.3"', hookGloves: 'data-out="fade s10-6~gloves-0.2 0.3"', hookGlovesBack: 'opacity="0" data-in="fade s10-8~off 0.3"',
-          cover: 'data-out="fade s10-7+0.3 0.4"', coverUp: 'data-in="fade s10-7+0.3 0.4" data-out="fade s10-8~off 0.4"', coverBack: 'opacity="0" data-in="fade s10-8~off 0.4"',
-          knife0: 'id="s10-k0"', knife1: 'id="s10-k1"', knife2: 'id="s10-k2"' })}
-        <g id="s10-you">${P(440, 600, 280, { gloves: 'var(--q3)' })}
-          ${TD.cutGloves(440, 600, 280, 'data-in="fade s10-6~gloves 0.3" data-out="fade s10-8~off 0.3"')}</g>
+          cover: 'data-out="fade s10-7+0.3 0.4"', coverUp: 'data-in="fade s10-7+0.3 0.4" data-out="fade s10-8~off-0.4 0.4"', coverBack: 'opacity="0" data-in="fade s10-8~off-0.4 0.4"' })}
+        ${P(440, 600, 280, { gloves: 'var(--q3)' })}
+        ${TD.cutGloves(440, 600, 280, 'data-in="fade s10-6~gloves 0.3" data-out="fade s10-8~off 0.3"')}
         <path d="M440 220 L484 466" stroke="var(--steel)" stroke-width="3" stroke-dasharray="6 5" data-in="fade ^1.3 0.4" data-out="fade s10-6.end+0.1 0.3"/>
-        <path id="s10-lead" d="M516 146 L628 262" stroke="var(--steel)" stroke-width="3" stroke-dasharray="6 5" data-in="fade s10-7~hold 0.4" data-out="fade s10-8~off-0.2 0.3"/>`)}
+        <g data-in="fade s10-7~hold 0.4" data-out="fade s10-8~off-0.7 0.3"><path id="s10-lead" d="M514 150 L640 240" stroke="var(--steel)" stroke-width="3" stroke-dasharray="6 5"/></g>`)}
       ${A(300, 8, TD.gloveInset({ knit: 'data-in="fade s10-6~gloves 0.4"' }), 'data-in="fade ^1.3 0.4" data-out="fade s10-6.end+0.1 0.3"')}
-      ${A(300, 8, TD.holderInset({ arrow: 'data-in="fade s10-8~slide 0.3" data-out="fade s10-8~slide+2.6 0.3"' }), 'data-in="fade s10-7~hold 0.4" data-out="fade s10-8~off-0.2 0.3"')}
+      ${A(300, 8, TD.bladeInset(), 'data-in="fade s10-7~hold 0.4" data-out="fade s10-8~off-0.7 0.3"')}
       ${A(8, 456, lab('Locked out', '', 'font-size:20px'), 'data-in="up s10-1~locked" data-out="fade s10-2~what-0.3 0.3"')}
       <div class="abs steps" style="left:544px;top:18px;display:flex;flex-direction:column;gap:6px;white-space:nowrap">
         ${check('Cut-resistant gloves your procedure names', 'data-in="pop s10-6~names 0.3"')}
-        ${check('By its holder, never the edge', 'data-in="pop s10-7~holder 0.3"')}
-        ${check('New widths', 'data-in="pop s10-8~widths+0.4 0.3"')}
+        ${check('By its back, never the edge', 'data-in="pop s10-7~back 0.3"')}
+        ${check('Each used one straight into the blade box', 'data-in="pop s10-8~box 0.3"')}
         ${check('Cut-resistant gloves off before it runs', 'data-in="pop s10-8~off 0.3"')}</div>
-      <div class="abs" style="left:0;top:0" data-out="fade s10-5 0.3">${ring(712, 276, 200, 's10-3~knives')}</div>
+      <div class="abs" style="left:0;top:0" data-out="fade s10-5 0.3">${ring(712, 300, 224, 's10-3~blades')}</div>
       <div class="abs" style="left:0;top:0" data-out="fade s10-5 0.3">${ring(410, 118, 176, 's10-3~thin')}</div>
     `)}
-    ${SC.casecard({ catch: 'Razor-sharp knives · thin&nbsp;gloves', catchAt: 's10-3~thin', call: 'fix', callAt: 's10-5', why: 'Your own PPE step', goAt: 's10-8~go', prev: 'No cut from a knife that’s stopped, but still sharp', prevAt: 's10-9' })}
+    ${SC.casecard({ catch: 'Razor-sharp blades · thin&nbsp;gloves', catchAt: 's10-3~thin', call: 'fix', callAt: 's10-5', why: 'Your own PPE step', goAt: 's10-8~go', prev: 'No cut from a blade that’s worn, but still sharp', prevAt: 's10-9' })}
     ${SC.predict(S4, 's10-2', 3.0, 's10-3-0.1')}
     ${SC.yourCall(S4, 's10-4', 2.4, 'fix', 's10-5', 's10-5~is-0.3')}
   `));

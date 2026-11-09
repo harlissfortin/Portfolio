@@ -340,12 +340,12 @@
    "post": 0.6
   },
   {
-   "id": "save-4-slitter-knives",
-   "chapter": "Save 4 · Slitter knives",
+   "id": "save-4-blade-change",
+   "chapter": "Save 4 · Blade change",
    "cues": [
     {
      "id": "s10-1",
-     "text": "At changeover, you've locked out the slitter to move its knives to new widths.",
+     "text": "At changeover, you've locked out the slitter to replace its worn blades.",
      "after": 0.6
     },
     {
@@ -355,7 +355,8 @@
     },
     {
      "id": "s10-3",
-     "text": "What could hurt us? Razor-sharp knives. Your thin gloves aren't made for blades.",
+     "text": "What could hurt us? Razor-sharp blades.\nYour thin gloves aren't made for them.",
+     "tts": "What could hurt us? Razor-sharp blades. Your thin gloves aren't made for them.",
      "after": 0.7
     },
     {
@@ -375,18 +376,18 @@
     },
     {
      "id": "s10-7",
-     "text": "Even in those gloves, hold each knife by its holder, never the edge.",
-     "after": 0.4
+     "text": "Even in those gloves, hold each blade by its back, never the edge.",
+     "after": 1.2
     },
     {
      "id": "s10-8",
-     "text": "Then slide the knives to their new widths.\nCut-resistant gloves off before it runs. Go.",
-     "tts": "Then slide the knives to their new widths. Cut-resistant gloves off before it runs. Go.",
+     "text": "Put each used one straight into the blade box.\nCut-resistant gloves off before it runs. Go.",
+     "tts": "Put each used one straight into the blade box. Cut-resistant gloves off before it runs. Go.",
      "after": 0.6
     },
     {
      "id": "s10-9",
-     "text": "No cut from a knife that's stopped, but still sharp."
+     "text": "No cut from a blade that's worn, but still sharp."
     }
    ],
    "pre": 1.4,

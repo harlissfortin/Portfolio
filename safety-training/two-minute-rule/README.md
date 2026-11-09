@@ -1,6 +1,6 @@
 # The 2-Minute Rule: One Shift on a Patch Line
 
-A narrated motion-graphics safety training video (about 6:39) about the **2-minute rule**: a short pause, on purpose,
+A narrated motion-graphics safety training video (about 6:40) about the **2-minute rule**: a short pause, on purpose,
 at the point of work, before you start and again after any break, handover, interruption or change. It is set at a
 transdermal patch manufacturing site. It teaches the rule and where its limits are, models a routine pause that finds
 nothing, then follows one shift on a patch line through four **two-minute saves**. A shift strip shows where each one
@@ -45,7 +45,7 @@ their supervisors.
 | 1 | Solvent transfer | Early | Before you start | Checked or assumed? | Fix it | A step in your procedure |
 | 2 | Roll staging | Just after the break | After a break | What's different? | Stop & get help | Not authorized: trained on the pallet truck, not the forklift |
 | 3 | Die cutter | Mid-shift | Handover | Checked or assumed? | Stop & get help | Someone else's unfinished work |
-| 4 | Slitter knives | Late | Change | What could hurt us? | Fix it | Your own PPE step |
+| 4 | Blade change | Late | Change | What could hurt us? | Fix it | Your own PPE step |
 
 Two Fix it, two Stop & get help, and all four end in Go once it's safe.
 
@@ -62,10 +62,10 @@ Two Fix it, two Stop & get help, and all four end in Go once it's safe.
 | 2:05 | Save 1 · Solvent transfer | **Checked or assumed?** You're about to pump flammable solvent from a drum, but the bonding clamps are still on their hook and the lamp is red. → Fix it (a step in your procedure): clamps on bare metal, lamp green, then Go. Won't go green? Stop & get help. |
 | 2:47 | Save 2 · Roll staging | **What's different?** After your break, the next pallet of rolls is up on the rack: a forklift job, and your card says pallet truck only. A co-worker means well: "Line's waiting. Just grab the forklift!" → Stop & get help (not authorized). You say so kindly and call your lead, who sends a trained driver while you stand clear. |
 | 3:41 | Save 3 · Die cutter | **Checked or assumed?** At handover the note says "ready to run", but the guard is off the die station and someone else's lock is still on. → Stop & get help (someone else's unfinished work). Only the lock's owner removes it, or a supervisor, using the site's lock-removal procedure. The owner puts the guard back and removes their lock; you run the restart checks. |
-| 4:29 | Save 4 · Slitter knives | **What could hurt us?** At changeover you've locked out the slitter, with your own locks on power and air, to move its knives to new widths. The knives are razor-sharp, and your thin gloves aren't made for blades. → Fix it (your own PPE step): the cut-resistant gloves your procedure names go on over your thin gloves; even in those gloves, each knife by its holder, never the edge; the knives slide to their new widths; cut-resistant gloves off before it runs, then Go. |
+| 4:29 | Save 4 · Blade change | **What could hurt us?** At changeover you've locked out the slitter, with your own locks on power and air, to replace its worn blades. The blades are razor-sharp, and your thin gloves aren't made for them. → Fix it (your own PPE step): the cut-resistant gloves your procedure names go on over your thin gloves; even in those gloves, each blade by its back, never the edge; each used one straight into the blade box, one at a time; cover closed, cut-resistant gloves off before it runs, then Go. |
 | 5:18 | All four end in Go | Two Fix it, two Stop & get help, each with its reason; all four end in Go, and most pauses end in Go right away |
-| 5:28 | What leaders commit to | Anyone can stop a job. Leaders commit to come quickly ("Thanks. What did you see?"), thank you, fix the cause and tell you what changed. The pause isn't a form: report what you caught the usual way. |
-| 5:49 | Recap card | The rule on one card, both halves, with all five triggers; then "Who do you call for help?" (6:21) and the sources (6:29) |
+| 5:29 | What leaders commit to | Anyone can stop a job. Leaders commit to come quickly ("Thanks. What did you see?"), thank you, fix the cause and tell you what changed. The pause isn't a form: report what you caught the usual way. |
+| 5:50 | Recap card | The rule on one card, both halves, with all five triggers; then "Who do you call for help?" (6:22) and the sources (6:29) |
 
 Each save follows the same template so a facilitator can show it on its own:
 1. A one-second Stop · Look · Ask · Decide sting.
@@ -109,10 +109,13 @@ Each save follows the same template so a facilitator can show it on its own:
   is down and the forks are flat. In Save 4 the slitter is locked out (power and air) under your own locks, each with
   its DO NOT OPERATE tag, from the first frame to the last; its control screen is dark, it never runs, and nobody puts
   on or removes a lock. The cut-resistant gloves go on over your thin gloves only while it's locked out, and they are
-  never near anything moving: they come off, back on their hook, before Go ("Cut-resistant gloves off before it runs"), because a
-  glove can be caught by moving parts. A knife is only ever held by its holder, never the edge; each knife moves only
-  as your gloved fist slides it in the close-up, and no blade leaves its holder. Cut-resistant gloves aren't cut-proof,
-  so the holder rule still applies in them. No cut level or glove brand is shown.
+  never near anything moving. The cover is closed while they're still on; then they come off, back on their hook,
+  before Go ("Cut-resistant gloves off before it runs"), because a glove can be caught by moving parts. A blade is only
+  ever held by its back, never the edge. The blades are changed one at a time, so only one is ever out of its holder:
+  each used blade goes edge first into the used-blade box, and the fingers stop at the slot; then a new blade is taken
+  by its back from the dispenser and seated to its stop. No blade falls, is set down, carried or passed.
+  Cut-resistant gloves aren't cut-proof, so even in them each blade is held by its back. No cut level, glove brand or
+  blade tool is shown.
 - **Proportionate.** The four saves split two fixes and two calls for help, and every one ends in Go once it's safe.
 - **Natural delivery.** Each line is voiced in one pass, so the voice keeps its intonation and punctuation carries the
   pauses. Six short lines are the exception: each is split once or twice (" | " in the script) and joined with 0.16 s of
@@ -124,7 +127,7 @@ Each save follows the same template so a facilitator can show it on its own:
   what is on screen as well as what is said.
 - **Who's on screen.** An operator in solvent PPE, a co-worker who wants to help, your lead in a teal vest, a trained
   forklift driver, the technician who owns the lock, and an operator who puts cut-resistant gloves on over thin gloves
-  for knife work, and takes them off before the slitter runs. Faces are never drawn.
+  to change the slitter's blades, and takes them off before the slitter runs. Faces are never drawn.
 - **Sound.** A quiet pad sits about 25 dB under the voice so pauses aren't dead air, and soft cues mark each save, each
   catch, each call, each Go and the seconds of each hold. Everything is synthesized in [`tooling/mix.py`](tooling/mix.py)
   (no samples, no licences).
@@ -135,13 +138,15 @@ Each save follows the same template so a facilitator can show it on its own:
   manufacturing, with six saves (8:57 in version 4). Version 5 is this one: a transdermal patch site, four saves on
   one shift, and a material-handling Save 2 in place of a drying-oven save, at the user's request. Later, on
   2026-11-06 and at the user's request, Save 4 was re-themed from a potent product to cut-resistant gloves at the
-  slitter knives. See [`trainer-review.md`](trainer-review.md).
+  slitter knives. Then, on 2026-11-09 and at the user's request, Save 4 became a blade change: replacing the slitter's
+  worn blades at its knife station, still a cut-resistant-glove save (Fix it, your own PPE step). See
+  [`trainer-review.md`](trainer-review.md).
 
 ## Sources
 
 On the end card:
 - [21 CFR 211.130(e)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211/subpart-G/section-211.130), packaging and labeling facilities inspected immediately before use (line clearance)
-- [OSHA 29 CFR 1910.147](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147), the control of hazardous energy (lockout/tagout), including (e)(3) on removing another person's lock (Save 3), and (b), where "servicing" includes setting up, adjustments and tool changes, so Save 4's changeover knife setting is done locked out, power and air, under your own locks (Save 4)
+- [OSHA 29 CFR 1910.147](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147), the control of hazardous energy (lockout/tagout), including (e)(3) on removing another person's lock (Save 3), and (b), where "servicing" includes setting up, adjustments and tool changes, so Save 4's changeover blade change (a tool change) is done locked out, power and air, under your own locks (Save 4)
 - [OSHA 29 CFR 1910.106(e)(6)(ii)](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.106) and NFPA 77, *Recommended Practice on Static Electricity*: bond the nozzle and the container before dispensing Category 1 or 2 flammable liquids, or Category 3 below 100 °F (Save 1)
 - [OSHA 29 CFR 1910.178(l)](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.178), powered industrial truck operator training and evaluation for each type of truck, and (m)(2), no one under raised forks (Save 2). OSHA issues no forklift licence or card: the employer trains, evaluates and certifies each operator.
 - [OSHA 29 CFR 1910.132(d)](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.132), the hazard assessment, certified in writing, and [1910.138(a)-(b)](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.138), hand protection chosen for the task; and ANSI/ISEA 105, glove cut ratings (Save 4). Cut-resistant gloves resist cuts; they aren't cut-proof. No cut level is shown on screen: your site sets it from its own hazard assessment.
@@ -156,8 +161,12 @@ through search-result excerpts (the rollout guide has the same check).
    task hazards with their controls and citations. For version 5, researchers walked through a transdermal patch plant
    (mixing, coating and drying, laminating, slitting, die cutting, pouching), its hazards and candidate saves, and a
    verifier corrected the facts (for example, how bonding prevents static sparks and the full lock-removal procedure).
-   For the Save 4 re-theme, research covered cut-resistant gloves (ANSI/ISEA 105, OSHA 1910.132 and 1910.138),
-   gloves near moving machinery, lockout of power and air for knife setting, and safe blade handling.
+   For the first Save 4 re-theme (2026-11-06), research covered cut-resistant gloves (ANSI/ISEA 105, OSHA 1910.132
+   and 1910.138), gloves near moving machinery, lockout of power and air at the slitter, and safe blade handling. For
+   the blade change (2026-11-09), research covered how razor blades are replaced in their holders at a knife station
+   (in place or at a bench), lockout of power and air for air-actuated holders, used-blade handling (a used-blade box
+   and a dispenser, one blade at a time, each new blade seated to its stop) and blade accountability, which is left to
+   site practice.
 2. **Script.** The first short draft had a drying-oven Save 2. At the user's request it became a material-handling
    save: three candidates were researched, and two AI judges, one in an EHS role and one in a trainer role, chose
    "Pallet truck only". Three shorter drafts were then written from different angles and scored by two independent AI
@@ -168,7 +177,18 @@ through search-result excerpts (the rollout guide has the same check).
    knife change, a hand knife at a roll change, and moving the slitter knives to new widths) were scored by two AI
    judges, one in an EHS role and one in a trainer role. The knife-moving draft, with the highest combined score, was
    merged with the knife-change draft's EHS strengths, then verifiers checked it for EHS accuracy and read it aloud,
-   and every issue they found was fixed (still 77 lines, now 787 words).
+   and every issue they found was fixed (still 77 lines, now 787 words). On 2026-11-09, again at the user's request,
+   Save 4 became a blade change. Three drafts (changing the blades in place on the knife bar, lifting each holder to a
+   tray, and an open draft that also changes them in place, with the used-blade box and the dispenser on a shelf beside
+   you) were scored by two AI judges in the same EHS and trainer roles, and both chose the open draft. It was merged
+   with the in-place draft's end order (the cover closed before the cut-resistant gloves come off), its stage blades,
+   which move in step with the close-up, and its frame-by-frame checker. From the tray draft it took blade changes
+   timed to the spoken words, and the docs sweep. AI role-based verifiers then checked it for EHS accuracy, layout and
+   how it reads aloud, and the frame-by-frame checker confirmed that only one blade is ever out of a holder (still 77
+   lines, now 786 words). An AI QA panel then checked the encoded MP4, and four of its findings were fixed: the
+   clamp knob was hidden under the fingertips, the close-up was still fading as the cover closed, the holes in the
+   close-up blade looked like digits, and the PRODUCT A label flipped before you could read it. A fifth, moving the
+   knob's turn arrows, was made unnecessary by the first fix, and three were rejected.
 3. **Stakeholder review.** AI reviewers read the version 3 script as a safety manager, an operations director and a
    site lead ([`stakeholder-review.md`](stakeholder-review.md)).
 4. **Master-trainer review, version 4 and version 5.** Four AI reviewers rated version 3 as master trainers
@@ -230,8 +250,8 @@ Work through the rollout guide in [`stakeholder-review.md`](stakeholder-review.m
 3. **A QA position.** A safety hold is not a deviation in itself.
 
 Then check the four saves against your site (the list is in the stakeholder review: who drives which truck and how
-authorization is shown, the lock-removal procedure, whether operators may move slitter knives, your lockout points for
+authorization is shown, the lock-removal procedure, whether operators may change slitter blades, your lockout points for
 power and air, and which cut-resistant gloves your hazard assessment names), and run the
 portfolio's SME, instructional-design and accessibility review gates, with real people in those roles. The perspective
 reviews in this folder are a starting point for them, not a substitute. Record the video as awareness training, not
-lockout, solvent-bonding, forklift-operator or knife-handling training.
+lockout, solvent-bonding, forklift-operator or blade-handling training.

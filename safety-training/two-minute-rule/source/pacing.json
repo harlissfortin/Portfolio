@@ -33,7 +33,7 @@
    "pre": 1.4,
    "post": 0.6
   },
-  "save-4-slitter-knives": {
+  "save-4-blade-change": {
    "pre": 1.4,
    "post": 1.4
   },
@@ -170,7 +170,7 @@
    "after": 0.6
   },
   "s10-7": {
-   "after": 0.4
+   "after": 1.2
   },
   "s10-8": {
    "after": 0.6

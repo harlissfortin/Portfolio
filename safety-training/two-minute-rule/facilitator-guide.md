@@ -1,9 +1,9 @@
 # The 2-Minute Rule: facilitator guide
 
 This guide is for the launch session and the four weekly huddles that go with the video *The 2-Minute Rule: One Shift
-on a Patch Line* (about 6:39). The video follows one shift on a transdermal patch line: a routine Go, then four saves.
+on a Patch Line* (about 6:40). The video follows one shift on a transdermal patch line: a routine Go, then four saves.
 
-This is awareness training. It builds a habit. It is not lockout, solvent-bonding, forklift-operator or knife-handling
+This is awareness training. It builds a habit. It is not lockout, solvent-bonding, forklift-operator or blade-handling
 training, and it does not qualify anyone to do any fix. Your site's procedures, permits and lockout always
 come first. The saves are illustrative composites, not real incidents. Your EHS, operations, QA and training leads
 review this guide and the video against your site before use.
@@ -150,7 +150,7 @@ aid.
 | Part | Time | Who |
 |---|---|---|
 | 1. Live opening: leader commitments and the QA position | About 3 min | Site or area head |
-| 2. The full video | About 7 min (6:39, plus pauses at Save 1's holds) | Facilitator |
+| 2. The full video | About 7 min (6:40, plus pauses at Save 1's holds) | Facilitator |
 | 3. Discussion | About 8 min | Facilitator, with the head staying |
 | 4. Close | About 2 min | Facilitator |
 
@@ -233,7 +233,7 @@ to the floor.
 | 1 | Save 1 · Solvent transfer | Before you start | Fix it | Sorting cards 1, 5, 6 | A solvent drum station, a bonding reel, or any bonding clamp and lamp |
 | 2 | Save 2 · Roll staging | After a break | Stop & get help | Our version | Roll staging: a rack bay, the next-roll spot or where your pallet truck parks |
 | 3 | Save 3 · Die cutter | Handover | Stop & get help | Sorting cards 4, 7, 8 | Any machine with a guard and a lockout point, where handovers happen |
-| 4 | Save 4 · Slitter knives | Change | Fix it | Our version | A slitter's knife station and its glove hook, stopped and locked out by its own operator, or a photo. Nobody touches knives or holders in a huddle |
+| 4 | Save 4 · Blade change | Change | Fix it | Our version | A slitter's knife station, its glove hook and used-blade box, stopped and locked out by its own operator, or a photo. Nobody touches blades or holders in a huddle |
 
 **Order.** Run them 1 to 4. That's the video's order and the order of the shift, and the calls go Fix it, Stop & get
 help, Stop & get help, Fix it. The boundary rule between those calls is what you're teaching. An area may start with
@@ -264,9 +264,9 @@ Chapter and hold times:
 | Save 1 · Solvent transfer | 2:05 | 2:12 (holds to 2:18) | 2:30 (holds to 2:33) |
 | Save 2 · Roll staging | 2:47 | 2:53 (holds to 2:59) | 3:16 (holds to 3:19) |
 | Save 3 · Die cutter | 3:41 | 3:47 (holds to 3:52) | 4:01 (holds to 4:04) |
-| Save 4 · Slitter knives | 4:29 | 4:36 (holds to 4:41) | 4:48 (holds to 4:51) |
+| Save 4 · Blade change | 4:29 | 4:36 (holds to 4:41) | 4:47 (holds to 4:51) |
 
-Other chapters: Intro 0:00 · The rule 0:15 · Line clearance for people 0:29 · Stop · Look · Ask · Decide 0:42 · A routine Go 1:26 · Four saves 1:49 · All four end in Go 5:18 · What leaders commit to 5:28 · Recap card 5:49. Full video: 6:39.
+Other chapters: Intro 0:00 · The rule 0:15 · Line clearance for people 0:29 · Stop · Look · Ask · Decide 0:42 · A routine Go 1:26 · Four saves 1:49 · All four end in Go 5:18 · What leaders commit to 5:29 · Recap card 5:50. Full video: 6:40.
 
 *Times come from `source/timing.json` (`python tooling/pause_points.py` refreshes them).*
 <!-- /PAUSE-POINTS -->
@@ -360,11 +360,11 @@ paused this week. Which trigger was it? Which question did the work?" Then ask f
    call, in any words. The supervisor responds as in section 5, starting with: **"Thanks. What did you see?"**
 5. Then say to everyone: "When you get back to your station, do your two minutes before you start. I'll come by this
    shift and ask one of you to talk me through it." Then do it.
-6. Keep it safe. This is talk only. Nobody touches controls, guards, valves, locks, clamps, knives or trucks. Stay
+6. Keep it safe. This is talk only. Nobody touches controls, guards, valves, locks, clamps, blades or trucks. Stay
    outside guarding and barriers, and out of truck aisles. In the mix room and in classified rooms, don't break PPE,
    gowning or entry rules for a huddle: use a station outside, or a photo. Never hold a huddle at a running slitter.
-   Use a knife station only when it's stopped and locked out by its own operator, or use a photo. If the volunteer
-   spots something real, treat it as a real catch.
+   Use a slitter knife station only when it's stopped and locked out by its own operator, or use a photo. Nobody
+   touches its blades or holders. If the volunteer spots something real, treat it as a real catch.
 
 **Step 6. Close (1.5 min)**
 
@@ -521,57 +521,77 @@ say, and who signs off the restart?
 6. **Close.** As step 6, plus: "At handover this week, ask the person going off shift, face to face, about locks,
    guards and anything half done."
 
-#### Save 4 huddle · Slitter knives
+#### Save 4 huddle · Blade change
 
-At changeover, you've locked out the slitter to move its knives to new widths: your own locks are on its POWER
-disconnect and its AIR valve. You're still in the thin gloves you run it in, and the cut-resistant gloves hang on
-their hook.
+At changeover, you've locked out the slitter to replace its worn blades. Your own locks are on its POWER disconnect and
+its AIR valve. You're still in the thin gloves you run it in, and the cut-resistant gloves hang on their hook. The
+used-blade box and the blade dispenser sit on a shelf beside you.
 
 **Check first.**
 
-- **Who moves the knives.** Are operators trained and authorized to move or change slitter knives here? If it's a
-  mechanic's job on your line, the model call there is **Stop & get help**. Say so.
-- **The lockout.** Is it locked out as your procedure says, including air for pneumatic knife holders? Setting up,
-  adjustments and tool changes count as servicing (29 CFR 1910.147(b)). The minor-servicing exception only covers
-  routine work during normal production with other effective protection, so don't offer it for changeover knife
-  setting. Any other method is EHS's call, in writing.
+- **Who changes blades.** Are operators trained and authorized to change slitter blades here? If it's a mechanic's
+  job on your line, the model call there is **Stop & get help**. Say so.
+- **The lockout.** Is the slitter locked out as your procedure says, including air for air-actuated knife holders? A
+  blade change is a tool change, and tool changes count as servicing (29 CFR 1910.147(b)). The minor-servicing
+  exception (1910.147(a)(2)(ii)) covers only minor tool changes during normal production that are routine, repetitive
+  and integral to using the machine for production, and done with other effective protection. A changeover blade
+  change isn't normal production, so don't offer that exception. Any other method is EHS's call, in writing. Check the
+  regulation wording against the primary text before you quote it.
 - **The gloves.** Which cut-resistant gloves does your procedure name? Your hazard assessment sets them: don't quote a
-  cut level, brand or fibre from this video. Are they worn over your thin gloves, as the video draws them, or as a
-  liner under them? Where are they kept, and in which sizes? Do they come off before threading and restart, as your
-  procedure says? The video says "Cut-resistant gloves off before it runs."
-- **Blades.** Where do used blades go, and where are blade changes done (at a bench, if your procedure says so)?
+  cut level, brand or fibre from this video (ANSI/ISEA 105 is the rating standard). Are they worn over your thin
+  gloves, as the video draws them, or as a liner under them, as your gowning procedure says? Where are they kept, and
+  in which sizes? Do they come off before threading and restart?
+- **Where blades are changed.** In place on the knife bar, as the video shows, or at the bench where your procedure
+  says? Some holders come off as a cartridge, with a guard snapped on before it moves. Neither way is wrong in itself:
+  your procedure decides.
+- **Blade tool.** Does your procedure name a blade-change tool? If it does, use it. The video shows none.
+- **Used and new blades.** Where is the used-blade box, and who swaps it before it's full? Where do new blades come
+  from? Does your site log or count blades in and out? If so, follow it. A chipped blade or a missing piece is
+  **Stop & get help**.
+- **Product gloves after.** After blade work, change or sanitize your product gloves, as your gowning procedure says,
+  before you handle product.
 
 1. **Recall.** As step 1.
 2. **Play.**
-   - Hold 1 ("Your turn. What would make you stop here?"), the clue: the three razor knives, the thin teal glove in
-     the close-up, and the cut-resistant gloves unused on their hook. The posted SLITTER KNIVES card says Lock out and
+   - Hold 1 ("Your turn. What would make you stop here?"), the clue: the three razor blades, the thin teal glove in
+     the close-up, and the cut-resistant gloves unused on their hook. The posted BLADE CHANGE card says Lock out and
      Cut-resistant gloves. The question that catches it: **What could hurt us?** ("What's different?" also fits: the
-     job changed from running the slitter to knife work.)
+     job changed from running the slitter to blade work.)
    - Hold 2 ("And your call?"), the call: **Fix it.**
 3. **The reason.** Getting the right gloves on is your own PPE step: it's in your procedure, and you're trained and
    authorized. Put on the cut-resistant gloves your procedure names, after looking them over: no cuts, holes or worn
-   spots (a damaged pair goes out as your procedure says). Even in those gloves, hold each knife by its holder, never
-   the edge. Slide the knives to their new widths. Cut-resistant gloves off before it runs. Then Go, still locked out: your own
-   locks come off only with your restart checks, as your procedure says.
-   - Why it matters, said calmly: locking out stops the knives moving, but it doesn't make them blunt. Cut-resistant
-     isn't cut-proof. The gloves come off before the slitter is threaded or runs again, because gloves can be caught
-     by moving rolls. If a knife or blade drops, let it fall, step back and warn others. Never catch it.
-   - Listen for: "It's only a quick nudge" (it's still knife work, done locked out); "It's locked out, so it's safe"
-     (stopped isn't blunt); "Cut-resistant gloves mean I can't get cut" (resistant, not cut-proof: hold the holder);
-     "I'd keep them on to thread up" (cut-resistant gloves off before it runs); "If a blade slips I'd grab it" (let it fall, step
-     back, warn others).
-   - Prevented: no cut from a knife that's stopped, but still sharp.
+   spots (a damaged pair goes out as your procedure says). Even in those gloves, hold each blade by its back, never the
+   edge. Change one blade at a time: open the clamp, slide the worn blade out by its back, and put it straight into
+   the used-blade box, edge first. Take a new one by its back from the dispenser. Seat it fully, to its stop, before
+   you tighten the clamp. Close the cover before you take the cut-resistant gloves off. Then Go, still locked out:
+   your own locks come off only with your restart checks, as your procedure says.
+   - Why it matters, said calmly: worn doesn't mean blunt, and cut-resistant isn't cut-proof. A used blade left on the
+     frame, on a bench or in a pocket is the next cut waiting. A blade that isn't fully seated can spring out as you
+     tighten. Keep your other hand clear of the other blades: that's why it's one at a time. The cut-resistant gloves
+     come off before the slitter is threaded or runs, because gloves can be caught by moving rolls. If a blade drops,
+     let it fall, step back and warn others. Never catch it.
+   - Listen for: "It's worn, so it's blunt" (worn, but still sharp); "Just this once in my thin gloves" (they aren't
+     made for blades); "I'd set it on the frame for a second" (straight into the blade box); "Cut-resistant gloves
+     mean I can't get cut" (resistant, not cut-proof: hold it by its back); "I'd tighten it, then push it home" (seat
+     it first, then tighten); "I'd keep them on to thread up" (cut-resistant gloves off before it runs); "If it slips
+     I'd grab it" (let it fall, step back, warn others); "It's only a quick swap" (it's still a tool change, done
+     locked out).
+   - Prevented: no cut from a blade that's worn, but still sharp.
    - **Twist:** "What if there are no cut-resistant gloves in your size on the hook?" Model call: **Stop & get help.**
-     You can't do your PPE step, so the knife work waits. Call your lead.
-4. **Our version.** Ask: "Which jobs on our line need different gloves from the ones we run it in: knife setting, die
-   changes, splices? Where could we slip into a knife job in our running gloves?" Capture one or two (section 8).
-5. **Talk-through.** A slitter knife station, only when it's stopped and locked out by its own operator, or a photo.
-   Hands off knives and holders: nobody handles a blade for a huddle.
-   "Now imagine you find this: halfway through setting the knives, you see a cut in your glove." (Model: stop, hands
-   off the knives, and swap for a sound pair from the hook as your procedure says: your own PPE step. Report it the
-   usual way: a cut glove is a near miss. No spare pair? Stop & get help.)
-6. **Close.** As step 6, plus: "At every changeover this week, ask: does this job need different gloves? And are they
-   off before it runs?"
+     You can't do your PPE step, so the blade change waits. Call your lead.
+4. **Our version.** Ask: "Which jobs on our line need different gloves from the ones we run it in: blade changes, die
+   changes, splices? Where could we slip into a blade job in our running gloves?" Capture one or two (section 8).
+5. **Talk-through.** Use a slitter knife station only when it's stopped and locked out by its own operator, or use a
+   photo. Hands off blades and holders: nobody handles a blade for a huddle.
+   "Now imagine you find this: halfway through the blade change, you see a cut in your glove." (Model: put any blade
+   you're holding straight into the blade box, then hands off the blades. Swap for a sound pair from the hook, as your
+   procedure says: your own PPE step. Report it the usual way: a cut glove is a near miss. No spare pair?
+   Stop & get help.)
+   If there's time, a second one: "Now imagine you find this: the used-blade box is full." (Model: don't push a blade
+   in or set it down. Leave the next blade in its holder. Swap the box only if your procedure says you do. Otherwise,
+   Stop & get help.)
+6. **Close.** As step 6, plus: "At every changeover this week, ask: does this job need different gloves? Where does
+   the used blade go? And are the gloves off before it runs?"
 
 #### After the last huddle
 
@@ -682,8 +702,8 @@ Work in pairs. One plays the person who stops, one responds. Two minutes each, t
    I'm not starting."
    Coaching point: never ask them to remove the lock or finish the job. Reach the owner, or follow the site's
    lock-removal procedure.
-5. At a changeover, an operator calls to check they should put on cut-resistant gloves before moving the slitter
-   knives, which is in their own procedure. The line is behind plan.
+5. At a changeover, an operator calls to check they should put on cut-resistant gloves before changing the slitter's
+   blades, which is in their own procedure. The line is behind plan.
    Coaching point: thank them anyway. When in doubt, get help. Don't let the plan show in your voice.
 
 **What the watcher looks for**
@@ -721,8 +741,8 @@ call is what keeps people safe. It also checks objectives 1, 2 and 4 (section 1)
 - Keep the scenarios out of huddles, sorting cards and posters. None of them is one of the four saves.
 - Trial both sets with about five people from an area that is in neither the pilot nor the comparison. Replace any
   item that nearly everyone gets right with a new one that has the same call.
-- EHS checks both sets, and any local names you swap in. Save 4 is a glove change, so EHS also confirms that B1 (the
-  right gloves for a solvent clean) still tests transfer, not recall of Save 4.
+- EHS checks both sets, and any local names you swap in. Save 4 is about putting on the right gloves, so EHS also
+  confirms that B1 (the right gloves for a solvent clean) still tests transfer, not recall of Save 4.
 
 ### How to run it (about 5 minutes per person)
 
@@ -876,7 +896,7 @@ names)
 | The outgoing and incoming person talk face to face | | | |
 | The handover record shows lock, guard and interlock state (die cutter, slitter, laminator, pouching) | | | |
 | The handover record shows anything unfinished: a die or knife change, a clean, a maintenance tag | | | |
-| At a changeover: the PPE the procedure names for the new job goes on before hands-on work, and comes off before the machine runs where the procedure says so (such as cut-resistant gloves for knife setting) | | | |
+| At a changeover: the PPE the procedure names for the new job goes on before hands-on work, and comes off before the machine runs where the procedure says so (such as cut-resistant gloves for a blade change) | | | |
 | The next rolls are staged where the line's own trucks and lifters can reach them | | | |
 | Hands off before starting: a pause at the point of work | | | |
 | They look at the equipment: guards, locks, tags, lamps, the PPE board | | | |
@@ -1038,7 +1058,7 @@ locked.
 | Line clearance | Checking the line is clear before each run. The 2-minute rule is line clearance for people. |
 | Bonding · BOND lamp | Clamps and wires that join the drum, the pump and the tank, so static charge can't build up and spark. The lamp shows it's connected: red, not bonded; green, bonded. |
 | PPE · PPE board | Your protective gear. Your procedure names the PPE for each job; a PPE board shows it at a room or machine. |
-| Cut-resistant gloves | Gloves made to resist cuts from blades. Resistant, not cut-proof. Your procedure names which ones, from your site's hazard assessment. Look them over before use. Worn for knife work on a stopped, locked-out machine; off before it runs again, as your procedure says. |
+| Cut-resistant gloves | Gloves made to resist cuts from blades. Resistant, not cut-proof. Your procedure names which ones, from your site's hazard assessment. Look them over before use. Worn for blade work on a stopped, locked-out machine; off before it runs again, as your procedure says. |
 | Roll staging | Where rolls wait for the line, on the warehouse side of the line's material airlock. |
 | Pallet truck · Forklift | A pallet truck is walk-behind and moves pallets at floor level. A forklift is ride-on and lifts loads high. They are different types of truck, and each needs its own training. |
 | Trained on | Your site's record of the trucks you're trained, evaluated and authorized to drive: a card, a badge or a posted list. OSHA doesn't issue licences or cards. |
@@ -1054,9 +1074,10 @@ locked.
 | Permit | Written permission for a higher-risk job, like reaching into a vessel or hot work. "No permit yet" means Stop & get help. If you hold the permit and the step is in it, it can be Fix it. |
 | Guard · Interlock | A guard keeps hands out. An interlock stops the machine when the guard opens. |
 | Die station | Where the die cutter cuts the patches. |
-| Slitter · Knife setting | A slitter cuts a wide roll into narrow ones with a row of razor knives. Knife setting: moving the knives to the new product's widths, with the slitter locked out (power and air). |
-| Knife holder | Holds a slitter knife on the knife bar. You hold the holder, never the edge. |
-| Awareness training | Training that builds a habit. It doesn't qualify you for lockout, solvent bonding, driving a truck, knife handling or any procedure. |
+| Slitter · Blade change | A slitter cuts a wide roll into narrow ones with a row of razor blades in holders. Blade change: replacing worn blades with new ones, with the slitter locked out (power and air). |
+| Knife holder | Holds one razor blade on the knife bar, in a clamp. Hold a blade by its back, never the edge. |
+| Used-blade box | A closed box with a slot for used blades. Each used blade goes straight in, edge first. Never set one down, carry it around or reach into the box. |
+| Awareness training | Training that builds a habit. It doesn't qualify you for lockout, solvent bonding, driving a truck, blade handling or any procedure. |
 
 **Translation notes**
 
