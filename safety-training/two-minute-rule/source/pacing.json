@@ -1,0 +1,212 @@
+{
+ "_note": "Silent beats layered onto the script by tooling/from_script.py. scene: pre = silence before the first line (saves: the 1 s Stop-Look-Ask-Decide sting), post = silence after the last. cue: after = silence after that line (default 0.34 s). Holds: 3.0 s after \"What would make you stop here?\", 2.4 s after \"Your call?\".",
+ "scenes": {
+  "title-open": {
+   "pre": 0.6,
+   "post": 1.8
+  },
+  "the-rule": {
+   "post": 1.0
+  },
+  "line-clearance": {
+   "post": 0.6
+  },
+  "how-to-run-it": {
+   "post": 0.9
+  },
+  "routine-go": {
+   "pre": 0.4,
+   "post": 0.6
+  },
+  "four-saves": {
+   "post": 0.6
+  },
+  "save-1-solvent-bonding": {
+   "pre": 1.4,
+   "post": 0.6
+  },
+  "save-2-material-handling": {
+   "pre": 1.4,
+   "post": 0.6
+  },
+  "save-3-die-cutter-lock": {
+   "pre": 1.4,
+   "post": 0.6
+  },
+  "save-4-blade-change": {
+   "pre": 1.4,
+   "post": 1.4
+  },
+  "all-four-end-in-go": {
+   "post": 1.2
+  },
+  "what-makes-it-work": {
+   "pre": 0.3,
+   "post": 1.2
+  },
+  "close-recap": {
+   "post": 3.4
+  }
+ },
+ "cues": {
+  "s1-2": {
+   "after": 0.6
+  },
+  "s3-1": {
+   "after": 0.9
+  },
+  "s3-2": {
+   "after": 0.8
+  },
+  "s4-3": {
+   "after": 0.25
+  },
+  "s4-4": {
+   "after": 0.5
+  },
+  "s4-5": {
+   "after": 0.6
+  },
+  "s4-6": {
+   "after": 0.9
+  },
+  "s4-9": {
+   "after": 0.9
+  },
+  "s5-4": {
+   "after": 2.4
+  },
+  "s5-5": {
+   "after": 0.4
+  },
+  "s6-1": {
+   "after": 0.6
+  },
+  "s6-3": {
+   "after": 0.6
+  },
+  "s6-4": {
+   "after": 0.6
+  },
+  "s7-1": {
+   "after": 0.6
+  },
+  "s7-2": {
+   "after": 3.0
+  },
+  "s7-4": {
+   "after": 0.7
+  },
+  "s7-5": {
+   "after": 2.4
+  },
+  "s7-6": {
+   "after": 0.5
+  },
+  "s7-7": {
+   "after": 0.6
+  },
+  "s8-1": {
+   "after": 0.6
+  },
+  "s8-2": {
+   "after": 3.0
+  },
+  "s8-5": {
+   "after": 0.7
+  },
+  "s8-6": {
+   "after": 2.4
+  },
+  "s8-7": {
+   "after": 0.5
+  },
+  "s8-8": {
+   "after": 0.4
+  },
+  "s8-9": {
+   "after": 2.0
+  },
+  "s8-10": {
+   "after": 0.6
+  },
+  "s9-1": {
+   "after": 0.6
+  },
+  "s9-2": {
+   "after": 3.0
+  },
+  "s9-4": {
+   "after": 0.7
+  },
+  "s9-5": {
+   "after": 2.4
+  },
+  "s9-6": {
+   "after": 0.5
+  },
+  "s9-7": {
+   "after": 0.7
+  },
+  "s9-8": {
+   "after": 0.6
+  },
+  "s10-1": {
+   "after": 0.6
+  },
+  "s10-2": {
+   "after": 3
+  },
+  "s10-3": {
+   "after": 0.7
+  },
+  "s10-4": {
+   "after": 2.4
+  },
+  "s10-5": {
+   "after": 0.5
+  },
+  "s10-6": {
+   "after": 0.6
+  },
+  "s10-7": {
+   "after": 1.2
+  },
+  "s10-8": {
+   "after": 0.6
+  },
+  "s11-1": {
+   "after": 0.6
+  },
+  "s11-2": {
+   "after": 0.2
+  },
+  "s12-1": {
+   "after": 1.2
+  },
+  "s12-2": {
+   "after": 0.6
+  },
+  "s12-3": {
+   "after": 0.6
+  },
+  "s13-2": {
+   "after": 0.25
+  },
+  "s13-3": {
+   "after": 0.5
+  },
+  "s13-4": {
+   "after": 0.4
+  },
+  "s13-5": {
+   "after": 0.7
+  },
+  "s13-6": {
+   "after": 2.6
+  },
+  "s13-7": {
+   "after": 3.6
+  }
+ }
+}
